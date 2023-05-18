@@ -62,10 +62,6 @@ $(function() {
 	var chart = new ApexCharts(document.querySelector("#chart1"), options);
 	chart.render();
 	
-	
-	
-	new PerfectScrollbar('.dashboard-top-countries');
-	
-	
+
 	
 });

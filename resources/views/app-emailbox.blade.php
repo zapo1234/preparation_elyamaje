@@ -536,7 +536,7 @@
 
 @section("script")
 <script>
-	new PerfectScrollbar('.email-navigation');
-	new PerfectScrollbar('.email-list');
+	// new PerfectScrollbar('.email-navigation');
+	// new PerfectScrollbar('.email-list');
 </script>
 @endsection

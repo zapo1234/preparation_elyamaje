@@ -187,7 +187,7 @@
 		@endsection
 @section("script")
 <script>
-	new PerfectScrollbar('.email-navigation');
-	new PerfectScrollbar('.email-read-box');
+	// new PerfectScrollbar('.email-navigation');
+	// new PerfectScrollbar('.email-read-box');
 </script>
 @endsection

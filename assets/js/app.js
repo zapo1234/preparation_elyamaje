@@ -1,8 +1,7 @@
 $(function () {
 	"use strict";
 	/* perfect scrol bar */
-	new PerfectScrollbar('.header-message-list');
-	new PerfectScrollbar('.header-notifications-list');
+
 	// search bar
 	$(".mobile-search-icon").on("click", function () {
 		$(".search-bar").addClass("full-search-bar");
@@ -178,24 +177,28 @@ $(function () {
       $('html').attr('class', 'color-sidebar sidebarcolor8');
     }
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+});
+
+
+$( document ).ready(function() {
+		
+	if($.fn.dataTable){
+		$.extend(true, $.fn.dataTable.defaults, {
+			"showNEntries" : false,
+			"language": {
+				"search": "",
+				"searchPlaceholder": "Rechercher...",
+				"lengthMenu": "_MENU_",
+				"paginate": {
+					"previous": "<i class='fadeIn animated bx bx-chevron-left'></i>",
+					"next": "<i class='fadeIn animated bx bx-chevron-right'></i>"
+				}
+			},
+			"oLanguage": {
+				"sInfo" : "Affichage des entrées de _START_ à _END_ sur un total de _TOTAL_ ",
+				
+			},
+		});
+	}
+
 });
