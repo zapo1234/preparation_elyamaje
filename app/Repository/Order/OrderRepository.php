@@ -54,16 +54,14 @@ class OrderRepository implements OrderInterface
                      'total_price' => floatval($value['quantity']) * floatval($value['total'])
                   ];
                }
-
-               dump("d");
-               // DB::table('products')->insert($productsToInsert);
             }
           
          }
     
          // Insérer les données dans la base de données par lot
          try{
-            // $this->model->insert($ordersToInsert);
+            $this->model->insert($ordersToInsert);
+            DB::table('products')->insert($productsToInsert);
          } catch(Exception $e){ 
             continue;
          }
