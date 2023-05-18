@@ -73,6 +73,8 @@ class Order extends BaseController
       $array_user = [];
       $orders_user = [];
       $orders_id = [];
+      $orders_to_delete = [];
+
       foreach($users as $user){
         $array_user[$user->id] = [];
       }
@@ -85,10 +87,24 @@ class Order extends BaseController
         $orders_id [] = $order['order_woocommerce_id'];
       }
 
+
+      // Liste des commandes Woocomerce
       $orders = $this->orders();
 
+      $ids = array_column($orders, "id");
+      foreach($orders_id as $id){
+        $clesRecherchees = array_keys($ids,  $id);
+        if(count($clesRecherchees) == 0){
+          $orders_to_delete [] = $id;
+        } 
+      }
+
+      // Supprime les commandes qui ne sont plus en cours dans woocommerce
+      $this->order->deleteOrdersById($orders_to_delete);
+
       // Répartitions des commandes
-      foreach($orders as $order){    
+      foreach($orders as $order){  
+      
         foreach($array_user as $key => $array){
 
           // Check si command epas déjà répartie

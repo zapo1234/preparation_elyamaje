@@ -11,6 +11,8 @@ interface OrderInterface
    public function getOrdersByUsers();
 
    public function getOrdersByIdUser($id);
+
+   public function deleteOrdersById($ids);
 }
 
 

@@ -103,10 +103,12 @@ class OrderRepository implements OrderInterface
 
       $list = array_values($list);
 
-      // dd($list);
       return $list;
+   }
 
-
+   public function deleteOrdersById($ids){
+      $this->model::whereIn('order_woocommerce_id', $ids)->delete();
+      DB::table('products')->whereIn('order_id', $ids)->delete();
    }
 
 }
