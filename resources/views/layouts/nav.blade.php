@@ -18,7 +18,7 @@
                 </li>
                
                 <li>
-                    <a href="{{ route('tiers.refreshtiers') }}">
+                    <a href="{{ url('refreshtiers') }}">
                         <div class="parent-icon"><i class='bx bx-box'></i>
                         </div>
                         <div class="menu-title">Import Api tiers</div>
