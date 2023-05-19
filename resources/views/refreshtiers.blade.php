@@ -46,7 +46,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             
-                                                            <form method="post" id="transfers_code_promo" action="{{ url('refreshtiers') }} ">
+                                                            <form method="post" id="transfers_code_promo" action="{{ url('refreshtier') }}">
                                                               @csrf
                                                             <h2></h2>
                                                                  <div id="error_code"></div>
