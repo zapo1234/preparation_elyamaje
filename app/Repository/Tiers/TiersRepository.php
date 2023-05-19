@@ -5,7 +5,7 @@ namespace App\Repository\Tiers;
 use Hash;
 use Exception;
 use Carbon\Carbon;
-use App\Models\tier;
+use App\Models\Tier;
 use App\Http\Service\Api\Api;
 use Illuminate\Support\Facades\DB;
 
