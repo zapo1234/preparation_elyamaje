@@ -16,6 +16,15 @@
                         <div class="menu-title">Commandes</div>
                     </a>
                 </li>
+               
+                <li>
+                    <a href="{{ route('tiers.refreshtiers') }}">
+                        <div class="parent-icon"><i class='bx bx-box'></i>
+                        </div>
+                        <div class="menu-title">Import Api tiers</div>
+                    </a>
+                </li>
+
             </ul>
             <!--end navigation-->
         </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Order;
+use App\Http\Controllers\TiersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +24,11 @@ Route::get('/', function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get("/index", [Controller::class, "index"])->name('orders');
     Route::get("/getOrder", [Order::class, "getOrder"])->name('getOrder');
+
+    // traiter les routes pour des tiers
+     Route::get("/tiers/new", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
+     // mise a jours des tiers via dolibar.
+     Route::post("/tiers/new", [TiersController::class, "postiers"]);
 });
 
 

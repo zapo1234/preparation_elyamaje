@@ -26,6 +26,53 @@ class Api
     return $result;
   }
 
+
+  public function CallAPI($method, $key, $url, $data = false)
+  {
+      
+        $curl = curl_init();
+        $httpheader = ['DOLAPIKEY: '.$key];
+
+      switch ($method)
+     {
+         case "POST":
+          curl_setopt($curl, CURLOPT_POST, 1);
+          $httpheader[] = "Content-Type:application/json";
+
+          if ($data)
+              curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+          break;
+       case "PUT":
+
+       curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+          $httpheader[] = "Content-Type:application/json";
+
+          if ($data)
+              curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+          break;
+      default:
+          if ($data)
+              $url = sprintf("%s?%s", $url, http_build_query($data));
+     }
+
+
+     curl_setopt($curl, CURLOPT_URL, $url);
+     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+     curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
+
+     $result = curl_exec($curl);
+
+     curl_close($curl);
+     
+     // renvoi le resultat sous forme de json
+      return $result;
+      
+      
+ }  
+   
+
 }
 
 
