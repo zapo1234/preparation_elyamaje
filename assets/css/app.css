@@ -183,7 +183,7 @@ a {
 	letter-spacing: 1px;
 
 
-	color: #8833ff;
+	color: black;
 
 
 }
@@ -198,7 +198,7 @@ a {
 	cursor: pointer;
 
 
-	color: #8833ff;
+	color: black;
 
 
 }
@@ -608,7 +608,7 @@ a {
 	
     text-decoration: none;
 	
-    background: rgb(136 51 255 / 12%);
+    background: rgb(0 0 0 / 12%);
 
 
 }
@@ -923,12 +923,16 @@ a {
 	right: 12px;
 
 
-	background-color: #8833ff;
+	background-color: black;
 
 
 	z-index: 5;
 
 
+}
+
+.back-to-top i{
+	color: white !important;
 }
 
 
@@ -5817,7 +5821,7 @@ input::placeholder {
 }
 
 .head_detail_product_order span{
-	font-size: 14px;
+	font-size: 22px;
 	font-weight: bold;
 }
 
@@ -5825,9 +5829,8 @@ input::placeholder {
 	width: 350px;
 }
 
-.detail_product_name_order img{
-	margin-right: 10px;
-	border: 1px solid #e8e8e8;
+.detail_product_order_line span{
+	font-size: 22px;
 }
 
 .detail_product_order_line{
@@ -5836,7 +5839,22 @@ input::placeholder {
 
 .body_detail_product_order{
 	overflow-y: auto;
-	max-height: 70vh;
+	height: 100%;
+}
+
+.modal_order .modal-content{
+	border-radius: 0px !important;
+}
+
+.detail_product_order_head {
+	height: 100%;
+}
+
+.detail_product_order{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	overflow-y: auto;
 }
 
 ::-webkit-scrollbar-track
@@ -6077,4 +6095,113 @@ a{
 	top: 15%;
 	width: inherit;
 	justify-content: center;
+}
+
+
+
+
+@media screen and (max-width: 550px) {
+	.page-content{
+		padding: 0px !important;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+.course {
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
+	display: flex;
+	max-width: 100%;
+	margin: 20px;
+	overflow: hidden;
+}
+
+.course h6 {
+	opacity: 0.6;
+	margin: 0;
+	letter-spacing: 1px;
+}
+
+.course h2 {
+	letter-spacing: 1px;
+	margin: 10px 0;
+	font-size: 1.5rem !important;
+}
+
+.course-preview {
+	background-color: black;
+	color: #fff !important;
+	padding: 30px;
+	max-width: 250px;
+}
+
+.course-preview a {
+	color: #fff !important;
+	display: inline-block;
+	font-size: 12px;
+	opacity: 0.6;
+	margin-top: 30px;
+	text-decoration: none;
+}
+
+.course-preview h6,
+.course-preview h2{
+	color: white;
+}
+
+.course-info {
+	padding: 30px;
+	position: relative;
+	width: 100%;
+}
+
+
+.course .btn {
+	background-color: black;
+	border: 0;
+	border-radius: 50px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	color: #fff;
+	font-size: 16px;
+	padding: 12px 25px;
+	position: absolute;
+	bottom: 30px;
+	right: 30px;
+	letter-spacing: 1px;
+}
+
+@media (min-width: 576px){
+	.modal_order .modal-dialog{
+		max-width: 100% !important;
+		margin: 0px !important;
+	}
+}
+
+.modal_order .modal-dialog{
+	max-width: 100% !important;
+	margin: 0px !important;
+}
+
+.modal_order .modal-dialog,
+.modal_order .modal-content{
+	height: 100% !important;
+}
+
+.pick{
+	background-color: #16e15e;
+	color: white !important
+}
+
+.dropdown-item.active, .dropdown-item:active{
+	background-color: black !important;
+	color: white !important;
 }

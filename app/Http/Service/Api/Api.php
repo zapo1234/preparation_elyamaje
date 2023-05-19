@@ -19,7 +19,7 @@ class Api
     $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
 
     $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
-      $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.elyamaje.com/wp-json/wc/v3/orders?status=".$status."&per_page=".$per_page."&page=".$page);
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/orders?status=".$status."&per_page=".$per_page."&page=".$page);
       return $response->json();
     });
     

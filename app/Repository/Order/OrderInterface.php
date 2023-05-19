@@ -12,9 +12,7 @@ interface OrderInterface
 
    public function getOrdersByIdUser($id);
 
-   public function deleteOrdersById($ids);
+   public function updateOrdersById($ids);
 }
-
-
 
 
