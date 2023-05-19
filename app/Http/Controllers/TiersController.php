@@ -23,7 +23,7 @@ class TiersController extends BaseController
 
     public function getiers()
     {
-          return view('Tiers.refreshtiers');
+          return view('refreshtiers');
 
     }
 
