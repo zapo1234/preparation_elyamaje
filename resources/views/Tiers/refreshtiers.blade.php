@@ -119,11 +119,11 @@
 							render: function(data, type, row) {
 							
 								return `
-									<div class="modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
 											<div class="modal-content">
 												<div class="modal-body detail_product_order">
-													<div class="detail_product_order_head d-flex flex-column">
+													<div class="d-flex flex-column">
 														<div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
 															<span class="name_column">Article</span>
 															<span class="name_column">Coût</span>
@@ -136,11 +136,12 @@
 															${row.line_items.map((element) => `
 																<div class="p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 																	<div class="d-flex align-items-center detail_product_name_order">
-																		${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
+																		<img class="lazy" width="42" height="42" loading="lazy" src="`+element.image.src+`">
+																		<span>`+element.name+` </span>
 																	</div>
 																	<span>	`+parseFloat(element.price).toFixed(2)+ `</span>
 																	<span> `+element.quantity+` </span>
-																	<span>`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
+																	<span>`+parseFloat(element.price).toFixed(2) * element.quantity+`</span>
 																	<span>` +parseFloat(element.total_tax).toFixed(2)+` </span>
 																</div>`
 														).join('')}
