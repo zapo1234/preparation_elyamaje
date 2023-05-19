@@ -45,11 +45,19 @@ class OrderRepository implements OrderInterface
                
 
                foreach($orderData['line_items'] as $value){
+
+                  if($value['meta_data']){
+                     $barcode = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "barcode" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
+                  } else {
+                     $barcode = null;
+                  }
+
                   $productsToInsert[] = [
                      'order_id' => $orderData['id'],
-                     'product_woocommerce_id' => $value['id'],
+                     'product_woocommerce_id' => $value['variation_id'] ?? $value['product_id'],
                      'name' => $value['name'],
                      'quantity' => $value['quantity'],
+                     'barcode' => $barcode, // Get barcode in meta_data (last key),
                      'cost' => $value['total'],
                      'total_price' => floatval($value['quantity']) * floatval($value['total'])
                   ];
@@ -72,12 +80,11 @@ class OrderRepository implements OrderInterface
 
 
    public function getOrdersByUsers(){
-      return $this->model->all();
+      return $this->model->select('*')->where('status', 'processing')->get();
+
    }
 
    public function getOrdersByIdUser($id){
-
-
 
       $list = [];
       $list2 = [];
@@ -85,6 +92,7 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')
          ->where('user_id', $id)
+         ->where('status', 'processing')
          ->select('*')->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -106,9 +114,8 @@ class OrderRepository implements OrderInterface
       return $list;
    }
 
-   public function deleteOrdersById($ids){
-      $this->model::whereIn('order_woocommerce_id', $ids)->delete();
-      DB::table('products')->whereIn('order_id', $ids)->delete();
+   public function updateOrdersById($ids){
+      $this->model::whereIn('order_woocommerce_id', $ids)->update(['status' => 'done']);
    }
 
 }
