@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth']], function () {
     // traiter les routes pour des tiers
      Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('refreshtiers');
      // mise a jours des tiers via dolibar.
-     Route::post("/refreshtiers", [TiersController::class, "postiers"]);
+     Route::post("/refreshtiers/app", [TiersController::class, "postiers"])->name('refrestiers');
 });
 
 

@@ -27,6 +27,13 @@ class TiersController extends BaseController
 
     }
 
+    public function postiers()
+    {
+       dd('zapo');
+      return view('refreshtiers');
+
+    }
+
     
   }
 
