@@ -37,7 +37,7 @@
 				</div>
 			</div>
 
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="position:absolute;width:500px;height:200px;top:100px;left:25%">
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="position:absolute;width:550px;height:250px;top:100px;left:28%">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
