@@ -33,7 +33,6 @@ class TiersController extends BaseController
        // recupérer le traitement des tiers pour les inserts dans la table.
        $this->tiers->insertiers();// mise à jours des tiers.
        $message="les clients sont bien mis à jours.";
-       dd('zapo');
        return view('refreshtiers',['message'=>$message]);
 
     }

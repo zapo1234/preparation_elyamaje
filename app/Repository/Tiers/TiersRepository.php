@@ -34,6 +34,18 @@ class TiersRepository implements TiersInterface
        }
     }
 
+    public function getalltiers()
+    {
+      // recupérer 
+       $data =  DB::table('tiers')->select('socid','email','code_client')->get();
+       // transformer les retour objets en tableau
+       $list = json_encode($data);
+       $lists = json_decode($data,true);
+       
+       return $lists;
+
+
+    }
 
     public function getallsocid()
     {
