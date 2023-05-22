@@ -24,16 +24,16 @@ class TiersController extends BaseController
     public function getiers()
     {
       $message="";
-      return view('refreshtiers',['message'=>$message]);
+      return view('Tiers.refreshtiers',['message'=>$message]);
 
     }
 
     public function postiers()
-    {
+    { 
        // recupérer le traitement des tiers pour les inserts dans la table.
        $this->tiers->insertiers();// mise à jours des tiers.
        $message="les clients sont bien mis à jours.";
-       return view('refreshtiers',['message'=>$message]);
+       return view('Tiers.refreshtiers',['message'=>$message]);
 
     }
 

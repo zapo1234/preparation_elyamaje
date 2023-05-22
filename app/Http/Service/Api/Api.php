@@ -18,12 +18,33 @@ class Api
     $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
     $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
 
-    $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
+    // Cache commenté car peux poser problème
+    // $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
       $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/orders?status=".$status."&per_page=".$per_page."&page=".$page);
       return $response->json();
-    });
+    // });
     
-    return $result;
+    // return $result;
+  }
+
+
+  public function updateOrdersWoocommerce($status, $id){
+
+    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
+    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+
+    // Cache commenté car peux poser problème
+    // $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
+      try{
+        $response = Http::withBasicAuth($customer_key, $customer_secret)->post("https://www.staging.elyamaje.com/wp-json/wc/v3/orders/".$id, [
+          'status' => $status,
+        ]);
+
+        return $response->json() ? true : false;
+
+      } catch(Exception $e){
+        return $e->getMessage();
+      }
   }
 
 

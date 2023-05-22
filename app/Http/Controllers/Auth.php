@@ -19,9 +19,9 @@ class Auth extends BaseController
 
     public function login(Request $request){
         if(!Auth()->user()){
-            return view('authentication-signin');
+            return view('login');
         } else {
-            return redirect()->route('orders');
+            return redirect()->route('/');
         }
     }
 
@@ -53,7 +53,7 @@ class Auth extends BaseController
 
 
         if(auth()->attempt(array('email' =>$input['email'], 'password' =>$input['password']))){
-            return redirect()->route('orders');
+            return redirect()->route('/');
         } else {
             return redirect()->route('login')->with('error','Identifiants incorrectes !');
         }

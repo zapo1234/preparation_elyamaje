@@ -17,24 +17,54 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-});
-
 Route::group(['middleware' => ['auth']], function () {
-    Route::get("/index", [Controller::class, "index"])->name('orders');
-    Route::get("/getOrder", [Order::class, "getOrder"])->name('getOrder');
-
-    // traiter les routes pour des tiers
-     Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('refreshtiers');
-     // mise a jours des tiers via dolibar// traiter le post.
-     Route::post("/refreshtier", [TiersController::class, "postiers"])->name('refreshtier');
+    Route::get('/', function () {
+        switch (Auth()->user()->role) {
+            case 1 :
+                return view('index');
+                break;
+            case 2 :
+                return redirect()->route('orders');
+                break;
+            case 3 :
+                return redirect()->route('dashboard.emballeur');
+                break;
+            default:
+                return redirect()->route('logout');
+                break;
+        } 
+        
+    })->name('/');
 });
+
+// ADMIN
+Route::group(['middleware' => ['auth', 'role:1']], function () {
+    Route::get("/index", [Controller::class, "index"])->name('orders');
+    Route::get("/getAllOrders", [Order::class, "getOrder"])->name('getAllOrders');
+    // traiter les routes pour des tiers
+    Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
+    // mise a jours des tiers via dolibar.
+    Route::post("refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
+});
+
+// PRÉPARATEUR
+Route::group(['middleware' => ['auth', 'role:2']], function () {
+    Route::get("/orders", [Controller::class, "orderPreparateur"])->name('orders');
+    Route::get("/ordersDistributeurs", [Controller::class, "ordersDistributeurs"])->name('orders.distributeurs');
+    Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
+    Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
+});
+
+// EMBALLEUR
+Route::group(['middleware' => ['auth', 'role:3']], function () {
+    Route::get("/dashboard", [Controller::class, "dashboard"])->name('dashboard.emballeur');
+});
+
 
 
 /*Authentication*/
-Route::get("/authentication-signin", [Auth::class, "login"])->name('login');
-Route::post("/authentication-signin", [Auth::class, "postLogin"])->name('login');
+Route::get("/login", [Auth::class, "login"])->name('login');
+Route::post("/login", [Auth::class, "postLogin"])->name('login');
 Route::get('/logout', [Auth::class, 'logout'])->name('logout');
 
 // Tâche cron répartition orders

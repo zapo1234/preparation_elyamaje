@@ -88,7 +88,7 @@
 				$('#example').DataTable({
 					order: [ 1, 'asc' ],
 					ajax: {
-						url: '{{ route("getOrder") }}',
+						url: '{{ route("getAllOrders") }}',
 						dataSrc: '',
 					},
 				
