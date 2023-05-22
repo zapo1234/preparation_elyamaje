@@ -25,10 +25,9 @@ class Order extends BaseController
       $this->order = $order;
     }
 
-    public function orders($id = null){
-
+    public function orders($id = null, $distributeur = false){
       if($id){
-        $orders_user = $this->order->getOrdersByIdUser($id);
+        $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         return $orders_user;
       } else {
         $status = "processing"; // Commande en préparation
@@ -62,6 +61,10 @@ class Order extends BaseController
       } else {
         return $this->orders(Auth()->user()->id);
       }
+    }
+
+    public function getOrderDistributeur(){
+      return $this->orders(Auth()->user()->id, true);
     }
 
 
@@ -134,6 +137,20 @@ class Order extends BaseController
       // List orders by users
       $this->order->insertOrdersByUsers($array_user);
       
+    }
+
+
+    public function ordersPrepared(Request $request){
+      $barcode_array = $request->post('pick_items');
+      $order_id = $request->post('order_id');
+      $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array);
+      echo json_encode(["success" => $check_if_order_done]);
+    }
+
+    public function ordersReset(Request $request){
+      $order_id = $request->post('order_id');
+      $orderReset = $this->order->orderReset($order_id);
+      echo json_encode(["success" => $orderReset]);
     }
 }
 

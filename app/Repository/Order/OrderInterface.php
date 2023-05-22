@@ -13,6 +13,10 @@ interface OrderInterface
    public function getOrdersByIdUser($id);
 
    public function updateOrdersById($ids);
+
+   public function checkIfDone($order_id, $barcode_array);
+
+   public function orderReset($order_id);
 }
 
 
