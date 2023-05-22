@@ -68,6 +68,7 @@ class TiersRepository implements TiersInterface
          
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
            $lists = json_decode($listinvoice,true);
+
      
            $data_ids = array('3087');
            // recupérer les données essentiel
@@ -88,12 +89,14 @@ class TiersRepository implements TiersInterface
                           $x2 = date("Y-m-d H:i:s", strtotime($x.'+ 0 days')); // AJOUTER +1 ans MAI 2024
                           $y = date('Y-m-d H:i:s', $values['date_modification']);
                           $y2 = date("Y-m-d H:i:s", strtotime($y.'+ 0 days')); // AJOUTER +1 en Mai 2024 rappel
-                         // Insert dasn la table
-                          $tier = new Tier;
-                          $tier->nom = $values['name'];
-                          $tier->prenom = $values['name_alias'];
-                          $tier->socid = $values['id'];
+
+                          // Insert dasn la table.
+                           $tier = new Tier;
+                           $tier->nom = $values['name'];
+                           $tier->prenom = $values['name_alias'];
+                           $tier->socid = $values['id'];
                            $tier->email = $values['email'];
+                           $tier->code_client = $values['code_client'];
                            $tier->phone = $values['phone'];
                            $tier->adresse = $values['address'];
                            $tier->zip_code = $values['zip'];
