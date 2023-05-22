@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // traiter les routes pour des tiers
     Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
-    Route::post("refreshtiers", [TiersController::class, "postiers"]);
+    Route::post("refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
 });
 
 // PRÉPARATEUR
