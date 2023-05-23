@@ -222,8 +222,8 @@ class TransferOrder
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
                 
         
-               //Recuperer les ref_client existant dans dolibar
-	             $tiers_ref = "";
+                //Recuperer les ref_client existant dans dolibar
+	              $tiers_ref = "";
                
                 // recupérer directement les tiers de puis bdd.
                 $this->tiers->insertiers();// mise a jour api
@@ -305,7 +305,7 @@ class TransferOrder
                    $oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                 
                    
-                   dd($order_data);
+                   
                     $data_tiers = [];//data tiers dans dolibar
                     $data_lines  = [];// data article liée à commande du tiers en cours
                     $data_product =[]; // data article details sur commande facture
@@ -475,6 +475,9 @@ class TransferOrder
                         }
                     }
          
+                      
+                    dump($unique_arr);
+                    dd($data_tiers);
                 
                     foreach($data_tiers as $data)
                     {
