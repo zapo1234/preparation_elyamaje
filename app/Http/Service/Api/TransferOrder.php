@@ -226,8 +226,8 @@ class TransferOrder
 	             $tiers_ref = "";
                
                 // recupérer directement les tiers de puis bdd.
-               // $this->tiers->insertiers();// mise a jour api
-               // $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
+                $this->tiers->insertiers();// mise a jour api
+                $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
               
               // verifier attribue ref_client dans dolibar comme id commande woocomerce!
               //Recuperer les ref_client existant dans dolibar
@@ -236,11 +236,11 @@ class TransferOrder
              
               
                // recuperer les ids commandes
-              // $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
-              // $key_commande = $this->commande->getIds();// lindex les ids commande existant.
+               $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
+               $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                // recupérer le tableau de ids
-              // $ids_commandes =[];
-             /* foreach($ids_commande as $key => $valis)
+               $ids_commandes =[];
+              foreach($ids_commande as $key => $valis)
               {
                  $ids_commandes[$valis['commande']] = $key;
               }
@@ -249,9 +249,9 @@ class TransferOrder
               $data_email = [];//entre le code_client et email.
               $data_list = []; //tableau associative de id et email
               $data_code =[];// tableau associative entre id(socid et le code client )
-              */
      
-            /* foreach($list_tier as $val)
+     
+             foreach($list_tier as $val)
              {
                    $data_email[$val['code_client']] = $val['email'];
                
@@ -270,8 +270,6 @@ class TransferOrder
         
              }
 
-             */
-
             
                  // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -283,13 +281,7 @@ class TransferOrder
          	       ), true);
 
 
-                 
-	              $produitParams = ["limit" => 1, "sortfield" => "rowid","sortorder"=>"DESC"];
-	              $listproducts = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParams);
-                 // reference ref_client dans dolibar
-                 $listproducts = json_decode($listproducts, true);// la liste des produits dans dolibar
-
-                 dd($listproducts);
+                 dd($clientSearch);
 
                 foreach($clientSearch as $data)
                 {
