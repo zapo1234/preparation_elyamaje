@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="assets/images/favicon-32x32.png" type="image/png" />
+	<link rel="icon" href="assets/images/Logo_elyamaje.png" type="image/png" />
 	<!--plugins-->
 	<link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
 	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
@@ -46,8 +46,12 @@
 						<div class="card">
 							<div class="card-body">
 								<div class="p-4 rounded">
-									<div class="text-center">
-										<h3 class="">Connexion</h3>
+									<div class="d-grid">
+										<a class="btn my-4 btn-white" href="javascript:;"> 
+											<span class="d-flex justify-content-center align-items-center">
+												<img id="imj" src="assets/images/Logo_elyamaje.png" width="95px" ;="" height="auto">
+											</span>
+										</a>
 									</div>
 									<div class="form-body">
 										<form method="post" action="{{ route('login') }}" class="row g-3">
@@ -62,11 +66,12 @@
 													<input type="password" name="password" class="form-control border-end-0" id="inputChoosePassword" value="" placeholder="Mot de passe"> <a href="javascript:;" class="input-group-text bg-transparent"><i class='bx bx-hide'></i></a>
 												</div>
 											</div>
-											<div class="w-100 col-md-6 text-end">	<a href="{{ url('authentication-forgot-password') }}">Forgot Password ?</a>
-											</div>
+											<!-- <div class="w-100 col-md-6 text-end">	
+												<a href="{{ url('authentication-forgot-password') }}">Forgot Password ?</a>
+											</div> -->
 											<div class="col-12">
 												<div class="d-grid">
-													<button type="submit" class="btn btn-primary"><i class="bx bxs-lock-open"></i>Sign in</button>
+													<button type="submit" class="btn btn-primary"><i class="bx bxs-lock-open"></i>Se connecter</button>
 												</div>
 											</div>
 										</form>

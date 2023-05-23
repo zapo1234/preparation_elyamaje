@@ -9,6 +9,8 @@ interface UserInterface
    public function getUsers();
 
    public function getUsersByRole($role);
+
+   public function updateRoleByUser($user_id, $role_id);
 }
 
 

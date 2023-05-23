@@ -47,6 +47,20 @@ class Api
       }
   }
 
+  public function insertOrderByUser($order_id, $user_id){
+
+    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
+    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/orders/".$order_id);
+      return $response->json();
+
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
 
   public function CallAPI($method, $key, $url, $data = false)
   {

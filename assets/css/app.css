@@ -264,13 +264,13 @@ a {
 .page-wrapper {
 
 
-	height: 100%;
+	height:0px;
 
 
-	margin-top: 60px;
+	padding-top: 60px;
 
 
-	margin-bottom: 30px;
+	padding-bottom: 30px;
 
 
 	margin-left: 250px;
@@ -1491,8 +1491,7 @@ a {
 }
 
 
-.customers-contacts a {
-
+.customers-contacts a{
 
 	font-size: 16px;
 
@@ -5703,6 +5702,22 @@ input::placeholder {
 
 	}
 
+	.dataTables_length label,
+	.dataTables_length label select,
+	#example_filter label,
+	#example_filter label input {
+		width: 100% !important;
+	}
+
+	.col-sm-12:has(.dataTables_length),
+	.col-sm-12:has(#example_filter){
+		padding: 0px !important;
+	}
+
+	#example_filter input{
+		margin-left: 0px !important;
+	}
+
 
 	.authentication-forgot {
 
@@ -5809,7 +5824,8 @@ input::placeholder {
 } */
 
 @media (min-width: 576px){
-	.modal-dialog {
+	.modal_order .modal-dialog,
+	.modal_success .modal-dialog {
 		max-width: 1000px !important;
 	}
 }
@@ -5818,6 +5834,10 @@ input::placeholder {
 	width: 350px;
 	word-break: break-word;
 	white-space: break-spaces;
+}
+
+.detail_product_name_order span{
+	text-align: left;
 }
 
 .head_detail_product_order span{
@@ -5835,6 +5855,7 @@ input::placeholder {
 
 .detail_product_order_line{
 	border-bottom: 1px solid #e8e8e8;
+	padding: 15px 0px 15px 5px  !important;
 }
 
 .body_detail_product_order,
@@ -5908,10 +5929,17 @@ input::placeholder {
 	.table_mobile_responsive{
 		border-left: 1px solid #dee2e6 !important;
 		border-top: 1px solid #dee2e6 !important;
-		border-radius: 8px !important;
+		/* border-radius: 8px !important; */
 	}
 
-	.table_mobile_responsive tr:last-child td:last-child {
+	
+	.dashboard_leader .dataTables_paginate{
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+	}
+
+	/* .table_mobile_responsive tr:last-child td:last-child {
 		border-bottom-right-radius: 8px !important;
 	}
 
@@ -5925,7 +5953,7 @@ input::placeholder {
 
 	.table_mobile_responsive th:last-child{
 		border-top-right-radius: 8px !important;
-	}
+	} */
 
 	.table_mobile_responsive td{
 		border-bottom: 1px solid #dee2e6 !important
@@ -5952,6 +5980,50 @@ input::placeholder {
   }
 
 @media screen and (max-width: 950px) {
+
+	.team_board {
+		padding: 0px 22px 0px 22px !important;
+	}
+
+	#example_filter{
+		margin-top: 5px;
+	}
+
+	.dashboard_leader{
+		--bs-gutter-x: 0px !important;
+		--bs-gutter-y: 0px !important;
+	}
+
+	.page-breadcrumb{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.allocation_of_orders{
+		display: flex;
+		align-items: center;
+		padding: 25px !important;
+		font-size: 22px;
+		margin-top: 15px;
+		margin-bottom: 15px;
+	}
+
+	.team_board,
+	.team_board h6,
+	.team_board p,
+	.user-info p{
+		font-size: 18px !important;
+	}
+
+	.table_mobile_responsive td{
+		font-size: 18px !important;
+	}
+
+	.dataTables_paginate{
+		display: flex !important;
+		justify-content: center !important;
+	}
 
 	.card_table_mobile_responsive h1, 
 	.breadcrumb-title{
@@ -6072,6 +6144,8 @@ button:focus{
     font-size: 18px;
     color: #15ca20;
 	font-weight: bold;
+	display: flex;
+	align-items: end;
 }
 
 .btn-primary{
@@ -6243,4 +6317,79 @@ a{
 
 .modal_reset_order{
 	background-color: rgba(0,0,0,0.5)
+}
+
+
+#qr {
+	position: relative;
+	}
+	
+#qr::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 36%;
+	height: 36%;
+	border-radius: 50%;
+}
+
+
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+
+	body:has(#qrcode){
+		max-height: 150px !important;
+	}
+}
+
+.name_column{
+	text-align: left;
+}
+
+.bg-border-warning{
+	border: 1px solid #ffc107 !important;
+	border-radius: 5px !important;
+}
+
+.dashboard_leader{
+	height: 82vh !important;
+}
+
+.dashboard_leader .show_detail{
+	font-size: 25px !important;
+	cursor: pointer;
+}
+
+.dataTables_info{
+	display: none !important;
+}
+
+.select_user{
+	border-color: #aaa;
+	border-radius: 4px;
+	padding: 5px;
+	cursor: pointer;
+}
+
+.select_user:focus{
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+
+.empty_select{
+    border: 1px solid #ffc107;
+	color: #ffc107
+}
+
+.no_empty_select{
+    border: 1px solid #15ca20;
+	color: #15ca20
 }

@@ -49,7 +49,7 @@
                             <img src="assets/images/avatars/default_avatar.png" class="user-img" alt="user avatar">
                             <div class="user-info ps-3">
                                 <p class="user-name mb-0">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</p>
-                                <p class="designattion mb-0">{{ Auth()->user() ?  (Auth()->user()->role == 2 ? "Préparateur" : (Auth()->user()->role == 3 ? "Emballeur" : "Admin") ) : "Inconnu" }}</p>
+                                <p class="designattion mb-0">{{ Auth()->user() ?  (Auth()->user()->role_id == 2 ? "Préparateur" : (Auth()->user()->role_id == 3 ? "Emballeur" : (Auth()->user()->role_id == 4 ? "Chef d'équipe" : "Admin"))) : "Utilisateur" }}</p>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

@@ -11,7 +11,7 @@
     <!--navigation-->
 
     <ul class="metismenu" id="menu">
-        @if(Auth()->user()->role == 1)
+        @if(Auth()->user()->role_id == 1)
             <li>
                 <a href="{{ url('index') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
@@ -26,8 +26,8 @@
                     <div class="menu-title">Import Api tiers</div>
                 </a>
             </li>
-        @elseif(Auth()->user()->role == 2)
-        <li>
+        @elseif(Auth()->user()->role_id == 2)
+            <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-box'></i>
                     </div>
@@ -40,7 +40,16 @@
                     </li>
                 </ul>
             </li>
+        @elseif(Auth()->user()->role_id == 4)
+            <li>
+                <a href="{{ url('dashboard') }}">
+                    <div class="parent-icon"><i class='bx bx-home'></i>
+                    </div>
+                    <div class="menu-title">Dashboard</div>
+                </a>
+            </li>
         @endif
+
 
     </ul>
     

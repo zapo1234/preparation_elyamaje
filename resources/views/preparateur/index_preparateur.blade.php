@@ -24,7 +24,7 @@
 								</div>
 								<div class="course-info">
 									<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-									<h2>{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+									<h2 class="customer_name">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
 									<button id="{{ $orders['details']['id'] }}" class="show_order btn">Préparer</button>
 								</div>
 							</div>
@@ -40,7 +40,7 @@
 												<span class="column1 name_column">Article</span>
 												<span class="column2 name_column">Coût</span>
 												<span class="column3 name_column">Qté</span>
-												<span class="column4 name_column">Total</span>
+												<span class="column4 name_column">Code Barre</span>
 											</div>	
 
 											<div class="body_detail_product_order">
@@ -51,7 +51,7 @@
 														</div>
 														<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 														<span class="column33"> {{ $item['quantity'] }} </span>
-														<span class="column44">{{ round(floatval($item['quantity'] * $item['cost']),2) }} </span>
+														<span class="column44">{{  $item['barcode'] }} </span>
 													</div>
 												@endforeach
 											</div>
@@ -82,7 +82,7 @@
 							<div class="modal-content">
 						
 								<div class="modal_body_success modal-body d-flex flex-column justify-content-center">
-									<div class="d-none loading_prepared_command d-flex flex-column justify-content-center align-items-center">
+									<div class="no-print d-none loading_prepared_command d-flex flex-column justify-content-center align-items-center">
 										<h2 class="mb-5">Validation de la préparation...</h2>
 										<div class="spinner-border" role="status"> 
 											<span class="visually-hidden">Loading...</span>
@@ -90,13 +90,15 @@
 									</div>
 
 									<div class="d-none success_prepared_command d-flex flex-column justify-content-center align-items-center">
-										<h2 class="mb-5">Commande préparée avec succès !</h2>
-										<div class="success">
-											<i class="text-success bx bx-check-circle mr-1 font-50"></i>
-										</div>
+										<h2 class="no-print mb-5">Commande préparée avec succès !</h2>
+										<div id="qrcode"></div>
+										<span class="info_order"></span>
+										<div class="no-print col">
+                                            <button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
+                                        </div>
 									</div>
 
-									<div class="d-none error_prepared_command d-flex flex-column justify-content-center align-items-center">
+									<div class="no-print d-none error_prepared_command d-flex flex-column justify-content-center align-items-center">
 										<h2 class="mb-5">Oops, la comande n'a pas pu être validée</h2>
 										<div class="danger">
 											<i class="text-danger bx bx-x-circle mr-1 mr-1 font-50"></i>
@@ -104,7 +106,7 @@
 									</div>
 
 									
-									<div class="d-none close_modal_validation mt-3 w-100 d-flex justify-content-center">
+									<div class="mt-5 no-print d-none close_modal_validation mt-3 w-100 d-flex justify-content-center">
 										<button type="button" class="close_modal_order btn btn-dark px-5">Fermer</button>
 									</div>
 
@@ -141,6 +143,8 @@
 
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="{{asset('assets/js/qrcode.js')}}"></script>
+
 
 		<script>
 
@@ -154,6 +158,7 @@
 			})
 
 			$(document).ready(function() {
+
 				if(localStorage.getItem('barcode')){
 					var list_barcode = JSON.parse(localStorage.getItem('barcode')).split(',')
 					if(!Array.isArray(list_barcode)){
@@ -209,18 +214,33 @@
 					// Ouvre la modal de loading
 					$(".loading_prepared_command").removeClass('d-none')
 					$("#modalSuccess").modal('show')
+					
+					var order_id = $(".show").attr("data-order")
+					var pick_items = JSON.parse(localStorage.getItem('barcode')).split(',')
 
 					$.ajax({
 						url: "{{ route('orders.prepared') }}",
 						method: 'POST',
-						data: {_token: $('input[name=_token]').val(), order_id: $(".show").attr("data-order"), pick_items: JSON.parse(localStorage.getItem('barcode')).split(',')}
+						data: {_token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items}
 					}).done(function(data) {
 						$(".loading_prepared_command").addClass('d-none')
-						$(".close_modal_validation").removeClass("d-none")
 
 						if(JSON.parse(data).success){
-							localStorage.removeItem("barcode");
 							$(".success_prepared_command").removeClass('d-none')
+							const href =order_id+","+pick_items.length+","+$(".customer_name").text();
+							const size = 300;
+							$(".info_order").text("#Commande "+order_id+" - "+pick_items.length+" Produit(s)")
+
+							new QRCode(document.querySelector("#qrcode"), {
+								text: href,
+								width: size,
+								height: size,
+
+								colorDark: "#000000",
+								colorLight: "#ffffff"
+							});
+							localStorage.removeItem("barcode");
+
 						} else {
 							$(".error_prepared_command").removeClass('d-none')
 						}
@@ -254,13 +274,17 @@
 			$(".close_modal_order").on('click', function(){
 				if(!$(".error_prepared_command").hasClass("d-none")){
 					$("#modalSuccess").modal('hide')
-					$(".close_modal_validation").addClass("d-none")
 					$(".success_prepared_command").addClass("d-none")
 					$(".error_prepared_command").addClass("d-none")
 					$(".loading_prepared_command").addClass("d-none")
 				} else {
 					location.reload()
 				}
+			})
+
+			$(".impression_code").on('click', function(){
+				window.print()
+				$(".close_modal_validation").removeClass("d-none")
 			})
         
         </script>
