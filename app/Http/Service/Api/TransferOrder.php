@@ -270,6 +270,8 @@ class TransferOrder
         
              }
 
+
+               dump($data_list);
             
                  // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -304,7 +306,7 @@ class TransferOrder
                    $order_data = $this->getdataorderid($id);// pour une seul commande.
                    $oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                 
-                   
+                   dd($order_data);
                    
                     $data_tiers = [];//data tiers dans dolibar
                     $data_lines  = [];// data article liée à commande du tiers en cours
