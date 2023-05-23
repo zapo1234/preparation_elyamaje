@@ -236,11 +236,11 @@ class TransferOrder
              
               
                // recuperer les ids commandes
-               $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
-               $key_commande = $this->commande->getIds();// lindex les ids commande existant.
+              // $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
+              // $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                // recupérer le tableau de ids
-               $ids_commandes =[];
-              foreach($ids_commande as $key => $valis)
+              // $ids_commandes =[];
+             /* foreach($ids_commande as $key => $valis)
               {
                  $ids_commandes[$valis['commande']] = $key;
               }
@@ -249,7 +249,7 @@ class TransferOrder
               $data_email = [];//entre le code_client et email.
               $data_list = []; //tableau associative de id et email
               $data_code =[];// tableau associative entre id(socid et le code client )
-     
+              */
      
             /* foreach($list_tier as $val)
              {
