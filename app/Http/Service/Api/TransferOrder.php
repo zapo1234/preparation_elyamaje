@@ -271,7 +271,7 @@ class TransferOrder
              }
 
 
-               dump($data_list);
+            
             
                  // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -319,11 +319,9 @@ class TransferOrder
                     $orders_d = [];// le nombre de orders non distributeur
                     $orders_distributeur = [];// le nombre de orders des distributeurs...
                
-                   foreach($order_data as $k => $dones)
+                   foreach($order_data as $k => $donnees)
                    {
                  
-                       foreach($dones as $donnees)
-                       {
                            // recupérer les données pour les tiers pour dolibar post tiers dans l'array
                            // créer le client via dolibarr à partir de woocomerce.
                            $ref_client = rand(4,10);
@@ -446,7 +444,7 @@ class TransferOrder
                                  $id_commande_existe[] = $donnees['id'];
                               }
                     
-                        }
+                        
          
                     }
      
