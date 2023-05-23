@@ -185,6 +185,7 @@ $( document ).ready(function() {
 	if($.fn.dataTable){
 		$.extend(true, $.fn.dataTable.defaults, {
 			"showNEntries" : false,
+			"info":     false,
 			"language": {
 				"search": "",
 				"searchPlaceholder": "Rechercher...",

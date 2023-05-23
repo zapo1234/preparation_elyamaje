@@ -100,13 +100,19 @@ class OrderRepository implements OrderInterface
          }
 
       }
-      dd("Commandes bien réparties !");
+
+      echo json_encode(['success' => true]);
+
     }
 
 
    public function getOrdersByUsers(){
-      return $this->model->select('*')->where('status', 'processing')->get();
+      return $this->model->select('orders.*', 'users.name')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->get();
+   }
 
+
+   public function getUsersWithOrder(){
+      return $this->model->select('users.*')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
    public function getOrdersByIdUser($id, $distributeur = false){
@@ -176,24 +182,84 @@ class OrderRepository implements OrderInterface
 
       if(!$missing_product){
          // Modifie le status de la commande sur Woocommerce en "Commande préparée"
-
          $update_status_local = $this->updateOrdersById([$order_id], "prepared-order");
          $update = $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
          return json_encode(['success' => is_bool($update) ?? false, "message" => is_bool($update) ? "" : $update]);
-       
-         // update status orders in database + woocommerce et générer code
-
       } else {
          return json_encode(['success' => false]);
       }
    }
 
    public function orderReset($order_id) {
-      $update_products = DB::table('products')->whereIn('order_id', [$order_id])->update(['pick' => 0]);
-      return $update_products;
+      
+      try{
+         $update_products = DB::table('products')->whereIn('order_id', [$order_id])->update(['pick' => 0]);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
 
    }
 
+   public function updateOrderAttribution($from_user, $to_user){
+      try{
+         $update_order_attribution =  $this->model::where('user_id', $from_user)->update(['user_id' => $to_user]);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
+   }
+
+   public function updateOneOrderAttribution($order_id, $user_id){
+      try{
+
+         if($user_id == "Non attribuée"){
+            $order = $this->model::where('order_woocommerce_id', $order_id)->delete();
+         } else {
+            $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
+            if(count($order) == 0){
+               $insert_order_by_user = $this->api->insertOrderByUser($order_id, $user_id);
+   
+               $ordersToInsert = [
+                  'order_woocommerce_id' => $insert_order_by_user['id'],
+                  'customer_id' => $insert_order_by_user['customer_id'],
+                  'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
+                  'billing_customer_last_name' => $insert_order_by_user['billing']['last_name'] ?? null,
+                  'billing_customer_company' => $insert_order_by_user['billing']['company'] ?? null,
+                  'billing_customer_address_1' => $insert_order_by_user['billing']['address_1'] ?? null,
+                  'billing_customer_address_2' => $insert_order_by_user['billing']['address_2'] ?? null,
+                  'billing_customer_city' => $insert_order_by_user['billing']['city'] ?? null,
+                  'billing_customer_state' => $insert_order_by_user['billing']['state'] ?? null,
+                  'billing_customer_postcode' => $insert_order_by_user['billing']['postcode'] ?? null,
+                  'billing_customer_country' => $insert_order_by_user['billing']['country'] ?? null,
+                  'billing_customer_email' => $insert_order_by_user['billing']['email'] ?? null,
+                  'billing_customer_phone' => $insert_order_by_user['billing']['phone'] ?? null,
+                  'shipping_customer_first_name' => $insert_order_by_user['shipping']['first_name'] ?? null,
+                  'shipping_customer_last_name' => $insert_order_by_user['shipping']['last_name'] ?? null,
+                  'shipping_customer_company' => $insert_order_by_user['shipping']['company'] ?? null,
+                  'shipping_customer_address_1' => $insert_order_by_user['shipping']['address_1'] ?? null,
+                  'shipping_customer_address_2' => $insert_order_by_user['shipping']['address_2'] ?? null,
+                  'shipping_customer_city' => $insert_order_by_user['shipping']['city'] ?? null,
+                  'shipping_customer_state' => $insert_order_by_user['shipping']['state'] ?? null,
+                  'shipping_customer_postcode' => $insert_order_by_user['shipping']['postcode'] ?? null,
+                  'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
+                  'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
+                  'date' => $insert_order_by_user['date_created'],
+                  'total' => $insert_order_by_user['total'],
+                  'user_id' => $user_id,
+                  'status' => $insert_order_by_user['status']
+               ];
+   
+               $this->model->insert($ordersToInsert);
+            } else {
+               $update_one_order_attribution =  $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
+            }
+         }
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
+   }
 }
 
 

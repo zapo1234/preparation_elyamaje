@@ -26,6 +26,7 @@ class Order extends BaseController
     }
 
     public function orders($id = null, $distributeur = false){
+
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         return $orders_user;
@@ -48,16 +49,33 @@ class Order extends BaseController
           
             $count = count($orders_other);
           }
+        }  
+
+        // Récupère les commandes attribuée en base s'il y en a 
+        $orders_distributed = $this->order->getOrdersByUsers()->toArray();
+        $ids = array_column($orders_distributed, "order_woocommerce_id");
+
+        foreach($orders as $key => $order){
+          $clesRecherchees = array_keys($ids,  $order['id']);
+          if(count($clesRecherchees) > 0){
+            $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
+            $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
+          } else {
+            $orders[$key]['user_id'] = null;
+            $orders[$key]['name'] = "Non attribuée";
+          }
+
         }
-  
+
         return $orders;
       }
       
     }
  
     public function getOrder(){
-      if(Auth()->user()->role == 1){
-        echo json_encode($this->orders());
+      if(Auth()->user()->role_id == 1 || Auth()->user()->role_id == 4){
+        $users =  $this->user->getUsersByRole([2])->toArray();
+        echo json_encode(['orders' => $this->orders(), 'users' => $users]);
       } else {
         return $this->orders(Auth()->user()->id);
       }
@@ -72,14 +90,20 @@ class Order extends BaseController
     public function distributionOrders(){
 
       // Liste des utilisateurs avec le rôle préparateur
-      $users =  $this->user->getUsersByRole(2);
+      $users =  $this->user->getUsersByRole([2]);
+
       $array_user = [];
       $orders_user = [];
       $orders_id = [];
       $orders_to_delete = [];
 
       foreach($users as $user){
-        $array_user[$user->id] = [];
+        $array_user[$user->user_id] = [];
+      }
+
+      if(count($array_user) == 0){
+        echo json_encode(['success' => false, 'message' => 'Il n\'y a pas de préparateur !']);
+        return;
       }
 
       // Liste des commandes déjà réparties entres les utilisateurs
@@ -143,8 +167,14 @@ class Order extends BaseController
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
       $order_id = $request->post('order_id');
-      $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array);
-      echo json_encode(["success" => $check_if_order_done]);
+
+      if($barcode_array && $order_id){
+        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array);
+        echo json_encode(["success" => $check_if_order_done]);
+      } else {
+        echo json_encode(["success" => false]);
+      }
+     
     }
 
     public function ordersReset(Request $request){
@@ -152,6 +182,31 @@ class Order extends BaseController
       $orderReset = $this->order->orderReset($order_id);
       echo json_encode(["success" => $orderReset]);
     }
+
+
+    public function updateAttributionOrder(Request $request){
+      $from_user = $request->post('from_user');
+      $to_user = $request->post('to_user');
+
+      if($from_user && $to_user){
+        echo json_encode(["success" => $this->order->updateOrderAttribution($from_user, $to_user)]);
+      } else {
+        echo json_encode(["success" => false]);
+      }
+    }
+
+
+    public function updateOneOrderAttribution(Request $request){
+      $order_id = $request->post('order_id');
+      $user_id = $request->post('user_id');
+
+      if($order_id && $user_id){
+        echo json_encode(["success" => $this->order->updateOneOrderAttribution($order_id, $user_id)]);
+      } else {
+        echo json_encode(["success" => false]);
+      }
+    }
+
 }
 
 

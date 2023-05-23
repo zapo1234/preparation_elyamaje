@@ -19,15 +19,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
-        switch (Auth()->user()->role) {
+        switch (Auth()->user()->role_id) {
             case 1 :
                 return view('index');
                 break;
             case 2 :
                 return redirect()->route('orders');
                 break;
-            case 3 :
-                return redirect()->route('dashboard.emballeur');
+            case 4 :
+                return redirect()->route('leader.dashboard');
                 break;
             default:
                 return redirect()->route('logout');
@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
 // ADMIN
 Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/index", [Controller::class, "index"])->name('orders');
-    Route::get("/getAllOrders", [Order::class, "getOrder"])->name('getAllOrders');
+    Route::get("/getAllOrdersAdmin", [Order::class, "getOrder"])->name('getAllOrdersAdmin');
     // traiter les routes pour des tiers
     Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
@@ -55,9 +55,13 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
 });
 
-// EMBALLEUR
-Route::group(['middleware' => ['auth', 'role:3']], function () {
-    Route::get("/dashboard", [Controller::class, "dashboard"])->name('dashboard.emballeur');
+// CHEF D'ÉQUIPE
+Route::group(['middleware' => ['auth', 'role:4']], function () {
+    Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
+    Route::post("/updateRole", [Controller::class, "updateRole"])->name('updateRole');
+    Route::get("/getAllOrders", [Order::class, "getOrder"])->name('leader.getAllOrders');
+    Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
+    Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
 });
 
 

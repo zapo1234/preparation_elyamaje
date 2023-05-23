@@ -88,8 +88,8 @@
 				$('#example').DataTable({
 					order: [ 1, 'asc' ],
 					ajax: {
-						url: '{{ route("getAllOrders") }}',
-						dataSrc: '',
+						url: '{{ route("getAllOrdersAdmin") }}',
+						dataSrc: 'orders',
 					},
 				
 					columns: [
@@ -134,7 +134,7 @@
 
 														<div class="body_detail_product_order">
 															${row.line_items.map((element) => `
-																<div class="p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+																<div class="d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 																	<div class="d-flex align-items-center detail_product_name_order">
 																		<img class="lazy" width="42" height="42" loading="lazy" src="`+element.image.src+`">
 																		<span>`+element.name+` </span>
