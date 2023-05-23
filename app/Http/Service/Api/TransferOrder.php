@@ -285,7 +285,7 @@ class TransferOrder
 
                  
 	              $produitParams = ["limit" => 1, "sortfield" => "rowid","sortorder"=>"DESC"];
-	              $listproducts = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParams);
+	              $listproducts = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParams);
                  // reference ref_client dans dolibar
                  $listproducts = json_decode($listproducts, true);// la liste des produits dans dolibar
 
