@@ -30,7 +30,7 @@ class TiersController extends BaseController
     public function getiers()
     {
       $message="";
-      return view('tiers.refreshtiers',['message'=>$message]);
+      return view('Tiers.refreshtiers',['message'=>$message]);
 
     }
 
