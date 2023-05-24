@@ -316,6 +316,8 @@ class TransferOrder
                
                     $orders_d = [];// le nombre de orders non distributeur
                     $orders_distributeur = [];// le nombre de orders des distributeurs...
+
+                    dd($orders);
                
                    foreach($orders as $k => $donnees)
                    {
