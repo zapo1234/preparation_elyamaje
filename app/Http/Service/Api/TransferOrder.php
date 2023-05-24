@@ -578,7 +578,7 @@ class TransferOrder
         
         
              // le nombre recupérer 
-            $count_datas = $this->$this->getdataorderid($id);// retour array ici
+            $count_datas = $this->getdataorderid($id);// retour array ici
             $ids_orders =[];// recupérer les id commande venant de woocomerce
            
            $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
