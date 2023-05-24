@@ -269,8 +269,6 @@ class TransferOrder
         
              }
 
-            
-            dump($data_list);
 
                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -383,7 +381,7 @@ class TransferOrder
                                foreach($values['meta_data'] as $vals)
                                {
                                   //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                                 if($vals['key']=="barcode")
+                                 if($vals['key']=="_reduced_stock")
                                  {
                                     // construire le details des produits arrivant liée pour dolibarr.
                                     $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
@@ -446,7 +444,7 @@ class TransferOrder
                                      // insert dans base de donnees historiquesidcommandes
                                      $date = date('Y-m-d');
                                       $historique = new Commandeid();
-                                      $historique->id_commande = $donnees['order_id'];
+                                      $historique->id_commande = $donnees['id'];
                                       $historique->date = $date;
                                       // insert to
                                       $historique->save();
