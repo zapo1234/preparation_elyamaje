@@ -206,7 +206,7 @@ class TransferOrder
       public function Transferorder($order)
       {
             
-            
+            dd('zapo');
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -381,11 +381,12 @@ class TransferOrder
                                foreach($values['meta_data'] as $vals)
                                {
                                   //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                                 if($vals['key']=="_reduced_stock")
+                                 if($vals['key']=="bar_code")
                                  {
                                     // construire le details des produits arrivant liée pour dolibarr.
                                     $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
-                                 
+                                     
+                                      $ref="";
                                      if($fk_product!="")
                                      {
                                          // details  array article libéllé(product sur la commande) pour dolibar
@@ -395,7 +396,7 @@ class TransferOrder
                                           "multicurrency_total_ht" => floatval($values['subtotal']),
                                           "multicurrency_total_tva" => floatval($values['total_tax']),
                                           "multicurrency_total_ttc" => floatval($values['total']),
-                                          "product_ref" => $values['sku'], // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                          "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                           "product_label" =>$values['name'],
                                            "qty" => $values['quantity'],
                                            "fk_product" => $fk_product,// id product dans dolibar.

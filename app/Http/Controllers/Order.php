@@ -258,12 +258,10 @@ class Order extends BaseController
             $order_new_array['billing'] = $billing;
             $order_new_array['shipping'] = $shipping;
 
-               // Return all order details
-               dd($order_new_array);
+          
                // recupérer les function d'ecriture  et création de client et facture dans dolibar.
                $order = $order_new_array;
-              
-               $this->factorder->Transferorder($order);
+              $this->factorder->Transferorder($order);
             
         }
     }
