@@ -34,11 +34,21 @@ class OrderRepository implements OrderInterface
          foreach ($userOrders as $orderData) {
             
             // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
+            $coupons = [];
+            $discount = [];
+            if(isset($orderData['coupon_lines'])){
+               foreach($orderData['coupon_lines'] as $coupon){
+                  $coupons[] = $coupon['code'];
+                  $discount[] = $coupon['discount'];
+               }
+            }
+
             if(isset($orderData['cart_hash'])){
                $ordersToInsert[] = [
                   'order_woocommerce_id' => $orderData['id'],
                   'customer_id' => $orderData['customer_id'],
-
+                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
+                  'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
                   'billing_customer_first_name' => $orderData['billing']['first_name'] ?? null,
                   'billing_customer_last_name' => $orderData['billing']['last_name'] ?? null,
                   'billing_customer_company' => $orderData['billing']['company'] ?? null,
@@ -222,11 +232,22 @@ class OrderRepository implements OrderInterface
             $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
             if(count($order) == 0){
                $insert_order_by_user = $this->api->insertOrderByUser($order_id, $user_id);
-               
+
+               $coupons = [];
+               $discount = [];
+               if(isset($insert_order_by_user['coupon_lines'])){
+                  foreach($insert_order_by_user['coupon_lines'] as $coupon){
+                     $coupons[] = $coupon['code'];
+                     $discount[] = $coupon['discount'];
+                  }
+               }
+
                // Insert commande
                $ordersToInsert = [
                   'order_woocommerce_id' => $insert_order_by_user['id'],
                   'customer_id' => $insert_order_by_user['customer_id'],
+                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
+                  'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
                   'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
                   'billing_customer_last_name' => $insert_order_by_user['billing']['last_name'] ?? null,
                   'billing_customer_company' => $insert_order_by_user['billing']['company'] ?? null,
