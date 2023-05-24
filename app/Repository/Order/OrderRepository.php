@@ -43,6 +43,7 @@ class OrderRepository implements OrderInterface
                }
             }
 
+
             if(isset($orderData['cart_hash'])){
                $ordersToInsert[] = [
                   'order_woocommerce_id' => $orderData['id'],
@@ -73,7 +74,8 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
 
                   'date' => $orderData['date_created'],
-                  'total' => $orderData['total'],
+                  'total_tax_order' => $orderData['total_tax'],
+                  'total_order' => $orderData['total'],
                   'user_id' => $userId,
                   'status' => $orderData['status']
                ];
@@ -87,10 +89,11 @@ class OrderRepository implements OrderInterface
                      $barcode = null;
                   }
 
-
                   $productsToInsert[] = [
                      'order_id' => $orderData['id'],
                      'product_woocommerce_id' => $value['product_id'],
+                     'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                     'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'variation_id' => $value['variation_id'] ?? null,
                      'name' => $value['name'],
                      'quantity' => $value['quantity'],
@@ -272,7 +275,8 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
                   'date' => $insert_order_by_user['date_created'],
-                  'total' => $insert_order_by_user['total'],
+                  'total_tax_order' => $insert_order_by_user['total_tax'],
+                  'total_order' => $insert_order_by_user['total'],
                   'user_id' => $user_id,
                   'status' => $insert_order_by_user['status']
                ];
@@ -289,6 +293,8 @@ class OrderRepository implements OrderInterface
                   $productsToInsert[] = [
                      'order_id' => $insert_order_by_user['id'],
                      'product_woocommerce_id' => $value['product_id'],
+                     'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                     'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'variation_id' => $value['variation_id'] ?? null,
                      'name' => $value['name'],
                      'quantity' => $value['quantity'],
@@ -314,7 +320,7 @@ class OrderRepository implements OrderInterface
 
 
    public function getOrderById($order_id){
-      return $this->model::where('order_woocommerce_id', $order_id)->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')->get()->toArray();
+      return $this->model::select('orders.*', 'products.*')->where('order_woocommerce_id', $order_id)->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')->get()->toArray();
    }
 }
 
