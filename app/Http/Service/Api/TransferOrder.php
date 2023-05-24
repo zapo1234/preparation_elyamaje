@@ -206,7 +206,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-         dd($orders);
+         
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -380,7 +380,7 @@ class TransferOrder
                                 
                                foreach($values['meta_data'] as $vals)
                                {
-                                  //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
+                                  //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode.
                                  if($vals['key']=="barcode")
                                  {
                                     // construire le details des produits arrivant liée pour dolibarr.
