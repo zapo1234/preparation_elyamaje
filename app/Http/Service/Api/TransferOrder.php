@@ -376,11 +376,14 @@ class TransferOrder
                            
                             foreach($donnees['line_items'] as $key => $values)
                             {
+                                
+                              foreach($values['meta_data'] as $vals)
+                              {
                                 //verifié et recupérer id keys existant de l'article
                                 // construire le details des produits arrivant liée pour dolibarr.
-                                  $fk_product = array_search($values['sku'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
-                                 if($fk_product!="")
-                                  {
+                                   $fk_product = array_search($vals['key'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
+                                  if($fk_product!="")
+                                   {
                                         // details  array article libéllé(product sur la commande) pour dolibar
                                         // details des produits, quantité et prix  dans une facture.
                                         $data_product[] = [
@@ -394,6 +397,8 @@ class TransferOrder
                                            "fk_product" => $fk_product,// id product dans dolibar.
                                             "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                        ];
+
+                                   }
                
                                   }
                       
