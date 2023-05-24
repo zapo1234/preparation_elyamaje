@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Order\OrderRepository;
 use App\Repository\User\UserRepository;
+use App\Http\Service\Api\TransferOrder;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -17,12 +18,16 @@ class Order extends BaseController
     private $api;
     private $user;
     private $order;
+    private $factorder;
 
 
-    public function __construct(Api $api, UserRepository $user, OrderRepository $order){
+    public function __construct(Api $api, UserRepository $user, 
+    OrderRepository $order,
+    TransferOrder $factorder){
       $this->api = $api;
       $this->user = $user;
       $this->order = $order;
+      $this->factorder =$factorder;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -213,8 +218,10 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
 
 
-        $order_id = $request->post('order_id');
+        //$order_id = $request->post('order_id');
+        $order_id=64686;
         $order = $this->order->getOrderById($order_id);
+      
 
         if($order){
             $order_new_array = [];
@@ -251,8 +258,11 @@ class Order extends BaseController
             $order_new_array['billing'] = $billing;
             $order_new_array['shipping'] = $shipping;
 
-            // Return all order details
-            dd($order_new_array);
+          
+               // recupérer les function d'ecriture  et création de client et facture dans dolibar.
+               $order = $order_new_array;
+              $this->factorder->Transferorder($order);
+            
         }
     }
 

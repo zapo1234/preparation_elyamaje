@@ -88,6 +88,6 @@ Route::get("/importiers/{token}", [Order::class, "importiers"])->name('importier
 
 
 
-
+Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
 
 
