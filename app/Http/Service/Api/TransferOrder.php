@@ -203,10 +203,10 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder($orders)
+      public function Transferorder($id)
       {
             
-          dd($orders);
+           
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -269,8 +269,6 @@ class TransferOrder
         
              }
 
-            
-            
 
                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -317,9 +315,11 @@ class TransferOrder
                
                     $orders_d = [];// le nombre de orders non distributeur
                     $orders_distributeur = [];// le nombre de orders des distributeurs...
+
+                    $orders = $this->getdataorderid($id);
                
-                   foreach($order as $k => $donnees)
-                   {
+                    foreach($orders as $k => $donnees)
+                    {
                  
                            // recupérer les données pour les tiers pour dolibar post tiers dans l'array
                            // créer le client via dolibarr à partir de woocomerce.
@@ -373,7 +373,7 @@ class TransferOrder
                             }
 
                         
-       
+    
                            
                             foreach($donnees['line_items'] as $key => $values)
                             {
@@ -381,7 +381,7 @@ class TransferOrder
                                foreach($values['meta_data'] as $vals)
                                {
                                   //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                                 if($vals['key']=="bar_code")
+                                 if($vals['key']=="_reduced_stock")
                                  {
                                     // construire le details des produits arrivant liée pour dolibarr.
                                     $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
@@ -391,6 +391,7 @@ class TransferOrder
                                      {
                                          // details  array article libéllé(product sur la commande) pour dolibar
                                          // details des produits, quantité et prix  dans une facture.
+                                         
                                          $data_product[] = [
                                           "multicurrency_subprice"=> floatval($values['subtotal']),
                                           "multicurrency_total_ht" => floatval($values['subtotal']),
@@ -410,9 +411,10 @@ class TransferOrder
                       
                                  if($fk_product=="")
                                  {
+                                   $ref_sku="";
                                    $list = new Transfertrefunded();
                                    $list->id_commande = $donnees['id'];
-                                   $list->ref_sku = $values['sku'];
+                                   $list->ref_sku = $ref_sku;
                                    $list->name_product = $values['name'];
                                    $list->quantite = $values['quantity'];
                                    $list->save();
@@ -487,7 +489,9 @@ class TransferOrder
                       }
          
                       
-                   
+                   dump($data_lines);
+
+                   dump($data_tiers);
                 
                     foreach($data_tiers as $data)
                     {
@@ -501,7 +505,7 @@ class TransferOrder
                      $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                    // activer le statut payé et lié les paiments  sur les factures.
-                   $this->invoicespay($orders);
+                   $this->invoicespay($id);
         
                   dd('succes of opération');
                   // initialiser un array recuperer les ref client.
@@ -515,12 +519,10 @@ class TransferOrder
 
 
 
-        public function invoicespay($orders)
+        public function invoicespay($id)
         {
            
-          $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-          // recuperer les données api dolibar.
-           // recuperer les données api dolibar copie projet tranfer x.
+        
             $method = "GET";
            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
             $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
@@ -578,24 +580,26 @@ class TransferOrder
         
         
              // le nombre recupérer 
-            $count_datas = $order; // retour array ici
+            $count_datas = $this->getdataorderid($id);// retour array ici
+
+          
             $ids_orders =[];// recupérer les id commande venant de woocomerce
            
            $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
         
             foreach($count_datas as $k =>$valis)
             {
-                foreach($valis as $val)
-                {
+              
+              
                   
-                      $ids_orders[] = $val['id'];
+                      $ids_orders[] = $valis['id'];
                   
-                      if(!in_array($val['id'],$this->getDataidcommande()))
+                      if(!in_array($valis['id'],$this->getDataidcommande()))
                       {
-                        $data_ids[]= $val['id'];
+                        $data_ids[]= $valis['id'];
                       }
                
-                }
+                
             }
            
              // le nombre de facture à traiter en payé
