@@ -203,9 +203,10 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder($id)
+      public function Transferorder($orders)
       {
             
+        dd($orders);
            
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
@@ -315,8 +316,6 @@ class TransferOrder
                
                     $orders_d = [];// le nombre de orders non distributeur
                     $orders_distributeur = [];// le nombre de orders des distributeurs...
-
-                    $orders = $this->getdataorderid($id);
                
                     foreach($orders as $k => $donnees)
                     {
@@ -381,7 +380,7 @@ class TransferOrder
                                foreach($values['meta_data'] as $vals)
                                {
                                   //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                                 if($vals['key']=="_reduced_stock")
+                                 if($vals['key']=="barcode")
                                  {
                                     // construire le details des produits arrivant liée pour dolibarr.
                                     $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
@@ -434,9 +433,9 @@ class TransferOrder
                                     'ref_int' =>$d,
                                     'ref_client' =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
                                     "email" => $donnees['billing']['email'],
-                                    "total_ht"  =>floatval($donnees['total']),
-                                    'total_tva' =>floatval($donnees['total_tax']),
-                                     "total_ttc" =>floatval($donnees['total']),
+                                    "total_ht"  =>floatval($donnees['total_order']),
+                                    'total_tva' =>floatval($donnees['total_tax_order']),
+                                     "total_ttc" =>floatval($donnees['total_order']),
                                      "paye"=>"1",
                                      'lines' =>$data_product,
                                    ];
@@ -505,7 +504,7 @@ class TransferOrder
                      $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                    // activer le statut payé et lié les paiments  sur les factures.
-                   $this->invoicespay($id);
+                   $this->invoicespay($orders);
         
                   dd('succes of opération');
                   // initialiser un array recuperer les ref client.
@@ -519,7 +518,7 @@ class TransferOrder
 
 
 
-        public function invoicespay($id)
+        public function invoicespay($orders)
         {
            
         
@@ -580,7 +579,7 @@ class TransferOrder
         
         
              // le nombre recupérer 
-            $count_datas = $this->getdataorderid($id);// retour array ici
+            $count_datas = $orders;// retour array ici
 
           
             $ids_orders =[];// recupérer les id commande venant de woocomerce
