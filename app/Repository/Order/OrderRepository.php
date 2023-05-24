@@ -96,6 +96,8 @@ class OrderRepository implements OrderInterface
                      'quantity' => $value['quantity'],
                      'barcode' => $barcode, // Get barcode in meta_data (last key),
                      'cost' => $value['total'],
+                     'subtotal_tax' =>  $value['subtotal_tax'],
+                     'total_tax' =>  $value['total_tax'],
                      'total_price' => floatval($value['quantity']) * floatval($value['total'])
                   ];
                }
@@ -292,6 +294,8 @@ class OrderRepository implements OrderInterface
                      'quantity' => $value['quantity'],
                      'barcode' => $barcode, // Get barcode in meta_data (last key),
                      'cost' => $value['total'],
+                     'subtotal_tax' =>  $value['subtotal_tax'],
+                     'total_tax' =>  $value['total_tax'],
                      'total_price' => floatval($value['quantity']) * floatval($value['total'])
                   ];
                }

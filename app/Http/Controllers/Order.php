@@ -232,7 +232,7 @@ class Order extends BaseController
             // Construis le tableau de la même manière que woocommerce
             foreach($order as $key => $or){
               $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
-              'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],
+              'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
               'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
 
               
