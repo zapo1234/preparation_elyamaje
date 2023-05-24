@@ -67,31 +67,33 @@
 
 										<!-- Réatribution des commandes d'un user vers un autre -->
 										<div class="p-3 mb-3 ps ps--active-y">
-										@foreach($teams_have_order as $key => $team)
-											<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
-												<div class="d-flex align-items-center">
-													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
-													<div class="ms-2">
-														<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{ $team['name'] }}</h6>
+										@if($number_preparateur > 1)
+											@foreach($teams_have_order as $key => $team)
+												<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
+													<div class="d-flex align-items-center">
+														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
+														<div class="ms-2">
+															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{ $team['name'] }}</h6>
+														</div>
+													</div>
+													
+													<div class="font-22">	
+														<i class="lni lni-arrow-right"></i>
+													</div>
+													<div class="list-inline d-flex align-items-center customers-contacts">	
+													
+														<select id="attribution_{{ $team['id'] }}" class="change_attribution_order">
+															<option value="">Réatribution</option>
+															@foreach($teams as $key => $team2)
+																@if($team['id'] != $team2['user_id'] && $team2['role'] != 1 && $team2['role'] != 4)
+																	<option value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
+																@endif
+															@endforeach
+														</select>
 													</div>
 												</div>
-												
-												<div class="font-22">	
-													<i class="lni lni-arrow-right"></i>
-												</div>
-												<div class="list-inline d-flex align-items-center customers-contacts">	
-												
-													<select id="attribution_{{ $team['id'] }}" class="change_attribution_order">
-														<option value="">Réatribution</option>
-														@foreach($teams as $key => $team2)
-															@if($team['id'] != $team2['user_id'] && $team2['role'] != 1 && $team2['role'] != 4)
-																<option value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
-															@endif
-														@endforeach
-													</select>
-												</div>
-											</div>
-										@endforeach
+											@endforeach
+										@endif
 									</div>
 
 
@@ -327,21 +329,21 @@
 												<div class="modal-body detail_product_order">
 													<div class="detail_product_order_head d-flex flex-column">
 														<div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
-															<span class="name_column">Article</span>
-															<span class="name_column">Coût</span>
-															<span class="name_column">Qté</span>
-															<span class="name_column">Total</span>
+															<span class="column1 name_column">Article</span>
+															<span class="column2 name_column">Coût</span>
+															<span class="column3 name_column">Qté</span>
+															<span class="column4 name_column">Total</span>
 														</div>	
 
 														<div class="body_detail_product_order">
 															${row.line_items.map((element) => `
 																<div class="d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-																	<div class="d-flex align-items-center detail_product_name_order">
+																	<div class="column11 d-flex align-items-center detail_product_name_order">
 																		${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
 																	</div>
-																	<span>	`+parseFloat(element.price).toFixed(2)+ `</span>
-																	<span> `+element.quantity+` </span>
-																	<span>`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
+																	<span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
+																	<span class="column33"> `+element.quantity+` </span>
+																	<span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
 																</div>`
 														).join('')}
 														</div>
@@ -381,7 +383,7 @@
 							data.name != "Non attribuée" ? attribution = attribution + 1 : attribution = attribution
 						} );
 						
-						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont '+attribution+' attribuée(s)</span>')
+						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s)</span>')
 						$(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
 						$(".allocation_of_orders").attr('disabled', false)
 						$(".dataTables_paginate").parent().removeClass("col-md-7")
@@ -399,7 +401,6 @@
 								// select.classList.remove('empty_select');
 							}
 						}
-						return nRow;
 							
 						$('td:nth-child(1)', nRow).attr('data-label', 'Commande');
 						$('td:nth-child(2)', nRow).attr('data-label', 'Attribution');
@@ -407,6 +408,9 @@
 						$('td:nth-child(4)', nRow).attr('data-label', 'État');
 						$('td:nth-child(5)', nRow).attr('data-label', 'Total');
 						$('td:nth-child(6)', nRow).attr('data-label', 'Détail');
+
+						return nRow;
+
 					}
 				})
 
@@ -433,6 +437,7 @@
 						setTimeout(function(){ location.reload(); }, 2500);
 					} else {
 						alert(JSON.parse(data).message ?? 'Erreur !')
+						$("#allocationOrders button").removeClass('d-none')
 						$(".loading_allocation").addClass("d-none")
 						$("#allocationOrders").modal('hide')
 					}
@@ -521,14 +526,22 @@
 				var order_id = order_id
 				var user_id = $("#select_"+order_id).val()
 
+				if(user_id == "Non attribuée"){
+					$("#select_"+order_id).addClass('empty_select')
+					$("#select_"+order_id).removeClass('no_empty_select')
+				} else {
+					$("#select_"+order_id).removeClass('empty_select')
+					$("#select_"+order_id).removeClass('no_empty_select')
+					$("#select_"+order_id).addClass('no_empty_select')
+				}
+
 				$.ajax({
 					url: "{{ route('updateOneOrderAttribution') }}",
 					method: 'POST',
 					data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id}
 				}).done(function(data) {
-					console.log(data)
 					if(JSON.parse(data).success){
-
+						$("#number_attribution").text(JSON.parse(data).number_order_attributed)
 					} else {
 						alert('Erreur !')
 					}

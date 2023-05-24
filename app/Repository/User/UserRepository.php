@@ -34,8 +34,8 @@ class UserRepository implements UserInterface
 
       // Si le rôle donné est différent de préparateur, alors lui retirer ses commandes attribuées
       if($role_id != 2){
-         DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->delete();
-         DB::table('orders')->where('user_id', $user_id)->delete();
+         DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
+         DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
       } 
       
       return $this->model->where('id', $user_id)->update(['role_id' => $role_id]);

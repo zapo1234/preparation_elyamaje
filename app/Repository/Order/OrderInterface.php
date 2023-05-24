@@ -6,6 +6,8 @@ use App\Model\User;
 
 interface OrderInterface
 {
+   public function getOrderById($order_id);
+
    public function insertOrdersByUsers($array_user);
 
    public function getOrdersByUsers();
