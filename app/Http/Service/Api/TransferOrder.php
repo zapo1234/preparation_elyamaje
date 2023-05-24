@@ -319,7 +319,7 @@ class TransferOrder
                
                    foreach($orders as $k => $donnees)
                    {
-                 
+                            dd($donnees['billing']['email']);
                            // recupérer les données pour les tiers pour dolibar post tiers dans l'array
                            // créer le client via dolibarr à partir de woocomerce.
                            $ref_client = rand(4,10);
