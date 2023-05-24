@@ -588,11 +588,11 @@ class TransferOrder
                 foreach($valis as $val)
                 {
                   
-                      $ids_orders[] = $val['order_id'];
+                      $ids_orders[] = $val['id'];
                   
-                      if(!in_array($val['order_id'],$this->getDataidcommande()))
+                      if(!in_array($val['id'],$this->getDataidcommande()))
                       {
-                        $data_ids[]= $val['order_id'];
+                        $data_ids[]= $val['id'];
                       }
                
                 }
