@@ -306,7 +306,7 @@ class TransferOrder
                    $order_data = $this->getdataorderid($id);// pour une seul commande.
                    $oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                 
-                   dd($order_data);
+                   
                    
                     $data_tiers = [];//data tiers dans dolibar
                     $data_lines  = [];// data article liée à commande du tiers en cours
