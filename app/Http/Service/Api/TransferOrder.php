@@ -292,13 +292,14 @@ class TransferOrder
                  $id_cl = $id_cl+1;
                  $socid ="";
                  // recupérer  les données dans un tableau associative(id et ref_article) dans dolibar
+                
                  $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
                  foreach($listproduct as $values)
                  {
                      $product_data[$values['id']]= $values['ref'];// tableau associative entre id product et reférence(product)
                      $data_list_product[$values['id']] = $values['barcode'];
-                      // tableau associatve entre ref et label product
+                      // tableau associatve entre ref et label product....
                  }
 
                  
@@ -470,20 +471,20 @@ class TransferOrder
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
             
-                     // Filtrer les produits associés au tiers (socid = ref_ext simulé) suprimer en cas d'inégalité du tableau.
-                     // clients invoices non distributeur 
-                     foreach($unique_arr as $r => $val)
-                     {
+                       // Filtrer les produits associés au tiers (socid = ref_ext simulé) suprimer en cas d'inégalité du tableau.
+                       // clients invoices non distributeur 
+                      foreach($unique_arr as $r => $val)
+                       {
            
-                        foreach($val['lines'] as $q => $vak)
-                        {
-                           if($val['socid']!=$vak['ref_ext'])
-                           {
+                          foreach($val['lines'] as $q => $vak)
+                          {
+                             if($val['socid']!=$vak['ref_ext'])
+                             {
                                unset($unique_arr[$r]['lines'][$q]);// filtrer les produit qui n'appartienne pas à l'utilisateur
-                           }
+                             }
 
-                        }
-                    }
+                         }
+                      }
          
                       
                     dump($unique_arr);
