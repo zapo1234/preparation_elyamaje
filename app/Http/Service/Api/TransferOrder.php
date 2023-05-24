@@ -203,10 +203,10 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder($order)
+      public function Transferorder($orders)
       {
             
-          dump($order);
+          dd($orders);
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -501,7 +501,7 @@ class TransferOrder
                      $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                    // activer le statut payé et lié les paiments  sur les factures.
-                   $this->invoicespay($order);
+                   $this->invoicespay($orders);
         
                   dd('succes of opération');
                   // initialiser un array recuperer les ref client.
@@ -515,7 +515,7 @@ class TransferOrder
 
 
 
-        public function invoicespay($order)
+        public function invoicespay($orders)
         {
            
           $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
