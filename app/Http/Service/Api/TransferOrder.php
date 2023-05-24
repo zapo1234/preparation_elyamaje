@@ -206,7 +206,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-        dd($orders);
+        
            
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
@@ -412,7 +412,7 @@ class TransferOrder
                                  {
                                    $ref_sku="";
                                    $list = new Transfertrefunded();
-                                   $list->id_commande = $donnees['id'];
+                                   $list->id_commande = $donnees['order_id'];
                                    $list->ref_sku = $ref_sku;
                                    $list->name_product = $values['name'];
                                    $list->quantite = $values['quantity'];
@@ -424,14 +424,14 @@ class TransferOrder
                         
                                // verifier si la commande est nouvelle
                                //lié le client avec les produits de ses achats 
-                               if($this->testing($ids_commande,$donnees['id'])==false)
+                               if($this->testing($ids_commande,$donnees['order_id'])==false)
                                {
                                     // pour les facture non distributeur...
                                      $d=1;
                                     $data_lines[] = [
                                     'socid'=> $socid,
                                     'ref_int' =>$d,
-                                    'ref_client' =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
+                                    'ref_client' =>$donnees['order_id'],// fournir un id orders wocommerce dans dolibar...
                                     "email" => $donnees['billing']['email'],
                                     "total_ht"  =>floatval($donnees['total_order']),
                                     'total_tva' =>floatval($donnees['total_tax_order']),
@@ -443,7 +443,7 @@ class TransferOrder
                                      // insert dans base de donnees historiquesidcommandes
                                      $date = date('Y-m-d');
                                       $historique = new Commandeid();
-                                      $historique->id_commande = $donnees['id'];
+                                      $historique->id_commande = $donnees['order_id'];
                                       $historique->date = $date;
                                       // insert to
                                       $historique->save();
@@ -451,9 +451,9 @@ class TransferOrder
                               }
                    
                                // recupérer les id_commande deja pris
-                               if($this->testing($ids_commandes,$donnees['id'])==true)
+                               if($this->testing($ids_commandes,$donnees['order_id'])==true)
                                {
-                                   $id_commande_existe[] = $donnees['id'];
+                                   $id_commande_existe[] = $donnees['order_id'];
                                }
                     
                         
