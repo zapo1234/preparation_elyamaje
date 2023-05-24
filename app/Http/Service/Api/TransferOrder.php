@@ -372,6 +372,8 @@ class TransferOrder
            
    
                             }
+
+                            dd($data_tiers);
        
                            
                             foreach($donnees['line_items'] as $key => $values)
