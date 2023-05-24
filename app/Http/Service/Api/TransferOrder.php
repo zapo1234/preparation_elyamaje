@@ -206,7 +206,7 @@ class TransferOrder
       public function Transferorder($order)
       {
             
-          
+          dump($order);
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -270,7 +270,7 @@ class TransferOrder
              }
 
             
-               dump($data_list);
+            
 
                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -487,8 +487,7 @@ class TransferOrder
                       }
          
                       
-                    dump($unique_arr);
-                    dd($data_tiers);
+                   
                 
                     foreach($data_tiers as $data)
                     {
