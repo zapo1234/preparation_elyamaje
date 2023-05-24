@@ -219,7 +219,7 @@ class Order extends BaseController
 
 
         //$order_id = $request->post('order_id');
-        $order_id="64686";
+        $order_id=64686;
         $order = $this->order->getOrderById($order_id);
         dd($order);
 
