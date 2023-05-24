@@ -219,8 +219,8 @@ class Order extends BaseController
 
 
         //$order_id = $request->post('order_id');
-        $order_id=64686;
-        $order = $this->order->getOrderById($order_id);
+        $id=64686;
+        /*$order = $this->order->getOrderById($order_id);
       
 
         if($order){
@@ -258,13 +258,13 @@ class Order extends BaseController
             $order_new_array['billing'] = $billing;
             $order_new_array['shipping'] = $shipping;
 
-          
+          */
                // recupérer les function d'ecriture  et création de client et facture dans dolibar.
-               $orders = $order_new_array;
-              $this->factorder->Transferorder($orders);
+              
+              $this->factorder->Transferorder($id);
             
         }
-    }
+    
 
 }
 
