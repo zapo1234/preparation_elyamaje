@@ -219,9 +219,8 @@ class Order extends BaseController
 
 
         //$order_id = $request->post('order_id');
-        $id=72392;
-        /*$order = $this->order->getOrderById($order_id);
-      
+        $order_id = 64686;
+        $order = $this->order->getOrderById($order_id);
 
         if($order){
             $order_new_array = [];
@@ -231,11 +230,11 @@ class Order extends BaseController
 
             // Construis le tableau de la même manière que woocommerce
             foreach($order as $key => $or){
+
               $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
               'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
               'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
 
-              
               if(count($billing) == 0 && count($shipping) == 0){
                 foreach($or as $key2 => $or2){
                   if (str_contains($key2, 'billing')) {
@@ -249,22 +248,19 @@ class Order extends BaseController
                   }
                 }
               }
-
-            
             }
 
             $order_new_array =  $order[0];
             $order_new_array['line_items'] = $products['line_items'];
             $order_new_array['billing'] = $billing;
             $order_new_array['shipping'] = $shipping;
-
-          */
-               // recupérer les function d'ecriture  et création de client et facture dans dolibar.
-              
-              $this->factorder->Transferorder($id);
+         
+            // recupérer les function d'ecriture  et création de client et facture dans dolibar.
+            $orders[] = $order_new_array;
+            $this->factorder->Transferorder($orders);
             
         }
-    
+    }
 
 }
 
