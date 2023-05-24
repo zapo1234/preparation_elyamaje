@@ -40,6 +40,14 @@
                     </li>
                 </ul>
             </li>
+        @elseif(Auth()->user()->role_id == 3)
+            <li>
+                <a href="{{ url('wrapOrder') }}">
+                    <div class="parent-icon"><i class='bx bx-box'></i>
+                    </div>
+                    <div class="menu-title">Commandes</div>
+                </a>
+            </li>
         @elseif(Auth()->user()->role_id == 4)
             <li>
                 <a href="{{ url('dashboard') }}">

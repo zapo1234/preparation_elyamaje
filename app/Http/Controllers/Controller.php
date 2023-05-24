@@ -31,32 +31,45 @@ class Controller extends BaseController
       $this->role = $role;
       $this->orders = $orders;
     }
- 
+    
+     // INDEX ADMIN
     public function index(Request $request){
         return view('index');
     }
 
+    // INDEX PRÉPARATEUR
     public function orderPreparateur(){
         $orders = $this->orderController->getOrder();
         return view('preparateur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
+     // AUTRE PAGES PRÉPARATEUR POUR COMMANDES DISTRIBUTEURS
     public function ordersDistributeurs(){
         $orders = $this->orderController->getOrderDistributeur();
         return view('preparateur.distributeur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
+    // INDEX CHEF D'ÉQUIPE
     public function dashboard(){
-        $teams = $this->users->getUsersByRole([2, 3])->toArray();
+        $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-        $roles = $this->role->getRoles();
-        return view('leader.dashboard', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order]);
-    }
 
+        $ids = array_column($teams, "role_id");
+        $number_preparateur = count(array_keys($ids,  2));
+
+        $roles = $this->role->getRoles();
+        return view('leader.dashboard', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
+    }
+    
     public function updateRole(Request $request){
         $user_id = $request->post('user_id');
         $role_id = $request->post('role_id');
         echo json_encode(['success' => $this->users->updateRoleByUser($user_id, $role_id)]);
+    }  
+
+    // INDEX EMBALLEUR 
+    public function wrapOrder(){
+        return view('emballeur.index');
     }
     
 }

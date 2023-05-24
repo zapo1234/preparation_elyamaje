@@ -201,14 +201,61 @@ class Order extends BaseController
       $user_id = $request->post('user_id');
 
       if($order_id && $user_id){
-        echo json_encode(["success" => $this->order->updateOneOrderAttribution($order_id, $user_id)]);
+        $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
+        $number_order_attributed = $this->order->getOrdersByUsers();
+        echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
       } else {
         echo json_encode(["success" => false]);
       }
     }
 
+
+    public function validWrapOrder(Request $request){
+
+
+        $order_id = $request->post('order_id');
+        $order = $this->order->getOrderById($order_id);
+
+        if($order){
+            $order_new_array = [];
+            $products = [];
+            $billing = [];
+            $shipping = [];
+
+            // Construis le tableau de la même manière que woocommerce
+            foreach($order as $key => $or){
+              $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
+              'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],
+              'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+
+              
+              if(count($billing) == 0 && count($shipping) == 0){
+                foreach($or as $key2 => $or2){
+                  if (str_contains($key2, 'billing')) {
+                    unset($order[$key][$key2]);
+                    $billing[count(explode('_', $key2)) > 3 ? explode('_', $key2)[2].'_'.explode('_', $key2)[3] : explode('_', $key2)[2]] = $or2;
+                  }
+
+                  if (str_contains($key2, 'shipping')) {
+                    unset($order[$key][$key2]);
+                    $shipping[count(explode('_', $key2)) > 3 ? explode('_', $key2)[2].'_'.explode('_', $key2)[3] : explode('_', $key2)[2]] = $or2;
+                  }
+                }
+              }
+
+            
+            }
+
+            $order_new_array =  $order[0];
+            $order_new_array['line_items'] = $products['line_items'];
+            $order_new_array['billing'] = $billing;
+            $order_new_array['shipping'] = $shipping;
+
+            // Return all order details
+            dd($order_new_array);
+        }
+    }
+
 }
-
-
 
 

@@ -77,9 +77,11 @@ class OrderRepository implements OrderInterface
                      $barcode = null;
                   }
 
+
                   $productsToInsert[] = [
                      'order_id' => $orderData['id'],
-                     'product_woocommerce_id' => $value['variation_id'] ?? $value['product_id'],
+                     'product_woocommerce_id' => $value['product_id'],
+                     'variation_id' => $value['variation_id'] ?? null,
                      'name' => $value['name'],
                      'quantity' => $value['quantity'],
                      'barcode' => $barcode, // Get barcode in meta_data (last key),
@@ -215,11 +217,13 @@ class OrderRepository implements OrderInterface
 
          if($user_id == "Non attribuée"){
             $order = $this->model::where('order_woocommerce_id', $order_id)->delete();
+            DB::table('products')->where('order_id', $order_id)->delete();
          } else {
             $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
             if(count($order) == 0){
                $insert_order_by_user = $this->api->insertOrderByUser($order_id, $user_id);
-   
+               
+               // Insert commande
                $ordersToInsert = [
                   'order_woocommerce_id' => $insert_order_by_user['id'],
                   'customer_id' => $insert_order_by_user['customer_id'],
@@ -249,8 +253,30 @@ class OrderRepository implements OrderInterface
                   'user_id' => $user_id,
                   'status' => $insert_order_by_user['status']
                ];
+
+               // Insert produits
+               foreach($insert_order_by_user['line_items'] as $value){
+
+                  if($value['meta_data']){
+                     $barcode = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "barcode" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
+                  } else {
+                     $barcode = null;
+                  }
+
+                  $productsToInsert[] = [
+                     'order_id' => $insert_order_by_user['id'],
+                     'product_woocommerce_id' => $value['product_id'],
+                     'variation_id' => $value['variation_id'] ?? null,
+                     'name' => $value['name'],
+                     'quantity' => $value['quantity'],
+                     'barcode' => $barcode, // Get barcode in meta_data (last key),
+                     'cost' => $value['total'],
+                     'total_price' => floatval($value['quantity']) * floatval($value['total'])
+                  ];
+               }
    
                $this->model->insert($ordersToInsert);
+               DB::table('products')->insert($productsToInsert);
             } else {
                $update_one_order_attribution =  $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
             }
@@ -259,6 +285,11 @@ class OrderRepository implements OrderInterface
       } catch(Exception $e){
          return false;
       }
+   }
+
+
+   public function getOrderById($order_id){
+      return $this->model::where('order_woocommerce_id', $order_id)->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')->get()->toArray();
    }
 }
 

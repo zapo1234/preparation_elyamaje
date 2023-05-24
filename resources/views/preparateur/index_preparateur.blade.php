@@ -40,18 +40,22 @@
 												<span class="column1 name_column">Article</span>
 												<span class="column2 name_column">Coût</span>
 												<span class="column3 name_column">Qté</span>
-												<span class="column4 name_column">Code Barre</span>
+												<!-- <span class="column4 name_column">Code Barre</span> -->
 											</div>	
 
 											<div class="body_detail_product_order">
 												@foreach($orders['items'] as $item)
 													<div id="barcode_{{ $item['barcode']  ?? 0 }}" class="{{ $item['pick'] == 1 ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 														<div class="column11 d-flex align-items-center detail_product_name_order">
-															<span>{{ $item['name'] }}</span>
+															@if($item['cost'] == 0)
+															<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
+															@else 
+																<span>{{ $item['name'] }}</span>
+															@endif
 														</div>
 														<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 														<span class="column33"> {{ $item['quantity'] }} </span>
-														<span class="column44">{{  $item['barcode'] }} </span>
+														<!-- <span class="column44">{{  $item['barcode'] }} </span> -->
 													</div>
 												@endforeach
 											</div>
@@ -177,7 +181,6 @@
 				}
 			})
 
-			// 3 7 6 0 3 2 4 8 1 1 5 2 8
 			document.addEventListener("keydown", function(e) {
 				if($(".modal_order ").hasClass('show')){
 					if (!isNaN(parseInt(e.key))) {

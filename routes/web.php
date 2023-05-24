@@ -26,6 +26,9 @@ Route::group(['middleware' => ['auth']], function () {
             case 2 :
                 return redirect()->route('orders');
                 break;
+            case 3 :
+                return redirect()->route('wrapOrder');
+                break;
             case 4 :
                 return redirect()->route('leader.dashboard');
                 break;
@@ -55,6 +58,12 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
 });
 
+// EMBALLEUR
+Route::group(['middleware' => ['auth', 'role:3']], function () {
+    Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
+    Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+});
+
 // CHEF D'ÉQUIPE
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
@@ -76,5 +85,9 @@ Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('d
 
 // tache cron import de tiers toute les minutes....
 Route::get("/importiers/{token}", [Order::class, "importiers"])->name('importiers');
+
+
+
+
 
 
