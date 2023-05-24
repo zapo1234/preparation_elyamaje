@@ -373,7 +373,7 @@ class TransferOrder
    
                             }
 
-                            dd($data_tiers);
+                        
        
                            
                             foreach($donnees['line_items'] as $key => $values)
@@ -381,10 +381,11 @@ class TransferOrder
                                 
                               foreach($values['meta_data'] as $vals)
                               {
-                                //verifié et recupérer id keys existant de l'article
+                                //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                 if($vals['key']=="_reduced_stock")
                                 {
                                   // construire le details des produits arrivant liée pour dolibarr.
+                                  dd($vals['value']);
                                    $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                   if($fk_product!="")
                                    {
