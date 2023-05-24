@@ -300,6 +300,8 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product
                  }
+
+                 dd($data_list_product);
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                    $id=72343;
@@ -385,7 +387,6 @@ class TransferOrder
                                 if($vals['key']=="_reduced_stock")
                                 {
                                   // construire le details des produits arrivant liée pour dolibarr.
-                                  dd($vals['value']);
                                    $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                   if($fk_product!="")
                                    {
