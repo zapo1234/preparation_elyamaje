@@ -207,7 +207,7 @@ class TransferOrder
       {
             $id=72371;
             $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-            dd($order);
+            
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -270,7 +270,10 @@ class TransferOrder
         
              }
 
-                // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
+            
+
+
+                // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		             "sortfield" => "t.rowid", 
 	    	        "sortorder" => "DESC", 
@@ -326,7 +329,7 @@ class TransferOrder
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
                             // recupérer le code customer client
-                            //$fk_tier = array_search($donnees['customer_id'],$data_code)
+                            //$fk_tier = array_search($donnees['customer_id'],$data_code).
                            if($fk_tiers!="")
                            {
                              $socid = $fk_tiers;
