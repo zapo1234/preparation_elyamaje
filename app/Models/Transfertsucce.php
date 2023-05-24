@@ -17,8 +17,8 @@ class Transfertsucce extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'id_commande',
         'date',
+        'id_commande',
         'label'
         
      ];
