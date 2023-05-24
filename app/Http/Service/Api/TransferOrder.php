@@ -303,7 +303,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product
                  }
 
-                 dd($data_list_product);
+                 
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                   
@@ -323,7 +323,7 @@ class TransferOrder
                     $orders_d = [];// le nombre de orders non distributeur
                     $orders_distributeur = [];// le nombre de orders des distributeurs...
                
-                   foreach($order_data as $k => $donnees)
+                   foreach($order as $k => $donnees)
                    {
                  
                            // recupérer les données pour les tiers pour dolibar post tiers dans l'array
