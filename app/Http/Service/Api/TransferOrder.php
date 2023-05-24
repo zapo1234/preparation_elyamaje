@@ -203,7 +203,7 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder()
+      public function Transferorder($order)
       {
             $id=72371;
             $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
@@ -502,7 +502,7 @@ class TransferOrder
                      $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                    // activer le statut payé et lié les paiments  sur les factures.
-                   $this->invoicespay();
+                   $this->invoicespay($order);
         
                   dd('succes of opération');
                   // initialiser un array recuperer les ref client.
@@ -516,7 +516,7 @@ class TransferOrder
 
 
 
-        public function invoicespay()
+        public function invoicespay($order)
         {
            
           $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
