@@ -306,7 +306,7 @@ class TransferOrder
                    $order_data = $this->getdataorderid($id);// pour une seul commande.
                    $oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                 
-                   
+                   dd($order_data);
                    
                     $data_tiers = [];//data tiers dans dolibar
                     $data_lines  = [];// data article liée à commande du tiers en cours
@@ -383,7 +383,7 @@ class TransferOrder
                                 if($vals['key']=="_reduced_stock")
                                 {
                                   // construire le details des produits arrivant liée pour dolibarr.
-                                   $fk_product = array_search($vals['values'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
+                                   $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                   if($fk_product!="")
                                    {
                                         // details  array article libéllé(product sur la commande) pour dolibar
