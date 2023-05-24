@@ -308,7 +308,7 @@ class TransferOrder
                     // appel du service via api
                   
                    $order_data = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-                   $oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
+                   //$oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                 
                   
                    
