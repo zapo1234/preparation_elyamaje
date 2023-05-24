@@ -242,7 +242,7 @@ class TransferOrder
                $ids_commandes =[];
               foreach($ids_commande as $key => $valis)
               {
-                 $ids_commandes[$valis['commande']] = $key;
+                 $ids_commandes[$valis['id_commande']] = $key;
               }
             
               // recupérer les email existant dans tiers
