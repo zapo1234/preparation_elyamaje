@@ -269,8 +269,7 @@ class TransferOrder
         
              }
 
-            
-            dump($data_list);
+          
 
                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
