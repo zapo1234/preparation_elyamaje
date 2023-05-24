@@ -205,7 +205,7 @@ class TransferOrder
      */
       public function Transferorder()
       {
-            $id=72343;
+            $id=72371;
             $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
           
              // excercer un get et post et put en fonction des status .
@@ -235,8 +235,6 @@ class TransferOrder
               //Recuperer les ref_client existant dans dolibar
               //verifié l'unicité
               //$list_id_order = [];
-             
-              
                // recuperer les ids commandes
                $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                $key_commande = $this->commande->getIds();// lindex les ids commande existant.
@@ -272,10 +270,7 @@ class TransferOrder
         
              }
 
-
-            
-            
-                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
+                // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		             "sortfield" => "t.rowid", 
 	    	        "sortorder" => "DESC", 
@@ -307,11 +302,8 @@ class TransferOrder
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                   
-                   $order_data = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-                   //$oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
-                
-                  
-                   
+                    $order_data = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
+                    //$oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
                     $data_tiers = [];//data tiers dans dolibar
                     $data_lines  = [];// data article liée à commande du tiers en cours
                     $data_product =[]; // data article details sur commande facture
@@ -626,7 +618,7 @@ class TransferOrder
              }
              elseif($nombre_orders ==1)
              {
-               $label ="Une commande transférée dans dolibars le $datetime";
+               $label ="la commande à été transférée dans dolibars le $datetime";
              }
              else{
                $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
@@ -845,7 +837,7 @@ class TransferOrder
 	       $invoice->status = "facture impayée";
 	   }
 
- }
+    }
 	
 
   }
