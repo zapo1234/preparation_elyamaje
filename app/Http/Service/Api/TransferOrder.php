@@ -421,18 +421,22 @@ class TransferOrder
                                     // pour les facture non distributeur...
                                      $d=1;
                                      $ref="";
+                                     $remise_percent="";
                                      $data_lines[] = [
                                     'socid'=> $socid,
                                     'ref_int' =>$d,
                                     'ref_client' =>$ref,// fournir un id orders wocommerce dans dolibar...
-                                    "email" => $donnees['billing']['email'],
-                                    "total_ht"  =>floatval($donnees['total_order']),
-                                    'total_tva' =>floatval($donnees['total_tax_order']),
+                                     "email" => $donnees['billing']['email'],
+                                     "remise_percent"=> $donnees['discount_amount'],
+                                     "total_ht"  =>floatval($donnees['total_order']),
+                                     "total_tva" =>floatval($donnees['total_tax_order']),
                                      "total_ttc" =>floatval($donnees['total_order']),
+                                    
                                      "paye"=>"1",
                                      'lines' =>$data_product,
                                      'array_options'=>[
-                                                  "options_idw"=>$donnees['order_id']
+                                                  "options_idw"=>$donnees['order_id'],
+                                                  "options_idc"=>$donnees['coupons']
                                                ]
                                       ];
                               
@@ -489,9 +493,8 @@ class TransferOrder
                       }
          
                       
-                   dump($data_lines);
-
-                   dump($data_tiers);
+                    dump($data_lines);
+                    dump($data_tiers);
                 
                     foreach($data_tiers as $data)
                     {
@@ -507,8 +510,8 @@ class TransferOrder
                    // activer le statut payé et lié les paiments  sur les factures.
                    $this->invoicespay($orders);
         
-                  dd('succes of opération');
-                  // initialiser un array recuperer les ref client.
+                    dd('succes of opération');
+                    // initialiser un array recuperer les ref client.
         
                   return view('apidolibar');
                 
@@ -522,14 +525,13 @@ class TransferOrder
         public function invoicespay($orders)
         {
            
-           $method = "GET";
+            $method = "GET";
             $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
             $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
            
-           //appelle de la fonction  Api
-           // $data = $this->api->getDatadolibar($apikey,$url);
-           // domp affichage test
-
+             //appelle de la fonction  Api
+            // $data = $this->api->getDatadolibar($apikey,$url);
+            // domp affichage test 
             // recupérer le dernière id des facture 
             // recuperer dans un tableau les ref_client existant id.
             $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
@@ -576,8 +578,7 @@ class TransferOrder
                $tiers_ref = $data['id'];
              }
         
-           
-              // le nombre recupérer 
+               // le nombre recupérer 
                $count_datas = $orders;// retour array ici
                $ids_orders =[];// recupérer les id commande venant de woocomerce
                $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
@@ -635,7 +636,7 @@ class TransferOrder
                "notrigger" => "0",
                ];
              
-             $newCommandepaye = [
+              $newCommandepaye = [
              "paye"	=> 1,
              "statut"	=> 2,
              "mode_reglement_id"=>4,
@@ -699,7 +700,6 @@ class TransferOrder
     {
            $id=72471;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-          dd($order);
            // excedd(rcer un get et post et put en fonction des status .
            // recuperer les données api dolibar copie projet tranfer x.
             $method = "GET";
@@ -860,9 +860,7 @@ class TransferOrder
                           }
 
                       
-     
-                         
-                          foreach($donnees['line_items'] as $key => $values)
+                           foreach($donnees['line_items'] as $key => $values)
                           {
                               
                              foreach($values['meta_data'] as $vals)
@@ -978,8 +976,8 @@ class TransferOrder
                        }
                     }
        
-                    
-                  
+                  dump($data_lines);
+                  dd($data_tiers);
               
                  foreach($data_tiers as $data)
                   {
@@ -1168,8 +1166,7 @@ class TransferOrder
          "accountid"=> 6, // id du compte bancaire.
       ];
        
-      dump($nombre_count);
-      dd($inv);
+      
          // valider les facture dans dolibar
          for($i=$nombre_count; $i<$inv+2; $i++)
          {
