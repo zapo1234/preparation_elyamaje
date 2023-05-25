@@ -976,7 +976,8 @@ class TransferOrder
                        }
                     }
        
-                
+                   dump($data_lines);
+                   dd($data_tiers);
               
                  foreach($data_tiers as $data)
                   {
