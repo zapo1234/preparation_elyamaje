@@ -941,16 +941,16 @@ class TransferOrder
                                   // pour les facture non distributeur...
                                    $d=1;
                                   $data_lines[] = [
-                                  'socid'=> $socid,
-                                  'ref_int' =>$d,
-                                  'ref_client' =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
+                                  "socid"=> $socid,
+                                  "ref_int" =>$d,
+                                  "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>floatval($donnees['total']),
                                   'total_tva' =>floatval($donnees['total_tax']),
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
-                                   'lines' =>$data_product,
-                                   'array_options'=>[
+                                   "lines" =>$data_product,
+                                   "array_options"=>[
                                            "options_idw"=>$donnees['oder_id']
                                             ]
                                  ];
