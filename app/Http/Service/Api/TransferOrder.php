@@ -1105,17 +1105,16 @@ class TransferOrder
       
           foreach($count_datas as $k =>$valis)
           {
-              foreach($valis as $val)
-              {
+              
                 
-                    $ids_orders[] = $val['id'];
+                    $ids_orders[] = $valis['id'];
                 
-                    if(!in_array($val['id'],$this->getDataidcommande()))
+                    if(!in_array($valis['id'],$this->getDataidcommande()))
                     {
-                      $data_ids[]= $val['id'];
+                      $data_ids[]= $valis['id'];
                     }
              
-              }
+            
           }
          
            // le nombre de facture à traiter en payé
