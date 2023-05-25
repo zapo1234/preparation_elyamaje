@@ -979,13 +979,14 @@ class TransferOrder
                   
                     dd($data_tiers);
               
-                 foreach($data_tiers as $data)
+                  foreach($data_tiers as $data)
                   {
-                     
-                    // insérer les données tiers dans dolibar
+                     // insérer les données tiers dans dolibar
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                   }
-              
+
+
+                   dd($data_tiers);
                  /* foreach($unique_arr as $donnes)
                   {
                    // construire la 1 ère couche de facture dans dolibar
