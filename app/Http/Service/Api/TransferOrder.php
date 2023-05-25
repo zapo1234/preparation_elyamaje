@@ -715,7 +715,7 @@ class TransferOrder
      */
     public function Transferorders()
     {
-          $id=72474;
+          $id=72471;
           $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
           
            // excercer un get et post et put en fonction des status .
