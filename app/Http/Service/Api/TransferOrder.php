@@ -1037,6 +1037,7 @@ class TransferOrder
       public function invoicespays()
       {
          
+        $id=72471;
         $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
         // recuperer les données api dolibar.
          // recuperer les données api dolibar copie projet tranfer x.
