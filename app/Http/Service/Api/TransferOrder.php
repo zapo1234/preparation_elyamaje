@@ -206,7 +206,6 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-             dump($orders);
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -298,9 +297,6 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                  }
-
-
-                 dump($data_list_product);
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -385,7 +381,7 @@ class TransferOrder
                                     $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                      
                                       $ref="";
-                                     if($fk_product!="")
+                                     if($fk_product!=""  OR $fk_product!=null)
                                      {
                                          // details  array article libéllé(product sur la commande) pour dolibar
                                          // details des produits, quantité et prix  dans une facture.
