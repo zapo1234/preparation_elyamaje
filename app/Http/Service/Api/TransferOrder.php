@@ -976,22 +976,22 @@ class TransferOrder
                        }
                     }
        
-                   dump($data_lines);
-                   dd($data_tiers);
+                  
               
                  foreach($data_tiers as $data)
                   {
-                   // insérer les données tiers dans dolibar
+                     dd($data);
+                    // insérer les données tiers dans dolibar
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                   }
               
-                  foreach($unique_arr as $donnes)
+                 /* foreach($unique_arr as $donnes)
                   {
                    // construire la 1 ère couche de facture dans dolibar
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                   }
                  // activer le statut payé et lié les paiments  sur les factures.
-                 
+                 */
                  $this->invoicespays();
                
                 dd('succes of opération');
