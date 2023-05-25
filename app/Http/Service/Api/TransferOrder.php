@@ -442,6 +442,9 @@ class TransferOrder
                                      "total_ttc" =>floatval($donnees['total_order']),
                                      "paye"=>"1",
                                      'lines' =>$data_product,
+                                     'array_options'=>[
+                                                  "options_idw"=>$donnees['oder_id']
+                                               ]
                                    ];
                               
                                      // insert dans base de donnees historiquesidcommandes
@@ -947,6 +950,9 @@ class TransferOrder
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
                                    'lines' =>$data_product,
+                                   'array_options'=>[
+                                           "options_idw"=>$donnees['oder_id']
+                                            ]
                                  ];
                             
                                    // insert dans base de donnees historiquesidcommandes
