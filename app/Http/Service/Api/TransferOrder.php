@@ -725,14 +725,13 @@ class TransferOrder
              $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
              $key_commande = $this->commande->getIds();// lindex les ids commande existant.
 
-             // recupérer le tableau de ids
+             // recupérer le tableau de ids.
              $ids_commandes =[];
             foreach($ids_commande as $key => $valis)
             {
                $ids_commandes[$valis['id_commande']] = $key;
             }
           
-             dd($ids_commandes);
             
             // recupérer les email existant dans tiers
             $data_email = [];//entre le code_client et email.
