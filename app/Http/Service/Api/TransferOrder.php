@@ -415,7 +415,7 @@ class TransferOrder
                         
                                 // verifier si la commande est nouvelle
                                 //lié le client avec les produits de ses achats 
-                                if($this->testing($ids_commande,$donnees['order_id'])==false)
+                                if($this->testing($key_commande,$donnees['order_id'])==false)
                                {
                                     // pour les facture non distributeur...
                                      $d=1;
@@ -444,9 +444,14 @@ class TransferOrder
                                       $historique->save();
             
                               }
+
+                              else{
+
+                                 $data_tiers = [];
+                              }
                    
                                  // recupérer les id_commande deja pris
-                                 if($this->testing($ids_commandes,$donnees['order_id'])==true)
+                                 if($this->testing($key_commande,$donnees['order_id'])==true)
                                  {
                                    $id_commande_existe[] = $donnees['order_id'];
                                   }
@@ -940,7 +945,7 @@ class TransferOrder
                             }
                             else{
                                $data_tiers =[];
-                               
+
                             }
                  
                              // recupérer les id_commande deja pris
