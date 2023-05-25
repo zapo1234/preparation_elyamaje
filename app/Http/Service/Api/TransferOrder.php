@@ -1005,7 +1005,7 @@ class TransferOrder
        
                     
                   dump($unique_arr);
-                  dd($data_tiers);
+                  dump($data_tiers);
               
                  /* foreach($data_tiers as $data)
                   {
