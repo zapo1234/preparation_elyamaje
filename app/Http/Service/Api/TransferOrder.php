@@ -432,10 +432,11 @@ class TransferOrder
                                {
                                     // pour les facture non distributeur...
                                      $d=1;
+                                     $ref="";
                                     $data_lines[] = [
                                     'socid'=> $socid,
                                     'ref_int' =>$d,
-                                    'ref_client' =>$donnees['order_id'],// fournir un id orders wocommerce dans dolibar...
+                                    'ref_client' =>$ref,// fournir un id orders wocommerce dans dolibar...
                                     "email" => $donnees['billing']['email'],
                                     "total_ht"  =>floatval($donnees['total_order']),
                                     'total_tva' =>floatval($donnees['total_tax_order']),
@@ -584,7 +585,7 @@ class TransferOrder
              $tiers_ref = $data['id'];
            }
         
-        
+           
              // le nombre recupérer 
             $count_datas = $orders;// retour array ici
 
@@ -1006,7 +1007,7 @@ class TransferOrder
                   dump($unique_arr);
                   dd($data_tiers);
               
-                  foreach($data_tiers as $data)
+                 /* foreach($data_tiers as $data)
                   {
                    // insérer les données tiers dans dolibar
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -1018,8 +1019,9 @@ class TransferOrder
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                   }
                  // activer le statut payé et lié les paiments  sur les factures.
+                 */
                  $this->invoicespays();
-      
+               
                 dd('succes of opération');
                 // initialiser un array recuperer les ref client.
       
@@ -1193,7 +1195,9 @@ class TransferOrder
          "closepaidinvoices"=> "yes",
          "accountid"=> 6, // id du compte bancaire.
       ];
-
+       
+      dump($nombre_facture);
+      dd($inv);
          // valider les facture dans dolibar
          for($i=$nombre_count; $i<$inv+2; $i++)
          {
