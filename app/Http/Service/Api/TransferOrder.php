@@ -443,7 +443,7 @@ class TransferOrder
                                      "paye"=>"1",
                                      'lines' =>$data_product,
                                      'array_options'=>[
-                                                  "options_idw"=>$donnees['oder_id']
+                                                  "options_idw"=>$donnees['order_id']
                                                ]
                                    ];
                               
@@ -951,7 +951,7 @@ class TransferOrder
                                    "paye"=>"1",
                                    "lines" =>$data_product,
                                    "array_options"=>[
-                                           "options_idw"=>$donnees['oder_id']
+                                           "options_idw"=>$donnees['id']
                                             ]
                                  ];
                             
