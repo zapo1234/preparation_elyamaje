@@ -206,7 +206,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-             
+             dump($orders);
              // excercer un get et post et put en fonction des status .
              // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
@@ -299,6 +299,8 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                  }
 
+
+                 dummp($data_list_product);
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
