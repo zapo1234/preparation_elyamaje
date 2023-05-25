@@ -913,7 +913,7 @@ class TransferOrder
                       
                              // verifier si la commande est nouvelle
                              //lié le client avec les produits de ses achats 
-                             if($this->testing($ids_commande,$donnees['id'])==false)
+                             if($this->testing($key_commande,$donnees['id'])==false)
                              {
                                   // pour les facture non distributeur...
                                    $d=1;
@@ -942,7 +942,7 @@ class TransferOrder
                             }
                  
                              // recupérer les id_commande deja pris
-                             if($this->testing($ids_commandes,$donnees['id'])==true)
+                             if($this->testing($key_commande,$donnees['id'])==true)
                              {
                                  $id_commande_existe[] = $donnees['id'];
                              }
