@@ -300,7 +300,7 @@ class TransferOrder
                  }
 
 
-                 dummp($data_list_product);
+                 dump($data_list_product);
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
