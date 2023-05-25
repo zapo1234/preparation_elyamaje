@@ -380,7 +380,7 @@ class TransferOrder
                                     // construire le details 
                                     //des produits arrivant liée pour dolibarr.
                                   
-                                      if($value['value']!=null)
+                                      if($val['value']!=null)
                                       {
                                         $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                       }
