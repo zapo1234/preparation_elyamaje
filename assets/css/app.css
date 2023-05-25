@@ -6394,3 +6394,7 @@ a{
     border: 1px solid #15ca20;
 	color: #15ca20
 }
+
+.table-striped>tbody>tr:nth-of-type(odd){
+	--bs-table-accent-bg: #F8F9FE;
+}

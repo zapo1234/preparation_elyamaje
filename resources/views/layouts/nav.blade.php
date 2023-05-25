@@ -26,6 +26,13 @@
                     <div class="menu-title">Import Api tiers</div>
                 </a>
             </li>
+            <li>
+                <a href="{{ url('configuration') }}">
+                    <div class="parent-icon"><i class='bx bx-cog'></i>
+                    </div>
+                    <div class="menu-title">Configuration</div>
+                </a>
+            </li>
         @elseif(Auth()->user()->role_id == 2)
             <li>
                 <a href="javascript:;" class="has-arrow">

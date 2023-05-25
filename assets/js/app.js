@@ -181,7 +181,7 @@ $(function () {
 
 
 $( document ).ready(function() {
-		
+	
 	if($.fn.dataTable){
 		$.extend(true, $.fn.dataTable.defaults, {
 			"showNEntries" : false,

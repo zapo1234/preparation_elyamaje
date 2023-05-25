@@ -47,7 +47,7 @@ class Api
       }
   }
 
-  public function insertOrderByUser($order_id, $user_id){
+  public function getOrderById($order_id){
 
     $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
     $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
@@ -60,6 +60,25 @@ class Api
       return $e->getMessage();
     }
   }
+
+
+  
+  public function getAllCategories($per_page, $page){
+
+    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
+    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/products/categories?per_page=".$per_page."&page=".$page);
+      return $response->json();
+
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
+
+  
 
 
 

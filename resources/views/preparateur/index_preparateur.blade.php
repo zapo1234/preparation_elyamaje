@@ -50,7 +50,7 @@
 															@if($item['cost'] == 0)
 															<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 															@else 
-																<span>{{ $item['name'] }}</span>
+																<span>{{ $item['name'] }} <br><br><strong>{{ $item['category'] }}</strong></span>
 															@endif
 														</div>
 														<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -61,8 +61,10 @@
 											</div>
 											
 											<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-												<span class="mt-1 mb-2 montant_toltal_order">Total: {{ $orders['details']['total'] }}€</span>
-												
+												<div class="w-100 d-flex justify-content-between">
+													<span class="mt-1 mb-2 montant_toltal_order">#{{ $orders['details']['id'] }} </span>
+													<span class="mt-1 mb-2 montant_toltal_order">Total: {{ $orders['details']['total'] }}€</span>
+												</div>
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													<button type="button" class="reset_order btn btn-dark px-5" ><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>

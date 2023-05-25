@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\User;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\Order;
-use App\Http\Controllers\TiersController;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TiersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,14 +42,41 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('/');
 });
 
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('index', function () {
+        switch (Auth()->user()->role_id) {
+            case 1 :
+                return view('index');
+                break;
+            case 2 :
+                return redirect()->route('orders');
+                break;
+            case 3 :
+                return redirect()->route('wrapOrder');
+                break;
+            case 4 :
+                return redirect()->route('leader.dashboard');
+                break;
+            default:
+                return redirect()->route('logout');
+                break;
+        } 
+        
+    })->name('index');
+});
+
 // ADMIN
 Route::group(['middleware' => ['auth', 'role:1']], function () {
-    Route::get("/index", [Controller::class, "index"])->name('orders');
+    // Route::get("/index", [Controller::class, "index"])->name('orders');
     Route::get("/getAllOrdersAdmin", [Order::class, "getOrder"])->name('getAllOrdersAdmin');
     // traiter les routes pour des tiers
     Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
     Route::post("refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
+
+    Route::get("configuration", [Controller::class, "configuration"])->name('admin.configuration');
+    Route::get("syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
+    Route::post("updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
 });
 
 // PRÉPARATEUR
@@ -67,7 +96,7 @@ Route::group(['middleware' => ['auth', 'role:3']], function () {
 // CHEF D'ÉQUIPE
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
-    Route::post("/updateRole", [Controller::class, "updateRole"])->name('updateRole');
+    Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::get("/getAllOrders", [Order::class, "getOrder"])->name('leader.getAllOrders');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
@@ -89,5 +118,9 @@ Route::get("/importiers/{token}", [Order::class, "importiers"])->name('importier
 
 
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+
+
+
+
 
 
