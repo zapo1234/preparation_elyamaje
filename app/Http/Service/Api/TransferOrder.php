@@ -389,12 +389,12 @@ class TransferOrder
                                          $fk_product="";
                                       }
                                       $ref="";
-                                     if($fk_product!="")
-                                     {
-                                         // details  array article libéllé(product sur la commande) pour dolibar
-                                         // details des produits, quantité et prix  dans une facture.
+                                     
+                                      if($fk_product!="")
+                                      {
+                                         // details  array article libéllé(product sur la commande) pour doliba
                                          
-                                         $data_product[] = [
+                                          $data_product[] = [
                                           "multicurrency_subprice"=> floatval($values['subtotal']),
                                           "multicurrency_total_ht" => floatval($values['subtotal']),
                                           "multicurrency_total_tva" => floatval($values['total_tax']),
@@ -715,7 +715,7 @@ class TransferOrder
      */
     public function Transferorders()
     {
-          $id=72371;
+          $id=72474;
           $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
           
            // excercer un get et post et put en fonction des status .
