@@ -938,6 +938,10 @@ class TransferOrder
                                     // insert to
                                     $historique->save();
                             }
+                            else{
+                               $data_tiers =[];
+                               
+                            }
                  
                              // recupérer les id_commande deja pris
                              if($this->testing($key_commande,$donnees['id'])==true)
@@ -977,6 +981,7 @@ class TransferOrder
                     }
        
                     
+                  
                   dump($unique_arr);
                   dump($data_tiers);
               
