@@ -36,13 +36,15 @@ class OrderRepository implements OrderInterface
             // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
             $coupons = [];
             $discount = [];
+            $amount = [];
+
             if(isset($orderData['coupon_lines'])){
                foreach($orderData['coupon_lines'] as $coupon){
                   $coupons[] = $coupon['code'];
                   $discount[] = $coupon['discount'];
+                  $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
                }
             }
-
 
             if(isset($orderData['cart_hash'])){
                $ordersToInsert[] = [
@@ -50,6 +52,7 @@ class OrderRepository implements OrderInterface
                   'customer_id' => $orderData['customer_id'],
                   'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
                   'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
+                  'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
                   'billing_customer_first_name' => $orderData['billing']['first_name'] ?? null,
                   'billing_customer_last_name' => $orderData['billing']['last_name'] ?? null,
                   'billing_customer_company' => $orderData['billing']['company'] ?? null,
@@ -133,18 +136,25 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersByIdUser($id, $distributeur = false){
-
       $distributeurs_id = ['4996', '4997', '1707', '3550', '3594'];
 
       $list = [];
       $list2 = [];
 
+      // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
+      $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
+      $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
+      $queryOrder .= "ELSE 3 END";
+
       $orders = 
       $this->model->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')
+         ->join('categories', 'products.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
          ->where('status', 'processing')
-         ->select('*')
+         ->select('orders.*', 'products.*', 'categories.order_display')
          ->orderBy('date', 'ASC')
+         ->orderBy('categories.order_display', 'ASC')
+         ->orderByRaw($queryOrder)
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -157,21 +167,23 @@ class OrderRepository implements OrderInterface
                   'first_name' => $order['billing_customer_first_name'],
                   'last_name' => $order['billing_customer_last_name'],
                   'date' => $order['date'],
-                  'total' => $order['total'],
+                  'total' => $order['total_order'],
                   'status' => $order['status'],
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
          } else {
-            $list[$order['order_woocommerce_id']]['details'] = [
-               'id' => $order['order_woocommerce_id'],
-               'first_name' => $order['billing_customer_first_name'],
-               'last_name' => $order['billing_customer_last_name'],
-               'date' => $order['date'],
-               'total' => $order['total'],
-               'status' => $order['status'],
-            ];
-            $list[$order['order_woocommerce_id']]['items'][] = $order;
+            if(!in_array($order['customer_id'], $distributeurs_id)){
+               $list[$order['order_woocommerce_id']]['details'] = [
+                  'id' => $order['order_woocommerce_id'],
+                  'first_name' => $order['billing_customer_first_name'],
+                  'last_name' => $order['billing_customer_last_name'],
+                  'date' => $order['date'],
+                  'total' => $order['total_order'],
+                  'status' => $order['status'],
+               ];
+               $list[$order['order_woocommerce_id']]['items'][] = $order;
+            }
          }
       }
 
@@ -236,16 +248,20 @@ class OrderRepository implements OrderInterface
          } else {
             $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
             if(count($order) == 0){
-               $insert_order_by_user = $this->api->insertOrderByUser($order_id, $user_id);
+               $insert_order_by_user = $this->api->getOrderById($order_id, $user_id);
 
                $coupons = [];
                $discount = [];
+               $amount = [];
+
                if(isset($insert_order_by_user['coupon_lines'])){
                   foreach($insert_order_by_user['coupon_lines'] as $coupon){
                      $coupons[] = $coupon['code'];
                      $discount[] = $coupon['discount'];
+                     $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
                   }
                }
+
 
                // Insert commande
                $ordersToInsert = [
@@ -253,6 +269,7 @@ class OrderRepository implements OrderInterface
                   'customer_id' => $insert_order_by_user['customer_id'],
                   'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
                   'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
+                  'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
                   'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
                   'billing_customer_last_name' => $insert_order_by_user['billing']['last_name'] ?? null,
                   'billing_customer_company' => $insert_order_by_user['billing']['company'] ?? null,
@@ -305,7 +322,7 @@ class OrderRepository implements OrderInterface
                      'total_price' => floatval($value['quantity']) * floatval($value['total'])
                   ];
                }
-   
+
                $this->model->insert($ordersToInsert);
                DB::table('products')->insert($productsToInsert);
             } else {
