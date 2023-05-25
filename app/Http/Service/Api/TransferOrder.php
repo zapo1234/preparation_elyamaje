@@ -977,6 +977,7 @@ class TransferOrder
                     }
        
                   
+                    dd($data_tiers);
               
                  foreach($data_tiers as $data)
                   {
