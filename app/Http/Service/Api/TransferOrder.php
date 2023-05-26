@@ -417,26 +417,29 @@ class TransferOrder
                                 // verifier si la commande est nouvelle
                                 //lié le client avec les produits de ses achats 
                                 if($this->testing($key_commande,$donnees['order_id'])==false)
-                               {
-                                    // pour les facture non distributeur...
-                                     $d=1;
-                                     $ref="";
-                                     $remise_percent="";
-                                     $data_lines[] = [
-                                    'socid'=> $socid,
-                                    'ref_int' =>$d,
-                                    'ref_client' =>$ref,// fournir un id orders wocommerce dans dolibar...
-                                     "email" => $donnees['billing']['email'],
-                                     "remise_percent"=> $donnees['discount_amount'],
-                                     "total_ht"  =>floatval($donnees['total_order']),
-                                     "total_tva" =>floatval($donnees['total_tax_order']),
-                                     "total_ttc" =>floatval($donnees['total_order']),
-                                     "paye"=>"1",
-                                     'lines' =>$data_product,
-                                     'array_options'=>[
-                                                  "options_idw"=>$donnees['order_id'],
-                                                  "options_idc"=>$donnees['coupons'],
-                                               ]
+                                {
+                                    $array_options[] = [
+                                      "options_idw"=>$donnees['order_id'],
+                                      "options_idc"=>$donnees['coupons'],
+          
+                                    ];
+                                
+                                       // pour les facture non distributeur...
+                                       $d=1;
+                                       $ref="";
+                                       $data_lines[] = [
+                                       'socid'=> $socid,
+                                       'ref_int' =>$d,
+                                       'ref_client' =>$ref,// fournir un id orders wocommerce dans dolibar...
+                                       "email" => $donnees['billing']['email'],
+                                      "remise_percent"=> floatval($donnees['discount_amount']),
+                                      "total_ht"  =>floatval($donnees['total_order']),
+                                      "total_tva" =>floatval($donnees['total_tax_order']),
+                                       "total_ttc" =>floatval($donnees['total_order']),
+                                      "paye"=>"1",
+                                      'lines' =>$data_product,
+                                      'array_options'=> $array_options,
+                                    
                                       ];
                               
                                      // insert dans base de donnees historiquesidcommandes
@@ -460,9 +463,7 @@ class TransferOrder
                                    $id_commande_existe[] = $donnees['order_id'];
                                   }
                     
-                        
-         
-                    }
+                           }
      
                        // recupérer les deux variable dans les seter
                        $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
@@ -506,11 +507,11 @@ class TransferOrder
                      // construire la 1 ère couche de facture dans dolibar
                      $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
-                   // activer le statut payé et lié les paiments  sur les factures.
-                   $this->invoicespay($orders);
+                      // activer le statut payé et lié les paiments  sur les factures.
+                     $this->invoicespay($orders);
         
-                    dd('succes of opération');
-                    // initialiser un array recuperer les ref client.
+                      dd('succes of opération');
+                      // initialiser un array recuperer les ref client.
         
                   return view('apidolibar');
                 
@@ -605,16 +606,16 @@ class TransferOrder
                  $datetime = date('d-m-Y H:i:s');
                  $dat = date('Y-m-d H:i:s');
          
-                // insert infos dans bdd ...
-               if($nombre_orders == 0)
-               {
-                  $label = "Aucune commande transférée";
-               }
-               elseif($nombre_orders ==1)
-              {
-                 $label ="la commande à été transférée dans dolibars le $datetime";
-               }
-             else{
+                 // insert infos dans bdd ...
+                 if($nombre_orders == 0)
+                 {
+                    $label = "Aucune commande transférée";
+                 }
+                 elseif($nombre_orders ==1)
+                 {
+                    $label ="la commande à été transférée dans dolibars le $datetime";
+                 }
+               else{
                $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
               }
          
