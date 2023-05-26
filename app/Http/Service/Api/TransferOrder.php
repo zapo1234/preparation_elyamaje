@@ -929,7 +929,7 @@ class TransferOrder
                        // activer le statut payé et lié les paiments  sur les factures.
                     $this->invoicespays();
                     dd('succes of opération');
-                  // initialiser un array recuperer les ref client.
+                     // initialiser un array recuperer les ref client.
                     return view('apidolibar');
               
             }
@@ -937,23 +937,21 @@ class TransferOrder
            public function invoicespays()
            {
               $id=72471;
-             $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-             // recuperer les données api dolibar.
-             // recuperer les données api dolibar copie projet tranfer x.
-             $method = "GET";
-             $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-             $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-             
-
-             // recupérer le dernière id des facture 
+              $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
+              // recuperer les données api dolibar.
+              // recuperer les données api dolibar copie projet tranfer x.
+              $method = "GET";
+              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+              $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+              // recupérer le dernière id des facture 
               // recuperer dans un tableau les ref_client existant id.
-             $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
-             "sortfield" => "t.rowid", 
-            "sortorder" => "DESC", 
-             "limit" => "1", 
-             "mode" => "1",
-             )
-          ), true);
+              $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
+              "sortfield" => "t.rowid", 
+              "sortorder" => "DESC", 
+              "limit" => "1", 
+               "mode" => "1",
+              )
+             ), true);
       
              // recupérer le premier id de la facture
              // recuperer dans un tableau les ref_client existant id.
@@ -986,17 +984,16 @@ class TransferOrder
            }
  
 
-         foreach($clientSearch as $data)
-         {
-           $tiers_ref = $data['id'];
-         }
+           foreach($clientSearch as $data)
+           {
+              $tiers_ref = $data['id'];
+           }
       
       
            // le nombre recupérer 
-          $count_datas = $order; // retour array ici
-          $ids_orders =[];// recupérer les id commande venant de woocomerce
-         
-         $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
+           $count_datas = $order; // retour array ici
+           $ids_orders =[];// recupérer les id commande venant de woocomerce
+           $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
       
           foreach($count_datas as $k =>$valis)
           {
@@ -1006,9 +1003,7 @@ class TransferOrder
                     {
                       $data_ids[]= $valis['id'];
                     }
-             
-            
-          }
+           }
          
            // le nombre de facture à traiter en payé
            $count_data = count($ids_orders);
@@ -1039,12 +1034,12 @@ class TransferOrder
              $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
        }
        
-          // insert dans la table 
-          $sucess = new Transfertsucce();
-          $sucess->date = $dat;
-          $sucess->id_commande = $list_id_commande;
-          $sucess->label = $label;
-          $sucess->save();
+           // insert dans la table 
+           $sucess = new Transfertsucce();
+           $sucess->date = $dat;
+           $sucess->id_commande = $list_id_commande;
+           $sucess->label = $label;
+           $sucess->save();
            // convertir en entier la valeur.
            $id_cl = (int)$tiers_ref;
            $id_cl = $id_cl+1;
@@ -1065,10 +1060,9 @@ class TransferOrder
     
        ];
       
- 
-       // recupérer la datetime et la convertir timestamp
-       // liée la facture à un mode de rélgement
-       // convertir la date en datetime en timestamp.
+          // recupérer la datetime et la convertir timestamp
+         // liée la facture à un mode de rélgement
+          // convertir la date en datetime en timestamp.
           $datetime = date('d-m-Y H:i:s');
           $d = DateTime::createFromFormat(
          'd-m-Y H:i:s',
@@ -1083,16 +1077,18 @@ class TransferOrder
           }
     
           $newbank = [
-         "datepaye"=>$date_finale,
-         "paymentid"=>6,
-         "closepaidinvoices"=> "yes",
-         "accountid"=> 6, // id du compte bancaire.
-      ];
+          "datepaye"=>$date_finale,
+          "paymentid"=>6,
+          "closepaidinvoices"=> "yes",
+           "accountid"=> 6, // id du compte bancaire.
+        ];
        
            $i=$nombre_count;
+           // valider les factures.
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
           // Lier les factures dolibar  à un moyen de paiement et bank.
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
+           // mettre la facture  en payée.
            $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
 
    }
