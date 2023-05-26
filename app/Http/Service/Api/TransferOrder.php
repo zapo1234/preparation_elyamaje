@@ -797,7 +797,7 @@ class TransferOrder
 
                       
                            foreach($donnees['line_items'] as $key => $values)
-                          {
+                           {
                               
                              foreach($values['meta_data'] as $vals)
                              {
@@ -917,8 +917,8 @@ class TransferOrder
        
                     foreach($data_tiers as $data)
                     {
-                      // insérer les données tiers dans dolibar
-                      $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                       // insérer les données tiers dans dolibar
+                        $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                     }
 
                     foreach($unique_arr as $donnes)
@@ -934,78 +934,74 @@ class TransferOrder
               
             }
 
-           public function invoicespays()
-           {
-              $id=72471;
-              $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-              // recuperer les données api dolibar.
-              // recuperer les données api dolibar copie projet tranfer x.
-              $method = "GET";
-              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-              $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-              // recupérer le dernière id des facture 
-              // recuperer dans un tableau les ref_client existant id.
-              $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
-              "sortfield" => "t.rowid", 
-              "sortorder" => "DESC", 
-              "limit" => "1", 
-               "mode" => "1",
-              )
-             ), true);
+            public function invoicespays()
+            {
+                $id=72471;
+                $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
+                // recuperer les données api dolibar.
+                // recuperer les données api dolibar copie projet tranfer x.
+               $method = "GET";
+               $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+                // recupérer le dernière id des facture 
+                 // recuperer dans un tableau les ref_client existant id.
+                 $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
+                 "sortfield" => "t.rowid", 
+                  "sortorder" => "DESC", 
+                  "limit" => "1", 
+                   "mode" => "1",
+                )
+                  ), true);
       
-             // recupérer le premier id de la facture
-             // recuperer dans un tableau les ref_client existant id.
-             $invoices_asc = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
-            "sortfield" => "t.rowid", 
-             "sortorder" => "ASC", 
-            "limit" => "1", 
-             "mode" => "1",
-          )
-          ), true);
-  
-            // recuperer dans un tableau les ref_client existant id.
-             $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
-              "sortfield" => "t.rowid", 
-              "sortorder" => "DESC", 
-             "limit" => "1", 
-              "mode" => "1",
-           )
-           ), true);
+                 // recupérer le premier id de la facture
+                 // recuperer dans un tableau les ref_client existant id.
+                  $invoices_asc = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
+                  "sortfield" => "t.rowid", 
+                  "sortorder" => "ASC", 
+                  "limit" => "1", 
+                  "mode" => "1",
+                )
+                ), true);
+                // recuperer dans un tableau les ref_client existant id.
+                $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
+                "sortfield" => "t.rowid", 
+                "sortorder" => "DESC", 
+                "limit" => "1", 
+                "mode" => "1",
+               )
+                ), true);
 
-          // recupération du dernier id invoices dolibar
-          foreach($invoices_id as $vk)
-          {
-              $inv = $vk['id'];
-          }
-            // recupérer le premier id de la facture
-           foreach($invoices_asc as $vks)
-           {
-            $inc = $vks['id'];
-           }
+               // recupération du dernier id invoices dolibar
+               foreach($invoices_id as $vk)
+               {
+                 $inv = $vk['id'];
+               }
+                 // recupérer le premier id de la facture
+               foreach($invoices_asc as $vks)
+               {
+                 $inc = $vks['id'];
+               }
  
-
-           foreach($clientSearch as $data)
-           {
-              $tiers_ref = $data['id'];
-           }
+              foreach($clientSearch as $data)
+              {
+                $tiers_ref = $data['id'];
+              }
       
+            // le nombre recupérer 
+            $count_datas = $order; // retour array ici
+            $ids_orders =[];// recupérer les id commande venant de woocomerce
+            $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
       
-           // le nombre recupérer 
-           $count_datas = $order; // retour array ici
-           $ids_orders =[];// recupérer les id commande venant de woocomerce
-           $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
-      
-          foreach($count_datas as $k =>$valis)
-          {
-                 $ids_orders[] = $valis['id'];
+             foreach($count_datas as $k =>$valis)
+             {
+                   $ids_orders[] = $valis['id'];
                 
                     if(!in_array($valis['id'],$this->getDataidcommande()))
                     {
                       $data_ids[]= $valis['id'];
                     }
-           }
-         
-           // le nombre de facture à traiter en payé
+              }
+            // le nombre de facture à traiter en payé
            $count_data = count($ids_orders);
            // les nouveau order à traiter
            // recupérer le nombre de commande recupérer 
@@ -1032,7 +1028,7 @@ class TransferOrder
            }
            else{
              $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
-       }
+          }
        
            // insert dans la table 
            $sucess = new Transfertsucce();
@@ -1083,7 +1079,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
        
-           $i=$nombre_count;
+           $i=$inv;
            // valider les factures.
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
           // Lier les factures dolibar  à un moyen de paiement et bank.
