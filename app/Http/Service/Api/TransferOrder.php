@@ -135,7 +135,6 @@ class TransferOrder
               $donnes = $this->api->getDataApiWoocommerce($urls);
              $donnees[] = array_merge($donnes);
            }
-           
            // recuperer les produit (name et les sku  de ces produits)
            $product_list = [];
            foreach($donnees as $k => $values)
@@ -146,9 +145,7 @@ class TransferOrder
                
                }
            }
-           
-           
-           return $product_list;
+              return $product_list;
               
       }
       
@@ -194,11 +191,6 @@ class TransferOrder
         }
     }
 
-
-
-    
-
-     
      /** 
      *@return array
      */
@@ -230,12 +222,12 @@ class TransferOrder
                      $ids_commandes[$valis['id_commande']] = $key;
                   }
             
-                 // recupérer les email,socid, code client existant dans tiers
-                 $data_email = [];//entre le code_client et email.
-                 $data_list = []; //tableau associative de id et email
-                 $data_code =[];// tableau associative entre id(socid et le code client )
-                 foreach($list_tier as $val)
-                 {
+                  // recupérer les email,socid, code client existant dans tiers
+                  $data_email = [];//entre le code_client et email.
+                  $data_list = []; //tableau associative de id et email
+                  $data_code =[];// tableau associative entre id(socid et le code client )
+                  foreach($list_tier as $val)
+                  {
                      $data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="")
                      {
@@ -248,7 +240,7 @@ class TransferOrder
                         $code_cls = $code_cl[2];
                         $data_code[$val['socid']] = $code_cls;
                       }
-                }
+                  }
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
@@ -866,6 +858,7 @@ class TransferOrder
                                   "socid"=> $socid,
                                   "ref_int" =>$d,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
+                                  "remise_percent"=>null,
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>floatval($donnees['total']),
                                   'total_tva' =>floatval($donnees['total_tax']),
@@ -1096,24 +1089,11 @@ class TransferOrder
          "accountid"=> 6, // id du compte bancaire.
       ];
        
-    
-         // valider les facture dans dolibar
-         for($i=$nombre_count; $i<$inv+1; $i++)
-         {
-            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
-         }
-    
-           // Lier les factures dolibar  à un moyen de paiement et bank.
-         for($i=$nombre_count; $i<$inv+1; $i++)
-         {
-             $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
-         }
-
-            // mettre le statut en payé dans la facture  dolibar
-         for($i=$nombre_count; $i<$inv+1; $i++)
-         {
+           $i=$nombre_count;
+           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
+          // Lier les factures dolibar  à un moyen de paiement et bank.
+           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
            $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
-         }
 
    }
 
