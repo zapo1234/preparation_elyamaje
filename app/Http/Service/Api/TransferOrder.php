@@ -185,12 +185,11 @@ class TransferOrder
 
        public function testing($array_x,$val)
        {
-         if(isset($array_x[$val]))
-         {
+          if(isset($array_x[$val]))
+          {
            return true;
-         }
-       
-        else{
+          }
+           else{
            return false;
         }
     }
@@ -211,65 +210,58 @@ class TransferOrder
              // recuperer les données api dolibar copie projet tranfer x.
                 $method = "GET";
                 $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+                $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
            
-                //environement test local
+                 //environement test local
            
-                //Recuperer les ref et id product dans un tableau
+                 //Recuperer les ref et id product dans un tableau
 	   
 	                $produitParam = ["limit" => 700, "sortfield" => "rowid"];
 	                $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-                 // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
+                  // reference ref_client dans dolibar
+                  $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
                   //Recuperer les ref_client existant dans dolibar
-	                $tiers_ref = "";
+	                 $tiers_ref = "";
                
-                // recupérer directement les tiers de puis bdd.
-                $this->tiers->insertiers();// mise a jour api
-                $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
-              
-              // verifier attribue ref_client dans dolibar comme id commande woocomerce!
-              //Recuperer les ref_client existant dans dolibar
-              //verifié l'unicité
-              //$list_id_order = [];
-               // recuperer les ids commandes
-               $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
-               $key_commande = $this->commande->getIds();// lindex les ids commande existant.
-               // recupérer le tableau de ids
-               $ids_commandes =[];
-              
-                foreach($ids_commande as $key => $valis)
-                {
-                   $ids_commandes[$valis['id_commande']] = $key;
-                }
+                   // recupérer directement les tiers de puis bdd.
+                   $this->tiers->insertiers();// mise a jour api
+                   $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
             
-               // recupérer les email existant dans tiers
-               $data_email = [];//entre le code_client et email.
-               $data_list = []; //tableau associative de id et email
-               $data_code =[];// tableau associative entre id(socid et le code client )
+                   // recuperer les ids commandes
+                   $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
+                   $key_commande = $this->commande->getIds();// lindex les ids commande existant.
+                   // recupérer le tableau de ids
+                   $ids_commandes =[];
+              
+                  foreach($ids_commande as $key => $valis)
+                  {
+                     $ids_commandes[$valis['id_commande']] = $key;
+                  }
+            
+                 // recupérer les email,socid, code client existant dans tiers
+                 $data_email = [];//entre le code_client et email.
+                 $data_list = []; //tableau associative de id et email
+                 $data_code =[];// tableau associative entre id(socid et le code client )
      
      
-             foreach($list_tier as $val)
-             {
-                   $data_email[$val['code_client']] = $val['email'];
+                foreach($list_tier as $val)
+                {
+                    $data_email[$val['code_client']] = $val['email'];
                
-                   if($val['email']!="")
-                   {
+                    if($val['email']!="")
+                    {
                       $data_list[$val['socid']] = $val['email'];
-                   }
-         
-                   // recuperer id customer du client et créer un tableau associative.
-                   $code_cl = explode('-',$val['code_client']);
-                   if(count($code_cl)>2)
-                   {
+                    }
+                    // recuperer id customer du client et créer un tableau associative.
+                    $code_cl = explode('-',$val['code_client']);
+                    if(count($code_cl)>2)
+                    {
                        $code_cls = $code_cl[2];
                        $data_code[$val['socid']] = $code_cls;
-                   }
-        
-             }
+                    }
+                }
 
-
-                // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
+                 // recuperer dans un tableau les ref_client existant(le dernier  id du tiers dans dolibar.
                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		             "sortfield" => "t.rowid", 
 	    	        "sortorder" => "DESC", 
@@ -278,43 +270,37 @@ class TransferOrder
 		             )
          	       ), true);
 
-                foreach($clientSearch as $data)
-                {
-                  $tiers_ref = $data['id'];
-                }
-     
-                 // convertir en entier la valeur le dernier id du tiers=>socid.
-                 $id_cl = (int)$tiers_ref;
-                 $id_cl = $id_cl+1;
-                 $socid ="";
-                 // recupérer  les données dans un tableau associative(id et ref_article) dans dolibar
-                
-                 $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
-      
-                 foreach($listproduct as $values)
+                 foreach($clientSearch as $data)
                  {
+                    $tiers_ref = $data['id'];
+                 }
+                  // convertir en entier la valeur le dernier id du tiers=>socid.
+                  $id_cl = (int)$tiers_ref;
+                  $id_cl = $id_cl+1;
+                  $socid ="";
+                  // recupérer  les données dans un tableau associative(id et ref_article) dans dolibar
+                  $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
+      
+                  foreach($listproduct as $values)
+                  {
                      $product_data[$values['id']]= $values['ref'];// tableau associative entre id product et reférence(product)
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
-                 }
+                  }
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
-                     //$oders_datas =  $this->getDataorder($date_after,$date_before);// retour des orders woocomerce!
-                    $data_tiers = [];//data tiers dans dolibar
+                     $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
-                    $data_product =[]; // data article details sur commande facture
-                    $data = [];
-                    $lines =[]; // le details des articles produit achétés par le client
-               
-                    $id_commande_existe =[];// recupérer les id_commande existant deja récupérer dans les facture
-               
-                    $orders_d = [];// le nombre de orders non distributeur
-                    $orders_distributeur = [];// le nombre de orders des distributeurs...
-               
+                     $data_product =[]; // data article details sur commande facture
+                     $data = [];
+                     $lines =[]; // le details des articles produit achétés par le client
+                     $id_commande_existe =[];// recupérer les id_commande existant deja récupérer dans les facture
+                     $orders_d = [];// le nombre de orders non distributeur
+                     $orders_distributeur = [];// le nombre de orders des distributeurs...
+                
                     foreach($orders as $k => $donnees)
                     {
-                 
                            // recupérer les données pour les tiers pour dolibar post tiers dans l'array
                            // créer le client via dolibarr à partir de woocomerce.
                            $ref_client = rand(4,10);
@@ -335,7 +321,7 @@ class TransferOrder
                            }
         
                             if($fk_tiers=="" && $fk_tier=="")
-                             {
+                            {
                                    
                                    $date = date('Y-m-d');
                                    $dat = explode('-', $date);
@@ -425,36 +411,35 @@ class TransferOrder
                                     ];
                                 
                                        // pour les facture non distributeur...
-                                       $d=1;
-                                       $ref="";
-                                       $data_lines[] = [
+                                        $d=1;
+                                        $ref="";
+                                        $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_int' =>$d,
                                        'ref_client' =>$ref,// fournir un id orders wocommerce dans dolibar...
                                        "email" => $donnees['billing']['email'],
-                                      "remise_percent"=> floatval($donnees['discount_amount']),
-                                      "total_ht"  =>floatval($donnees['total_order']),
-                                      "total_tva" =>floatval($donnees['total_tax_order']),
+                                       "remise_percent"=> floatval($donnees['discount_amount']),
+                                        "total_ht"  =>floatval($donnees['total_order']),
+                                        "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
-                                      "paye"=>"1",
-                                      'lines' =>$data_product,
-                                      'array_options'=> $array_options,
+                                        "paye"=>"1",
+                                        'lines' =>$data_product,
+                                        'array_options'=> $array_options,
                                     
                                       ];
                               
-                                     // insert dans base de donnees historiquesidcommandes
-                                     $date = date('Y-m-d');
+                                       // insert dans base de donnees historiquesidcommandes
+                                      $date = date('Y-m-d');
                                       $historique = new Commandeid();
                                       $historique->id_commande = $donnees['order_id'];
                                       $historique->date = $date;
                                       // insert to
                                       $historique->save();
-            
-                              }
+                                   }
 
                               else{
 
-                                 $data_tiers = [];
+                                   $data_tiers = [];
                               }
                    
                                  // recupérer les id_commande deja pris
@@ -619,29 +604,29 @@ class TransferOrder
                $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
               }
          
-               // insert dans la table 
-               $sucess = new Transfertsucce();
-               $sucess->date = $dat;
-               $sucess->id_commande = $list_id_commande;
-               $sucess->label = $label;
-               $sucess->save();
-               // convertir en entier la valeur.
-               $id_cl = (int)$tiers_ref;
-               $id_cl = $id_cl+1;
+                // insert dans la table 
+                $sucess = new Transfertsucce();
+                $sucess->date = $dat;
+                $sucess->id_commande = $list_id_commande;
+                $sucess->label = $label;
+                $sucess->save();
+                // convertir en entier la valeur.
+                $id_cl = (int)$tiers_ref;
+                $id_cl = $id_cl+1;
                 $socid ="";
-               // id  du dernier invoices(facture)
+                  // id  du dernier invoices(facture)
                 // valider invoice
-               $newCommandeValider = [
-               "idwarehouse"	=> "6",
-               "notrigger" => "0",
-               ];
+                 $newCommandeValider = [
+                "idwarehouse"	=> "6",
+                 "notrigger" => "0",
+                ];
              
-              $newCommandepaye = [
-             "paye"	=> 1,
-             "statut"	=> 2,
-             "mode_reglement_id"=>4,
-             "idwarehouse"=>6,
-             "notrigger"=>0,
+                $newCommandepaye = [
+                 "paye"	=> 1,
+                 "statut"	=> 2,
+                 "mode_reglement_id"=>4,
+                  "idwarehouse"=>6,
+                   "notrigger"=>0,
              ];
         
              // recupérer la datetime et la convertir timestamp
