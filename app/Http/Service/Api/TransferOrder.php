@@ -1091,8 +1091,7 @@ class TransferOrder
          "accountid"=> 6, // id du compte bancaire.
       ];
        
-      
-      dd($nombre_count);
+    
          // valider les facture dans dolibar
          for($i=$nombre_count; $i<$inv+1; $i++)
          {
