@@ -855,6 +855,12 @@ class TransferOrder
                              {
                                   // pour les facture non distributeur...
 
+                                  // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
+                                  $array_options[] = [
+                                    "options_idw"=>$donnees['id'],
+                                    "options_idc"=>"fem-test-01",
+                                     ];
+
                                    $d=1;
                                   $data_lines[] = [
                                   "socid"=> $socid,
@@ -866,6 +872,7 @@ class TransferOrder
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
                                    "lines" =>$data_product,
+                                   "array_options"=>$array_options,
                                   
                                  ];
                             
@@ -1000,9 +1007,7 @@ class TransferOrder
       
           foreach($count_datas as $k =>$valis)
           {
-              
-                
-                    $ids_orders[] = $valis['id'];
+                 $ids_orders[] = $valis['id'];
                 
                     if(!in_array($valis['id'],$this->getDataidcommande()))
                     {
