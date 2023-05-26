@@ -64,7 +64,7 @@ class TiersRepository implements TiersInterface
 
        public function insertiers()
        {
-          // inseré des clients de dolibar // connecté l'api dolibar tiers sous 3 jours .
+           // inseré des clients de dolibar // connecté l'api dolibar tiers sous 3 jours .
            $method = "GET";
            $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
            $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
@@ -75,13 +75,11 @@ class TiersRepository implements TiersInterface
              'limit' => 0,
              'sortfield' => 'rowid',
              'sortorder' => 'DESC',
-         );
+          );
          
          
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
            $lists = json_decode($listinvoice,true);
-
-     
            $data_ids = array('3087');
            // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();

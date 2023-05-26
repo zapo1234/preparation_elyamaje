@@ -352,7 +352,7 @@ class TransferOrder
                                      
                                       if($fk_product!="")
                                       {
-                                         // details  array article libéllé(product sur la commande) pour doliba
+                                         // details  array article libéllé(product sur la commande) pour dolibarr.
                                           $data_product[] = [
                                             "multicurrency_subprice"=> floatval($values['subtotal']),
                                             "multicurrency_total_ht" => floatval($values['subtotal']),
@@ -388,7 +388,7 @@ class TransferOrder
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                      $array_options[] = [
                                       "options_idw"=>$donnees['order_id'],
-                                      "options_idc"=>$donnees['coupons'],
+                                      "options_idc"=>$donnees['coupons']
                                        ];
                                 
                                        // pour les factures non distributeurs...
@@ -648,7 +648,7 @@ class TransferOrder
     {
            $id=72635;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-           dump($order);
+           
            // excedd(rcer un get et post et put en fonction des status .
            // recuperer les données api dolibar copie projet tranfer x.
             $method = "GET";
@@ -1092,6 +1092,7 @@ class TransferOrder
       ];
        
       
+      dd($nombre_count);
          // valider les facture dans dolibar
          for($i=$nombre_count; $i<$inv+2; $i++)
          {
