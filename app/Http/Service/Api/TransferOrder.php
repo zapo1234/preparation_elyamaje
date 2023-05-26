@@ -431,12 +431,11 @@ class TransferOrder
                                      "total_ht"  =>floatval($donnees['total_order']),
                                      "total_tva" =>floatval($donnees['total_tax_order']),
                                      "total_ttc" =>floatval($donnees['total_order']),
-                                    
                                      "paye"=>"1",
                                      'lines' =>$data_product,
                                      'array_options'=>[
                                                   "options_idw"=>$donnees['order_id'],
-                                                  "options_idc"=>$donnees['coupons']
+                                                  "options_idc"=>$donnees['coupons'],
                                                ]
                                       ];
                               
@@ -698,7 +697,7 @@ class TransferOrder
      */
     public function Transferorders()
     {
-           $id=72471;
+           $id=72635;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
            // excedd(rcer un get et post et put en fonction des status .
            // recuperer les données api dolibar copie projet tranfer x.
@@ -910,6 +909,7 @@ class TransferOrder
                              if($this->testing($key_commande,$donnees['id'])==false)
                              {
                                   // pour les facture non distributeur...
+
                                    $d=1;
                                   $data_lines[] = [
                                   "socid"=> $socid,
@@ -921,9 +921,7 @@ class TransferOrder
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
                                    "lines" =>$data_product,
-                                   "array_options"=>[
-                                           "options_idw"=>$donnees['id']
-                                            ]
+                                  
                                  ];
                             
                                    // insert dans base de donnees historiquesidcommandes
@@ -977,7 +975,8 @@ class TransferOrder
                     }
        
                   
-                
+                   dump($data_tiers);
+                   dd($data_lines);
               
                   foreach($data_tiers as $data)
                   {
@@ -985,15 +984,13 @@ class TransferOrder
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                   }
 
-
-                   dd($data_tiers);
-                 /* foreach($unique_arr as $donnes)
+                  foreach($unique_arr as $donnes)
                   {
                    // construire la 1 ère couche de facture dans dolibar
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                   }
                  // activer le statut payé et lié les paiments  sur les factures.
-                 */
+                 
                  $this->invoicespays();
                
                 dd('succes of opération');

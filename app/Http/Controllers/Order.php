@@ -257,6 +257,7 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
+            // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
             
         }
