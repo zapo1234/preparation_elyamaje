@@ -884,17 +884,17 @@ class TransferOrder
                   
                        }
    
-                     // recupérer les deux variable dans les seter
-                     $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                     $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
-                     // filtrer les doublons du tableau
-                     $id_commande_exist = array_unique($id_commande_existe);
-                     // recupérer le tableau
-                     $this->setDataidcommande($id_commande_exist);
-                     // renvoyer un tableau unique par tiers en fonction socid.
-                     // données des non distributeurs....
-                     $temp = array_unique(array_column($data_lines, 'socid'));
-                     $unique_arr = array_intersect_key($data_lines, $temp);
+                       // recupérer les deux variable dans les seter
+                       $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
+                       $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                        // filtrer les doublons du tableau
+                        $id_commande_exist = array_unique($id_commande_existe);
+                       // recupérer le tableau
+                        $this->setDataidcommande($id_commande_exist);
+                        // renvoyer un tableau unique par tiers en fonction socid.
+                       // données des non distributeurs....
+                       $temp = array_unique(array_column($data_lines, 'socid'));
+                       $unique_arr = array_intersect_key($data_lines, $temp);
           
                      // Filtrer les produits associés au tiers (socid = ref_ext simulé) suprimer en cas d'inégalité du tableau.
                      // clients invoices non distributeur 
