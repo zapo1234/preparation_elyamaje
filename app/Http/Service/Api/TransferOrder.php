@@ -925,7 +925,7 @@ class TransferOrder
                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                        // activer le statut payé et lié les paiments  sur les factures.
-                    $this->invoicespays();
+                   // $this->invoicespays();
                     dd('succes of opération');
                      // initialiser un array recuperer les ref client.
                     return view('apidolibar');
@@ -1000,14 +1000,14 @@ class TransferOrder
                     }
               }
             // le nombre de facture à traiter en payé
-           $count_data = count($ids_orders);
-           // les nouveau order à traiter
-           // recupérer le nombre de commande recupérer 
-           $nombre1 = $count_data;
-           $nombre2= count($this->getDataidcommande());// compter les anciennes ids 
-           // nombre des nouveaux order recupérer journaliier.
-           $nombre_orders = count($data_ids);
-           // tranformer le tableau en chaine de caractère
+             $count_data = count($ids_orders);
+            // les nouveau order à traiter
+            // recupérer le nombre de commande recupérer 
+            $nombre1 = $count_data;
+            $nombre2= count($this->getDataidcommande());// compter les anciennes ids 
+            // nombre des nouveaux order recupérer journaliier.
+            $nombre_orders = count($data_ids);
+            // tranformer le tableau en chaine de caractère
            $list_id_commande = implode(',',$data_ids);
          
            $nombre_count = $inv - $nombre_orders+1;
