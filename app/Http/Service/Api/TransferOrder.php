@@ -741,7 +741,7 @@ class TransferOrder
                   $id_commande_existe =[];// recupérer les id_commande existant deja récupérer dans les facture
              
                   $orders_d = [];// le nombre de orders non distributeur
-                  $orders_distributeur = [];// le nombre de orders des distributeurs...
+                  $orders_distributeur = [];// le nombre de orders des distributeurs.....
              
                   foreach($order as $k => $donnees)
                   {
