@@ -926,6 +926,8 @@ class TransferOrder
                     }
                        // activer le statut payé et lié les paiments  sur les factures.
                    // $this->invoicespays();
+
+                   dump($unique_arr);
                     dd('succes of opération');
                      // initialiser un array recuperer les ref client.
                     return view('apidolibar');
