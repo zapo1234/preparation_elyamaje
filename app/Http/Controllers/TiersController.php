@@ -39,7 +39,7 @@ class TiersController extends BaseController
        // recupérer le traitement des tiers pour les inserts dans la table...
        $date_after="2023-08-2023";
        $date_before="2023-09-2023";
-       $this->$tiers->insertiers();
+       $this->tiers->insertiers();
        
        //$this->orders->Transferorders();
        //$this->tiers->insertiers();// mise à jours des tiers.......
