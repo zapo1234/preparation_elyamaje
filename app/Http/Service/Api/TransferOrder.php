@@ -660,7 +660,7 @@ class TransferOrder
               $tiers_ref = "";
              
               // recupérer directement les tiers de puis bdd.
-              $this->tiers->insertiers();// mise a jour api
+              //$this->tiers->insertiers();// mise a jour api
               $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
             
                // recuperer les ids commandes deja traiter
