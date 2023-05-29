@@ -638,7 +638,7 @@ class TransferOrder
      */
     public function Transferorders()
     {
-           $id=72635;
+           $id=73184;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
            
            // excedd(rcer un get et post et put en fonction des status .
@@ -914,6 +914,9 @@ class TransferOrder
                             }
                           }
                       }
+
+                      dump($data_tiers);
+                      dd($data_lines);
        
                     foreach($data_tiers as $data)
                     {
@@ -936,7 +939,7 @@ class TransferOrder
 
             public function invoicespays()
             {
-                $id=72471;
+                $id=73184;
                 $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
                 // recuperer les données api dolibar.
                 // recuperer les données api dolibar copie projet tranfer x.
