@@ -15,22 +15,15 @@ class CommandeidsRepository implements CommandeidsInterface
         $this->model = $model;
         
      }
-
-    
-    public function getIds(): array
-    {
+     public function getIds(): array
+     {
        return $this->ids;
-    }
-    
-    
-    public function setIds(array $ids)
-    {
+     }
+     public function setIds(array $ids)
+     {
       $this->ids = $ids;
-     return $this;
-    }
-    
-    
-    
+      return $this;
+     }
     
       public function getAll()
       {
@@ -50,23 +43,17 @@ class CommandeidsRepository implements CommandeidsInterface
            $this->setIds($id_commandes);
         
            return $name_list;
-      
-    }
+      }
     
-    public function getAlldate($date)
-    {
+     public function getAlldate($date)
+     {
          // recupérer tous les data de la table
         $data =  DB::table('commandeids')->select('id_commande')->where('date','=',$date)->get();
         $name_list = json_encode($data);
         $name_list = json_decode($data,true);
         
         return $name_list;
-        
-        
-    }
-    
-    
-  
+     }
     
     
 }

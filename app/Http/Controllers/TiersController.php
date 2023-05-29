@@ -36,13 +36,13 @@ class TiersController extends BaseController
 
     public function postiers()
     { 
-       // recupérer le traitement des tiers pour les inserts dans la table.
-       $date_after="2023-08-2023";
-       $date_before="2023-09-2023";
-       $this->orders->Transferorders();
-       //$this->tiers->insertiers();// mise à jours des tiers.......
-       $message="les clients sont bien mis à jours.";
-       return view('refreshtiers',['message'=>$message]);
+        // recupérer le traitement des tiers pour les inserts dans la table...
+        $date_after="2023-08-2023";
+        $date_before="2023-09-2023";
+        $this->orders->Transferorders();
+        //$this->tiers->insertiers();// mise à jours des tiers.......
+        $message="les clients sont bien mis à jours.";
+        return view('refreshtiers',['message'=>$message]);
 
     }
 

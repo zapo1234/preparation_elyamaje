@@ -64,26 +64,31 @@ class TiersRepository implements TiersInterface
 
        public function insertiers()
        {
-          // inseré des clients de dolibar // connecté l'api dolibar tiers sous 3 jours .
-           $method = "GET";
-           $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
-           $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
-           $produitParam = array(
+           // inseré des clients de dolibar // connecté l'api dolibar tiers sous 3 jours .
+          // $method = "GET";
+          // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
+         //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
+
+           // recuperer les données api dolibar copie projet tranfer x.
+           $methods = "GET";
+           $apiKeys = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+           $apiUrls = "https://www.transfertx.elyamaje.com/api/index.php/";
+
+           $produitParams = array(
              'apikey' => '9W8P7vJY9nYOrE4acS982RBwvl85rlMa',
              'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
 
              'limit' => 0,
              'sortfield' => 'rowid',
              'sortorder' => 'DESC',
-         );
-         
-         
-           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
-           $lists = json_decode($listinvoice,true);
+          );
 
-     
-           $data_ids = array('3087');
-           // recupérer les données essentiel
+         
+    
+            $listinvoice = $this->api->CallAPI("GET", $apiKeys, $apiUrls."thirdparties", $produitParams);
+            $lists = json_decode($listinvoice,true);
+            $data_ids = array('3087');
+            // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();
             foreach($lists as $key=>$values)
             {
