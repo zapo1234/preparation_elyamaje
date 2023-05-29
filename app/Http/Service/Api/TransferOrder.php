@@ -857,9 +857,9 @@ class TransferOrder
                                   "ref_int" =>$d,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
                                   "email" => $donnees['billing']['email'],
-                                  "total_ht"  =>$total_ht,
-                                  'total_tva' =>$total_tva,
-                                   "total_ttc" =>$total_ttc,
+                                  "total_ht"  =>"0.00000000",
+                                  'total_tva' =>"0.00000000",
+                                   "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
                                    "lines" =>$data_product,
                                   
