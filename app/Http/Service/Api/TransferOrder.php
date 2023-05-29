@@ -711,6 +711,8 @@ class TransferOrder
                 {
                   $tiers_ref = $data['id'];
                 }
+
+                dd($tiers_ref);
    
                   // convertir en entier la valeur le dernier id du tiers=>socid.
                   $id_cl = (int)$tiers_ref;
