@@ -712,7 +712,7 @@ class TransferOrder
                   $tiers_ref = $data['id'];
                 }
 
-                dd($tiers_ref);
+              
    
                   // convertir en entier la valeur le dernier id du tiers=>socid.
                   $id_cl = (int)$tiers_ref;
@@ -854,12 +854,13 @@ class TransferOrder
                                   $data_lines[] = [
                                   "socid"=> $socid,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
+                                  "remise_percent"=>null,
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>"0.00000000",
                                   'total_tva' =>"0.00000000",
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
-                                   "lines" =>[],
+                                   "lines"=>$data_product,
                                   
                                   
                                  ];
@@ -911,12 +912,9 @@ class TransferOrder
                       }
 
                   
-
-                    
-       
                     foreach($data_tiers as $data)
                     {
-                       // insérer les données tiers dans dolibar
+                       // insérer les données tiers dans dolibar...
                         $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                     }
 
@@ -927,10 +925,10 @@ class TransferOrder
                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
                        // activer le statut payé et lié les paiments  sur les factures.
-                   // $this->invoicespays();
+                      $this->invoicespays();
 
-                   dump($unique_arr);
-                    dd('succes of opération');
+                      dump($unique_arr);
+                      dd('succes of opération');
                      // initialiser un array recuperer les ref client.
                     return view('apidolibar');
               
@@ -942,10 +940,10 @@ class TransferOrder
                 $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
                 // recuperer les données api dolibar.
                 // recuperer les données api dolibar copie projet tranfer x.
-               $method = "GET";
-               $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-                // recupérer le dernière id des facture 
+                 $method = "GET";
+                 $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+                 $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+                 // recupérer le dernière id des facture 
                  // recuperer dans un tableau les ref_client existant id.
                  $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
                  "sortfield" => "t.rowid", 
@@ -978,22 +976,22 @@ class TransferOrder
                {
                  $inv = (int)$vk['id'];
                }
-                 // recupérer le premier id de la facture
+               // recupérer le premier id de la facture
                foreach($invoices_asc as $vks)
                {
-                 $inc = $vks['id'];
+                  $inc = $vks['id'];
                }
  
-              foreach($clientSearch as $data)
-              {
-                $tiers_ref = $data['id'];
-              }
+               foreach($clientSearch as $data)
+               {
+                 $tiers_ref = $data['id'];
+               }
       
-            // le nombre recupérer 
-            $count_datas = $order; // retour array ici
-            $ids_orders =[];// recupérer les id commande venant de woocomerce
-            $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
-      
+              // le nombre recupérer 
+              $count_datas = $order; // retour array ici
+              $ids_orders =[];// recupérer les id commande venant de woocomerce
+              $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
+         
              foreach($count_datas as $k =>$valis)
              {
                    $ids_orders[] = $valis['id'];
