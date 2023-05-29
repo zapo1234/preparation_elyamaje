@@ -849,14 +849,17 @@ class TransferOrder
 
                                   // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                    $d=1;
+                                   $total_ht =0;
+                                   $total_tva =0;
+                                   $total_ttc =0;
                                   $data_lines[] = [
                                   "socid"=> $socid,
                                   "ref_int" =>$d,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
                                   "email" => $donnees['billing']['email'],
-                                  "total_ht"  =>floatval($donnees['total']),
-                                  'total_tva' =>floatval($donnees['total_tax']),
-                                   "total_ttc" =>floatval($donnees['total']),
+                                  "total_ht"  =>$total_ht,
+                                  'total_tva' =>$total_tva,
+                                   "total_ttc" =>$total_ttc,
                                    "paye"=>"1",
                                    "lines" =>$data_product,
                                   
@@ -909,7 +912,7 @@ class TransferOrder
                           }
                       }
 
-                    dd($data_lines);
+                  
        
                     foreach($data_tiers as $data)
                     {
@@ -1075,7 +1078,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
        
-           dd($inv);
+          
            // valider les factures.
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
           // Lier les factures dolibar  à un moyen de paiement et bank.
