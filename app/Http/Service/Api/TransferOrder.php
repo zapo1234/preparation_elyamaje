@@ -848,9 +848,7 @@ class TransferOrder
                                   // pour les facture non distributeur...
                                    // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                    $d=1;
-                                   $total_ht =0;
-                                   $total_tva =0;
-                                   $total_ttc =0;
+                                  
                                   $data_lines[] = [
                                   "socid"=> $socid,
                                   "ref_int" =>$d,
@@ -860,7 +858,7 @@ class TransferOrder
                                   'total_tva' =>"0.00000000",
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
-                                   "lines" =>$data_product,
+                                   "lines" =>[],
                                   
                                   
                                  ];
@@ -1080,12 +1078,23 @@ class TransferOrder
         ];
        
           
-           // valider les factures.
-           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+        for($i=$nombre_count; $i<$inv+2; $i++)
+        {
+           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
+        }
+   
           // Lier les factures dolibar  à un moyen de paiement et bank.
-           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-           // mettre la facture  en payée.
-           $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+        for($i=$nombre_count; $i<$inv+2; $i++)
+        {
+            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
+        }
+
+           // mettre le statut en payé dans la facture  dolibar
+        for($i=$nombre_count; $i<$inv+2; $i++)
+        {
+          $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
+        }
+
 
    }
 
