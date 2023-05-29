@@ -865,7 +865,7 @@ class TransferOrder
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
                                    "lines" =>$data_product,
-                                   "array_options"=>$array_options,
+                                  
                                   
                                  ];
                             
