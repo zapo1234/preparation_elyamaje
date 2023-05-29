@@ -920,7 +920,7 @@ class TransferOrder
 
                     foreach($unique_arr as $donnes)
                     {
-                       dd(json_encode($donnees));
+                       dd(json_encode($donnes));
                        // construire la 1 ère couche de facture dans dolibar
                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
