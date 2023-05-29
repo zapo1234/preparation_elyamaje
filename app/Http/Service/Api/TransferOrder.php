@@ -851,7 +851,6 @@ class TransferOrder
                                   
                                   $data_lines[] = [
                                   "socid"=> $socid,
-                                  "ref_int" =>$d,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>"0.00000000",
@@ -863,8 +862,8 @@ class TransferOrder
                                   
                                  ];
                             
-                                   // insert dans base de donnees historiquesidcommandes
-                                   $date = date('Y-m-d');
+                                    // insert dans base de donnees historiquesidcommandes
+                                    $date = date('Y-m-d');
                                     $historique = new Commandeid();
                                     $historique->id_commande = $donnees['id'];
                                     $historique->date = $date;
@@ -884,20 +883,20 @@ class TransferOrder
                   
                        }
    
-                       // recupérer les deux variable dans les seter
-                       $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                       $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                        // recupérer les deux variable dans les seter
+                        $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
+                        $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
                         // filtrer les doublons du tableau
                         $id_commande_exist = array_unique($id_commande_existe);
-                       // recupérer le tableau
+                         // recupérer le tableau
                         $this->setDataidcommande($id_commande_exist);
                         // renvoyer un tableau unique par tiers en fonction socid.
-                       // données des non distributeurs....
-                       $temp = array_unique(array_column($data_lines, 'socid'));
-                       $unique_arr = array_intersect_key($data_lines, $temp);
+                        // données des non distributeurs....
+                        $temp = array_unique(array_column($data_lines, 'socid'));
+                        $unique_arr = array_intersect_key($data_lines, $temp);
           
-                     // Filtrer les produits associés au tiers (socid = ref_ext simulé) suprimer en cas d'inégalité du tableau.
-                     // clients invoices non distributeur 
+                      // Filtrer les produits associés au tiers (socid = ref_ext simulé) suprimer en cas d'inégalité du tableau.
+                      // clients invoices non distributeur 
                       foreach($unique_arr as $r => $val)
                       {
                           foreach($val['lines'] as $q => $vak)
@@ -910,6 +909,8 @@ class TransferOrder
                       }
 
                   
+
+                    
        
                     foreach($data_tiers as $data)
                     {
@@ -919,6 +920,7 @@ class TransferOrder
 
                     foreach($unique_arr as $donnes)
                     {
+                       dd(json_encode($donnees));
                        // construire la 1 ère couche de facture dans dolibar
                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                     }
