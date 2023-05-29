@@ -641,10 +641,10 @@ class TransferOrder
            $id=73184;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
            
-           // excedd(rcer un get et post et put en fonction des status .
-           // recuperer les données api dolibar copie projet tranfer x.
-            $method = "GET";
-            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+            // excedd(rcer un get et post et put en fonction des status .
+            // recuperer les données api dolibar copie projet tranfer x.
+             $method = "GET";
+             $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
              $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
          
               //environement test local
@@ -801,11 +801,11 @@ class TransferOrder
                            foreach($donnees['line_items'] as $key => $values)
                            {
                               
-                             foreach($values['meta_data'] as $vals)
-                             {
-                                //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                               if($vals['key']=="_reduced_stock")
-                               {
+                              foreach($values['meta_data'] as $vals)
+                              {
+                                 //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
+                                if($vals['key']=="_reduced_stock")
+                                {
                                   // construire le details des produits arrivant liée pour dolibarr.
                                   $fk_product = array_search($vals['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  product de dolibar pour capter id du produit
                                
@@ -912,25 +912,24 @@ class TransferOrder
                       }
 
                   
-                    foreach($data_tiers as $data)
-                    {
-                       // insérer les données tiers dans dolibar...
-                        $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                    }
+                     foreach($data_tiers as $data)
+                     {
+                         // insérer les données tiers dans dolibar...
+                         $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                     }
 
-                    foreach($unique_arr as $donnes)
-                    {
-                       dd(json_encode($donnes));
-                       // construire la 1 ère couche de facture dans dolibar
-                       $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                    }
+                      foreach($unique_arr as $donnes)
+                      {
+                        // construire la 1 ère couche de facture dans dolibar
+                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                      }
                        // activer le statut payé et lié les paiments  sur les factures.
-                      $this->invoicespays();
+                       $this->invoicespays();
 
-                      dump($unique_arr);
-                      dd('succes of opération');
-                     // initialiser un array recuperer les ref client.
-                    return view('apidolibar');
+                        dump($unique_arr);
+                        dd('succes of opération');
+                        // initialiser un array recuperer les ref client.
+                        return view('apidolibar');
               
             }
 

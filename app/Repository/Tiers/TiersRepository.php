@@ -76,14 +76,29 @@ class TiersRepository implements TiersInterface
              'sortfield' => 'rowid',
              'sortorder' => 'DESC',
           );
+
+         
+          
+              // recuperer les données api dolibar copie projet tranfer x.
+              $methods = "GET";
+              $apiKeys = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+              $apiUrls = "https://www.transfertx.elyamaje.com/api/index.php/";
+          
+           
+
+            $produitParams= ["limit" => 4000, "sortfield" => "rowid"];
+            $listproduct = $this->api->CallAPI("GET", $apiKeys, $apiUrls."thirdparties", $produitParams);
+            // reference ref_client dans dolibar
+            $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
+          
          
          
-           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
-           $lists = json_decode($listinvoice,true);
-           $data_ids = array('3087');
+           //$listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
+          // $lists = json_decode($listinvoice,true);
+          // $data_ids = array('3087');
            // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();
-            foreach($lists as $key=>$values)
+            foreach($listproduct as $key=>$values)
             {
                
                if($this->testing($array_tiers,$values['id'])==false)
