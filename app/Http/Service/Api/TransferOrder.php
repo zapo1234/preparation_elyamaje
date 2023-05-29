@@ -846,8 +846,7 @@ class TransferOrder
                              if($this->testing($key_commande,$donnees['id'])==false)
                              {
                                   // pour les facture non distributeur...
-
-                                  // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
+                                   // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                    $d=1;
                                    $total_ht =0;
                                    $total_tva =0;
