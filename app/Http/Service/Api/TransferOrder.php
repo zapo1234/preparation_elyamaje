@@ -892,7 +892,7 @@ class TransferOrder
                      // recupérer le tableau
                      $this->setDataidcommande($id_commande_exist);
                      // renvoyer un tableau unique par tiers en fonction socid.
-                     // données des non distributeurs
+                     // données des non distributeurs....
                      $temp = array_unique(array_column($data_lines, 'socid'));
                      $unique_arr = array_intersect_key($data_lines, $temp);
           
