@@ -26,6 +26,7 @@ interface OrderInterface
 
    public function updateOneOrderAttribution($order_id, $user_id);
 
+   public function getHistoryByUser($user_id);
 }
 
 

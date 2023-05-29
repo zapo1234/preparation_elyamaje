@@ -13,13 +13,15 @@ class CheckRole
      * @param  string  $role
      * @return mixed
      */
-    public function handle($request, Closure $next, $role)
+    public function handle($request, Closure $next, ...$roles)
     {
-        if ($request->user()->role_id != intval($role)) {
-            abort(403);
+        $user = Auth()->user();
+        
+        if(in_array($user->role_id,$roles)) {
+            return $next($request);
         }
 
-        return $next($request);
+        abort(403, 'Accès refusé');
     }
 
 }

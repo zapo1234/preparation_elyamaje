@@ -86,7 +86,7 @@
 															<option value="">Réatribution</option>
 															@foreach($teams as $key => $team2)
 																@if($team['id'] != $team2['user_id'] && $team2['role'] != 1 && $team2['role'] != 4)
-																	<option value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
+																	<option id="user_name_{{ $team2['user_id'] }}" value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
 																@endif
 															@endforeach
 														</select>
@@ -476,11 +476,11 @@
 			$(".change_attribution_order").on("change", function(){
 				if($(this).val() != ""){
 					var from_user = $(this).attr('id').split('_')[1]
-					var to_user = $(this).val()
+					var to_user = $("#user_name_"+$(this).val()).text()
 
 					$(".from_to_user").val(from_user+','+to_user)
 					$("#from_user").text($("#user_"+from_user).text())
-					$("#to_user").text($("#user_"+to_user).text())
+					$("#to_user").text(to_user)
 					$("#reallocationOrders").modal('show')
 				}
 			})

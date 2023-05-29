@@ -61,16 +61,74 @@ class CategoriesRepository implements CategoriesInterface
    }
 
    public function getAllCategories(){
-      return $this->model::all();
+      $categories = $this->model::all()->toArray();
+      $arborescence = $this->trierCategories($categories);
+      return $arborescence;
    }
 
-   public function updateCategoryOrder($id, $order_display){
-      try{
-         $this->model->where('id', $id)->update(['order_display' => $order_display]);
-         return true;
-      } catch(Exception $e){
-         return $e->getMessage();
+
+   function trierCategories($elements, $parent = 0) {
+      $arborescence = array();
+  
+      foreach ($elements as $element) {
+          if ($element['parent_category_id'] == $parent) {
+              $sousCategories = $this->trierCategories($elements, $element['category_id_woocommerce']);
+              if (!empty($sousCategories)) {
+                  $element['sub_category'] = $sousCategories;
+              }
+              $arborescence[] = $element;
+          }
       }
+  
+      return $arborescence;
+  }
+
+
+  function updateAllChildren($elements) {
+   
+   $list_ids = array();
+
+   foreach ($elements as $element) {
+       if (isset($element['sub_category'])) {
+         $sousCategories = $this->updateAllChildren($element['sub_category']);
+         if (!empty($sousCategories)) {
+               foreach($sousCategories as $sous){
+                  $list_ids [] = $sous;
+               }
+         }
+       }
+      $list_ids [] = $element['category_id_woocommerce'];
+   }
+
+   return $list_ids;
+}
+
+   public function updateCategoryOrder($id, $order_display, $parent){
+      $categories = $this->model::all()->toArray();
+
+    
+      if($parent != "false"){
+         $arborescence = $this->trierCategories($categories);
+         $ids = array_column($arborescence, "category_id_woocommerce");
+         $category = array_keys($ids,  $id);
+         $lits_ids = $this->updateAllChildren($arborescence[$category[0]]['sub_category']);
+         $lits_ids [] = $id;
+         try{
+            $this->model->whereIn('category_id_woocommerce', $lits_ids)->update(['order_display' => $order_display]);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      } else {
+         try{
+            $this->model->where('category_id_woocommerce', $id)->update(['order_display' => $order_display]);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
+     
+    
    }
 
 }

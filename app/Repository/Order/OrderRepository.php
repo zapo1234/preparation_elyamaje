@@ -142,9 +142,9 @@ class OrderRepository implements OrderInterface
       $list2 = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
-      $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
-      $queryOrder .= "ELSE 3 END";
+      // $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
+      // $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
+      // $queryOrder .= "ELSE 3 END";
 
       $orders = 
       $this->model->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')
@@ -154,7 +154,7 @@ class OrderRepository implements OrderInterface
          ->select('orders.*', 'products.*', 'categories.order_display')
          ->orderBy('date', 'ASC')
          ->orderBy('categories.order_display', 'ASC')
-         ->orderByRaw($queryOrder)
+         // ->orderByRaw($queryOrder)
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -335,10 +335,47 @@ class OrderRepository implements OrderInterface
       }
    }
 
-
    public function getOrderById($order_id){
       return $this->model::select('orders.*', 'products.*')->where('order_woocommerce_id', $order_id)->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')->get()->toArray();
    }
+   
+   public function getHistoryByUser($user_id){
+
+      $list = [];
+      // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
+      $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
+      $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
+      $queryOrder .= "ELSE 3 END";
+
+      $orders = 
+      $this->model->join('products', 'products.order_id', '=', 'orders.order_woocommerce_id')
+         ->join('categories', 'products.category_id', '=', 'categories.category_id_woocommerce')
+         ->where('user_id', $user_id)
+         ->where('status', '!=', 'processing')
+         ->select('orders.*', 'products.*', 'categories.order_display')
+         ->orderBy('updated_at', 'DESC')
+         ->orderBy('categories.order_display', 'ASC')
+         ->orderByRaw($queryOrder)
+         ->get();
+
+      $orders = json_decode(json_encode($orders), true);
+
+      foreach($orders as $key => $order){
+         $list[$order['order_woocommerce_id']]['details'] = [
+            'id' => $order['order_woocommerce_id'],
+            'first_name' => $order['billing_customer_first_name'],
+            'last_name' => $order['billing_customer_last_name'],
+            'date' => $order['date'],
+            'total' => $order['total_order'],
+            'status' => $order['status'],
+         ];
+         $list[$order['order_woocommerce_id']]['items'][] = $order;
+      }
+
+      $list = array_values($list);
+      return $list;
+   }
+
 }
 
 

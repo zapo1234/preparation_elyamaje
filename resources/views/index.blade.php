@@ -2,48 +2,205 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-		@endsection
+			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
+		@endsecrion 
 
 		@section("wrapper")
 			<div class="page-wrapper">
 				<div class="page-content">
-					<div class="page-breadcrumb d-sm-flex align-items-center mb-2">
-						<div class="breadcrumb-title pe-3">Commandes en préparation</div>
-						<div class="pe-3 number_order_pending"></div>
-
+					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
+						<div class="d-flex">
+							<div class="breadcrumb-title pe-3">Commandes</div>
+							<div class="pe-3 number_order_pending"></div>
+						</div>
+						@csrf
+						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Attribuer les commandes</button>
 					</div>
-					<div class="row">
-						<div class="card card_table_mobile_responsive">
-							<div class="card-body">
-								<div class="table-responsive">
 
-									<table id="example" class="w-100 table_mobile_responsive table table-striped table-bordered">
-										<thead>
-											<tr>
-												<th scope="col">Commande</th>
-												<th scope="col">Date</th>
-												<th scope="col">État</th>
-												<th scope="col">Total</th>
-												<th class="col-md-1" scope="col">Action</th>
-											</tr>
-										</thead>
-									</table>
+					<div class="dashboard_leader row row-cols-1 row-cols-lg-2">
+				   		<div class="team_board col flex-column d-flex col-lg-4">
+							<div class="card radius-10 w-100 h-100">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div>
+											<h5 class="mb-0">Équipes</h5>
+										</div>
+									</div>
+
+									<!-- Liste des utilisateurs et leur rôle -->
+									<div class="p-3 mb-3 ps ps--active-y">
+										@foreach($teams as $key => $team)
+											<div class="flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
+												<div class="">
+													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
+												</div>
+												<div class="ms-2">
+													<h6 class="mb-1 font-14">{{ $team['name'] }}</h6>
+													<p class="mb-0 font-13 text-secondary">{{ $team['email'] }}</p>
+												</div>
+												<div class="list-inline d-flex align-items-center customers-contacts ms-auto">	
+													<select id="{{ $team['user_id'] }}" class="change_user_role">
+														@foreach($roles as $role)
+															@if($role['id'] != 1 && $role['id'] != 4)
+																@if($team['role_id'] == $role['id'])
+																	<option selected value="{{ $role['id'] }}">{{ $role['role'] }}</option>
+																@else
+																	<option value="{{ $role['id'] }}">{{ $role['role'] }}</option>
+																@endif
+															@endif
+														@endforeach
+													</select>
+												</div>
+											</div>
+										@endforeach
+									</div>
+								</div>
+							</div>
+							<div class="card radius-10 w-100 h-100">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div>
+											<h5 class="mb-0">Réatribuer des commandes</h5>
+										</div>
+									</div>
+
+										<!-- Réatribution des commandes d'un user vers un autre -->
+										<div class="p-3 mb-3 ps ps--active-y">
+										@if($number_preparateur > 1)
+											@foreach($teams_have_order as $key => $team)
+												<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
+													<div class="d-flex align-items-center">
+														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
+														<div class="ms-2">
+															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{ $team['name'] }}</h6>
+														</div>
+													</div>
+													
+													<div class="font-22">	
+														<i class="lni lni-arrow-right"></i>
+													</div>
+													<div class="list-inline d-flex align-items-center customers-contacts">	
+													
+														<select id="attribution_{{ $team['id'] }}" class="change_attribution_order">
+															<option value="">Réatribution</option>
+															@foreach($teams as $key => $team2)
+																@if($team['id'] != $team2['user_id'] && $team2['role'] != 1 && $team2['role'] != 4)
+																	<option id="user_name_{{ $team2['user_id'] }}" value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
+																@endif
+															@endforeach
+														</select>
+													</div>
+												</div>
+											@endforeach
+										@endif
+									</div>
+
+
+								</div>
+
+								<!-- Modal de confirmation de changement de rôle -->
+								<div class="modal fade" id="valid_change_user_role" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+										<div class="modal-body d-flex flex-column justify-content-center">
+											<h2 class="text-center">Changer le rôle de cet utilisateur ?</h2>
+											<div class="w-100 d-flex justify-content-center">
+												<input type="hidden" class="user_role_id" value="">
+												<button type="button" class="change_user_role_button btn btn-dark px-5 ">Oui</button>
+												<button style="margin-left:15px" type="button" class="cancel_user_role_button btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+											</div>
+										</div>
+										</div>
+									</div>
+								</div>
+
+
+								<!-- Modal de confirmation de réatribution de commandes à un user -->
+								<div class="modal fade" id="reallocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body">
+												<h2 class="text-center reallocationOrdersTitle">Voulez-vous réatribuer les commandes de 
+													<strong id="from_user"></strong> à <strong id="to_user"></strong>
+												</h2>
+												<input type="hidden" class="from_to_user" value="">
+												<div class="w-100 d-flex justify-content-center">
+													<div class="d-none spinner-border loading_realocation" role="status"> 
+														<span class="visually-hidden">Loading...</span>
+													</div>
+													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+													<button style="margin-left:15px" type="button" class="reallocationOrdersConfirm btn btn-dark px-5 ">Oui</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<div class="col d-flex col-lg-8">
+								<div class="card card_table_mobile_responsive radius-10 w-100">
+									<div class="card-body">
+										<div class="d-flex align-items-center">
+											<div>
+												<h5 class="mb-4">Commandes <span class="text-success total_amount"></span></h5>
+											</div>
+										</div>
+										<div class="table-responsive">
+
+											<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+												<thead>
+													<tr>
+														<th scope="col">Commande</th>
+														<th scope="col">Attribution</th>
+														<th scope="col">Date</th>
+														<th scope="col">État</th>
+														<th scope="col">Total</th>
+														<th class="col-md-1" scope="col">Détail</th>
+													</tr>
+												</thead>
+											</table>
+										</div>
+
+									</div>
+								</div>
+
+								<!-- Modal pour lancer l'attribution des commandes -->
+								<div class="modal fade" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body">
+												<h2 class="text-center allocationOrdersTitle">Attribuer les commandes entre les préparateurs ?</h2>
+												<div class="w-100 d-flex justify-content-center">
+													<div class="d-none spinner-border loading_allocation" role="status"> 
+														<span class="visually-hidden">Loading...</span>
+													</div>
+													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Lancer</button>
+													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
 		@endsection
 
 	
-	@section("script")
+		@section("script")
 
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="assets/plugins/select2/js/select2.min.js"></script>
 
 		<script>
+
 			$(document).ready(function() {
+				$("select").select2({width: '100px'})
+
 
 				// Sélection de la div
 				const paceProgress = document.querySelector('.pace-progress');
@@ -85,20 +242,67 @@
                 };
 				var to = 0
 
+
 				$('#example').DataTable({
-					order: [ 1, 'asc' ],
+					scrollY: '59vh',
+        			scrollCollapse: true,
+					order: [ 0, 'asc' ],
 					ajax: {
 						url: '{{ route("getAllOrdersAdmin") }}',
-						dataSrc: 'orders',
+						dataSrc: function(json) {
+
+							// Récupérer les données des commandes (orders)
+							var orders = json.orders;
+							// Récupérer les données des utilisateurs (users)
+							var users = json.users;
+							// Combiner les données des commandes (orders) et des utilisateurs (users)
+							var combinedData = orders.map(function(order) {
+
+								return {
+									id: order.id,
+									first_name: order.billing.first_name,
+									last_name: order.billing.last_name,
+									total: order.total,
+									name: order.name,
+									date_created: order.date_created,
+									line_items: order.line_items,
+									user_id: order.user_id,
+									users: users
+								};
+							});
+
+							return combinedData;
+						}
 					},
 				
 					columns: [
 						{ 
 						data: null,
 							render: function(data, type, row) {
-								return "#"+row.id+' '+row.billing.first_name + ' ' + row.billing.last_name;
+								return "#"+row.id+' '+row.first_name + ' ' + row.last_name;
 							}
             			},
+						{data: null,
+							render: function(data, type, row) {
+								var selectOptions = '<option selected>Non attribuée</option>';
+								row.users.forEach(function(element) {
+									if(element.user_id == row.user_id){
+										selectOptions += `<option selected value="${element.user_id}">${element.name}</option>`;
+									} else {
+										selectOptions += `<option value="${element.user_id}">${element.name}</option>`;
+									}
+								});
+								var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id})" id="select_${row.id}" class="select_user">${selectOptions}</select>`;
+
+								if($("#select_"+row.id).val() == "Non attribuée"){
+									$("#select_"+row.id).addClass('empty_select')
+								} else {
+									$("#select_"+row.id).addClass('no_empty_select')
+								}
+								
+								return selectHtml;
+							}
+						},
 						{data: null,
 							render: function(data, type, row) {
 								const date = new Date(row.date_created);
@@ -119,30 +323,27 @@
 							render: function(data, type, row) {
 							
 								return `
-									<div class="modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
 											<div class="modal-content">
 												<div class="modal-body detail_product_order">
-													<div class="d-flex flex-column">
+													<div class="detail_product_order_head d-flex flex-column">
 														<div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
-															<span class="name_column">Article</span>
-															<span class="name_column">Coût</span>
-															<span class="name_column">Qté</span>
-															<span class="name_column">Total</span>
-															<span class="name_column">TVA</span>
+															<span class="column1 name_column">Article</span>
+															<span class="column2 name_column">Coût</span>
+															<span class="column3 name_column">Qté</span>
+															<span class="column4 name_column">Total</span>
 														</div>	
 
 														<div class="body_detail_product_order">
 															${row.line_items.map((element) => `
 																<div class="d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-																	<div class="d-flex align-items-center detail_product_name_order">
-																		<img class="lazy" width="42" height="42" loading="lazy" src="`+element.image.src+`">
-																		<span>`+element.name+` </span>
+																	<div class="column11 d-flex align-items-center detail_product_name_order">
+																		${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
 																	</div>
-																	<span>	`+parseFloat(element.price).toFixed(2)+ `</span>
-																	<span> `+element.quantity+` </span>
-																	<span>`+parseFloat(element.price).toFixed(2) * element.quantity+`</span>
-																	<span>` +parseFloat(element.total_tax).toFixed(2)+` </span>
+																	<span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
+																	<span class="column33"> `+element.quantity+` </span>
+																	<span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
 																</div>`
 														).join('')}
 														</div>
@@ -156,16 +357,17 @@
 											</div>
 										</div>
 									</div>
-									<button type="button" onclick="show(`+row.id+`)" class="show_detail btn btn-dark px-2">Voir détail</button>
+									<i onclick="show(`+row.id+`)" class="show_detail bx bx-comment-detail"></i>
 									`;
 							}
             			},
-
 					],
 
 					"initComplete": function(settings, json) {
+
 						var info = $('#example').DataTable().page.info();
 						var total = 0
+						var attribution = 0
 
 						// Calcul total valeur des commandes
 						$('#example').DataTable().rows().eq(0).each( function ( index ) {
@@ -173,22 +375,140 @@
 							var data = row.data();
 							total = parseFloat(total) + parseFloat(data.total)
 						} );
-						
-						$(".number_order_pending").append('<span>'+info.recordsTotal+' ('+parseFloat(total).toFixed(2)+'€)</span>')
 
+						// Check nombre attribution
+						$('#example').DataTable().rows().eq(0).each( function ( index ) {
+							var row = $('#example').DataTable().row( index );
+							var data = row.data();
+							data.name != "Non attribuée" ? attribution = attribution + 1 : attribution = attribution
+						} );
+						
+						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s)</span>')
+						$(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
+						$(".allocation_of_orders").attr('disabled', false)
+						$(".dataTables_paginate").parent().removeClass("col-md-7")
 					},
 
 					"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+						var selectElements = nRow.getElementsByTagName('select');
+						for (var i = 0; i < selectElements.length; i++) {
+							var select = selectElements[i];
+							if (select.value != 'Non attribuée') {
+								select.classList.add('no_empty_select');
+								// select.classList.remove('no_empty_select');
+							} else {
+								select.classList.add('empty_select');
+								// select.classList.remove('empty_select');
+							}
+						}
+							
 						$('td:nth-child(1)', nRow).attr('data-label', 'Commande');
-						$('td:nth-child(2)', nRow).attr('data-label', 'Date');
-						$('td:nth-child(3)', nRow).attr('data-label', 'État');
-						$('td:nth-child(4)', nRow).attr('data-label', 'Total');
-						$('td:nth-child(5)', nRow).attr('data-label', 'Action');
-					}
-					
+						$('td:nth-child(2)', nRow).attr('data-label', 'Attribution');
+						$('td:nth-child(3)', nRow).attr('data-label', 'Date');
+						$('td:nth-child(4)', nRow).attr('data-label', 'État');
+						$('td:nth-child(5)', nRow).attr('data-label', 'Total');
+						$('td:nth-child(6)', nRow).attr('data-label', 'Détail');
 
+						return nRow;
+
+					}
 				})
+
 			})
+
+
+			$(".allocation_of_orders").on("click", function(){
+				$("#allocationOrders").modal('show')
+			})
+
+			$(".allocationOrdersConfirm").on("click", function(){
+				
+				$("#allocationOrders button").addClass('d-none')
+				$(".loading_allocation").removeClass("d-none")
+
+				$.ajax({
+					url: "{{ route('distributionOrders') }}",
+					method: 'GET',
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						$(".loading_allocation").addClass("d-none")
+						$(".lni-checkmark-circle").removeClass('d-none')
+						$(".allocationOrdersTitle").text("Commandes réparties avec succès !")
+						setTimeout(function(){ location.reload(); }, 2500);
+					} else {
+						alert(JSON.parse(data).message ?? 'Erreur !')
+						$("#allocationOrders button").removeClass('d-none')
+						$(".loading_allocation").addClass("d-none")
+						$("#allocationOrders").modal('hide')
+					}
+				});
+			})
+
+
+			$(".change_user_role").on("change", function(){
+				var user_id = $(this).attr('id')
+				var role_id = $(this).val()
+				$(".user_role_id").val(user_id+','+role_id)
+				$("#valid_change_user_role").modal('show')
+			})
+
+			$(".change_user_role_button").on("click", function(){
+				var user_id = $(".user_role_id").val().split(',')[0]
+				var role_id = $(".user_role_id").val().split(',')[1]
+
+				$.ajax({
+					url: "{{ route('updateRole') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), user_id: user_id, role_id: role_id}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						$("#valid_change_user_role").modal('hide')
+						if($(".change_attribution_order").length > 0){
+							location.reload()
+						}
+					} else {
+						alert('Erreur !')
+					}
+				});
+			})
+
+
+			$(".change_attribution_order").on("change", function(){
+				if($(this).val() != ""){
+					var from_user = $(this).attr('id').split('_')[1]
+					var to_user = $("#user_name_"+$(this).val()).text()
+
+					$(".from_to_user").val(from_user+','+to_user)
+					$("#from_user").text($("#user_"+from_user).text())
+					$("#to_user").text(to_user)
+					$("#reallocationOrders").modal('show')
+				}
+			})
+
+			$(".reallocationOrdersConfirm").on("click", function(){
+				var from_user = $(".from_to_user").val().split(',')[0]
+				var to_user = $(".from_to_user").val().split(',')[1]
+
+				$(".loading_realocation").removeClass('d-none')
+				$("#reallocationOrders button").addClass('d-none')
+
+				$.ajax({
+					url: "{{ route('updateAttributionOrder') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), from_user: from_user, to_user: to_user}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						$('#example').DataTable().ajax.reload();
+						$(".loading_realocation").addClass('d-none')
+						$("#reallocationOrders button").removeClass('d-none')
+						$("#reallocationOrders").modal('hide')
+					} else {
+						alert('Erreur !')
+					}
+				});
+
+			})
+				
 
 			function show(id){
 			
@@ -200,9 +520,35 @@
 				$("#order_"+id).modal('show')
 
 			}
-		
-		</script>
 
+
+			function changeOneOrderAttribution(order_id){
+				var order_id = order_id
+				var user_id = $("#select_"+order_id).val()
+
+				if(user_id == "Non attribuée"){
+					$("#select_"+order_id).addClass('empty_select')
+					$("#select_"+order_id).removeClass('no_empty_select')
+				} else {
+					$("#select_"+order_id).removeClass('empty_select')
+					$("#select_"+order_id).removeClass('no_empty_select')
+					$("#select_"+order_id).addClass('no_empty_select')
+				}
+
+				$.ajax({
+					url: "{{ route('updateOneOrderAttribution') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						$("#number_attribution").text(JSON.parse(data).number_order_attributed)
+					} else {
+						alert('Erreur !')
+					}
+				});
+
+			}
+        
+        </script>
 	@endsection
-
 

@@ -49,6 +49,8 @@ class Admin extends BaseController
             $insert_categories [] = [
                 'name' => $category['name'],
                 'category_id_woocommerce' => $category['id'],
+                'parent_category_id' => $category['parent'],
+
             ];
         }
 
@@ -64,6 +66,7 @@ class Admin extends BaseController
     public function updateOrderCategory(Request $request){
         $id = $request->post('id');
         $order_display = $request->post('order_display');
-        echo json_encode(['success' => $this->category->updateCategoryOrder($id, $order_display)]);
+        $parent = $request->post('parent');
+        echo json_encode(['success' => $this->category->updateCategoryOrder($id, $order_display, $parent)]);
     }
 }
