@@ -848,11 +848,6 @@ class TransferOrder
                                   // pour les facture non distributeur...
 
                                   // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                                  $array_options[] = [
-                                    "options_idw"=>$donnees['id'],
-                                    "options_idc"=>"fem-test-01",
-                                     ];
-
                                    $d=1;
                                   $data_lines[] = [
                                   "socid"=> $socid,
@@ -863,7 +858,7 @@ class TransferOrder
                                   'total_tva' =>floatval($donnees['total_tax']),
                                    "total_ttc" =>floatval($donnees['total']),
                                    "paye"=>"1",
-                                   "lines" =>$data_product
+                                   "lines" =>$data_product,
                                   
                                   
                                  ];
@@ -1082,11 +1077,11 @@ class TransferOrder
        
            $i=$inv;
            // valider les factures.
-           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
+           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
           // Lier les factures dolibar  à un moyen de paiement et bank.
-           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
+           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
            // mettre la facture  en payée.
-           $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
+           $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
    }
 
