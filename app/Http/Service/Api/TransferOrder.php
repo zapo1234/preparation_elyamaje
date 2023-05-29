@@ -640,7 +640,6 @@ class TransferOrder
     {
            $id=73777;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-           dd($order);
             // excedd(rcer un get et post et put en fonction des status .
             // recuperer les données api dolibar copie projet tranfer x.
              $method = "GET";
