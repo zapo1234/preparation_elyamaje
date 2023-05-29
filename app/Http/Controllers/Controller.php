@@ -39,8 +39,17 @@ class Controller extends BaseController
     
      // INDEX ADMIN
     public function index(Request $request){
-        return view('index');
+        $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
+        $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+
+        $ids = array_column($teams, "role_id");
+        $number_preparateur = count(array_keys($ids,  2));
+
+        $roles = $this->role->getRoles();
+
+        return view('index', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
     }
+
 
     // CONFIGURATION ADMIN
     public function configuration(){
@@ -48,13 +57,15 @@ class Controller extends BaseController
         return view('admin.configuration', ['categories' => $categories]);
     }
 
+
+
     // PRÉPARATEUR COMMANDES CLASSIQUES
     public function orderPreparateur(){
         $orders = $this->orderController->getOrder();
         return view('preparateur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
-     // PRÉPARATEUR COMMANDES DISTRIBUTEURS
+    // PRÉPARATEUR COMMANDES DISTRIBUTEURS
     public function ordersDistributeurs(){
         $orders = $this->orderController->getOrderDistributeur();
         return view('preparateur.distributeur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);

@@ -1,4 +1,5 @@
-@extends("layouts.app")
+
+	@extends("layouts.app")
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
@@ -36,44 +37,36 @@
 					@endif
 
 					<div class="row">
-						<div class="card card_table_mobile_responsive">
+						<div class="card">
 							<div class="card-body">
-
-								<div class="d-flex justify-content-center w-100 loading"> 
-									<div class="spinner-border text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
-								</div>
 								
-								<div class="table-responsive">
-									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
-										<thead>
-											<tr>
-												<th scope="col">Catégorie</th>
-												<th scope="col">Identifiant</th>
-												<th scope="col">Ordre</th>
-											</tr>
-										</thead>
-										<tbody>
-											@foreach($categories as $category)
-												<tr> 
-													<td>{{ $category['name'] }}</td>
-													<td>{{ $category['category_id_woocommerce'] }}</td>
-													<td>
-														<select id="{{ $category['id'] }}" class="update_order_display">
-															@for($i = 0; $i < count($categories); $i++)
-																@if($category['order_display'] == $i)
-																	<option value="{{ $i }}" selected>{{ $i }}</option>
-																@else 
-																	<option value="{{ $i }}">{{ $i }}</option>
-																@endif
-															@endfor
-														</select>
-													</td>
-												</tr>
-											@endforeach
 
-										</tbody>
-									</table>
-								</div>
+
+								<!-- <div class="d-flex justify-content-center w-100 loading"> 
+									<div class="spinner-border text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
+								</div> -->
+								
+								<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>Nom</th>
+											<th>Ordre (Menu & Sous-menu)</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										@foreach ($categories as $category)
+											<!-- Appeler la vue récursive pour afficher les catégories et les sous-catégories -->
+											@include('partials.category', ['category' => $category])
+										@endforeach
+									</tbody>
+									
+								</table>
+								
+										
+		
+
+								
 							</div>
 						</div>
 					</div>
@@ -83,43 +76,72 @@
 
 	
 	@section("script")
+
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
-
 		<script>
-			$( document ).ready(function() {
 
-				$("select").select2({"width" : "80px"})
-				$('#example').DataTable({
-					"initComplete": function(settings, json) {
-						$(".loading").addClass('d-none')
-						$("#example").removeClass('d-none')
+			$('#example').DataTable({
+				"pageLength": 100,
+				"paging": false,
+				"ordering": false,
+				"info": false,
+				"searching": false
+			})
 
-					}
-				})
+			$(".show_sub_category").on("click", function(){
+				
+				var id = $(this).attr('id')
+				if($(".category_"+id).hasClass('show') || $("#"+id).hasClass('show')){
+					$(this).addClass('bx-plus')
+					$(this).removeClass('bx-minus')
+
+					$(".category_"+id).removeClass('show')
+					$(".category_"+id).hide()
+					
+					$(".td_"+id).children('div').removeClass('show')
+					$(".td_"+id).children('div').hide()
+				} else {
+					$(this).removeClass('bx-plus')
+					$(this).addClass('bx-minus')
+					$(".category_"+id).addClass('show')
+					$(".category_"+id).show()
+				}
 			})
 
 			$(".update_order_display").on("change", function(){
-				var id = $(this).attr('id')
+				var id = $(this).attr('data-id')
 				var order_display = $(this).val()
+				var parent = false
 
+				if($(this).hasClass('select_parent_menu')){
+					parent = true
+				}	
+
+
+				$('select').each(function(index) { 
+					if($(this).attr('data-parent') == id){
+						$(this).val(order_display)
+					}
+				});
+			
+				
 				$.ajax({
 					url: "{{ route('admin.updateOrderCategory') }}",
 					method: 'POST',
-					data: {_token: $('input[name=_token]').val(), id: id, order_display: order_display}
+					data: {_token: $('input[name=_token]').val(), id: id, order_display: order_display, parent: parent}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
-					
+
 					} else {
 						alert('Erreur !')
 					}
 				});
 
 			})	
-		
-		</script>
 
+		</script>
 	@endsection
 
 

@@ -50,7 +50,7 @@
 															@if($item['cost'] == 0)
 															<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 															@else 
-																<span>{{ $item['name'] }} <br><br><strong>{{ $item['category'] }}</strong></span>
+																<span>{{ $item['name'] }}</span>
 															@endif
 														</div>
 														<span class="column22">{{ round(floatval($item['cost']),2) }}</span>

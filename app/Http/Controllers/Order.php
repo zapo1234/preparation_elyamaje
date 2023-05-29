@@ -262,6 +262,21 @@ class Order extends BaseController
         }
     }
 
+    public function ordersHistory(){
+      $history = $this->order->getHistoryByUser(Auth()->user()->id);
+      return view('preparateur.history', ['history' => $history]);
+    }
+
+
+    public function colissimo(){
+
+
+      
+      $order_id = 64922;
+      $order = $this->order->getOrderById($order_id);
+      dd($order);
+    }
+
 }
 
 

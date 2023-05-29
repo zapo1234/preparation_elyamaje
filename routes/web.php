@@ -23,7 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         switch (Auth()->user()->role_id) {
             case 1 :
-                return view('index');
+                return redirect()->route('indexAdmin');
                 break;
             case 2 :
                 return redirect()->route('orders');
@@ -46,7 +46,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('index', function () {
         switch (Auth()->user()->role_id) {
             case 1 :
-                return view('index');
+                return redirect()->route('indexAdmin');
                 break;
             case 2 :
                 return redirect()->route('orders');
@@ -67,7 +67,7 @@ Route::group(['middleware' => ['auth']], function () {
 
 // ADMIN
 Route::group(['middleware' => ['auth', 'role:1']], function () {
-    // Route::get("/index", [Controller::class, "index"])->name('orders');
+    Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
     Route::get("/getAllOrdersAdmin", [Order::class, "getOrder"])->name('getAllOrdersAdmin');
     // traiter les routes pour des tiers
     Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
@@ -85,6 +85,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersDistributeurs", [Controller::class, "ordersDistributeurs"])->name('orders.distributeurs');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
+    Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
 });
 
 // EMBALLEUR
@@ -96,12 +97,15 @@ Route::group(['middleware' => ['auth', 'role:3']], function () {
 // CHEF D'ÉQUIPE
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
-    Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::get("/getAllOrders", [Order::class, "getOrder"])->name('leader.getAllOrders');
+});
+
+// ADMIN ET CHEF D'ÉQUIPE
+Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
+    Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
 });
-
 
 
 /*Authentication*/
@@ -118,6 +122,10 @@ Route::get("/importiers/{token}", [Order::class, "importiers"])->name('importier
 
 
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+
+
+Route::get("/colissimo", [Order::class, "colissimo"])->name('colissimo');
+
 
 
 
