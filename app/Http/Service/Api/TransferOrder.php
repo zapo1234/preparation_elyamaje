@@ -909,7 +909,7 @@ class TransferOrder
                           }
                       }
 
-            
+                    dd($data_lines);
        
                     foreach($data_tiers as $data)
                     {
@@ -970,7 +970,7 @@ class TransferOrder
                // recupération du dernier id invoices dolibar
                foreach($invoices_id as $vk)
                {
-                 $inv = $vk['id'];
+                 $inv = (int)$vk['id'];
                }
                  // recupérer le premier id de la facture
                foreach($invoices_asc as $vks)
@@ -1075,7 +1075,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
        
-           $i=$inv;
+           dd($inv);
            // valider les factures.
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
           // Lier les factures dolibar  à un moyen de paiement et bank.
