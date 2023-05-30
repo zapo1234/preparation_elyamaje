@@ -638,7 +638,7 @@ class TransferOrder
      */
     public function Transferorders()
     {
-           $id=73992;
+           $id=74179;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
             // excedd(rcer un get et post et put en fonction des status .
             // recuperer les données api dolibar copie projet tranfer x.
@@ -650,14 +650,6 @@ class TransferOrder
          
               //Recuperer les ref et id product dans un tableau
 
-              $produitParam = ["sortfield" => "rowid"];
-              $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/15644", $produitParam);
-              $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
-              
-              dump($listproduct);
-
-              dd('zapo');
-   
               $produitParam = ["limit" => 700, "sortfield" => "rowid"];
               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                // reference ref_client dans dolibar
@@ -852,13 +844,12 @@ class TransferOrder
                       
                              // verifier si la commande est nouvelle
                              //lié le client avec les produits de ses achats 
-                             if($this->testing($key_commande,$donnees['id'])==false)
+                              if($this->testing($key_commande,$donnees['id'])==false)
                               {
-                                  $code_fem ="fem-02M76";
                                   
-                                   $array_options[] = [
+                                   $data_options[] = [
                                     "options_idw"=>$donnees['id'],
-                                    "options_idc"=>$code_fem
+                                    "options_idc"=>"fem-18788-10",
                                   ];
                                  
                                    // pour les facture non distributeur...
@@ -874,6 +865,7 @@ class TransferOrder
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
                                    "lines"=>$data_product,
+                                   "array_options" => $data_options,
                                   
                                   
                                  ];
@@ -948,7 +940,7 @@ class TransferOrder
 
             public function invoicespays()
             {
-                $id =73992;
+                $id =74179;
                 $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
                 // recuperer les données api dolibar.
                 // recuperer les données api dolibar copie projet tranfer x.
