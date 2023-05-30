@@ -10,7 +10,7 @@
                     <td align="center">
                         <h1>Bonjour {{ $email}} </h1>
                         <a href="">
-                            <img i src="{{ asset('admin/img/Logo_elyamaje.png')}}" width="95px"; height="auto"; style="margin-top:20px;";>
+                            <img src="assets/images/Logo_elyamaje.png" width="95px"; height="auto"; style="margin-top:20px;";>
                         </a>       
                         <p>Votre compte à été activé !</p>
                         <p></p>
