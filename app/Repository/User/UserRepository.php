@@ -88,16 +88,26 @@ class UserRepository implements UserInterface
    public function createUser($user_name_last_name, $email, $role, $password){
 
       try{
-         $this->model->create([
+         $user = $this->model->create([
             'name'=> $user_name_last_name,
             'email'=> $email,
             'password'=> $password,
          ]);
 
+         $roles = [];
+         foreach($role as $r){
+            $roles[] = [
+               'user_id' => $user->id,
+               'role_id' => $r,
+
+            ];
+         }
+
+         DB::table('user_roles')->insert($roles);
          return true;
 
       } catch(Exception $e){
-         
+         return $e->getMessage();
       }
 
     

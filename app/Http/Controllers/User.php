@@ -36,14 +36,19 @@ class User extends BaseController
         $password = "elyamaje@$rand_pass";
         // crypter l'email.
         $password_hash = Hash::make($password);
+        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash);
 
-        if($this->users->createUser($user_name_last_name, $email, $role, $password_hash)){
-              // ENVOIE EMAIL
+        if($create){
+            // ENVOIE EMAIL
             Mail::send('email.newAccount', ['email' => $email, 'password'=> $password], function($message) use($email){
                 $message->to($email);
                 $message->from('no-reply@elyamaje.com');
                 $message->subject('Confirmation de création de compte Préparation Elyamaje');
             });
+
+            return redirect()->back()->with('success', 'Compte créé avec succès !');
+        } else {
+            return redirect()->back()->with('success',  $create);
         }
         
     }

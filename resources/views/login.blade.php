@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="assets/images/Logo_elyamaje.png" type="image/png" />
+	<link rel="icon" href="assets{{ ('/images/Logo_elyamaje.png') }}" type="image/png" />
 	<!--plugins-->
 	<link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
 	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
@@ -32,7 +32,7 @@
 				<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
 					<div class="col mx-auto">
 						<div class="mb-4 text-center">
-							<img src="assets/images/logo-img.png" width="180" alt="" />
+							<img src="assets{{ ('/images/logo-img.png') }}" width="180" alt="" />
 						</div>
 
 						@if(session('error'))
@@ -49,7 +49,7 @@
 									<div class="d-grid">
 										<a class="btn my-4 btn-white" href="javascript:;"> 
 											<span class="d-flex justify-content-center align-items-center">
-												<img id="imj" src="assets/images/Logo_elyamaje.png" width="95px" ;="" height="auto">
+												<img id="imj" src="assets{{ ('/images/Logo_elyamaje.png') }}" width="95px" ;="" height="auto">
 											</span>
 										</a>
 									</div>
