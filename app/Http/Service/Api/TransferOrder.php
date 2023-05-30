@@ -847,7 +847,7 @@ class TransferOrder
                               if($this->testing($key_commande,$donnees['id'])==false)
                               {
                                   
-                                   $data_options[] = [
+                                   $data_options = [
                                     "options_idw"=>$donnees['id'],
                                     "options_idc"=>"fem-18788-10",
                                   ];
