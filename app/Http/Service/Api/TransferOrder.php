@@ -649,6 +649,13 @@ class TransferOrder
               //environement test local
          
               //Recuperer les ref et id product dans un tableau
+
+              $produitParam = ["sortfield" => "rowid"];
+              $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/15642", $produitParam);
+              
+              dump($listproduct);
+
+              dd('zapo');
    
               $produitParam = ["limit" => 700, "sortfield" => "rowid"];
               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -1084,7 +1091,7 @@ class TransferOrder
         ];
        
           
-        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/15677/validate", json_encode($newCommandeValider));
+        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/15677/validate", json_encode($newCommandeValider,true));
 
         for($i=$nombre_count; $i<$inv+1; $i++)
         {
