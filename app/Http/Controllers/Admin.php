@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\Role\RoleRepository;
+use App\Repository\User\UserRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -16,10 +18,15 @@ class Admin extends BaseController
     
     private $api;
     private $category;
+    private $user;
+    private $role;
 
-    public function __construct(Api $api, CategoriesRepository $category){
+
+    public function __construct(Api $api, CategoriesRepository $category, UserRepository $user, RoleRepository $role){
         $this->api = $api;
         $this->category = $category;
+        $this->user = $user;
+        $this->role = $role;
     }
 
     
@@ -68,5 +75,11 @@ class Admin extends BaseController
         $order_display = $request->post('order_display');
         $parent = $request->post('parent');
         echo json_encode(['success' => $this->category->updateCategoryOrder($id, $order_display, $parent)]);
+    }
+
+    public function account(){
+        $users = $this->user->getUsersAndRoles();
+        $roles = $this->role->getRoles();
+        return view('admin.account', ['users' => $users, 'roles' => $roles]);
     }
 }

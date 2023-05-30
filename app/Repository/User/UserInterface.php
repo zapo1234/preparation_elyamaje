@@ -11,6 +11,8 @@ interface UserInterface
    public function getUsersByRole($role);
 
    public function updateRoleByUser($user_id, $role_id);
+
+   public function createUser($user_name_last_name, $email, $role, $password);
 }
 
 

@@ -10,17 +10,23 @@
 		@section("wrapper")
 			<div class="page-wrapper">
 				<div class="page-content">
-					<div class="page-breadcrumb d-sm-flex align-items-center mb-2">
+					<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
 						<div class="breadcrumb-title pe-3">Configuration</div>
+						<div class="ps-3">
+							<nav aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0 p-0">
+									<li class="breadcrumb-item active" aria-current="page">Catégories</li>
+								</ol>
+							</nav>
+						</div>
 						<div class="ms-auto">
-                            <div class="btn-group">
-								<form action="{{ route('admin.syncCategories') }}" method="get">
-									@csrf
-									<button type="submit" class="btn btn-dark px-5">Synchroniser les catégories</button>
-								</form>
-                            </div>
+							<form action="{{ route('admin.syncCategories') }}" method="get">
+								@csrf
+								<button type="submit" class="btn btn-dark px-5">Synchroniser les catégories</button>
+							</form>
                         </div>
 					</div>
+					
 
 
 					@if(session()->has('success'))
@@ -45,23 +51,24 @@
 								<!-- <div class="d-flex justify-content-center w-100 loading"> 
 									<div class="spinner-border text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
 								</div> -->
-								
-								<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>Nom</th>
-											<th>Ordre (Menu & Sous-menu)</th>
-										</tr>
-									</thead>
+								<div class="table-responsive">
+									<table id="example" class="table_classique w-100 table_list_order table table-striped table-bordered">
+										<thead>
+											<tr>
+												<th>Nom</th>
+												<th>Ordre (Menu & Sous-menu)</th>
+											</tr>
+										</thead>
 
-									<tbody>
-										@foreach ($categories as $category)
-											<!-- Appeler la vue récursive pour afficher les catégories et les sous-catégories -->
-											@include('partials.category', ['category' => $category])
-										@endforeach
-									</tbody>
-									
-								</table>
+										<tbody>
+											@foreach ($categories as $category)
+												<!-- Appeler la vue récursive pour afficher les catégories et les sous-catégories -->
+												@include('partials.category', ['category' => $category])
+											@endforeach
+										</tbody>
+										
+									</table>
+								</div>
 								
 										
 		

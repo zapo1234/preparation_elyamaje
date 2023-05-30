@@ -5276,6 +5276,7 @@ input::placeholder {
 @media screen and (max-width: 1280px) {
 
 
+
 	.email-header {
 
 
@@ -5627,6 +5628,13 @@ input::placeholder {
 
 @media screen and (max-width: 991px) {
 
+	.ms-auto-responsive{
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin-bottom: 15px;
+		margin-top: 15px;
+	}
 
 	.section-authentication-signin {
 
@@ -6028,6 +6036,8 @@ input::placeholder {
 	.card_table_mobile_responsive h1, 
 	.breadcrumb-title{
 		text-align: center;
+		display: flex;
+		align-items: center;
 	}
 
 	.number_order_pending{
@@ -6533,4 +6543,24 @@ a{
 @keyframes fadeIn {
 	0% { opacity: 0; }
 	100% { opacity: 1; }
+}
+
+.table_classique{
+	border: 1px solid #dee2e6;
+}
+
+.table_classique tr:not(:last-child) td{
+	border-bottom: 1px solid #dee2e6 !important;
+}
+
+.table_classique th{
+	border-bottom: 1px solid #dee2e6 !important;
+}
+
+.text-primary{
+	color: #000 !important;
+}
+
+.select2-dropdown{
+	z-index: 1600 !important;
 }

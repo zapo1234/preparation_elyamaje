@@ -11,7 +11,17 @@
     <!--navigation-->
 
     <ul class="metismenu" id="menu">
-        @if(Auth()->user()->role_id == 1)
+  
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
+            <li>
+                <a href="{{ url('dashboard') }}">
+                    <div class="parent-icon"><i class='bx bx-home'></i>
+                    </div>
+                    <div class="menu-title">Dashboard</div>
+                </a>
+            </li>
+        @endif
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
                 <a href="{{ url('index') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
@@ -27,13 +37,21 @@
                 </a>
             </li>
             <li>
-                <a href="{{ url('configuration') }}">
+                <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-cog'></i>
                     </div>
                     <div class="menu-title">Configuration</div>
                 </a>
+                <ul>
+                    <li> <a href="{{ url('configuration') }}"><i class="bx bx-right-arrow-alt"></i>Catégories</a>
+                    </li>
+                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
+                    </li>
+                </ul>
             </li>
-        @elseif(Auth()->user()->role_id == 2)
+
+        @endif
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-box'></i>
@@ -49,7 +67,8 @@
                     </li>
                 </ul>
             </li>
-        @elseif(Auth()->user()->role_id == 3)
+         @endif
+         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0)
             <li>
                 <a href="{{ url('wrapOrder') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
@@ -57,17 +76,7 @@
                     <div class="menu-title">Commandes</div>
                 </a>
             </li>
-        @elseif(Auth()->user()->role_id == 4)
-            <li>
-                <a href="{{ url('dashboard') }}">
-                    <div class="parent-icon"><i class='bx bx-home'></i>
-                    </div>
-                    <div class="menu-title">Dashboard</div>
-                </a>
-            </li>
         @endif
-
-
     </ul>
     
     <!--end navigation-->

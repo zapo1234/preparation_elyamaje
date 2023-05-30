@@ -25,6 +25,7 @@ class Auth extends BaseController
         }
     }
 
+
     public function logout(Request $request){
         
        Auth()->guard()->logout();
@@ -59,4 +60,5 @@ class Auth extends BaseController
         }
       
     }
+    
 }

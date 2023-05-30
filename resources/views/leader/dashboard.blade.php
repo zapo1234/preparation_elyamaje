@@ -36,11 +36,11 @@
 													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
-													<h6 class="mb-1 font-14">{{ $team['name'] }}</h6>
+													<h6 class="mb-1 font-14">{{ Auth()->user()->id == $team['user_id'] ? $team['name'].' (Moi)' : $team['name']}}</h6>
 													<p class="mb-0 font-13 text-secondary">{{ $team['email'] }}</p>
 												</div>
 												<div class="list-inline d-flex align-items-center customers-contacts ms-auto">	
-													<select id="{{ $team['user_id'] }}" class="change_user_role">
+													<select id="{{ $team['user_id'] }}" class="select_user change_user_role">
 														@foreach($roles as $role)
 															@if($role['id'] != 1 && $role['id'] != 4)
 																@if($team['role_id'] == $role['id'])
@@ -73,7 +73,7 @@
 													<div class="d-flex align-items-center">
 														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 														<div class="ms-2">
-															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{ $team['name'] }}</h6>
+															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{  Auth()->user()->id == $team['id'] ? $team['name'].' (Moi)' : $team['name'] }}</h6>
 														</div>
 													</div>
 													
@@ -81,11 +81,10 @@
 														<i class="lni lni-arrow-right"></i>
 													</div>
 													<div class="list-inline d-flex align-items-center customers-contacts">	
-													
-														<select id="attribution_{{ $team['id'] }}" class="change_attribution_order">
+														<select id="attribution_{{ $team['id'] }}" class="select_user change_attribution_order">
 															<option value="">Réatribution</option>
 															@foreach($teams as $key => $team2)
-																@if($team['id'] != $team2['user_id'] && $team2['role'] != 1 && $team2['role'] != 4)
+																@if($team['id'] != $team2['user_id'] && $team2['role_id'] == 2)
 																	<option id="user_name_{{ $team2['user_id'] }}" value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
 																@endif
 															@endforeach
@@ -199,8 +198,7 @@
 		<script>
 
 			$(document).ready(function() {
-				$("select").select2({width: '100px'})
-
+				// $("select").select2({width: '100px'})
 
 				// Sélection de la div
 				const paceProgress = document.querySelector('.pace-progress');
@@ -476,11 +474,13 @@
 			$(".change_attribution_order").on("change", function(){
 				if($(this).val() != ""){
 					var from_user = $(this).attr('id').split('_')[1]
-					var to_user = $("#user_name_"+$(this).val()).text()
+					var to_user = $(this).val()
+					var to_user_text = $("#user_name_"+$(this).val()).text()
+
 
 					$(".from_to_user").val(from_user+','+to_user)
 					$("#from_user").text($("#user_"+from_user).text())
-					$("#to_user").text(to_user)
+					$("#to_user").text(to_user_text)
 					$("#reallocationOrders").modal('show')
 				}
 			})
@@ -488,6 +488,7 @@
 			$(".reallocationOrdersConfirm").on("click", function(){
 				var from_user = $(".from_to_user").val().split(',')[0]
 				var to_user = $(".from_to_user").val().split(',')[1]
+
 
 				$(".loading_realocation").removeClass('d-none')
 				$("#reallocationOrders button").addClass('d-none')

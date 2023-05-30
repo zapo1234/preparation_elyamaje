@@ -35,10 +35,16 @@ abstract class DuskTestCase extends BaseTestCase
             $this->shouldStartMaximized() ? '--start-maximized' : '--window-size=1920,1080',
         ])->unless($this->hasHeadlessDisabled(), function ($items) {
             return $items->merge([
-                '--disable-gpu',
-                '--headless',
+                // '--disable-gpu',
+                // '--headless',
             ]);
         })->all());
+
+
+        // $options->setExperimentalOption('prefs', [
+        //     'download.default_directory' => storage_path('temp')
+        // ]);
+        
 
         return RemoteWebDriver::create(
             $_ENV['DUSK_DRIVER_URL'] ?? 'http://localhost:9515',

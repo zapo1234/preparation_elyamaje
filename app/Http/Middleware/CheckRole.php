@@ -15,13 +15,26 @@ class CheckRole
      */
     public function handle($request, Closure $next, ...$roles)
     {
-        $user = Auth()->user();
-        
-        if(in_array($user->role_id,$roles)) {
-            return $next($request);
+        auth()->user()->hasAnyRole($roles);
+        // Auth()->user()->roles->toArray()[0]['id']
+        if(!auth()->user()->hasAnyRole($roles)){
+            abort(403);
         }
+        return $next($request);
+        // $user = Auth()->user();
+        // $roleIds = $user->roles()
+        //     ->wherePivot('user_roles.user_id', $user->id)
+        //     ->pluck('user_roles.role_id')
+        //     ->toArray();
 
-        abort(403, 'Accès refusé');
+        // auth()->user()->roles = $roleIds;
+
+    
+        // if(count(array_intersect($roleIds, $roles)) > 0){
+            // return $next($request);
+        // }
+
+        // abort(403, 'Accès refusé');
     }
 
 }

@@ -41,7 +41,6 @@ class Controller extends BaseController
     public function index(Request $request){
         $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-
         $ids = array_column($teams, "role_id");
         $number_preparateur = count(array_keys($ids,  2));
 
@@ -75,7 +74,6 @@ class Controller extends BaseController
     public function dashboard(){
         $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-
         $ids = array_column($teams, "role_id");
         $number_preparateur = count(array_keys($ids,  2));
 

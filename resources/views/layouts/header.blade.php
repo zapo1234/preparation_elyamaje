@@ -1,4 +1,5 @@
 <header>
+
             <div class="topbar d-flex align-items-center">
                 <nav class="navbar navbar-expand">
                     <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
@@ -49,7 +50,7 @@
                             <img src="assets/images/avatars/default_avatar.png" class="user-img" alt="user avatar">
                             <div class="user-info ps-3">
                                 <p class="user-name mb-0">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</p>
-                                <p class="designattion mb-0">{{ Auth()->user() ?  (Auth()->user()->role_id == 2 ? "Préparateur" : (Auth()->user()->role_id == 3 ? "Emballeur" : (Auth()->user()->role_id == 4 ? "Chef d'équipe" : "Admin"))) : "Utilisateur" }}</p>
+                                <p class="designattion mb-0"> @include('partials.account', ['role' => Auth()->user()->roles->toArray()])</p>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

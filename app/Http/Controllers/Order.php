@@ -78,13 +78,16 @@ class Order extends BaseController
     }
  
     public function getOrder(){
-      if(Auth()->user()->role_id == 1 || Auth()->user()->role_id == 4){
-        $users =  $this->user->getUsersByRole([2])->toArray();
-        echo json_encode(['orders' => $this->orders(), 'users' => $users]);
-      } else {
-        return $this->orders(Auth()->user()->id);
-      }
+      // Préparateur
+      return $this->orders(Auth()->user()->id);
     }
+
+    public function getAllOrders(){
+      // Admin
+      $users =  $this->user->getUsersByRole([2]);
+      echo json_encode(['orders' => $this->orders(), 'users' => $users]);
+    }
+
 
     public function getOrderDistributeur(){
       return $this->orders(Auth()->user()->id, true);
@@ -271,8 +274,7 @@ class Order extends BaseController
 
     public function colissimo(){
 
-
-      
+      // Déclanchement Dusk 
       $order_id = 64922;
       $order = $this->order->getOrderById($order_id);
       dd($order);
