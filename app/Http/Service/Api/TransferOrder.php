@@ -845,8 +845,15 @@ class TransferOrder
                              // verifier si la commande est nouvelle
                              //lié le client avec les produits de ses achats 
                              if($this->testing($key_commande,$donnees['id'])==false)
-                             {
-                                  // pour les facture non distributeur...
+                              {
+                                  $code_fem ="fem-02M76";
+                                  
+                                   $array_options[] = [
+                                    "options_idw"=>$donnees['id'],
+                                    "options_idc"=>$code_fem
+                                  ];
+                                 
+                                   // pour les facture non distributeur...
                                    // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                    $d=1;
                                   
@@ -860,6 +867,7 @@ class TransferOrder
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
                                    "lines"=>$data_product,
+                                   "array_options"=>$array_options,
                                   
                                   
                                  ];
