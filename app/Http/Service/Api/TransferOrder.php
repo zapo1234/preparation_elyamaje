@@ -1047,7 +1047,7 @@ class TransferOrder
            // id  du dernier invoices(facture)
            // valider invoice
            $newCommandeValider = [
-           "idwarehouse"	=> "6",
+           "idwarehouse"	=> "0",
            "notrigger" => "0",
            ];
            
