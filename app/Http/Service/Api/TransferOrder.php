@@ -1047,8 +1047,8 @@ class TransferOrder
            // id  du dernier invoices(facture)
            // valider invoice
            $newCommandeValider = [
-           "idwarehouse"	=> "0",
-           "notrigger" => "0",
+           "idwarehouse"	=> "6",
+           "notrigger" => "0"
            ];
            
            $newCommandepaye = [
@@ -1056,7 +1056,7 @@ class TransferOrder
           "statut"	=> 2,
           "mode_reglement_id"=>4,
           "idwarehouse"=>6,
-           "notrigger"=>0,
+           "notrigger"=>0
     
        ];
       
@@ -1080,7 +1080,7 @@ class TransferOrder
           "datepaye"=>$date_finale,
           "paymentid"=>6,
           "closepaidinvoices"=> "yes",
-           "accountid"=> 6, // id du compte bancaire.
+           "accountid"=> 6 // id du compte bancaire.
         ];
        
           
