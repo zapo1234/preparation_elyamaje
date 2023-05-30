@@ -117,7 +117,7 @@ Route::get('/logout', [Auth::class, 'logout'])->name('logout');
 Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
-Route::get("/imports/tiers", [TiersController::class, "imports"])->name('imports');
+Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
 
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
