@@ -1084,6 +1084,8 @@ class TransferOrder
         ];
        
           
+        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/15677/validate", json_encode($newCommandeValider));
+
         for($i=$nombre_count; $i<$inv+1; $i++)
         {
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
