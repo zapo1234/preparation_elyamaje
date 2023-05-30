@@ -918,8 +918,6 @@ class TransferOrder
                           }
                       }
                 
-                       dump($data_tiers);
-                       dd($data_lines);
                   
                      foreach($data_tiers as $data)
                      {
@@ -1088,19 +1086,19 @@ class TransferOrder
         ];
        
           
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
         }
    
           // Lier les factures dolibar  à un moyen de paiement et bank.
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
             $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
         }
 
            // mettre le statut en payé dans la facture  dolibar
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
           $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
         }
