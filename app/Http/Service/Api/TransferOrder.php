@@ -860,14 +860,12 @@ class TransferOrder
                                   $data_lines[] = [
                                   "socid"=> $socid,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
-                                  "remise_percent"=>null,
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>"0.00000000",
                                   'total_tva' =>"0.00000000",
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
                                    "lines"=>$data_product,
-                                   "array_options"=>$array_options,
                                   
                                   
                                  ];
