@@ -905,7 +905,7 @@ class TransferOrder
                           {
                             if($val['socid']!=$vak['ref_ext'])
                             {
-                              unset($unique_arr[$r]['lines'][$q]);// filtrer les produit qui n'appartienne pas à l'utilisateur
+                              unset($unique_arr[$r]['lines'][$q]);// filtrer les produit qui n'appartienne pas à l'utilisateur.
                             }
                           }
                       }

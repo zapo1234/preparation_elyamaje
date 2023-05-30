@@ -116,9 +116,8 @@ Route::get('/logout', [Auth::class, 'logout'])->name('logout');
 // Tâche cron répartition orders
 Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
 
-// tache cron import de tiers toute les minutes....
-Route::get("/importiers/{token}", [Order::class, "importiers"])->name('importiers');
 
+Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
 
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
