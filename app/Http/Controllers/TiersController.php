@@ -46,6 +46,14 @@ class TiersController extends BaseController
 
     }
 
+    public function imports($token)
+    {
+          $token ="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk";
+          $this->tiers->insertiers();
+          dd('succes');
+
+    }
+
     
   }
 

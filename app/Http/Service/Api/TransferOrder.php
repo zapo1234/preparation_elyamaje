@@ -638,9 +638,8 @@ class TransferOrder
      */
     public function Transferorders()
     {
-           $id=73777;
+           $id=74179;
            $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
-           dd($order);
             // excedd(rcer un get et post et put en fonction des status .
             // recuperer les données api dolibar copie projet tranfer x.
              $method = "GET";
@@ -650,7 +649,7 @@ class TransferOrder
               //environement test local
          
               //Recuperer les ref et id product dans un tableau
-   
+
               $produitParam = ["limit" => 700, "sortfield" => "rowid"];
               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                // reference ref_client dans dolibar
@@ -661,7 +660,7 @@ class TransferOrder
               $tiers_ref = "";
              
               // recupérer directement les tiers de puis bdd.
-              $this->tiers->insertiers();// mise a jour api
+              //$this->tiers->insertiers();// mise a jour api
               $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
             
                // recuperer les ids commandes deja traiter
@@ -741,7 +740,7 @@ class TransferOrder
                   $id_commande_existe =[];// recupérer les id_commande existant deja récupérer dans les facture
              
                   $orders_d = [];// le nombre de orders non distributeur
-                  $orders_distributeur = [];// le nombre de orders des distributeurs...
+                  $orders_distributeur = [];// le nombre de orders des distributeurs.....
              
                   foreach($order as $k => $donnees)
                   {
@@ -845,22 +844,28 @@ class TransferOrder
                       
                              // verifier si la commande est nouvelle
                              //lié le client avec les produits de ses achats 
-                             if($this->testing($key_commande,$donnees['id'])==false)
-                             {
-                                  // pour les facture non distributeur...
+                              if($this->testing($key_commande,$donnees['id'])==false)
+                              {
+                                  
+                                   $data_options = [
+                                    "options_idw"=>$donnees['id'],
+                                    "options_idc"=>"fem-18788-10",
+                                  ];
+                                 
+                                   // pour les facture non distributeur...
                                    // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                    $d=1;
                                   
                                   $data_lines[] = [
-                                  "socid"=> $socid,
+                                  "socid"=> 3415,
                                   "ref_client" =>$donnees['id'],// fournir un id orders wocommerce dans dolibar...
-                                  "remise_percent"=>null,
                                   "email" => $donnees['billing']['email'],
                                   "total_ht"  =>"0.00000000",
                                   'total_tva' =>"0.00000000",
                                    "total_ttc" =>"0.00000000",
                                    "paye"=>"1",
                                    "lines"=>$data_product,
+                                   "array_options" => $data_options,
                                   
                                   
                                  ];
@@ -906,11 +911,11 @@ class TransferOrder
                           {
                             if($val['socid']!=$vak['ref_ext'])
                             {
-                              unset($unique_arr[$r]['lines'][$q]);// filtrer les produit qui n'appartienne pas à l'utilisateur
+                              unset($unique_arr[$r]['lines'][$q]);// filtrer les produit qui n'appartienne pas à l'utilisateur.
                             }
                           }
                       }
-
+                
                   
                      foreach($data_tiers as $data)
                      {
@@ -935,7 +940,7 @@ class TransferOrder
 
             public function invoicespays()
             {
-                $id =73777;
+                $id =74179;
                 $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
                 // recuperer les données api dolibar.
                 // recuperer les données api dolibar copie projet tranfer x.
@@ -1043,7 +1048,7 @@ class TransferOrder
            // valider invoice
            $newCommandeValider = [
            "idwarehouse"	=> "6",
-           "notrigger" => "0",
+           "notrigger" => "0"
            ];
            
            $newCommandepaye = [
@@ -1051,7 +1056,7 @@ class TransferOrder
           "statut"	=> 2,
           "mode_reglement_id"=>4,
           "idwarehouse"=>6,
-           "notrigger"=>0,
+           "notrigger"=>0
     
        ];
       
@@ -1075,23 +1080,25 @@ class TransferOrder
           "datepaye"=>$date_finale,
           "paymentid"=>6,
           "closepaidinvoices"=> "yes",
-           "accountid"=> 6, // id du compte bancaire.
+           "accountid"=> 6 // id du compte bancaire.
         ];
        
           
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/15677/validate", json_encode($newCommandeValider,true));
+
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
         }
    
           // Lier les factures dolibar  à un moyen de paiement et bank.
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
             $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
         }
 
            // mettre le statut en payé dans la facture  dolibar
-        for($i=$nombre_count; $i<$inv+2; $i++)
+        for($i=$nombre_count; $i<$inv+1; $i++)
         {
           $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
         }
