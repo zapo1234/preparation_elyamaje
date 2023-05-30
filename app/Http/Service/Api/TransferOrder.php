@@ -651,7 +651,8 @@ class TransferOrder
               //Recuperer les ref et id product dans un tableau
 
               $produitParam = ["sortfield" => "rowid"];
-              $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/15642", $produitParam);
+              $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/15664", $produitParam);
+              $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
               
               dump($listproduct);
 
