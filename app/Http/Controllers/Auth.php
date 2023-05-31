@@ -85,11 +85,11 @@ class Auth extends BaseController
                 $this->user->insertToken($email, $token);
 
                 // Envoie de l'email
-                // Mail::send('email.resetpassword', ['token' => $token, 'email' =>$email], function($message) use($email){
-                //     $message->to($email);
-                //     $message->from('no-reply@elyamaje.com');
-                //     $message->subject('Reinitialiser votre mot de passe !');
-                // });
+                Mail::send('email.resetpassword', ['token' => $token, 'email' =>$email], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Reinitialiser votre mot de passe !');
+                });
 
                 return redirect()->back()->with('success','Un mail a été envoyé à cette adresse !');
          }
