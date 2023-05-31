@@ -10,7 +10,7 @@
 			<div class="page-wrapper">
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
-						<div class="d-flex">
+						<div class="d-flex flex-wrap justify-content-center">
 							<div class="breadcrumb-title pe-3">Commandes</div>
 							<div class="pe-3 number_order_pending"></div>
 						</div>

@@ -20,6 +20,17 @@
                     <div class="menu-title">Dashboard</div>
                 </a>
             </li>
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class='bx bx-cog'></i>
+                    </div>
+                    <div class="menu-title">Configuration</div>
+                </a>
+                <ul>
+                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
+                    </li>
+                </ul>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
@@ -56,7 +67,7 @@
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-box'></i>
                     </div>
-                    <div class="menu-title">Commandes</div>
+                    <div class="menu-title">Préparation</div>
                 </a>
                 <ul>
                     <li> <a href="{{ url('orders') }}"><i class="bx bx-right-arrow-alt"></i>Internet</a>
@@ -73,7 +84,7 @@
                 <a href="{{ url('wrapOrder') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
                     </div>
-                    <div class="menu-title">Commandes</div>
+                    <div class="menu-title">Emballer</div>
                 </a>
             </li>
         @endif

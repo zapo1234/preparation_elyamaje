@@ -42,6 +42,13 @@
 								</div>
 							</div>
 						@endif
+						@if(session('success'))
+							<div class="error_login d-flex">
+								<div class="text-center alert alert-success">
+									{{ session('success') }}
+								</div>
+							</div>
+						@endif
 
 						<div class="card">
 							<div class="card-body">
@@ -66,9 +73,9 @@
 													<input type="password" name="password" class="form-control border-end-0" id="inputChoosePassword" value="" placeholder="Mot de passe"> <a href="javascript:;" class="input-group-text bg-transparent"><i class='bx bx-hide'></i></a>
 												</div>
 											</div>
-											<!-- <div class="w-100 col-md-6 text-end">	
-												<a href="{{ url('authentication-forgot-password') }}">Forgot Password ?</a>
-											</div> -->
+											<div class="w-100 col-md-6 text-end">	
+												<a href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
+											</div>
 											<div class="col-12">
 												<div class="d-grid">
 													<button type="submit" class="btn btn-primary"><i class="bx bxs-lock-open"></i>Se connecter</button>

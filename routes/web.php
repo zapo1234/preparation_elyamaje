@@ -58,7 +58,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("configuration", [Controller::class, "configuration"])->name('admin.configuration');
     Route::get("syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
     Route::post("updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
-    Route::get("/account", [Admin::class, "account"])->name('account');
 });
 
 // PRÉPARATEUR
@@ -88,7 +87,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
     Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
+    Route::get("/account", [Admin::class, "account"])->name('account');
     Route::post("/account", [User::class, "createAccount"])->name('account.create');
+    Route::post("/deleteAccount", [User::class, "deleteAccount"])->name('account.delete');
+    Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
+    Route::get("/user", [User::class, "getUser"])->name('account.user');
+
 });
 
 
@@ -96,6 +100,13 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 Route::get("/login", [Auth::class, "login"])->name('login');
 Route::post("/login", [Auth::class, "postLogin"])->name('login');
 Route::get('/logout', [Auth::class, 'logout'])->name('logout');
+Route::get('/authentication-forgot-password', [Auth::class, 'forgotPassword'])->name('authentication-forgot-password');
+Route::post('/resetPassword', [Auth::class, 'resetPassword'])->name('password.reset');
+Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->name('auth.passwords.reset');
+Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage'])->name('auth.passwords.reset');
+
+
+
 
 // Tâche cron répartition orders
 

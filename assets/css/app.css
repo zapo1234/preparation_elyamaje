@@ -5636,6 +5636,18 @@ input::placeholder {
 		margin-top: 15px;
 	}
 
+	.page-breadcrumb .ps-3{
+		padding-left: 0px !important
+	}
+	
+	.page-breadcrumb .pe-3{
+		padding-right: 0px !important
+	}
+
+	.breadcrumb-title{
+		border: none !important;
+	}
+
 	.section-authentication-signin {
 
 
@@ -6563,4 +6575,8 @@ a{
 
 .select2-dropdown{
 	z-index: 1600 !important;
+}
+
+.action_table i{
+	cursor: pointer !important;
 }

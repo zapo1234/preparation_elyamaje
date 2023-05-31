@@ -19,7 +19,7 @@
 								</ol>
 							</nav>
 						</div>
-						<div class="ms-auto">
+						<div class="ms-auto ms-auto-responsive">
 							<form action="{{ route('admin.syncCategories') }}" method="get">
 								@csrf
 								<button type="submit" class="btn btn-dark px-5">Synchroniser les catégories</button>

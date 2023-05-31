@@ -2,8 +2,8 @@
 
 @foreach($role as $key => $r)
 	@if(count($role) > 1)
-		@if($key == count($role) - 1)
-			/ {{ $r['role'] }}
+		@if($key != count($role) - 1)
+			{{ $r['role'] }} /
 		@else 
 			{{ $r['role'] }}
 		@endif

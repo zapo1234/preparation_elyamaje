@@ -8,17 +8,16 @@
             <table style="border-style:solid; border-width:1px; border-color:#edeff1;" width="auto" border="0" cellspacing="0" cellpadding="25">
                 <tr>
                     <td align="center">
-                        <h1>Bonjour {{ $name }} </h1>
+                        <h1>Bonjour</h1>
                         <a href="">
                             <img src="assets{{ ('/images/Logo_elyamaje.png') }}" width="95px"; height="auto"; style="margin-top:20px;";>
                         </a>       
-                        <p>Votre compte à été activé !</p>
+                        <p>Vous avez fait une demande de réinitialisation de mot de passe</p>
                         <p></p>
-                        <p>Voici le lien et le mot de passe pour vous connecter :</p>
+                        <p>Cliquez ci-dessous afin d'effectuer la podification :</p>
                         <p></p>
-                        <p>Lien : https://preparation.elyamaje.com</p>
-                        <p>Identifiant :  {{ $email }}</p>
-                        <p>Mot de passe : {{ $password }}</p>
+                        <p><button class="resetpassword" style="display:block:color:black"><a href="{{ route('auth.passwords.reset') }}/{{ $token }}">Réinitialiser mot de passe !</a></button></p>
+                        <p></p>
                         <p>L'équipe Elya Maje</p>
                     </td>
                 </tr>

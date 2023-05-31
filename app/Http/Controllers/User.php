@@ -27,10 +27,19 @@ class User extends BaseController
     }  
 
     public function createAccount(Request $request) {
+
+      
         $input = $request->all();
         $user_name_last_name =   $input['name_last_name'];
         $email =  $input['email'];
         $role =  $input['role'];
+
+        // Check if email is unique
+        $email_already_exist = $this->users->getUserByEmail($email);
+        if($email_already_exist > 0){
+            return redirect()->back()->with('error',  'Cet email existe déjà !');
+        }
+
 
         $rand_pass = rand(136,50000);
         $password = "elyamaje@$rand_pass";
@@ -39,8 +48,9 @@ class User extends BaseController
         $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash);
 
         if($create){
+            
             // ENVOIE EMAIL
-            Mail::send('email.newAccount', ['email' => $email, 'password'=> $password], function($message) use($email){
+            Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
                 $message->to($email);
                 $message->from('no-reply@elyamaje.com');
                 $message->subject('Confirmation de création de compte Préparation Elyamaje');
@@ -48,8 +58,55 @@ class User extends BaseController
 
             return redirect()->back()->with('success', 'Compte créé avec succès !');
         } else {
-            return redirect()->back()->with('success',  $create);
+            return redirect()->back()->with('error',  $create);
         }
         
+    }
+
+    public function deleteAccount(Request $request){
+        $user_id = $request->post("account_user");
+        $delete = $this->users->deleteUser($user_id);
+
+        if($delete){
+            return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+        } else {
+            return redirect()->back()->with('error',  $delete);
+        }
+    }
+
+    public function updateAccount(Request $request){
+
+        $input = $request->all();
+        $user_id =   $input['account_user_update'];
+        $user_name_last_name =  $input['update_name_last_name'];
+        $email =  $input['update_email'];
+        $role =  $input['update_role'];
+
+        // Check if email is unique
+        $email_already_exist = $this->users->getUserByEmail($email, $user_id);
+        if($email_already_exist > 0){
+            return redirect()->back()->with('error',  'Cet email existe déjà !');
+        }
+  
+        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role);
+
+        if($update){
+            return redirect()->back()->with('success', 'Compte modifié avec succès !');
+        } else {
+            return redirect()->back()->with('error',  $update);
+        }
+    }
+
+
+    public function getUser(Request $request){
+        $user_id = $request->get('user_id');
+        $user = $this->users->getUserById($user_id);
+       
+        if(count($user) > 0){
+            echo json_encode(['success' => true, 'user' => $user[0] ]);
+        } else {
+            echo json_encode(['success' => false ]);
+        }
+       
     }
 }

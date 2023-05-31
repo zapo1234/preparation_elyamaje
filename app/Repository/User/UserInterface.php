@@ -10,9 +10,23 @@ interface UserInterface
 
    public function getUsersByRole($role);
 
+   public function getUserById($user_id);
+
+   public function getUserByEmail($email, $user_id = false);
+
    public function updateRoleByUser($user_id, $role_id);
 
+   public function updateUserById($user_id, $user_name_last_name, $email, $role);
+
    public function createUser($user_name_last_name, $email, $role, $password);
+
+   public function deleteUser($user_id);
+
+   public function insertToken($email, $token);
+
+   public function getUserByToken($token);
+
+   public function updatePassword($token, $password_hash);
 }
 
 
