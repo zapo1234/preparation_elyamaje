@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="assets{{ ('/images/Logo_elyamaje.png') }}" type="image/png" />
+	<link rel="icon" href="{{ asset('assets/images/Logo_elyamaje.png')}}" type="image/png" />
 	<!-- loader-->
 	<link href="assets/css/pace.min.css" rel="stylesheet" />
 	<script src="assets/js/pace.min.js"></script>
@@ -32,7 +32,7 @@
 								<div class="card-body">
 									<div class="p-5">
 										<div class="text-start">
-											<img src="assets{{ ('/images/Logo_elyamaje.png') }}" width="100" alt="">
+											<img src="{{ asset('assets/images/Logo_elyamaje.png')}}" width="100" alt="">
 										</div>
 										<h4 class="mt-5 font-weight-bold">Réinitialisation</h4>
 										<p class="text-muted">Veuillez entrer un nouveau mot de passe</p>
