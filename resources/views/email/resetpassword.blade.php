@@ -16,7 +16,7 @@
                         <p></p>
                         <p>Cliquez ci-dessous afin d'effectuer la modification :</p>
                         <p></p>
-                        <p><button class="resetpassword" style="padding:10px;display:block:color:black"><a href="{{ route('auth.passwords.reset') }}?token={{ $token }}">Réinitialiser mot de passe !</a></button></p>
+                        <button class="resetpassword" style="display:block:color:black"><a href="{{ route('auth.passwords.reset') }}?token={{ $token }}">Réinitialiser mot de passe !</a></button>
                         <p></p>
                         <p>L'équipe Elya Maje</p>
                     </td>
