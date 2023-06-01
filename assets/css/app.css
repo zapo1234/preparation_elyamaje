@@ -847,11 +847,6 @@ a {
 }
 
 @media (max-width: 990px) { 
-	.modal_order {
-		position: absolute !important;
-		top: -134px !important;
-		height: 100vh !important;
-	}
 
 	.dataTables_scrollBody{
 		position: initial !important;
@@ -6666,5 +6661,10 @@ select:focus, input:focus{
 }
 
 
-
-
+@media (max-width: 990px) { 
+	.modal_order {
+		position: absolute !important;
+		top: -134px !important;
+		height: 100vh !important;
+	}
+}
