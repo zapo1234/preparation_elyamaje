@@ -528,7 +528,7 @@
 			function show(id){
 			
 				$('#order_'+id).modal({
-					backdrop: 'static',
+					backdrop: false,
 					keyboard: false
 				})
 
