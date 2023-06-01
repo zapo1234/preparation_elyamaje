@@ -204,6 +204,8 @@
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 
 		<script>
+			
+			
 
 			$(document).ready(function() {
 
@@ -422,6 +424,17 @@
 					}
 				})
 
+				if($(window).width() < 650){
+					$(".dataTables_scrollBody").css('max-height', '100%')
+				}
+
+				$(window).resize(function(){
+					if($(window).width() < 650){
+						$(".dataTables_scrollBody").css('max-height', '100%')
+					} else {
+						$(".dataTables_scrollBody").css('max-height', '59vh')
+					}
+				})
 			})
 
 
