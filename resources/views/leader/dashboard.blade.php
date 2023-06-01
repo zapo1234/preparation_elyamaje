@@ -365,7 +365,7 @@
 											</div>
 										</div>
 									</div>
-									<i onclick="show(`+row.id+`)" class="show_detail bx bx-comment-detail"></i>
+									<i onclick="show(`+row.id+`)" ontouchstart="show(`+row.id+`)" class="show_detail bx bx-comment-detail"></i>
 									`;
 							}
             			},
