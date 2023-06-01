@@ -847,24 +847,11 @@ a {
 }
 
 @media (max-width: 990px) { 
-	.modal {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 9999;
-	  }
-	  
-	  .backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 9998;
-	  }
-	  
+	.modal_order {
+		position: absolute !important;
+		top: -134px;
+		height: 100vh;
+	}
 
 	.dataTables_scrollBody{
 		position: initial !important;
