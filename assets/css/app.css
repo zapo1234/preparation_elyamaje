@@ -847,13 +847,28 @@ a {
 }
 
 @media (max-width: 990px) { 
-	/* .modal_order {
-		position: fixed !important;
-	}
+	.modal {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 9999;
+	  }
+	  
+	  .backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 9998;
+	  }
+	  
 
 	.dataTables_scrollBody{
 		position: initial !important;
-	} */
+	}
 	 
 	  
 	.html_login, .html_login body, .html_login .wrapper{
