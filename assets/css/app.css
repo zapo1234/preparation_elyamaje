@@ -6666,5 +6666,19 @@ select:focus, input:focus{
 		position: absolute !important;
 		top: -134px !important;
 		height: 100vh !important;
+		-webkit-position: absolute !important;
+		-moz-position: absolute !important;
+		-ms-position: absolute !important;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.modal_order {
+		position: absolute !important;
+		top: -134px !important;
+		height: 100vh !important;
+		-webkit-position: absolute !important;
+		-moz-position: absolute !important;
+		-ms-position: absolute !important;
 	}
 }
