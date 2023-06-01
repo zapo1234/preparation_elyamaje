@@ -849,8 +849,8 @@ a {
 @media (max-width: 990px) { 
 	.modal_order {
 		position: absolute !important;
-		top: -134px;
-		height: 100vh;
+		top: -134px !important;
+		height: 100vh !important;
 	}
 
 	.dataTables_scrollBody{
