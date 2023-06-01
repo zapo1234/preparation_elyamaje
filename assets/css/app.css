@@ -6654,6 +6654,6 @@ select:focus, input:focus{
 	cursor: pointer;
 }
 
-.show{
-	display: block !important;
+.modal_order{
+	z-index: 9999 !important;
 }
