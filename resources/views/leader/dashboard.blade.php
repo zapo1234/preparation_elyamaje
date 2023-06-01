@@ -206,7 +206,7 @@
 		<script>
 
 			$(document).ready(function() {
-		
+
 				// Sélection de la div
 				const paceProgress = document.querySelector('.pace-progress');
 

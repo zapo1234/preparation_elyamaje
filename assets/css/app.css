@@ -847,6 +847,15 @@ a {
 }
 
 @media (max-width: 990px) { 
+	.modal_order {
+		position: absolute !important;
+	}
+
+	.dataTables_scrollBody{
+		position: initial !important;
+	}
+	 
+	  
 	.html_login, .html_login body, .html_login .wrapper{
 		height: 100%;
 	}
@@ -6655,23 +6664,5 @@ select:focus, input:focus{
 }
 
 
-.modal_order {
-	position: absolute !important;
-	top: 0 !important;
-	left: 0 !important;
-	width: 100% !important;
-	height: 100% !important;
-	z-index: 9999 !important;
-  }
-  
 
-  .backdrop {
-	position: fixed !important;
-	top: 0 !important;
-	left: 0 !important;
-	width: 100% !important;
-	height: 100% !important;
-	z-index: 9998 !important;
-	display: none !important;
-  }
 
