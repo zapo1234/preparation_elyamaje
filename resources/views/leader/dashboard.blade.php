@@ -355,7 +355,7 @@
 																</div>`
 														).join('')}
 														</div>
-														<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
+														<div class="close_modal align-items-end flex-column mt-2 d-flex justify-content-end"> 
 															<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
 															<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
 														</div>

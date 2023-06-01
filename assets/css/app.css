@@ -844,6 +844,10 @@ a {
 	.select_chart{
 		margin-top: 25px !important;
 	}
+
+	.modal_order .close_modal{
+		margin-bottom: 50px !important;
+	}
 }
 
 @media (max-width: 990px) { 
