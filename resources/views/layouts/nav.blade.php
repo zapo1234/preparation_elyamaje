@@ -34,7 +34,14 @@
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
-                <a href="{{ url('index') }}">
+                <a href="{{ url('analytics') }}">
+                    <div class="parent-icon"><i class='bx bx-data'></i>
+                    </div>
+                    <div class="menu-title">Analytics</div>
+                </a>
+            </li>    
+            <li>
+                <a href="{{ url('indexAdmin') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
                     </div>
                     <div class="menu-title">Commandes</div>
@@ -42,7 +49,7 @@
             </li>
             <li>
                 <a href="{{ url('refreshtiers') }}">
-                    <div class="parent-icon"><i class='bx bx-box'></i>
+                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
                     </div>
                     <div class="menu-title">Import Api tiers</div>
                 </a>

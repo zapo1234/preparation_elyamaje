@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="assets{{ ('/images/Logo_elyamaje.png') }}" type="image/png" />
+	<link rel="icon" href="assets{{ ('/images/icons/elyamaje_logo_mini.jpg') }}" type="image/jpg" />
 	<!--plugins-->
 	@yield("style")
 	<link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />

@@ -39,10 +39,19 @@ class Controller extends BaseController
     
      // INDEX ADMIN
     public function index(Request $request){
-        $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
+        $teams = $this->users->getUsersByRole([2, 3, 5]);
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-        $ids = array_column($teams, "role_id");
-        $number_preparateur = count(array_keys($ids,  2));
+        $number_preparateur = 0;
+        
+        foreach($teams as $team){
+            foreach($team['role_id'] as $role){
+                if($role == 2){
+                    $number_preparateur = $number_preparateur + 1;
+                }
+            }
+        }   
+
+        // dd($teams);
 
         $roles = $this->role->getRoles();
 
@@ -72,10 +81,17 @@ class Controller extends BaseController
 
     // INDEX CHEF D'ÉQUIPE
     public function dashboard(){
-        $teams = $this->users->getUsersByRole([2, 3, 5])->toArray();
-        $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-        $ids = array_column($teams, "role_id");
-        $number_preparateur = count(array_keys($ids,  2));
+       $teams = $this->users->getUsersByRole([2, 3, 5]);
+       $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+       $number_preparateur = 0;
+        
+        foreach($teams as $team){
+            foreach($team['role_id'] as $role){
+                if($role == 2){
+                    $number_preparateur = $number_preparateur + 1;
+                }
+            }
+        }   
 
         $roles = $this->role->getRoles();
         return view('leader.dashboard', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);

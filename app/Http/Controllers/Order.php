@@ -105,8 +105,10 @@ class Order extends BaseController
       $orders_id = [];
       $orders_to_delete = [];
 
+
+
       foreach($users as $user){
-        $array_user[$user->user_id] = [];
+        $array_user[$user['user_id']] = [];
       }
 
       if(count($array_user) == 0){
@@ -266,6 +268,7 @@ class Order extends BaseController
         }
     }
 
+    // Historique commande préparateur
     public function ordersHistory(){
       $history = $this->order->getHistoryByUser(Auth()->user()->id);
       return view('preparateur.history', ['history' => $history]);

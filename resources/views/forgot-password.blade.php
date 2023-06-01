@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="{{ asset('assets/images/Logo_elyamaje.png')}}" type="image/png" />
+	<link rel="icon" href="assets{{ ('/images/icons/elyamaje_logo_mini.jpg') }}" type="image/jpg" />
 
 	<!-- loader-->
 	<link href="assets/css/pace.min.css" rel="stylesheet" />

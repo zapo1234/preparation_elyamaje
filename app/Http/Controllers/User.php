@@ -65,13 +65,19 @@ class User extends BaseController
 
     public function deleteAccount(Request $request){
         $user_id = $request->post("account_user");
-        $delete = $this->users->deleteUser($user_id);
 
-        if($delete){
-            return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+        if($user_id != 1){
+            $delete = $this->users->deleteUser($user_id);
+
+            if($delete){
+                return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+            } else {
+                return redirect()->back()->with('error',  $delete);
+            }
         } else {
-            return redirect()->back()->with('error',  $delete);
+            return redirect()->back()->with('error',  'L\'administrateur principal ne peut pas être supprimé !');
         }
+       
     }
 
     public function updateAccount(Request $request){
@@ -81,6 +87,7 @@ class User extends BaseController
         $user_name_last_name =  $input['update_name_last_name'];
         $email =  $input['update_email'];
         $role =  $input['update_role'];
+
 
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email, $user_id);

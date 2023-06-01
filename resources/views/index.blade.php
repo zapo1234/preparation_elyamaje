@@ -2,9 +2,8 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
-			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
-		@endsecrion 
+
+		@endsection 
 
 		@section("wrapper")
 			<div class="page-wrapper">
@@ -31,6 +30,7 @@
 									<!-- Liste des utilisateurs et leur rôle -->
 									<div class="p-3 mb-3 ps ps--active-y">
 										@foreach($teams as $key => $team)
+											<input class="role_user_input" id="user_{{ $team['user_id'] }}" type="hidden" value="{{ implode(',',$team['role_id']) }}">
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
 												<div class="">
 													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
@@ -39,18 +39,14 @@
 													<h6 class="mb-1 font-14">{{ Auth()->user()->id == $team['user_id'] ? $team['name'].' (Moi)' : $team['name']}}</h6>
 													<p class="mb-0 font-13 text-secondary">{{ $team['email'] }}</p>
 												</div>
-												<div class="list-inline d-flex align-items-center customers-contacts ms-auto">	
-													<select id="{{ $team['user_id'] }}" class="select_user change_user_role">
-														@foreach($roles as $role)
-															@if($role['id'] != 1 && $role['id'] != 4)
-																@if($team['role_id'] == $role['id'])
-																	<option selected value="{{ $role['id'] }}">{{ $role['role'] }}</option>
-																@else
-																	<option value="{{ $role['id'] }}">{{ $role['role'] }}</option>
-																@endif
+												<div class="list-inline d-flex align-items-center list_role_user customers-contacts ms-auto">	
+													@foreach($roles as $role)
+														@if($role['id'] != 1 && $role['id'] != 4)
+															@if(in_array($role['id'], $team['role_id']))
+																<span class="badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
 															@endif
-														@endforeach
-													</select>
+														@endif
+													@endforeach
 												</div>
 											</div>
 										@endforeach
@@ -84,7 +80,7 @@
 														<select id="attribution_{{ $team['id'] }}" class="select_user change_attribution_order">
 															<option value="">Réatribution</option>
 															@foreach($teams as $key => $team2)
-																@if($team['id'] != $team2['user_id'] && $team2['role_id'] == 2)
+																@if($team['id'] != $team2['user_id'] && in_array(2, $team2['role_id']))
 																	<option id="user_name_{{ $team2['user_id'] }}" value="{{ $team2['user_id'] }}">{{  $team2['name']  }}</option>
 																@endif
 															@endforeach
@@ -99,7 +95,7 @@
 								</div>
 
 								<!-- Modal de confirmation de changement de rôle -->
-								<div class="modal fade" id="valid_change_user_role" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<!-- <div class="modal fade" id="valid_change_user_role" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 										<div class="modal-body d-flex flex-column justify-content-center">
@@ -112,7 +108,7 @@
 										</div>
 										</div>
 									</div>
-								</div>
+								</div> -->
 
 
 								<!-- Modal de confirmation de réatribution de commandes à un user -->
@@ -193,13 +189,10 @@
 
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
 
 		<script>
 
 			$(document).ready(function() {
-				// $("select").select2({width: '100px'})
-
 
 				// Sélection de la div
 				const paceProgress = document.querySelector('.pace-progress');
@@ -284,13 +277,16 @@
 						{data: null,
 							render: function(data, type, row) {
 								var selectOptions = '<option selected>Non attribuée</option>';
-								row.users.forEach(function(element) {
-									if(element.user_id == row.user_id){
-										selectOptions += `<option selected value="${element.user_id}">${element.name}</option>`;
+							
+								Object.entries(row.users).forEach(([key, value]) => {
+									if(value.user_id == row.user_id){
+										selectOptions += `<option selected value="${value.user_id}">${value.name}</option>`;
 									} else {
-										selectOptions += `<option value="${element.user_id}">${element.name}</option>`;
+										selectOptions += `<option value="${value.user_id}">${value.name}</option>`;
 									}
-								});
+
+								})
+								
 								var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id})" id="select_${row.id}" class="select_user">${selectOptions}</select>`;
 
 								if($("#select_"+row.id).val() == "Non attribuée"){
@@ -417,6 +413,10 @@
 
 
 			$(".allocation_of_orders").on("click", function(){
+				$('#allocationOrders').modal({
+					backdrop: 'static',
+					keyboard: false
+				})
 				$("#allocationOrders").modal('show')
 			})
 
@@ -444,32 +444,32 @@
 			})
 
 
-			$(".change_user_role").on("change", function(){
-				var user_id = $(this).attr('id')
-				var role_id = $(this).val()
-				$(".user_role_id").val(user_id+','+role_id)
-				$("#valid_change_user_role").modal('show')
-			})
+			// $(".change_user_role").on("change", function(){
+			// 	var user_id = $(this).attr('id')
+			// 	var role_id = $(this).val()
+			// 	$(".user_role_id").val(user_id+','+role_id)
+			// 	$("#valid_change_user_role").modal('show')
+			// })
 
-			$(".change_user_role_button").on("click", function(){
-				var user_id = $(".user_role_id").val().split(',')[0]
-				var role_id = $(".user_role_id").val().split(',')[1]
+			// $(".change_user_role_button").on("click", function(){
+			// 	var user_id = $(".user_role_id").val().split(',')[0]
+			// 	var role_id = $(".user_role_id").val().split(',')[1]
 
-				$.ajax({
-					url: "{{ route('updateRole') }}",
-					method: 'POST',
-					data: {_token: $('input[name=_token]').val(), user_id: user_id, role_id: role_id}
-				}).done(function(data) {
-					if(JSON.parse(data).success){
-						$("#valid_change_user_role").modal('hide')
-						if($(".change_attribution_order").length > 0){
-							location.reload()
-						}
-					} else {
-						alert('Erreur !')
-					}
-				});
-			})
+			// 	$.ajax({
+			// 		url: "{{ route('updateRole') }}",
+			// 		method: 'POST',
+			// 		data: {_token: $('input[name=_token]').val(), user_id: user_id, role_id: role_id}
+			// 	}).done(function(data) {
+			// 		if(JSON.parse(data).success){
+			// 			$("#valid_change_user_role").modal('hide')
+			// 			if($(".change_attribution_order").length > 0){
+			// 				location.reload()
+			// 			}
+			// 		} else {
+			// 			alert('Erreur !')
+			// 		}
+			// 	});
+			// })
 
 
 			$(".change_attribution_order").on("change", function(){

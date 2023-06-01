@@ -54,7 +54,7 @@
 													<label for="role" class="form-label">Rôle</label>
 													<select required name="role[]" id="role" class="form-select">
 														@foreach($roles as $role)
-															@if( $role->id != 1)
+															@if( $role->id != 1 || $isAdmin)
 																<option value="{{ $role->id }}">{{  $role->role }}</option>
 															@endif
 														@endforeach
@@ -103,37 +103,29 @@
 											<tr>
 												<td data-label="Nom">{{ $user['name'] }}</td>
 												<td data-label="Status">	
-													@foreach($user['role'] as $key => $r)
-														@if(count($user['role']) > 1)
-															@if($key != count($user['role']) - 1)
-																 {{ $r }} /
-															@else 
-																{{ $r }}
-															@endif
-														@else
-															{{ $r }} 
+													@foreach($roles as $role)
+														@if(in_array($role['id'], $user['role_id']))
+															<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
 														@endif
-														
 													@endforeach
 												</td>
 												<td class="d-flex justify-content-between" data-label="Action" >
-													@if(!in_array('Admin', $user['role']))
-														<div class="d-flex">
-															<div data-id="{{ $user['user_id'] }}" class="update_action action_table font-22 text-primary">	
-																<i class="fadeIn animated bx bx-edit"></i>
-															</div>
-															<div data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
-																<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
-															</div>
-														</div>
-													@else 
+													@if(in_array('Admin', $user['role']) && !$isAdmin)
 														<div class="d-flex">
 															<div class="action_table font-22 text-secondary">	
 																<i class="text-secondary fadeIn animated bx bx-edit"></i>
 															</div>
-															<div style="margin-left:10px;" class="action_table font-22 text-secondary">	
-																<i class="text-secondary fadeIn animated bx bx-trash-alt"></i>
+														</div>
+													@else 
+														<div class="d-flex">
+															<div data-id="{{ $user['user_id'] }}" class="update_action action_table font-22 text-primary">	
+																<i class="fadeIn animated bx bx-edit"></i>
 															</div>
+															@if($user['user_id'] != 1)
+																<div data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
+																	<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
+																</div>
+															@endif
 														</div>
 													@endif
 												</td>
@@ -199,7 +191,7 @@
 											<label for="update_role" class="form-label">Rôle</label>
 											<select required name="update_role[]" id="update_role" class="form-select">
 												@foreach($roles as $role)
-													@if( $role->id != 1)
+													@if( $role->id != 1 || $isAdmin)
 														<option value="{{ $role->id }}">{{  $role->role }}</option>
 													@else 
 														<option disabled value="{{ $role->id }}">{{  $role->role }}</option>
@@ -231,7 +223,11 @@
 
 		$(document).ready(function() {
 
-			$("select").select2({multiple: true, maximumSelectionLength: 2})
+			$("select").select2({multiple: true, maximumSelectionLength: 3})
+
+			$('select').val(null);
+			$('.select2-selection__rendered').html('');
+
 			$('#example').DataTable({
 
 			})

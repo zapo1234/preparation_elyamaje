@@ -169,6 +169,9 @@ class OrderRepository implements OrderInterface
                   'date' => $order['date'],
                   'total' => $order['total_order'],
                   'status' => $order['status'],
+                  'coupons' => $order['coupons'],
+                  'discount' => $order['discount'],
+                  'discount_amount' => $order['discount_amount'],
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -181,6 +184,9 @@ class OrderRepository implements OrderInterface
                   'date' => $order['date'],
                   'total' => $order['total_order'],
                   'status' => $order['status'],
+                  'coupons' => $order['coupons'],
+                  'discount' => $order['discount'],
+                  'discount_amount' => $order['discount_amount'],
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }

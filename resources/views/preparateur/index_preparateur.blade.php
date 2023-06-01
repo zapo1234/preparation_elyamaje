@@ -59,11 +59,15 @@
 													</div>
 												@endforeach
 											</div>
-											
+
 											<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 												<div class="w-100 d-flex justify-content-between">
 													<span class="mt-1 mb-2 montant_toltal_order">#{{ $orders['details']['id'] }} </span>
+													@if($orders['details']['coupons'])
+														<div><span style="margin-left:12%" class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
+													@endif
 													<span class="mt-1 mb-2 montant_toltal_order">Total: {{ $orders['details']['total'] }}€</span>
+												</div>
 												</div>
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>

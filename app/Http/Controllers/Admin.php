@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\History\HistoryRepository;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -20,13 +21,20 @@ class Admin extends BaseController
     private $category;
     private $user;
     private $role;
+    private $history;
 
-
-    public function __construct(Api $api, CategoriesRepository $category, UserRepository $user, RoleRepository $role){
+    public function __construct(
+        Api $api, 
+        CategoriesRepository $category,
+        UserRepository $user, 
+        RoleRepository $role,
+        HistoryRepository $history
+    ){
         $this->api = $api;
         $this->category = $category;
         $this->user = $user;
         $this->role = $role;
+        $this->history = $history;
     }
 
     
@@ -79,7 +87,33 @@ class Admin extends BaseController
 
     public function account(){
         $users = $this->user->getUsersAndRoles();
+        $rolesUser =  Auth()->user()->roles->toArray();
+
+        $ids = array_column($rolesUser, "id");
+        $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();
-        return view('admin.account', ['users' => $users, 'roles' => $roles]);
+        
+        return view('admin.account', ['users' => $users, 'roles' => $roles, 'isAdmin' => $isAdmin]);
+    }
+
+    public function analytics(){
+        return view('admin.analytics');
+    }
+
+    public function getAnalytics(Request $request){
+        $date = $request->get('date') != "false" ? $request->get('date') : date('Y-m-d');
+        $histories = $this->history->getHistory($date);
+        $name = [];
+        $prepared_count = [];
+        $finished_count = [];
+
+        foreach($histories as $history){
+            $name[] = $history['name'];
+            $prepared_count[] = $history['prepared_count'];
+            $finished_count[] = $history['finished_count'];
+        }
+
+        echo json_encode(['name' => $name, 'prepared_count' => $prepared_count, 'finished_count' => $finished_count]);
+
     }
 }

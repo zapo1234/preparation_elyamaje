@@ -6,7 +6,7 @@
 
 @if($level == 0)
 	<tr class="category sub_category_{{ $level}}"> 
-		<td class="td_{{ $category['category_id_woocommerce'] }}">
+		<td data-label="Nom" class="td_{{ $category['category_id_woocommerce'] }}">
 			@if (!empty($category['sub_category']))
 				<i id="{{ $category['category_id_woocommerce'] }}" class="show_sub_category bx bx-plus"></i>
 			@endif
@@ -44,7 +44,7 @@
 				@endforeach
 			@endif
 		</td>
-		<td>
+		<td  data-label="Ordre">
 			<select id="{{ $category['id'] }}" data-id="{{ $category['category_id_woocommerce'] }}" class="select_parent_menu update_order_display">
 				@for($i = 0; $i < 106; $i++)
 					@if($category['order_display'] == $i)

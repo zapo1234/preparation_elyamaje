@@ -35,14 +35,19 @@ class UserRepository implements UserInterface
       $role = [];
 
       foreach($users as $user){
-
-         $role[$user['user_id']][] = $user['role'];
+   
+         $role[$user['user_id']][] = $user['role_id'];
+         $role['role_name'][$user['user_id']][] = $user['role'];
 
          if(isset($userRole[$user['user_id']])){
-            $userRole[$user['user_id']]['role'] = $role[$user['user_id']];
+            $userRole[$user['user_id']]['role_id'] = $role[$user['user_id']];
+            $userRole[$user['user_id']]['role'] = $role['role_name'][$user['user_id']];
+
          } else {
             $userRole[$user['user_id']] = $user; 
+            $userRole[$user['user_id']]['role_id'] = [$user['role_id']];
             $userRole[$user['user_id']]['role'] = [$user['role']];
+
          }
       }
 
@@ -56,9 +61,30 @@ class UserRepository implements UserInterface
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
          ->whereIn('user_roles.role_id', $role)
          ->orderBy('users.id', 'ASC')
-         ->get();
+         ->get()
+         ->toArray();
 
-      return $users;
+         $userRole = [];
+         $role = [];
+   
+         foreach($users as $user){
+   
+            $role[$user['user_id']][] = $user['role_id'];
+            $role['role_name'][$user['user_id']][] = $user['role'];
+
+            if(isset($userRole[$user['user_id']])){
+               $userRole[$user['user_id']]['role_id'] = $role[$user['user_id']];
+               $userRole[$user['user_id']]['role'] = $role['role_name'][$user['user_id']];
+
+            } else {
+               $userRole[$user['user_id']] = $user; 
+               $userRole[$user['user_id']]['role_id'] = [$user['role_id']];
+               $userRole[$user['user_id']]['role'] = [$user['role']];
+
+            }
+         }
+   
+         return $userRole;
    }
 
    public function getUserByEmail($email, $user_id = false){
@@ -91,24 +117,33 @@ class UserRepository implements UserInterface
 
    public function updateRoleByUser($user_id, $role_id){
       
-      $user = $this->model->where('id', $user_id)->get();
+      try{
+         $user = DB::table('user_roles')->where('user_id', $user_id)->get();
+         $actuel_role = [];
 
-      if($user) {
-         $actuel_role = explode(',', $user[0]->role_id);
-         
-         if(count($actuel_role) > 1){
-            $actuel_role[1] = $role_id;
-         } else {
-            $actuel_role[0] = $role_id;
+         if($user) {
+            $actuel_role = explode(',', $user[0]->role_id);
+            
+            if(count($actuel_role) > 1){
+               $actuel_role[1] = $role_id;
+            } else {
+               $actuel_role[0] = $role_id;
+            }
+
+            // Si le rôle donné est différent de préparateur, alors lui retirer ses commandes attribuées
+            if($role_id != 2){
+               DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
+               DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
+            } 
+
+            
+            DB::table('user_roles')->where('user_id', $user_id)->where('role_id', $actuel_role)->delete();
+            DB::table('user_roles')->insert(['user_id' => $user_id, 'role_id' => $role_id]);
+            
+            return true;
          }
-        
-         // Si le rôle donné est différent de préparateur, alors lui retirer ses commandes attribuées
-         if($role_id != 2){
-            DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
-            DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
-         } 
-      
-         return $this->model->where('id', $user_id)->update(['role_id' => implode(',', $actuel_role)]);
+      } catch(Exception $e){
+         return $e->getMessage();
       }
    }
 
@@ -141,7 +176,7 @@ class UserRepository implements UserInterface
    public function updateUserById($user_id, $user_name_last_name, $email, $role){
 
       try{
-         
+         $delete_order = false;
          $this->model->where('id', $user_id)->update([
             'name'=> $user_name_last_name,
             'email'=> $email,
@@ -156,7 +191,17 @@ class UserRepository implements UserInterface
                'role_id' => $r,
 
             ];
+
+            if($r != 2){
+               $delete_order = true;
+            }
          }
+
+
+         if($delete_order){
+            DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
+            DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
+         } 
 
          DB::table('user_roles')->insert($roles);
          return true;
@@ -164,7 +209,6 @@ class UserRepository implements UserInterface
       } catch(Exception $e){
          return $e->getMessage();
       }
-      // return $this->model->where('id', $user_id)->update(['role_id' => implode(',', $actuel_role)]);
    }
 
    public function deleteUser($user_id){

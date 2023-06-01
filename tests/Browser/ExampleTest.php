@@ -26,18 +26,18 @@ class ExampleTest extends DuskTestCase
                     ->visit('https://staging.elyamaje.com/wp-admin/post.php?post=64922&action=edit')
                     ->waitForText('Modifier commande')
                     ->press('Ignore')
-                    ->pause(2000)
+                    ->pause(500)
                     ->scrollTo("#lpc_banner-box")
-                    ->pause(2000)
+                    ->pause(500)
                     ->click('.lpc__admin__order_banner__header__generation')
-                    ->pause(2000)
+                    ->pause(500)
                     ->press('Générer')
                     ->press('Ignore')
-                    ->pause(1000)
+                    ->pause(500)
                     ->scrollTo("#lpc_banner-box")
-                    ->pause(2000)
+                    ->pause(500)
                     ->click('.lpc_label_action_download') 
-                    ->pause(2000);
+                    ->pause(500);
         });
     }
 

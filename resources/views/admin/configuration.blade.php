@@ -10,7 +10,7 @@
 		@section("wrapper")
 			<div class="page-wrapper">
 				<div class="page-content">
-					<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
 						<div class="breadcrumb-title pe-3">Configuration</div>
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
@@ -42,41 +42,28 @@
 						</div>
 					@endif
 
-					<div class="row">
-						<div class="card">
+					<!-- <div class="row"> -->
+						<div class="card card_table_mobile_responsive">
 							<div class="card-body">
-								
-
-
-								<!-- <div class="d-flex justify-content-center w-100 loading"> 
-									<div class="spinner-border text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
-								</div> -->
 								<div class="table-responsive">
-									<table id="example" class="table_classique w-100 table_list_order table table-striped table-bordered">
+									<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 										<thead>
 											<tr>
 												<th>Nom</th>
 												<th>Ordre (Menu & Sous-menu)</th>
 											</tr>
 										</thead>
-
 										<tbody>
 											@foreach ($categories as $category)
 												<!-- Appeler la vue récursive pour afficher les catégories et les sous-catégories -->
 												@include('partials.category', ['category' => $category])
 											@endforeach
 										</tbody>
-										
 									</table>
 								</div>
-								
-										
-		
-
-								
 							</div>
 						</div>
-					</div>
+					<!-- </div> -->
 				</div>
 			</div>
 		@endsection

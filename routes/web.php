@@ -27,7 +27,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         switch (Auth()->user()->roles->toArray()[0]['id']) {
             case 1 :
-                return redirect()->route('indexAdmin');
+                return redirect()->route('admin.analytics');
                 break;
             case 2 :
                 return redirect()->route('orders');
@@ -51,13 +51,15 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
     Route::get("/getAllOrdersAdmin", [Order::class, "getAllOrders"])->name('getAllOrdersAdmin');
     // traiter les routes pour des tiers
-    Route::get("refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
+    Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
-    Route::post("refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
+    Route::post("/refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
 
-    Route::get("configuration", [Controller::class, "configuration"])->name('admin.configuration');
-    Route::get("syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
-    Route::post("updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
+    Route::get("/configuration", [Controller::class, "configuration"])->name('admin.configuration');
+    Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
+    Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
+    Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
+    Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
 });
 
 // PRÉPARATEUR
@@ -96,10 +98,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 });
 
 
-/*Authentication*/
+// Connexion & Déconnexion
 Route::get("/login", [Auth::class, "login"])->name('login');
 Route::post("/login", [Auth::class, "postLogin"])->name('login');
 Route::get('/logout', [Auth::class, 'logout'])->name('logout');
+
+// Mot de passe oublié et reset mot de passe
 Route::get('/authentication-forgot-password', [Auth::class, 'forgotPassword'])->name('authentication-forgot-password');
 Route::post('/resetPassword', [Auth::class, 'resetPassword'])->name('password.reset');
 Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->name('auth.passwords.reset');
@@ -107,8 +111,6 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 
 
 
-
-// Tâche cron répartition orders
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
