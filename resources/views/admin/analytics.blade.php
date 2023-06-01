@@ -42,7 +42,7 @@
 
 					<div class="card">
 						<div class="card-body" style="position: relative;">
-								<div class="d-flex align-items-center">
+								<div class="flex-wrap d-flex align-items-center">
 									<h6 class="mb-0 font-weight-bold">Commandes Préparées & Emballées (Jour)</h6>
 									<div class="d-flex dropdown ms-auto select_chart">
 										<input id="date_research" value="{{ date('Y-m-d') }}" type="date">
