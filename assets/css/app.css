@@ -6666,6 +6666,6 @@ select:focus, input:focus{
 }
 
 .modal_order button{
-	z-index: 9999 !important;
+	margin-bottom: 50px !important;
 }
 
