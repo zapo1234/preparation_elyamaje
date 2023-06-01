@@ -527,10 +527,10 @@
 
 			function show(id){
 			
-				$('#order_'+id).modal({
-					backdrop: 'static',
-					keyboard: false
-				})
+				// $('#order_'+id).modal({
+				// 	backdrop: 'static',
+				// 	keyboard: false
+				// })
 
 				$("#order_"+id).modal('show')
 
