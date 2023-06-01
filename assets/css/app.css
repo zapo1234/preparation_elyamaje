@@ -6653,3 +6653,21 @@ select:focus, input:focus{
 	outline: 0px !important;
 	cursor: pointer;
 }
+
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 9999 !important;
+  }
+  
+  .backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 9998 !important;
+  }
