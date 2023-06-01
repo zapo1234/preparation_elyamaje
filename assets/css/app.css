@@ -6659,3 +6659,8 @@ select:focus, input:focus{
 	outline: 0px !important;
 	cursor: pointer;
 }
+
+.modal_order{
+	position: fixed !important;
+	z-index: 9999 !important;
+}
