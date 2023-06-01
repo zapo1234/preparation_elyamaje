@@ -6654,8 +6654,8 @@ select:focus, input:focus{
 	cursor: pointer;
 }
 
-.modal {
-	position: fixed !important;
+.modal_order {
+	position: absolute !important;
 	top: 0 !important;
 	left: 0 !important;
 	width: 100% !important;
