@@ -2,7 +2,7 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-		@endsecrion 
+		@endsection 
 
 		@section("wrapper")
 			<div class="page-wrapper">

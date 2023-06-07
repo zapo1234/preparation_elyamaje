@@ -844,6 +844,14 @@ a {
 	.select_chart{
 		margin-top: 25px !important;
 	}
+	.modal_order_admin{
+		position: fixed !important;
+		z-index: 9999 !important;
+	}
+	
+	.modal_order_admin button{
+		margin-bottom: 50px !important;
+	}
 }
 
 @media (max-width: 990px) { 
@@ -6277,6 +6285,10 @@ a{
 		padding: 6px 12px !important;
 		box-shadow: none !important;
 	}
+
+	.course{
+		min-height: 150px !important;
+	}
 }
 
 @media screen and (max-width: 550px) {
@@ -6301,8 +6313,8 @@ a{
 	}
 
 	.course .btn{
-		bottom: 2px !important;
-		right: 2px !important;
+		bottom: 10px !important;
+		right: 10px !important;
 		padding: 6px 12px !important;
 		box-shadow: none !important;
 	}
@@ -6657,15 +6669,32 @@ a{
 select:focus, input:focus{
 	box-shadow: none !important;
 	outline: 0px !important;
-	cursor: pointer;
 }
 
-.modal_order{
-	position: fixed !important;
-	z-index: 9999 !important;
+.bg-draft{
+	background-color: #ffc107;
 }
 
-.modal_order button{
-	margin-bottom: 50px !important;
+.bg-private{
+	background-color: #212529;
 }
+
+.bg-publish{
+	background-color: #29cc39;
+}
+
+.detail_footer_order{
+	font-weight: 100 !important;
+}
+
+.montant_toltal_order div{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 5px;
+}
+
+.montant_toltal_order div:first-child{
+	margin-top: 5px;
+}
+
 

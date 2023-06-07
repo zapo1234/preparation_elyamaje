@@ -132,7 +132,7 @@ class UserRepository implements UserInterface
 
             // Si le rôle donné est différent de préparateur, alors lui retirer ses commandes attribuées
             if($role_id != 2){
-               DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
+               DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
                DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
             } 
 
@@ -147,13 +147,13 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function createUser($user_name_last_name, $email, $role, $password){
-
+   public function createUser($user_name_last_name, $email, $role, $password, $poste){
       try{
          $user = $this->model->create([
             'name'=> $user_name_last_name,
             'email'=> $email,
             'password'=> $password,
+            'poste'=> $poste,
          ]);
 
          $roles = [];
@@ -173,13 +173,13 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function updateUserById($user_id, $user_name_last_name, $email, $role){
-
+   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste){
       try{
          $delete_order = false;
          $this->model->where('id', $user_id)->update([
             'name'=> $user_name_last_name,
             'email'=> $email,
+            'poste'=> !in_array('3', $role) ? 0 : $poste,
          ]);
 
          DB::table('user_roles')->where('user_id', $user_id)->delete();
@@ -199,7 +199,7 @@ class UserRepository implements UserInterface
 
 
          if($delete_order){
-            DB::table('products')->join('orders', 'orders.order_woocommerce_id', '=', 'products.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
+            DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status","processing")->delete();
             DB::table('orders')->where('user_id', $user_id)->where('status','processing')->delete();
          } 
 

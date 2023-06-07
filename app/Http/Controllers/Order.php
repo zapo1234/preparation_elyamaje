@@ -1,11 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
-use App\Repository\Order\OrderRepository;
-use App\Repository\User\UserRepository;
+use App\Http\Service\Api\Colissimo;
+use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Http;
 use App\Http\Service\Api\TransferOrder;
+use App\Repository\User\UserRepository;
+use App\Repository\Order\OrderRepository;
+use App\Repository\History\HistoryRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -19,15 +24,25 @@ class Order extends BaseController
     private $user;
     private $order;
     private $factorder;
-
+    private $history;
+    private $pdf;
+    private $colissimo;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
-    TransferOrder $factorder){
+    TransferOrder $factorder,
+    HistoryRepository $history,
+    CreatePdf $pdf,
+    Colissimo $colissimo
+    ){
       $this->api = $api;
       $this->user = $user;
       $this->order = $order;
       $this->factorder =$factorder;
+      $this->history = $history;
+      $this->pdf = $pdf;
+      $this->colissimo = $colissimo;
+      $this->colissimo = $colissimo;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -58,6 +73,7 @@ class Order extends BaseController
 
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getOrdersByUsers()->toArray();
+        
         $ids = array_column($orders_distributed, "order_woocommerce_id");
 
         foreach($orders as $key => $order){
@@ -230,30 +246,51 @@ class Order extends BaseController
         if($order){
             $order_new_array = [];
             $products = [];
-            $billing = [];
-            $shipping = [];
+            $billing = [
+              "first_name" => $order[0]['billing_customer_first_name'],
+              "last_name" => $order[0]['billing_customer_last_name'],
+              "company" => $order[0]['billing_customer_company'],
+              "address_1" => $order[0]['billing_customer_address_1'],
+              "address_2" => $order[0]['billing_customer_address_2'],
+              "city" => $order[0]['billing_customer_city'],
+              "state" => $order[0]['billing_customer_state'],
+              "postcode" => $order[0]['billing_customer_postcode'],
+              "country" => $order[0]['billing_customer_country'],
+              "email" => $order[0]['billing_customer_email'],
+              "phone" =>  $order[0]['billing_customer_phone'],
+            ];
 
+            $shipping = [
+              "first_name" => $order[0]['shipping_customer_first_name'],
+              "last_name" => $order[0]['shipping_customer_last_name'],
+              "company" => $order[0]['shipping_customer_company'],
+              "address_1" => $order[0]['shipping_customer_address_1'],
+              "address_2" => $order[0]['shipping_customer_address_2'],
+              "city" => $order[0]['shipping_customer_city'],
+              "state" => $order[0]['shipping_customer_state'],
+              "postcode" => $order[0]['shipping_customer_postcode'],
+              "country" => $order[0]['shipping_customer_country'],
+              "phone" =>  $order[0]['shipping_customer_phone'],
+            ];
+       
             // Construis le tableau de la même manière que woocommerce
             foreach($order as $key => $or){
-
               $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
               'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
               'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
 
-              if(count($billing) == 0 && count($shipping) == 0){
-                foreach($or as $key2 => $or2){
-                  if (str_contains($key2, 'billing')) {
-                    unset($order[$key][$key2]);
-                    $billing[count(explode('_', $key2)) > 3 ? explode('_', $key2)[2].'_'.explode('_', $key2)[3] : explode('_', $key2)[2]] = $or2;
-                  }
+              foreach($or as $key2 => $or2){
+                if (str_contains($key2, 'billing')) {
+                  unset($order[$key][$key2]);
+                }
 
-                  if (str_contains($key2, 'shipping')) {
-                    unset($order[$key][$key2]);
-                    $shipping[count(explode('_', $key2)) > 3 ? explode('_', $key2)[2].'_'.explode('_', $key2)[3] : explode('_', $key2)[2]] = $or2;
-                  }
+                if (str_contains($key2, 'shipping')) {
+                  unset($order[$key][$key2]);
                 }
               }
+
             }
+
 
             $order_new_array =  $order[0];
             $order_new_array['line_items'] = $products['line_items'];
@@ -262,6 +299,7 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
+            dd($orders);
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
             
@@ -275,16 +313,44 @@ class Order extends BaseController
     }
 
 
+    // Fonction à appelé après validation d'une commande
     public function colissimo(){
-
-      // Déclanchement Dusk 
+      
       $order_id = 64922;
       $order = $this->order->getOrderById($order_id);
-      dd($order);
+  
+      if($order){
+        $weight = 0; // Kg
+
+        foreach($order as $key => $or){
+          $weight = $weight + ($or['weight'] *$or['quantity']);
+        }
+   
+
+      //  $label = $this->colissimo->generateLabel($order[0], $weight, $order_id);
+      }
     }
 
-  
 
+    public function leaderHistory(){
+      $histories = $this->history->getAllHistory();
+      $histories_by_date = [];
+
+      // Groupe par date
+      foreach($histories as $history){
+        $histories_by_date[date("Y-m-d", strtotime($history['created_at']))][] = $history;
+      }
+      return view('leader.history', ['histories_by_date' => $histories_by_date]);
+    }
+
+    public function downloadPDF(Request $request){
+      $date = $request->post('date_historique');
+      $histories = $this->history->getHistoryByDate($date);
+      
+      // Générer mon pdf
+      $this->pdf->generateHistoryOrders($histories, $date);
+      return redirect()->back();
+    }
 }
 
 

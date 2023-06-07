@@ -28,11 +28,11 @@ class User extends BaseController
 
     public function createAccount(Request $request) {
 
-      
         $input = $request->all();
         $user_name_last_name =   $input['name_last_name'];
         $email =  $input['email'];
         $role =  $input['role'];
+        $poste =  $input['poste'] ?? 0;
 
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email);
@@ -45,16 +45,16 @@ class User extends BaseController
         $password = "elyamaje@$rand_pass";
         // crypter l'email.
         $password_hash = Hash::make($password);
-        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash);
+        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste);
 
         if($create){
             
             // ENVOIE EMAIL
-            Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
-                $message->to($email);
-                $message->from('no-reply@elyamaje.com');
-                $message->subject('Confirmation de création de compte Préparation Elyamaje');
-            });
+            // Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
+            //     $message->to($email);
+            //     $message->from('no-reply@elyamaje.com');
+            //     $message->subject('Confirmation de création de compte Préparation Elyamaje');
+            // });
 
             return redirect()->back()->with('success', 'Compte créé avec succès !');
         } else {
@@ -87,6 +87,7 @@ class User extends BaseController
         $user_name_last_name =  $input['update_name_last_name'];
         $email =  $input['update_email'];
         $role =  $input['update_role'];
+        $poste =  $input['update_poste'] ?? 0;
 
 
         // Check if email is unique
@@ -95,7 +96,7 @@ class User extends BaseController
             return redirect()->back()->with('error',  'Cet email existe déjà !');
         }
   
-        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role);
+        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste);
 
         if($update){
             return redirect()->back()->with('success', 'Compte modifié avec succès !');

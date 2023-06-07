@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Repository\History\HistoryRepository;
+use App\Repository\Product\ProductRepository;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -22,19 +23,22 @@ class Admin extends BaseController
     private $user;
     private $role;
     private $history;
+    private $products;
 
     public function __construct(
         Api $api, 
         CategoriesRepository $category,
         UserRepository $user, 
         RoleRepository $role,
-        HistoryRepository $history
+        HistoryRepository $history,
+        ProductRepository $products
     ){
         $this->api = $api;
         $this->category = $category;
         $this->user = $user;
         $this->role = $role;
         $this->history = $history;
+        $this->products = $products;
     }
 
     
@@ -72,9 +76,72 @@ class Admin extends BaseController
         $sync = $this->category->insertCategoriesOrUpdate($insert_categories);
 
         if($sync){
-            return redirect()->route('admin.configuration')->with('success', 'Catégories synchronisées avec succès !');
+            return redirect()->route('admin.categories')->with('success', 'Catégories synchronisées avec succès !');
         } else {
-            return redirect()->route('admin.configuration')->with('error', $sync);
+            return redirect()->route('admin.categories')->with('error', $sync);
+        }
+    }
+
+    public function syncProducts(){
+        $per_page = 100;
+        $page = 1;
+        $products = $this->api->getAllProducts($per_page, $page);
+        $count = count($products);
+        $insert_products = [];
+
+        // Check if others page
+        if($count == 100){
+          while($count == 100){
+            $page = $page + 1;
+            $products_other = $this->api->getAllProducts($per_page, $page);
+           
+            if(count($products_other ) > 0){
+              $products = array_merge($products, $products_other);
+            }
+            $count = count($products_other);
+          }
+        }  
+
+        foreach($products as $product){
+
+            if($product['meta_data']){
+                $barcode = $product['meta_data'][array_key_last($product['meta_data'])]['key'] == "barcode" ? $product['meta_data'][array_key_last($product['meta_data'])]['value'] : null;
+             } else {
+                $barcode = null;
+            }  
+
+            $category_name = [];
+            $category_id = [];
+
+
+            foreach($product['categories'] as $cat){
+                $category_name[] = $cat['name'];
+                $category_id[] = $cat['id'];
+            }
+            
+
+            $insert_products [] = [
+                'product_woocommerce_id' => $product['id'],
+                'category' =>  implode(',', $category_name),
+                'category_id' => implode(',', $category_id),
+                'variation_id' => implode(',', $product['variations']),
+                'name' => $product['name'],
+                'status' => $product['status'],
+                'price' => $product['price'],
+                'barcode' => $barcode,
+                'weight' => $product['weight'],
+            ];
+        }
+
+
+        // dd($insert_products);
+
+        $sync = $this->products->insertProductsOrUpdate($insert_products);
+
+        if($sync){
+            return redirect()->route('admin.products')->with('success', 'Produits synchronisés avec succès !');
+        } else {
+            return redirect()->route('admin.products')->with('error', $sync);
         }
     }
 
@@ -102,7 +169,7 @@ class Admin extends BaseController
 
     public function getAnalytics(Request $request){
         $date = $request->get('date') != "false" ? $request->get('date') : date('Y-m-d');
-        $histories = $this->history->getHistory($date);
+        $histories = $this->history->getHistoryByDate($date);
         $name = [];
         $prepared_count = [];
         $finished_count = [];
@@ -114,6 +181,5 @@ class Admin extends BaseController
         }
 
         echo json_encode(['name' => $name, 'prepared_count' => $prepared_count, 'finished_count' => $finished_count]);
-
     }
 }

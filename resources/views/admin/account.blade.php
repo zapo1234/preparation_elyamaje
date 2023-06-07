@@ -60,6 +60,10 @@
 														@endforeach
 													</select>
 												</div>
+												<div class="poste_input d-none col-md-12">
+													<label for="poste" class="form-label">N° du poste</label>
+													<input name="poste" type="number" class="poste_field form-control" id="poste">
+												</div>
 											</div>
 										</div>
 									</div>
@@ -199,6 +203,10 @@
 												@endforeach
 											</select>
 										</div>
+										<div class="poste_input d-none col-md-12">
+											<label for="update_poste" class="form-label">N° du poste</label>
+											<input name="update_poste" type="number" class="poste_field form-control" id="update_poste">
+										</div>
 									</div>
 								</div>
 							</div>
@@ -221,6 +229,16 @@
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script>
 
+		function showHidePoste(array){
+			if(array.includes("3")){
+				$(".poste_input").removeClass('d-none')
+				$(".poste_field").attr('required', true)
+			} else {
+				$(".poste_input").addClass('d-none')
+				$(".poste_field").attr('required', false)
+			}
+		}
+
 		$(document).ready(function() {
 
 			$("select").select2({multiple: true, maximumSelectionLength: 3})
@@ -234,11 +252,16 @@
 
 		})
 
+		$("select").on("change", function(){
+			showHidePoste($(this).val())
+		})
+
 		$("#show_modal_account").on('click', function(){
 			$('#createAccountModal').modal({
 				backdrop: 'static',
 				keyboard: false
 			})
+			showHidePoste($("#role").val())
 			$("#createAccountModal").modal('show')
 		})
 
@@ -252,6 +275,7 @@
 
 		// Modifier compte
 		$(".update_action").on('click', function(){
+			showHidePoste($("#update_role").val())
 			var id_account = $(this).attr('data-id')
 			
 			$.ajax({
@@ -265,6 +289,7 @@
 					$("#update_email").val(user.email)
 					$('#update_role').val(user.roles).trigger('change').select2();
 					$("#account_user_update").val(id_account)
+					$("#update_poste").val(user.poste)
 					$("#updateAccount").modal('show')
 
 				} else {

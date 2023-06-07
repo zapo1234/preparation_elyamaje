@@ -21,8 +21,12 @@ class CategoriesRepository implements CategoriesInterface
 
       try{
          // Récupère les catégories déjà existante
-         $categories_exists = $this->model::select('name', 'category_id_woocommerce')->get()->toArray();
-         
+         try{
+            $categories_exists = $this->model::select('name', 'category_id_woocommerce')->get()->toArray();
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+        
          // Aucune existante
          if(count($categories_exists) == 0){
             return $this->model->insert($categories);
@@ -44,8 +48,12 @@ class CategoriesRepository implements CategoriesInterface
 
                if (!empty($difference)) {
                   foreach ($difference as $diff) {
-                     $update = $this->model->where('category_id_woocommerce', $diff['category_id_woocommerce'])->update($diff);
-
+                     try{
+                        $update = $this->model->where('category_id_woocommerce', $diff['category_id_woocommerce'])->update($diff);
+                     } catch(Exception $e){
+                        return $e->getMessage();
+                     }
+                    
                      if($update == 0){
                         $this->model->insert($diff);
                      }

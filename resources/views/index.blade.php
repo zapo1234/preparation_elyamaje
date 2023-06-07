@@ -255,6 +255,7 @@
 									first_name: order.billing.first_name,
 									last_name: order.billing.last_name,
 									total: order.total,
+									total_tax: order.total_tax,
 									name: order.name,
 									date_created: order.date_created,
 									line_items: order.line_items,
@@ -313,12 +314,21 @@
 									</div>`;
 							}
             			},
-						{ data: 'total' },
+						{data: null,
+							render: function(data, type, row) {
+								return `
+									<div class="w-100 d-flex flex-column">
+										<span>Total (HT): <strong>` +parseFloat(row.total -row.total_tax).toFixed(2)+`</strong></span>
+										<span>TVA: <strong>` +row.total_tax+`</strong></span>
+										<span>Total (TTC): <strong>` +row.total+`</strong></span>
+									</div>`;
+							}
+            			},
 						{data: null,
 							render: function(data, type, row) {
 							
 								return `
-									<div class="modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
 											<div class="modal-content">
 												<div class="modal-body detail_product_order">

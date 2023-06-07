@@ -9,6 +9,7 @@ use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\Product\ProductRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -22,19 +23,21 @@ class Controller extends BaseController
     private $users;
     private $role;
     private $categories;
+    private $products;
 
     public function __construct(Order $orderController, 
         UserRepository $users,
         RoleRepository $role,
         OrderRepository $orders,
-        CategoriesRepository $categories
+        CategoriesRepository $categories,
+        ProductRepository $products
     ){
       $this->orderController = $orderController;
       $this->users = $users;
       $this->role = $role;
       $this->orders = $orders;
       $this->categories = $categories;
-
+      $this->products = $products;
     }
     
      // INDEX ADMIN
@@ -60,17 +63,21 @@ class Controller extends BaseController
 
 
     // CONFIGURATION ADMIN
-    public function configuration(){
+    public function categories(){
         $categories = $this->categories->getAllCategories();
-        return view('admin.configuration', ['categories' => $categories]);
+        return view('admin.categories', ['categories' => $categories]);
     }
 
-
+    // CONFIGURATION LIST PRODUCTS ADMIN
+    public function products(){
+        $products = $this->products->getAllProducts();
+        return view('admin.products', ['products' => $products]);
+    }
 
     // PRÉPARATEUR COMMANDES CLASSIQUES
     public function orderPreparateur(){
         $orders = $this->orderController->getOrder();
-        return view('preparateur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
+        return view('preparateur.index_preparateur', ['user' => Auth()->user()->name,'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
     // PRÉPARATEUR COMMANDES DISTRIBUTEURS

@@ -31,6 +31,14 @@
                     </li>
                 </ul>
             </li>
+            <li>
+                <a href="{{ url('leaderHistory') }}">
+                    <div class="parent-icon"><i class='bx bx-history'></i>
+                    </div>
+                    <div class="menu-title">Historiques</div>
+                </a>
+            </li>
+           
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
@@ -61,7 +69,9 @@
                     <div class="menu-title">Configuration</div>
                 </a>
                 <ul>
-                    <li> <a href="{{ url('configuration') }}"><i class="bx bx-right-arrow-alt"></i>Catégories</a>
+                    <li> <a href="{{ url('categories') }}"><i class="bx bx-right-arrow-alt"></i>Catégories</a>
+                    </li>
+                    <li> <a href="{{ url('products') }}"><i class="bx bx-right-arrow-alt"></i>Produits</a>
                     </li>
                     <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
                     </li>

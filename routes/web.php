@@ -55,8 +55,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // mise a jours des tiers via dolibar.
     Route::post("/refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
 
-    Route::get("/configuration", [Controller::class, "configuration"])->name('admin.configuration');
+    Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
+    Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
+    Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
+
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
     Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
@@ -81,6 +84,8 @@ Route::group(['middleware' => ['auth', 'role:3']], function () {
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('leader.getAllOrders');
+    Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
+    Route::post("/downloadPDF", [Order::class, "downloadPDF"])->name('leader.downloadPDF');
 });
 
 // ADMIN ET CHEF D'ÉQUIPE

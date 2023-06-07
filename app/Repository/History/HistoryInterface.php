@@ -5,7 +5,9 @@ namespace App\Repository\History;
 
 interface HistoryInterface
 {
-   public function getHistory($date);
+   public function getHistoryByDate($date);
+
+   public function getAllHistory();
 }
 
 

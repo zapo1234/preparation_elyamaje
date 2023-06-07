@@ -15,8 +15,8 @@ class Api
 
   public function getOrdersWoocommerce($status, $per_page, $page){
 
-    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
 
     // Cache commenté car peux poser problème
     // $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
@@ -30,8 +30,8 @@ class Api
 
   public function updateOrdersWoocommerce($status, $id){
 
-    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
 
     // Cache commenté car peux poser problème
     // $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
@@ -49,8 +49,8 @@ class Api
 
   public function getOrderById($order_id){
 
-    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/orders/".$order_id);
@@ -65,11 +65,26 @@ class Api
   
   public function getAllCategories($per_page, $page){
 
-    $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-    $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/products/categories?per_page=".$per_page."&page=".$page);
+      return $response->json();
+
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
+
+  public function getAllProducts($per_page, $page){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get("https://www.staging.elyamaje.com/wp-json/wc/v3/products?per_page=".$per_page."&page=".$page);
       return $response->json();
 
     } catch(Exception $e){
