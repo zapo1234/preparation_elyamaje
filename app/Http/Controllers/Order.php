@@ -246,6 +246,8 @@ class Order extends BaseController
         if($order){
             $order_new_array = [];
             $products = [];
+
+            $order[0]['order_id'] = $order[0]['order_woocommerce_id'];
             $billing = [
               "first_name" => $order[0]['billing_customer_first_name'],
               "last_name" => $order[0]['billing_customer_last_name'],
@@ -299,7 +301,6 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
-            dd($orders);
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
             
