@@ -129,12 +129,10 @@ class Admin extends BaseController
                 'status' => $product['status'],
                 'price' => $product['price'],
                 'barcode' => $barcode,
-                'weight' => $product['weight'],
             ];
         }
 
 
-        // dd($insert_products);
 
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 

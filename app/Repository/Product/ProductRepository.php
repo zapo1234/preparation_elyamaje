@@ -25,15 +25,23 @@ class ProductRepository implements ProductInterface
 
    public function insertProductsOrUpdate($products){
       try{
-         // Récupère les catégories déjà existante
+         // Récupère les produits déjà existants
          try{
             $products_exists = $this->model::select('name', 'product_woocommerce_id')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
-         // Aucune existante
+
+
+         // Aucun existants
          if(count($products_exists) == 0){
-            return $this->model->insert($products);
+           
+            try{
+               return $this->model->insert($products);
+            } catch(Exception $e){
+               return $e->getMessage();
+            }
+           
          } else {
                $difference = [];
                foreach ($products as $item1) {
