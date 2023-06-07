@@ -11,6 +11,7 @@ use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
+use App\Repository\Label\LabelRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -27,13 +28,15 @@ class Order extends BaseController
     private $history;
     private $pdf;
     private $colissimo;
+    private $label;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
     TransferOrder $factorder,
     HistoryRepository $history,
     CreatePdf $pdf,
-    Colissimo $colissimo
+    Colissimo $colissimo,
+    LabelRepository $label
     ){
       $this->api = $api;
       $this->user = $user;
@@ -42,7 +45,7 @@ class Order extends BaseController
       $this->history = $history;
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
-      $this->colissimo = $colissimo;
+      $this->label = $label;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -238,10 +241,11 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
 
-
         //$order_id = $request->post('order_id');
-        $order_id = 64686;
+        $order_id = 64922; // Données de test
+        // Génération de l'étiquette colissimo
         $order = $this->order->getOrderById($order_id);
+        $this->generateLabel($order);
 
         if($order){
             $order_new_array = [];
@@ -303,6 +307,8 @@ class Order extends BaseController
             $orders[] = $order_new_array;
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
+
+
             
         }
     }
@@ -315,20 +321,25 @@ class Order extends BaseController
 
 
     // Fonction à appelé après validation d'une commande
-    public function colissimo(){
-      
-      $order_id = 64922;
-      $order = $this->order->getOrderById($order_id);
-  
+    private function generateLabel($order){
+
       if($order){
         $weight = 0; // Kg
 
-        foreach($order as $key => $or){
+        foreach($order as $or){
           $weight = $weight + ($or['weight'] *$or['quantity']);
         }
-   
 
-      //  $label = $this->colissimo->generateLabel($order[0], $weight, $order_id);
+        // $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
+
+        // if($label['success']){
+        //   $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+        //   if($this->label->save($label)){
+        //     dd("Étiquette générée !");
+        //   }
+        // } else {
+        //   return $label;
+        // }
       }
     }
 

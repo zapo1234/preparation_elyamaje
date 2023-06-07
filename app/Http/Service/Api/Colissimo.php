@@ -64,7 +64,7 @@ class Colissimo
     
             $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
             $data = $requestParameter; // Remplacez les crochets par les données que vous souhaitez envoyer
-    
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
             ])->post($url, $data);
@@ -75,21 +75,14 @@ class Colissimo
             ? $this->parseMonoPartBody($response)
             : $this->parseMultiPartBody($response, $boundary[0]);
 
-            
-            if (!empty($content['<jsonInfos>'])) {
-                $content = $content['<jsonInfos>'];
-            } else {
-                return "Error";
-            }
 
-
-            $content['<label>'] = mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII');
+            $label = mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII');
             $trackingNumber = isset($content['<jsonInfos>']['labelV2Response']['parcelNumber']) ? $content['<jsonInfos>']['labelV2Response']['parcelNumber'] : null;
 
             if($trackingNumber){
                 $data = [
                     'order_id' => $order_id,
-                    'label' => $content['<label>'],
+                    'label' => $label,
                     'label_format' => 'PDF',
                     'label_created_at' => date('Y-m-d h:i:s'),
                     'tracking_number' => $trackingNumber
@@ -103,7 +96,7 @@ class Colissimo
                 
             }
         } catch (Exception $e) {
-            dd($e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -113,12 +106,18 @@ class Colissimo
         $customer_key = config('app.woocommerce_customer_key');
         $customer_secret = config('app.woocommerce_customer_secret');
       
+
         try {
             $response = Http::withBasicAuth($customer_key, $customer_secret) 
                 ->post("https://staging.elyamaje.com/wp-json/wc/v3/colissimo/", [
                     'data' => $data
                 ]); 
-            return $response->json();
+
+            if($response){
+                $data['success'] = true;
+            }
+
+            return $data;
         } catch(Exception $e) {
             return $e->getMessage();
         }

@@ -122,7 +122,7 @@ Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name(
 
 
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
-Route::get("/colissimo", [Order::class, "colissimo"])->name('colissimo');
+// Route::get("/colissimo", [Order::class, "colissimo"])->name('colissimo');
 
 
 
