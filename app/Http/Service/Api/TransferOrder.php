@@ -614,13 +614,14 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-           dd($inv);
-             // valider les facture dans dolibar
+            
+               // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-             // Lier les factures dolibar  à un moyen de paiement et bank.
-             $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-             // mettre le statut en payé dans la facture  dolibar
-               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+              // mettre le statut en payé dans la facture  dolibar
+              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+               // Lier les factures dolibar  à un moyen de paiement et bank.
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+               
            
 
      }
