@@ -198,14 +198,14 @@ class TransferOrder
       {
                // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
-              //  $method = "GET";
-             //   $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-             //   $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+                $method = "GET";
+                $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+                $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
 
                   // recuperer les données api dolibar propers prod tous les clients.
-                $method = "GET";
-                $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
-                $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
+               // $method = "GET";
+              //  $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
+              //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
               //Recuperer les ref et id product dans un tableau
 	   
 	               $produitParam = ["limit" => 800, "sortfield" => "rowid"];
@@ -272,6 +272,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
                  
+                  dd($data_list_product);
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
@@ -355,7 +356,7 @@ class TransferOrder
                                             "multicurrency_subprice"=> floatval($values['subtotal']),
                                             "multicurrency_total_ht" => floatval($values['subtotal']),
                                             "multicurrency_total_tva" => floatval($values['total_tax']),
-                                            "multicurrency_total_ttc" => floatval($values['total']),
+                                            "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
                                             "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                             "product_label" =>$values['name'],
                                             "qty" => $values['quantity'],
