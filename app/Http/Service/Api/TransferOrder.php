@@ -394,7 +394,7 @@ class TransferOrder
                                        'ref_client' =>$ref,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
-                                        "total_ht"  =>floatval($donnees['total_order']),
+                                        "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
