@@ -30,7 +30,7 @@ class Colissimo
                         'productCode' =>  $order['product_code'] ?? $productCode_array[$order['shipping_method']],
                         'depositDate' => date('Y-m-d'), // Date du dépôt du colis (au moins égale à la date actuelle)
                         'orderNumber ' => $order_id,
-                        'commercialName' => $order['shipping_customer_first_name'].' '.$order['shipping_customer_last_name'],
+                        'commercialName' => $order['shipping']['last_name'].' '.$order['shipping']['first_name'],
                     ],
                     'parcel' => [
                       'weight' => $weight, // Poids du colis
@@ -50,18 +50,18 @@ class Colissimo
                         'addresseeParcelRef' => true,
                         'codeBarForReference' => false,
                         'address' => [
-                            'lastName' => $order['shipping_customer_first_name'],
-                            'firstName' => $order['shipping_customer_last_name'],
-                            'line2' => $order['shipping_customer_address_1'],
-                            'countryCode' => $order['shipping_customer_country'],
-                            'city' => $order['shipping_customer_city'],
-                            'zipCode' => $order['shipping_customer_postcode'],
-                            'email' => $order['billing_customer_email'],
+                            'lastName' => $order['shipping']['last_name'],
+                            'firstName' => $order['shipping']['first_name'],
+                            'line2' => $order['shipping']['address_1'],
+                            'countryCode' =>$order['shipping']['country'],
+                            'city' => $order['shipping']['city'],
+                            'zipCode' => $order['shipping']['postcode'],
+                            'email' => $order['billing']['email'],
                         ]
                     ]
                 ]
             ];
-    
+
             $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
             $data = $requestParameter; // Remplacez les crochets par les données que vous souhaitez envoyer
 

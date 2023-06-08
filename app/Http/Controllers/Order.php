@@ -9,6 +9,7 @@ use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Http;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
+use Illuminate\Support\Facades\Response;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Label\LabelRepository;
@@ -247,7 +248,6 @@ class Order extends BaseController
         $order = $this->order->getOrderById($order_id);
     
         if($order){
-            $this->generateLabel($order);
 
             $order_new_array = [];
             $products = [];
@@ -279,25 +279,26 @@ class Order extends BaseController
               "country" => $order[0]['shipping_customer_country'],
               "phone" =>  $order[0]['shipping_customer_phone'],
             ];
+
+
        
             // Construis le tableau de la même manière que woocommerce
             foreach($order as $key => $or){
               $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
               'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-              'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+              'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
 
               foreach($or as $key2 => $or2){
                 if (str_contains($key2, 'billing')) {
                   unset($order[$key][$key2]);
                 }
 
-                if (str_contains($key2, 'shipping')) {
+                if (str_contains($key2, 'shipping') && !str_contains($key2, 'method')) {
                   unset($order[$key][$key2]);
                 }
               }
 
             }
-
 
             $order_new_array =  $order[0];
             $order_new_array['line_items'] = $products['line_items'];
@@ -308,6 +309,7 @@ class Order extends BaseController
             $orders[] = $order_new_array;
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
+            // return $this->generateLabel($orders);
         } else {
             return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
         }
@@ -326,20 +328,23 @@ class Order extends BaseController
       if($order){
         $weight = 0; // Kg
 
-        foreach($order as $or){
+        foreach($order[0]['line_items'] as $or){
+
           $weight = $weight + ($or['weight'] *$or['quantity']);
         } 
 
-
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
 
-        if($label['success']){
+        if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
           if($this->label->save($label)){
-            dd("Étiquette générée !");
+            $headers = [
+              'Content-Type' => 'application/pdf',
+            ];
+            return Response::make($label['label'] , 200, $headers);
           }
         } else {
-          return $label;
+          return redirect()->back()->with('error', $label);
         }
       }
     }

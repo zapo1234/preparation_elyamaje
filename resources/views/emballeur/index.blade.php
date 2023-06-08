@@ -37,7 +37,7 @@
                                         </div>
                                     @endif
 
-                                    <form method="POST" action="{{ route('validWrapOrder') }}" class="form_valid_wrap_order row g-3" data-bitwarden-watching="1">
+                                    <form method="POST" action="{{ route('validWrapOrder') }}" class="form_valid_wrap_order row g-3">
                                         @csrf
                                         <div class="col-md-3">
                                             <label for="order_id" class="form-label">N° Commande</label>
