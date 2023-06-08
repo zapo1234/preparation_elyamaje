@@ -208,7 +208,7 @@ class TransferOrder
                 $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
               //Recuperer les ref et id product dans un tableau
 	   
-	               $produitParam = ["limit" => 900, "sortfield" => "rowid"];
+	               $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
@@ -271,9 +271,6 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
-
-
-                  dd($data_list_product);
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
