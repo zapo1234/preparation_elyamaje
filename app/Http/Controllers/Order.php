@@ -309,6 +309,10 @@ class Order extends BaseController
             $orders[] = $order_new_array;
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
+
+            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+            // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+
             // return $this->generateLabel($orders);
         } else {
             return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');

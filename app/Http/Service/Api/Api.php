@@ -93,40 +93,33 @@ class Api
   }
 
 
-  
-
-
-
-    // api get
-    public function getDataApiWoocommerce(string $urls): array
-    {
-        
-       // keys authentification API data woocomerce dev copie;
-        $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-        $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
-        
-       $headers = array(
-           
-           'Authorization'=> 'Basic' .base64_encode($customer_key.':'.$customer_secret)
-            );
-            
-         //
-       $curl = curl_init();
-       curl_setopt($curl, CURLOPT_URL, $urls);
-       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-       curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-       curl_setopt($curl, CURLOPT_USERPWD, "$customer_key:$customer_secret");
-       $resp = curl_exec($curl);
-       $status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
-       curl_close($curl);
+  // api get
+  public function getDataApiWoocommerce(string $urls): array
+  {
       
-       // afficher les données dans array
-       $data = json_decode($resp,true);
-       return $data;
-        
-        
-    }
-
+      // keys authentification API data woocomerce dev copie;
+      $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
+      $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+      
+      $headers = array(
+          
+          'Authorization'=> 'Basic' .base64_encode($customer_key.':'.$customer_secret)
+          );
+          
+        //
+      $curl = curl_init();
+      curl_setopt($curl, CURLOPT_URL, $urls);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt($curl, CURLOPT_USERPWD, "$customer_key:$customer_secret");
+      $resp = curl_exec($curl);
+      $status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE); 
+      curl_close($curl);
+    
+      // afficher les données dans array
+      $data = json_decode($resp,true);
+      return $data; 
+  }
 
   public function CallAPI($method, $key, $url, $data = false)
   {

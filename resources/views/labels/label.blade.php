@@ -58,7 +58,7 @@
 													<form method="POST" action="{{ route('label.download') }}">
 														@csrf
 														<input name="label_id" type="hidden" value="{{ $label->id }}">
-														<button type="submit" class="btn btn-outline-danger px-5"><i class="bx bx-file"></i>Télécharger</button>
+														<button type="submit" class="btn btn-outline-danger px-5"><i class="bx bx-file"></i>Voir</button>
 													</form>
 												</td>
 
