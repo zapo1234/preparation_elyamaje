@@ -245,7 +245,7 @@ class Order extends BaseController
         // $order_id = $request->post('order_id');
         $order_id = 64795; // Données de test
         $order = $this->order->getOrderById($order_id);
-    
+        dd($order);
         if($order){
 
             $order_new_array = [];
