@@ -448,8 +448,7 @@ class TransferOrder
                            }
                       }
 
-                      dump($data_tiers);
-                      dd($data_lines);
+                  
                 
                       foreach($data_tiers as $data)
                       {
