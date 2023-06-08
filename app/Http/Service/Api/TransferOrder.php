@@ -196,18 +196,13 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-               
-           
-               
-               // excercer un get et post et put en fonction des status ...
+              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                 $method = "GET";
-               $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+                $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
                 $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
 
-            
-	   
-	               $produitParam = ["limit" => 800, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
@@ -222,8 +217,7 @@ class TransferOrder
                  // recupérer le tableau de ids
                  $ids_commandes =[];
               
-                  foreach($ids_commande as $key => $valis)
-                  {
+                  foreach($ids_commande as $key => $valis) {
                      $ids_commandes[$valis['id_commande']] = $key;
                   }
             
@@ -231,17 +225,14 @@ class TransferOrder
                   $data_email = [];//entre le code_client et email.
                   $data_list = []; //tableau associative de id et email
                   $data_code =[];// tableau associative entre id(socid et le code client )
-                  foreach($list_tier as $val)
-                  {
+                  foreach($list_tier as $val) {
                      $data_email[$val['code_client']] = $val['email'];
-                     if($val['email']!="")
-                     {
+                     if($val['email']!="") {
                        $data_list[$val['socid']] = $val['email'];
                      }
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
-                      if(count($code_cl)>2)
-                      {
+                      if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
                         $data_code[$val['socid']] = $code_cls;
                       }
@@ -255,23 +246,19 @@ class TransferOrder
 		               )
          	         ), true);
 
-                 foreach($clientSearch as $data)
-                 {
+                 foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
                  }
                   // convertir en entier la valeur le dernier id du tiers=>socid.
-                  $id_cl = (int)$tiers_ref;
-                  $id_cl = $id_cl+1;
-                  $socid ="";
+                   $id_cl = (int)$tiers_ref;
+                   $id_cl = $id_cl+1;
+                   $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
-                  foreach($listproduct as $values)
-                  {
+                  foreach($listproduct as $values){
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
-                 
-                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
@@ -283,8 +270,7 @@ class TransferOrder
                      $orders_d = [];// le nombre de orders non distributeur..
                      $orders_distributeur = [];// le nombre de orders des distributeurs...
                 
-                    foreach($orders as $k => $donnees)
-                    {
+                    foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
                             // créer le client via dolibarr à partir de woocomerce.
                             $ref_client = rand(4,10);
@@ -293,18 +279,15 @@ class TransferOrder
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
                       
-                           if($fk_tiers!="")
-                           {
+                           if($fk_tiers!="") {
                              $socid = $fk_tiers;
                            }
         
-                           if($fk_tier!="" && $fk_tiers=="")
-                           {
+                           if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
                            }
         
-                            if($fk_tiers=="" && $fk_tier=="")
-                            {
+                            if($fk_tiers=="" && $fk_tier=="") {
                                    
                                    $date = date('Y-m-d');
                                    $dat = explode('-', $date);
@@ -334,13 +317,10 @@ class TransferOrder
            
                               }
 
-                             foreach($donnees['line_items'] as $key => $values)
-                             {
-                                  foreach($values['meta_data'] as $val)
-                                  {
+                             foreach($donnees['line_items'] as $key => $values){
+                                  foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
-                                       if($val['value']!=null)
-                                       {
+                                       if($val['value']!=null) {
                                           $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
                                        }
                                        else{
@@ -348,8 +328,7 @@ class TransferOrder
                                       }
                                       $ref="";
                                      
-                                      if($fk_product!="")
-                                      {
+                                      if($fk_product!=""){
                                          // details  array article libéllé(product sur la commande) pour dolibarr.
                                           $data_product[] = [
                                             "multicurrency_subprice"=> floatval($values['subtotal']),
@@ -365,8 +344,7 @@ class TransferOrder
 
                                      }
                
-                                     if($fk_product=="")
-                                     {
+                                     if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu.
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
@@ -381,8 +359,7 @@ class TransferOrder
                         
                                 // verifier si la commande est nouvelle
                                 //lié le client les  produits qui compose son achat .
-                                if($this->testing($key_commande,$donnees['order_id'])==false)
-                                {
+                                if($this->testing($key_commande,$donnees['order_id'])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                      $data_options = [
                                       "options_idw"=>$donnees['order_id'],
@@ -437,27 +414,20 @@ class TransferOrder
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
             
-                       foreach($unique_arr as $r => $val)
-                       {
-                           foreach($val['lines'] as $q => $vak)
-                           {
-                             if($val['socid']!=$vak['ref_ext'])
-                             {
-                               unset($unique_arr[$r]['lines'][$q]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
+                       foreach($unique_arr as $r => $val){
+                           foreach($val['lines'] as $q => $vak) {
+                             if($val['socid']!=$vak['ref_ext']){
+                                unset($unique_arr[$r]['lines'][$q]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
                              }
                            }
                       }
 
-                  
-                
-                      foreach($data_tiers as $data)
-                      {
+                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                       }
                     
-                      foreach($unique_arr as $donnes)
-                      {
+                      foreach($unique_arr as $donnes){
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
@@ -509,19 +479,15 @@ class TransferOrder
         	), true);
 
               // recupération du dernier id invoices dolibar
-              foreach($invoices_id as $vk)
-              {
+              foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
-
               // recupérer le premier id de la facture
-             foreach($invoices_asc as $vks)
-             {
+             foreach($invoices_asc as $vks){
                $inc = $vks['id'];
              }
             
-             foreach($clientSearch as $data)
-             {
+             foreach($clientSearch as $data) {
                $tiers_ref = $data['id'];
              }
         
@@ -530,8 +496,7 @@ class TransferOrder
                $ids_orders =[];// recupérer les id commande venant de woocomerce
                $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés
         
-              foreach($count_datas as $k =>$valis)
-              {
+              foreach($count_datas as $k =>$valis){
                      $ids_orders[] = $valis['id'];
                      if(!in_array($valis['id'],$this->getDataidcommande()))
                       {
@@ -554,12 +519,10 @@ class TransferOrder
                  $dat = date('Y-m-d H:i:s');
          
                  // insert infos dans bdd ...
-                 if($nombre_orders == 0)
-                 {
+                 if($nombre_orders == 0) {
                     $label = "Aucune commande transférée";
                  }
-                 elseif($nombre_orders ==1)
-                 {
+                 elseif($nombre_orders ==1){
                     $label ="la commande à été transférée dans dolibars le $datetime";
                  }
                else{
@@ -621,18 +584,9 @@ class TransferOrder
               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
                // Lier les factures dolibar  à un moyen de paiement et bank.
                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-               
-           
+    }
 
-     }
-
-
-
-
-
-
-
-       /** 
+      /** 
      *@return array
      */
     public function Transferorders($orders)
