@@ -462,7 +462,7 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
                         // activer le statut payé et lié les paiments  sur les factures.
-                         $this->invoicespay($orders);
+                         //$this->invoicespay($orders);
                          dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
