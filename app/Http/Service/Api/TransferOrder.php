@@ -198,7 +198,7 @@ class TransferOrder
       {
                
            
-        
+               dd($orders);
                // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                 $method = "GET";
