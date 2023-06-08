@@ -441,6 +441,9 @@ class TransferOrder
                              }
                            }
                       }
+
+                      dd($data_tiers);
+                      dd($data_lines);
                 
                       foreach($data_tiers as $data)
                       {
@@ -635,10 +638,10 @@ class TransferOrder
        /** 
      *@return array
      */
-    public function Transferorders()
+    public function Transferorders($orders)
     {
-           $id=74181;
-           $order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
+           
+           //$order = $this->getdataorderid($id);// pour une seul commande. retour de réponse tableau. $order
             // excedd(rcer un get et post et put en fonction des status .
             // recuperer les données api dolibar copie projet tranfer x.
              $method = "GET";
@@ -741,7 +744,7 @@ class TransferOrder
                   $orders_d = [];// le nombre de orders non distributeur
                   $orders_distributeur = [];// le nombre de orders des distributeurs.....
              
-                  foreach($order as $k => $donnees)
+                  foreach($orders as $k => $donnees)
                   {
                
                          // recupérer les données pour les tiers pour dolibar post tiers dans l'array
