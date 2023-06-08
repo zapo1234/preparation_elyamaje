@@ -265,6 +265,9 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
+
+
+                  dd($data_list_product);
                  
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
