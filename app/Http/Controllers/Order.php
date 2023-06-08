@@ -242,9 +242,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
 
-        $order_id = $request->post('order_id');
-        // $order_id = 64922; // Données de test
-        // Génération de l'étiquette colissimo
+        // $order_id = $request->post('order_id');
+        $order_id = 64795; // Données de test
         $order = $this->order->getOrderById($order_id);
     
         if($order){
@@ -312,7 +311,7 @@ class Order extends BaseController
 
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
             // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-
+            // Génération de l'étiquette colissimo
             // return $this->generateLabel($orders);
         } else {
             return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
