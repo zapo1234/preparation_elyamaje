@@ -462,7 +462,7 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
                         // activer le statut payé et lié les paiments  sur les factures.
-                         //$this->invoicespay($orders);
+                         $this->invoicespay($orders);
                          dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
@@ -613,24 +613,15 @@ class TransferOrder
            "closepaidinvoices"=> "yes",
            "accountid"=> 6, // id du compte bancaire.
         ];
-
-           // valider les facture dans dolibar
-           for($i=$nombre_count; $i<$inv+1; $i++)
-           {
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
-           }
-      
+           
+           dd($inv);
+             // valider les facture dans dolibar
+              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
              // Lier les factures dolibar  à un moyen de paiement et bank.
-           for($i=$nombre_count; $i<$inv+1; $i++)
-           {
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
-           }
-
-              // mettre le statut en payé dans la facture  dolibar
-           for($i=$nombre_count; $i<$inv+1; $i++)
-           {
-             $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$i, json_encode($newCommandepaye));
-           }
+             $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+             // mettre le statut en payé dans la facture  dolibar
+               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+           
 
      }
 
