@@ -49,33 +49,30 @@
 									<span class="visually-hidden">Loading...</span>
 								</div>
 							</div>
-							<div class="table-responsive">
-								
-								<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
-									<thead>
+							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Nom</th>
+										<th>Prix (TTC)</th>
+										<th>Code Barre</th>
+										<th>Catégorie</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($products as $product)
 										<tr>
-											<th>Nom</th>
-											<th>Prix</th>
-											<th>Code Barre</th>
-											<th>Catégorie</th>
-											<th>Status</th>
+											<td data-label="Nom">{{ $product->name }}</td>
+											<td data-label="Prix (TTC)">{{ $product->price }} {{ config('app.currency_symbol') }}</td>
+											<td data-label="Code Barre">{{ $product->barcode ?? "Aucun"}}</td>
+											<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
+											<td data-label="Status">
+												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
+											</td>
 										</tr>
-									</thead>
-									<tbody>
-										@foreach($products as $product)
-											<tr>
-												<td data-label="Nom">{{ $product->name }}</td>
-												<td data-label="Prix">{{ $product->price }} {{ config('app.currency_symbol') }}</td>
-												<td data-label="Code Barre">{{ $product->barcode }}</td>
-												<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
-												<td data-label="Status">
-													<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
-												</td>
-											</tr>
-										@endforeach
-									</tbody>
-								</table>
-							</div>
+									@endforeach
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>

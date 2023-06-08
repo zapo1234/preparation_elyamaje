@@ -6501,6 +6501,7 @@ a{
 	body:has(#qrcode){
 		max-height: 150px !important;
 	}
+
 }
 
 .name_column{

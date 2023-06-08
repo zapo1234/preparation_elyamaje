@@ -241,13 +241,14 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
 
-        //$order_id = $request->post('order_id');
-        $order_id = 64922; // Données de test
+        $order_id = $request->post('order_id');
+        // $order_id = 64922; // Données de test
         // Génération de l'étiquette colissimo
         $order = $this->order->getOrderById($order_id);
-        $this->generateLabel($order);
-
+    
         if($order){
+            $this->generateLabel($order);
+
             $order_new_array = [];
             $products = [];
 
@@ -307,9 +308,8 @@ class Order extends BaseController
             $orders[] = $order_new_array;
             // envoi des données pour créer des facture via api dolibar....
             $this->factorder->Transferorder($orders);
-
-
-            
+        } else {
+            return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
         }
     }
 
@@ -328,18 +328,19 @@ class Order extends BaseController
 
         foreach($order as $or){
           $weight = $weight + ($or['weight'] *$or['quantity']);
+        } 
+
+
+        $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
+
+        if($label['success']){
+          $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+          if($this->label->save($label)){
+            dd("Étiquette générée !");
+          }
+        } else {
+          return $label;
         }
-
-        // $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
-
-        // if($label['success']){
-        //   $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-        //   if($this->label->save($label)){
-        //     dd("Étiquette générée !");
-        //   }
-        // } else {
-        //   return $label;
-        // }
       }
     }
 

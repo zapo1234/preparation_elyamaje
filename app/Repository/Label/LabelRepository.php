@@ -24,6 +24,16 @@ class LabelRepository implements LabelInterface
          'tracking_number' => $label['tracking_number'],
      ]);
    }
+
+   public function getLabels(){
+      return $this->model::select('labels.*', 'orders.status')
+      ->join('orders', 'orders.order_woocommerce_id', '=', 'labels.order_id')
+      ->orderBy('labels.created_at', 'DESC')->get();
+   }
+
+   public function getLabelById($label){
+      return $this->model::select('label')->where('id', $label)->get();
+   }
 }
 
 

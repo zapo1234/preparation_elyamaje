@@ -55,18 +55,19 @@
 															@endif
 														</div>
 														<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
-														<span class="column33"> {{ $item['quantity'] }} </span>
-														<!-- <span class="column44">{{  $item['barcode'] }} </span> -->
+														<span class="quantity column33"> {{ $item['quantity'] }} </span>
 													</div>
 												@endforeach
 											</div>
 
 											<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 												<div class="w-100 d-flex align-items-end justify-content-between">
-													<span class="mt-1 mb-2 montant_toltal_order">#{{ $orders['details']['id'] }} </span>
+													<span class="mt-1 mb-2 montant_toltal_order">
 													@if($orders['details']['coupons'])
-														<div><span style="margin-left:12%" class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
+														<div><span  class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
 													@endif
+													#{{ $orders['details']['id'] }} </span>
+													
 													<div class="mt-1 mb-2 montant_toltal_order">
 														<div>
 															<span class="detail_footer_order">Sous-total des articles : </span><strong>{{ floatval($orders['details']['total']) - floatval($orders['details']['total_tax']) }} {{ config('app.currency_symbol') }}</strong>
@@ -110,10 +111,13 @@
 									</div>
 
 									<div class="d-none success_prepared_command d-flex flex-column justify-content-center align-items-center">
-										<h2 class="no-print mb-5">Commande préparée avec succès !</h2>
-										<div id="qrcode"></div>
-										<span class="info_order"></span>
-										<div class="no-print col">
+										<h2 class="no-print mb-5 d-flex justify-content-center">Commande préparée avec succès !</h2>
+										<div class="d-flex justify-content-center" id="qrcode"></div>
+
+										<span class="d-flex justify-content-center info_order"></span>
+										<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
+
+										<div class="d-flex justify-content-center no-print col">
                                             <button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
                                         </div>
 									</div>
@@ -180,7 +184,7 @@
 			$(document).ready(function() {
 
 				if(localStorage.getItem('barcode')){
-					var list_barcode = JSON.parse(localStorage.getItem('barcode')).split(',')
+					var list_barcode = localStorage.getItem('barcode').split(',')
 					if(!Array.isArray(list_barcode)){
 						$("#barcode_"+list_barcode).addClass('pick')
 					} else {
@@ -189,7 +193,7 @@
 						});
 					}
 				} 
-
+			
 				if($(".pick").length == $(".product_order").length){
 					$(".validate_pick_in").attr('disabled', false)
 					$(".validate_pick_in").css('background-color', '#16e15e')
@@ -213,14 +217,15 @@
 
 								if(localStorage.getItem('barcode')){
 									var list_barcode = localStorage.getItem('barcode')
-									var new_list_list_barcode = JSON.stringify(list_barcode+','+$("#barcode").val())
+									var new_list_list_barcode = list_barcode+','+$("#barcode").val()
 									localStorage.setItem('barcode', new_list_list_barcode);
 								} else {
-									localStorage.setItem('barcode', JSON.stringify($("#barcode").val()));
+									localStorage.setItem('barcode', $("#barcode").val());
 								}
 								$("#barcode").val("")
 							} else {
 								$("#barcode").val("")
+								alert("Aucun produit ne correspond à ce code barre !")
 							}
 						}
 					}
@@ -235,9 +240,10 @@
 					$("#modalSuccess").modal('show')
 					
 					var order_id = $(".show").attr("data-order")
-					var pick_items = JSON.parse(localStorage.getItem('barcode')).split(',')
+					var pick_items = localStorage.getItem('barcode').split(',')
 					var customer_name = $(".customer_name").text()
 					var user_name = $('#userinfo').val()
+
 
 					$.ajax({
 						url: "{{ route('orders.prepared') }}",
@@ -252,6 +258,13 @@
 							const size = 300;
 							$(".info_order").text("#Commande "+order_id+" - "+pick_items.length+" Produit(s)"+" - "+$(".customer_name").text())
 
+							var list_products = ""
+							$( ".product_order" ).each(function() {
+								list_products += '<span>'+$( this ).children( "div" ).children( "span" ).text()+' - x'+$( this ).children( ".quantity " ).text()+'</span>'
+							});
+							
+							$(".info_order_product").append(list_products)
+								 
 							new QRCode(document.querySelector("#qrcode"), {
 								text: href,
 								width: size,
@@ -292,7 +305,7 @@
 				});
 			})
 
-			$(".close_modal_order").on('click', function(){
+			$('body').on('click', '.close_modal_order', function() {
 				if(!$(".error_prepared_command").hasClass("d-none")){
 					$("#modalSuccess").modal('hide')
 					$(".success_prepared_command").addClass("d-none")
@@ -303,10 +316,23 @@
 				}
 			})
 
-			$(".impression_code").on('click', function(){
-				window.print()
+			$('body').on('click', '.impression_code', function() {
+				imprimerPages()
 				$(".close_modal_validation").removeClass("d-none")
 			})
-        
+
+
+			function imprimerPages() {
+				var pageHeight = window.innerHeight;
+				var scrollHeight = document.documentElement.scrollHeight;
+				var position = 0;
+
+				var originalContents = document.body.innerHTML;
+				var printReport= document.querySelector('.success_prepared_command').innerHTML;
+				document.body.innerHTML = printReport;
+				window.print();
+				document.body.innerHTML = originalContents;
+			}
+
         </script>
 	@endsection

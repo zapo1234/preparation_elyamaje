@@ -13,7 +13,7 @@ class CreateProductsOrderTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_order', function (Blueprint $table) {
+        Schema::create('products_order', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
             $table->integer('product_woocommerce_id');

@@ -221,6 +221,7 @@ class OrderRepository implements OrderInterface
       ->where('products_order.order_id', $order_id)
       ->get();
 
+
       $update_products = DB::table('products_order')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
       ->whereIn('barcode', $barcode_array)

@@ -104,6 +104,17 @@
                     <div class="menu-title">Emballer</div>
                 </a>
             </li>
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="lni lni-delivery"></i>
+                    </div>
+                    <div class="menu-title">Colissimo</div>
+                </a>
+                <ul>
+                    <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
+                    </li>
+                </ul>
+            </li>
         @endif
     </ul>
     

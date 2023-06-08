@@ -23,6 +23,20 @@
                                         <input type="hidden" value="" id="detail_order">
                                     </div>
                                     <hr>
+
+                                    @if(session()->has('success'))
+                                        <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                                            <div class="text-white">{{ session()->get('success') }}</div>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    @endif
+                                    @if(session()->has('error'))
+                                        <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                                            <div class="text-white">{{ session()->get('error') }}</div>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    @endif
+
                                     <form method="POST" action="{{ route('validWrapOrder') }}" class="form_valid_wrap_order row g-3" data-bitwarden-watching="1">
                                         @csrf
                                         <div class="col-md-3">

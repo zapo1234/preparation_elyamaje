@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Order;
+use App\Http\Controllers\Label;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TiersController;
@@ -78,6 +79,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
 Route::group(['middleware' => ['auth', 'role:3']], function () {
     Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
     Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+    Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
 });
 
 // CHEF D'ÉQUIPE
@@ -99,7 +101,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteAccount", [User::class, "deleteAccount"])->name('account.delete');
     Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
     Route::get("/user", [User::class, "getUser"])->name('account.user');
+});
 
+// ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
+Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
+    Route::get("/labels", [Label::class, "getlabels"])->name('labels');
 });
 
 
