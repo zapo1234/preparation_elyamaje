@@ -196,7 +196,10 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-               // excercer un get et post et put en fonction des status ...
+               
+           
+        
+              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                 $method = "GET";
                 $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
