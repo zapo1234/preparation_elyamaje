@@ -621,8 +621,9 @@ class TransferOrder
         ];
            
              $fac = intval($inv+1);
-
-             dump($inv);
+             $facs = intval($inv);
+             
+             dump($facs);
              dd($fac);
 
               dd($array_ids_facture);
