@@ -521,6 +521,7 @@ class TransferOrder
         	), true);
 
               // recupération du dernier id invoices dolibar
+              $inv="";
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
@@ -620,7 +621,7 @@ class TransferOrder
         ];
            
              $fac = $inv+1;
-             $array_ids_facture = array($inv,$fac);
+             $array_ids_facture = array($inv,$inv+1);
 
              dd($array_ids_facture);
                // valider les facture dans dolibar
