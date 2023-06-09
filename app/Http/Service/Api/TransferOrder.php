@@ -621,7 +621,11 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-             $id_facture_kdo = $inv+1;
+             
+             $array_ids_facture[] =$inv;
+             $array_ids_facture = $inv+1;
+
+             dd($array_ids_facture);
                // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
