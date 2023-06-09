@@ -424,8 +424,6 @@ class TransferOrder
                            }
                       }
 
-                      dd($data_lines);
-
                          foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
