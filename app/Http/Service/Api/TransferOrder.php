@@ -620,7 +620,8 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-             $fac = $inv+1;
+             $fac = intval($inv+1);
+             dd($fac);
              $array_ids_facture = array($inv,$inv+1);
              dump($array_ids_facture[0]);
              dd($array_ids_facture[1]);
