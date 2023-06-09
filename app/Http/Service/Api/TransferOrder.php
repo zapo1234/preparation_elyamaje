@@ -456,8 +456,6 @@ class TransferOrder
                    }
       
                    
-                     dump($unique_arr);
-                     dd($unique_arrs);
                       
                          foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
