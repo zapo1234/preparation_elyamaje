@@ -623,7 +623,7 @@ class TransferOrder
            
              
              $array_ids_facture[] =$inv;
-             $array_ids_facture = $inv+1;
+             $array_ids_facture[] = $inv+1;
 
              dd($array_ids_facture);
                // valider les facture dans dolibar
