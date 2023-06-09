@@ -271,6 +271,7 @@ class TransferOrder
                      $id_commande_existe =[];// recupérer les id_commande existant deja récupérer dans les facture
                      $orders_d = [];// le nombre de orders non distributeur..
                      $orders_distributeur = [];// le nombre de orders des distributeurs...
+                     $data_kdo =[] ; // recupérer les produit qui sont cadeaux 
                 
                     foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -331,17 +332,32 @@ class TransferOrder
                                       $ref="";
                                      
                                       if($fk_product!=""){
-                                         // details  array article libéllé(product sur la commande) pour dolibarr.
-                                          $data_product[] = [
-                                            //"multicurrency_subprice"=> floatval($values['subtotal']),
-                                            //"multicurrency_total_ht" => floatval($values['subtotal']),
-                                            //"multicurrency_total_tva" => floatval($values['total_tax']),
-                                           // "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                            "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                            "product_label" =>$values['name'],
-                                            "qty" => $values['quantity'],
-                                            "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                            "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                            // details  array article libéllé(product sur la commande) pour dolibarr.
+                                            if($values['subtotal']==0){
+                                                $data_kdo[] = [
+                                                "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                "product_label" =>$values['name'],
+                                                "qty" => $values['quantity'],
+                                                "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                ];
+                                                  // recupérer les produit en kdo avec leur prix initial.
+                                                }
+                                         
+                                             $data_product[] = [
+                                             "multicurrency_subprice"=> floatval($values['subtotal']),
+                                             "multicurrency_total_ht" => floatval($values['subtotal']),
+                                             "multicurrency_total_tva" => floatval($values['total_tax']),
+                                             "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                             "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                             "product_label" =>$values['name'],
+                                              "qty" => $values['quantity'],
+                                             "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                             "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
                                      }
@@ -367,7 +383,8 @@ class TransferOrder
                                       "options_idw"=>$donnees['order_id'],
                                       "options_idc"=>$donnees['coupons']
                                        ];
-                                
+                                        
+                                       
                                        // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
@@ -415,7 +432,12 @@ class TransferOrder
                        // données des non distributeurs
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
-            
+
+                       // recupérer les données de produit en kdo 
+                       $temps = array_unique(array_column($data_kdo, 'socid'));
+                       $unique_arrs = array_intersect_key($data_kdo, $temps);
+
+                       // trier les produits qui ne sont pas en kdo
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
@@ -423,8 +445,19 @@ class TransferOrder
                              }
                            }
                       }
-      
 
+                      // les produits qui sont en kdo.
+                      foreach($unique_arrs as $rs => $vals){
+                        foreach($vals['lines'] as $qs => $vaks) {
+                          if($vals['socid']!=$vaks['ref_ext']){
+                             unset($unique_arrs[$rs]['lines'][$qs]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
+                          }
+                        }
+                   }
+      
+                   
+                   dd($unique_arr);
+                   dd($unique_arrs);
                       
                          foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -435,6 +468,13 @@ class TransferOrder
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
+
+                       // inserer les factures kdo de l\'utilisateur 
+                       foreach($unique_arrs as $donns){
+                        // insérer les details des données de la facture dans dolibarr
+                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donns));
+                     }
+                        
                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
                          dd('succes of opération');
