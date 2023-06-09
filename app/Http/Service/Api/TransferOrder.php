@@ -456,8 +456,8 @@ class TransferOrder
                    }
       
                    
-                   dd($unique_arr);
-                   dd($unique_arrs);
+                     dump($unique_arr);
+                     dd($unique_arrs);
                       
                          foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -621,7 +621,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-        $id_facture_kdo = $inv+1;
+             $id_facture_kdo = $inv+1;
                // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
