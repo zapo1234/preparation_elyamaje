@@ -469,9 +469,9 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
 
-                       // inserer les factures kdo de l\'utilisateur 
+                    
                        foreach($unique_arrs as $donns){
-                        // insérer les details des données de la facture dans dolibarr
+                        // insérer le details pour la facture kdo
                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donns));
                      }
                         
@@ -621,6 +621,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
+        $id_facture_kdo = $inv+1;
                // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
