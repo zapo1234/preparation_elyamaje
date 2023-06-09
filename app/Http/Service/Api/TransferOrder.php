@@ -621,7 +621,9 @@ class TransferOrder
         ];
            
              $fac = intval($inv+1);
-              $array_ids_facture = array($inv,$fac);
+
+             dump($inv);
+             dd($fac);
 
               dd($array_ids_facture);
              
@@ -629,7 +631,7 @@ class TransferOrder
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-              
+
                // Lier les factures dolibar  à un moyen de paiement et bank.
                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
     }
