@@ -46,6 +46,10 @@ class HistoryRepository implements HistoryInterface
          ->toArray();
    }
 
+   public function save($data){
+      return $this->model::insert($data);
+   }
+
 
 }
 

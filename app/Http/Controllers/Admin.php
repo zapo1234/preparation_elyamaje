@@ -102,6 +102,8 @@ class Admin extends BaseController
           }
         }  
 
+
+       
         foreach($products as $product){
 
             if($product['meta_data']){
@@ -113,26 +115,41 @@ class Admin extends BaseController
             $category_name = [];
             $category_id = [];
 
-
             foreach($product['categories'] as $cat){
                 $category_name[] = $cat['name'];
                 $category_id[] = $cat['id'];
             }
             
+            $ids = array_column($product['attributes'], "name");
+            $clesRecherchees = array_keys($ids,  "Volume");
 
-            $insert_products [] = [
-                'product_woocommerce_id' => $product['id'],
-                'category' =>  implode(',', $category_name),
-                'category_id' => implode(',', $category_id),
-                'variation_id' => implode(',', $product['variations']),
-                'name' => $product['name'],
-                'status' => $product['status'],
-                'price' => $product['price'],
-                'barcode' => $barcode,
-            ];
+            if(count($clesRecherchees) > 0 && count($product['variations']) > 0){
+                $option = $product['attributes'][$clesRecherchees[0]]['options'];
+                foreach($option as $key => $op){
+                    $insert_products [] = [
+                        'product_woocommerce_id' => $product['variations'][$key],
+                        'category' =>  implode(',', $category_name),
+                        'category_id' => implode(',', $category_id),
+                        'variation' => 1,
+                        'name' => $product['name'].' - '.$op,
+                        'status' => $product['status'],
+                        'price' => $product['variation_prices'][$key],
+                        'barcode' => $product['barcodes_list'][$key]
+                    ];
+                }
+            } else {
+                $insert_products [] = [
+                    'product_woocommerce_id' => $product['id'],
+                    'category' =>  implode(',', $category_name),
+                    'category_id' => implode(',', $category_id),
+                    'variation' => 0,
+                    'name' => $product['name'],
+                    'status' => $product['status'],
+                    'price' => $product['price'],
+                    'barcode' => $barcode,
+                ];
+            }
         }
-
-
 
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 

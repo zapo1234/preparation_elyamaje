@@ -75,7 +75,7 @@
 													<div class="d-flex align-items-center">
 														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 														<div class="ms-2">
-															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">
+															<h6 id="team_user_{{ $team['id'] }}" class="mb-1 font-14">
 																@if(Auth()->user()->id == $team['id'])
 																	{{ $team['name'] }}<strong> (Moi)</strong>
 																@else 
@@ -503,10 +503,9 @@
 					var from_user = $(this).attr('id').split('_')[1]
 					var to_user = $(this).val()
 					var to_user_text = $("#user_name_"+$(this).val()).text()
-
-
+					
 					$(".from_to_user").val(from_user+','+to_user)
-					$("#from_user").text($("#user_"+from_user).text())
+					$("#from_user").text($("#team_user_"+from_user).text())
 					$("#to_user").text(to_user_text)
 					$("#reallocationOrders").modal('show')
 				}

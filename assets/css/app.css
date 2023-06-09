@@ -6672,15 +6672,15 @@ select:focus, input:focus{
 	outline: 0px !important;
 }
 
-.bg-draft{
+.bg-draft, .bg-prepared-order{
 	background-color: #ffc107;
 }
 
-.bg-private{
+.bg-private, .bg-processing{
 	background-color: #212529;
 }
 
-.bg-publish{
+.bg-publish, .bg-ready_to_ship{
 	background-color: #29cc39;
 }
 
