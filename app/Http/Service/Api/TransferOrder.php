@@ -334,7 +334,7 @@ class TransferOrder
                                      
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
-                                            if($values['subtotal']==0){
+                                            if($values['subtotal']=="0.0"){
                                                  $data_kdo[] = [
                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
