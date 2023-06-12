@@ -77,13 +77,13 @@ class Controller extends BaseController
     // PRÉPARATEUR COMMANDES CLASSIQUES
     public function orderPreparateur(){
         $orders = $this->orderController->getOrder();
-        return view('preparateur.index_preparateur', ['user' => Auth()->user()->name,'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
+        return view('preparateur.index_preparateur', ['user' => Auth()->user()->name, 'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
     // PRÉPARATEUR COMMANDES DISTRIBUTEURS
     public function ordersDistributeurs(){
         $orders = $this->orderController->getOrderDistributeur();
-        return view('preparateur.distributeur.index_preparateur', ['orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
+        return view('preparateur.distributeur.index_preparateur', ['user' => Auth()->user()->name, 'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
     }
 
     // INDEX CHEF D'ÉQUIPE

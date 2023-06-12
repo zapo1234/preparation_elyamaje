@@ -19,7 +19,7 @@ return [
     |
     */
 
-    'woocommerce_api_url' => 'https://staging.elyamaje.com/',
+    'woocommerce_api_url' => env('APP_WOOCOMMERCE_API_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,8 +28,8 @@ return [
     |
     */
 
-    'woocommerce_customer_key' => 'ck_06dc2c28faab06e6532ecee8a548d3d198410969',
-    'woocommerce_customer_secret' => 'cs_a11995d7bd9cf2e95c70653f190f9feedb52e694',
+    'woocommerce_customer_key' => env('APP_WOOCOMMERCE_API_CUSTOMER_KEY'),
+    'woocommerce_customer_secret' => env('APP_WOOCOMMERCE_API_CUSTOMER_SECRET'),
 
     /*
     |--------------------------------------------------------------------------

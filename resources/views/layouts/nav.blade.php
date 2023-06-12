@@ -75,6 +75,8 @@
                     </li>
                     <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
                     </li>
+                    <li> <a href="{{ url('roles') }}"><i class="bx bx-right-arrow-alt"></i>Roles</a>
+                    </li>
                 </ul>
             </li>
 

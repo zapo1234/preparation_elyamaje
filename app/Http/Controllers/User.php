@@ -117,4 +117,8 @@ class User extends BaseController
         }
        
     }
+
+    public function noRole(){
+        return view('norole');
+    }
 }

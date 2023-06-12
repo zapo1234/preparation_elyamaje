@@ -1,14 +1,9 @@
 <?php
 
-// recuperer des utilitaires
-
 namespace App\Http\Service\Api;
 
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
-
 
 class Api
 {
@@ -24,27 +19,21 @@ class Api
     } catch(Exception $e){
       return $e->getMessage();
     }
-
   }
-
 
   public function updateOrdersWoocommerce($status, $id){
 
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
-    // Cache commenté car peux poser problème
-    // $result = Cache::remember('orders', 15, function () use ($status, $page, $per_page, $customer_key, $customer_secret) {
-      try{
-        $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
-          'status' => $status,
-        ]);
-
-        return $response->json() ? true : false;
-
-      } catch(Exception $e){
-        return $e->getMessage();
-      }
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
+        'status' => $status,
+      ]);
+      return $response->json() ? true : false;
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
   }
 
   public function getOrderById($order_id){
@@ -55,28 +44,24 @@ class Api
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$order_id);
       return $response->json();
-
     } catch(Exception $e){
       return $e->getMessage();
     }
   }
 
-
-  
   public function getAllCategories($per_page, $page){
 
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
-      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."/wp-json/wc/v3/products/categories?per_page=".$per_page."&page=".$page);
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/categories?per_page=".$per_page."&page=".$page);
       return $response->json();
 
     } catch(Exception $e){
       return $e->getMessage();
     }
   }
-
 
   public function getAllProducts($per_page, $page){
 
@@ -92,21 +77,16 @@ class Api
     }
   }
 
-
-  // api get
-  public function getDataApiWoocommerce(string $urls): array
-  {
+  public function getDataApiWoocommerce(string $urls): array{
       
       // keys authentification API data woocomerce dev copie;
-      $customer_key="ck_06dc2c28faab06e6532ecee8a548d3d198410969";
-      $customer_secret ="cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
+      $customer_key = config('app.woocommerce_customer_key');
+      $customer_secret = config('app.woocommerce_customer_secret');
       
       $headers = array(
+        'Authorization'=> 'Basic' .base64_encode($customer_key.':'.$customer_secret)
+      );
           
-          'Authorization'=> 'Basic' .base64_encode($customer_key.':'.$customer_secret)
-          );
-          
-        //
       $curl = curl_init();
       curl_setopt($curl, CURLOPT_URL, $urls);
       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -121,21 +101,18 @@ class Api
       return $data; 
   }
 
-  public function CallAPI($method, $key, $url, $data = false)
-  {
+  public function CallAPI($method, $key, $url, $data = false){
       
         $curl = curl_init();
         $httpheader = ['DOLAPIKEY: '.$key];
 
-      switch ($method)
-     {
-         case "POST":
+      switch ($method){
+        case "POST":
           curl_setopt($curl, CURLOPT_POST, 1);
           $httpheader[] = "Content-Type:application/json";
 
           if ($data)
               curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-
           break;
        case "PUT":
 
@@ -149,24 +126,19 @@ class Api
       default:
           if ($data)
               $url = sprintf("%s?%s", $url, http_build_query($data));
-     }
+    }
 
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
 
-     curl_setopt($curl, CURLOPT_URL, $url);
-     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-     curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
+    $result = curl_exec($curl);
 
-     $result = curl_exec($curl);
-
-     curl_close($curl);
+    curl_close($curl);
      
-     // renvoi le resultat sous forme de json
-      return $result;
-      
-      
- }  
-   
-
+    // renvoi le resultat sous forme de json
+    return $result;   
+  }  
 }
 
 

@@ -280,7 +280,7 @@
 						}
 					});
 				}
-			})
+			}) 
 
 			$(".reset_order").on('click', function(){
 				$("#modalReset").modal("show")

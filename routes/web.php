@@ -22,7 +22,7 @@ use App\Http\Controllers\TiersController;
 
 Route::get('/index', function () {
     return redirect()->route('/');
-})->name('index');;
+})->name('index');
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
@@ -38,6 +38,9 @@ Route::group(['middleware' => ['auth']], function () {
                 break;
             case 4 :
                 return redirect()->route('leader.dashboard');
+                break;
+            case 5 :
+                return redirect()->route('noRole');
                 break;
             default:
                 return redirect()->route('logout');
@@ -60,10 +63,16 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
     Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
-
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
     Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
+
+    // CRUD Role
+    Route::get("/roles", [Admin::class, "roles"])->name('roles');
+    Route::post("/roles", [Admin::class, "createRole"])->name('role.create');
+    Route::put("/roles", [Admin::class, "updateRole"])->name('role.update');
+    Route::delete("/roles", [Admin::class, "deleteRole"])->name('role.delete');
+
 });
 
 // PRÉPARATEUR
@@ -109,6 +118,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
 });
 
 
+// ROLES NON DÉFINI 
+Route::group(['middleware' =>  ['auth', 'role:5']], function () {
+    Route::get("/noRole", [User::class, "noRole"])->name('noRole');
+});
+
+
 // Connexion & Déconnexion
 Route::get("/login", [Auth::class, "login"])->name('login');
 Route::post("/login", [Auth::class, "postLogin"])->name('login');
@@ -125,10 +140,7 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
-
-
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
-// Route::get("/colissimo", [Order::class, "colissimo"])->name('colissimo');
 
 
 

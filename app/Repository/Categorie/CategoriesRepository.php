@@ -3,19 +3,16 @@
 namespace App\Repository\Categorie;
 
 use Exception;
-use Carbon\Carbon;
 use App\Models\Categorie;
-use Illuminate\Support\Facades\DB;
 
 class CategoriesRepository implements CategoriesInterface
 {
-     
+   
    private $model;
 
    public function __construct(Categorie $model){
       $this->model = $model;
    }
-
 
    public function insertCategoriesOrUpdate($categories){
 
@@ -113,7 +110,6 @@ class CategoriesRepository implements CategoriesInterface
 
    public function updateCategoryOrder($id, $order_display, $parent){
       $categories = $this->model::all()->toArray();
-
     
       if($parent != "false"){
          $arborescence = $this->trierCategories($categories);
@@ -135,8 +131,5 @@ class CategoriesRepository implements CategoriesInterface
             return $e->getMessage();
          }
       }
-     
-    
    }
-
 }

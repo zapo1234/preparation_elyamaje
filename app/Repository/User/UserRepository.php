@@ -3,21 +3,17 @@
 namespace App\Repository\User;
 
 use Exception;
-use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserInterface
-
 {
 
    private $model;
 
    public function __construct(User $model){
-
       $this->model = $model;
    }
-
 
    public function getUsers(){
       return $this->model->all();
@@ -189,7 +185,6 @@ class UserRepository implements UserInterface
             $roles[] = [
                'user_id' => $user_id,
                'role_id' => $r,
-
             ];
 
             if($r != 2){

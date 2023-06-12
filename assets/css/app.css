@@ -6698,4 +6698,6 @@ select:focus, input:focus{
 	margin-top: 5px;
 }
 
-
+.role_color{
+	border-radius: .25rem;
+}
