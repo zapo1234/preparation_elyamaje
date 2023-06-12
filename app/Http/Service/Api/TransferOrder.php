@@ -345,7 +345,11 @@ class TransferOrder
                                                  "product_label" =>$values['name'],
                                                  "qty" => $values['quantity'],
                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                  "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                  "coupons"=>$donnees['coupons'],
+                                                  "date" => $donnees['date'],
+                                                  "total_order" =>$donnees['total_order'],
+                                                   "order_id"=>$donnees['oder_id']
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
                                                 }
@@ -447,7 +451,8 @@ class TransferOrder
                       }
 
                       
-                      
+                       dump($data_tiers);
+                       dd($data_kdo);
 
                       
                          foreach($data_tiers as $data) {
