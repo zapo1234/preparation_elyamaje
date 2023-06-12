@@ -71,8 +71,8 @@ class TiersRepository implements TiersInterface
 
            // recuperer les données api dolibar copie projet tranfer x.
            $methods = "GET";
-           $apiKeys = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-           $apiUrls = "https://www.transfertx.elyamaje.com/api/index.php/";
+           $apiKeys = env('KEY_API_DOLIBAR');
+           $apiUrls = env('KEY_API_URL');
 
            $produitParams = array(
              'apikey' => '9W8P7vJY9nYOrE4acS982RBwvl85rlMa',
