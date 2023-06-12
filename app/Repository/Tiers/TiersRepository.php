@@ -71,12 +71,13 @@ class TiersRepository implements TiersInterface
 
            // recuperer les données api dolibar copie projet tranfer x.
            $method = "GET";
-               $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
-               $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
+              
+            $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = env('KEY_API_URL');
               
                   $produitParam = array(
-                    'apikey' => '9W8P7vJY9nYOrE4acS982RBwvl85rlMa',
-                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-2 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                    'apikey' => $apiKey,
+                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
 
                     'limit' => 0,
                     'sortfield' => 'rowid',
