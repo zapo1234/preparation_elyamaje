@@ -377,16 +377,13 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrderById($order_id){
-
-      dd($this->model::select('orders.*', 'products.*', 'products_order.pick', 'products_order.quantity',
+      return $this->model::select('orders.*', 'products.*', 'products_order.pick', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
       ->get()
-      ->toArray());
-
-      // return 
+      ->toArray();
    }
    
    public function getHistoryByUser($user_id){
