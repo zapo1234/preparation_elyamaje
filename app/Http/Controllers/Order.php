@@ -235,7 +235,6 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
            
-      dd('adrien');
         // $order_id = $request->post('order_id');
         $order_id = 70000; // Données de test
         $order = $this->order->getOrderById($order_id);
@@ -305,6 +304,8 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
+
+            dd($orders);
            
             // envoi des données pour créer des facture via api dolibar....
              $this->factorder->Transferorder($orders);
