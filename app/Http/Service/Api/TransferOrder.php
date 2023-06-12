@@ -200,8 +200,8 @@ class TransferOrder
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
-               $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+               $apiKey = env('KEY_API_DOLIBAR');
+               $apiUrl = env('KEY_API_URL');
     
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -209,6 +209,7 @@ class TransferOrder
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
 
                  dd($listproduct);
+
                  //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
