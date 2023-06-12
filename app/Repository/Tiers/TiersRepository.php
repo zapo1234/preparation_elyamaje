@@ -71,12 +71,14 @@ class TiersRepository implements TiersInterface
 
            // recuperer les données api dolibar copie projet tranfer x.
            $methods = "GET";
-           $apiKeys = env('KEY_API_DOLIBAR');
-           $apiUrls = env('KEY_API_URL');
+           $apiKeys = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+           $apiUrls = "https://www.transfertx.elyamaje.com/api/index.php/";
 
            $produitParams = array(
-            'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
-              'limit' => 0,
+             'apikey' => '9W8P7vJY9nYOrE4acS982RBwvl85rlMa',
+             'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+
+             'limit' => 0,
              'sortfield' => 'rowid',
              'sortorder' => 'DESC',
           );
@@ -86,8 +88,6 @@ class TiersRepository implements TiersInterface
             $listinvoice = $this->api->CallAPI("GET", $apiKeys, $apiUrls."thirdparties", $produitParams);
             $lists = json_decode($listinvoice,true);
             $data_ids = array('3087');
-
-            dd($lists);
             // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();
             foreach($lists as $key=>$values)
