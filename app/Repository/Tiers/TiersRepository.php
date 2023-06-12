@@ -85,11 +85,8 @@ class TiersRepository implements TiersInterface
     
             $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
             $lists = json_decode($listinvoice,true);
-
-            dd($lists);
             $data_ids = array('3087');
             // recupérer les données essentiel
-            dd($lists);
            $array_tiers = $this-> getallsocid();
             foreach($lists as $key=>$values)
             {
