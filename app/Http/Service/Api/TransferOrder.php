@@ -637,7 +637,7 @@ class TransferOrder
          
               //environement test local
          
-              //Recuperer les ref et id product dans un tableau
+              //Recuperer les ref et id product dans un tableau.
 
               $produitParam = ["limit" => 700, "sortfield" => "rowid"];
               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
