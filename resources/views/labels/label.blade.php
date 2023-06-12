@@ -48,10 +48,19 @@
 										</tr>
 									</thead>
 									<tbody>
-										@foreach($labels as $label)
+										@foreach($labels as $key => $label)
 											<tr>
-												<td>{{ $label->order_id }}</td>
-												<td>{{ $label->status }}</td>
+												<td>
+													<div class="d-flex justify-content-between">
+														<span>{{ $label->order_id }}</span>
+														@if($key == 0)
+															<span class="rounded-pill badge bg-danger">New</span>
+														@endif
+													</div>
+												</td>
+												<td>
+													<span class="badge bg-{{ $label->status }} text-light">{{ $label->status }}</span>
+												</td>
 												<td>{{ $label->tracking_number }}</td>
 												<td>{{ $label->created_at }}</td>
 												<td data-label="PDF">
@@ -61,7 +70,6 @@
 														<button type="submit" class="btn btn-outline-danger px-5"><i class="bx bx-file"></i>Voir</button>
 													</form>
 												</td>
-
 											</tr>
 										@endforeach
 									</tbody>
@@ -84,9 +92,9 @@
 
 
 		$(document).ready(function() {
-
-
-
+			$('#example').DataTable({
+				order: [[3, 'desc']],
+			})
 		})
 
 

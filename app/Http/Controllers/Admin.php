@@ -102,6 +102,8 @@ class Admin extends BaseController
           }
         }  
 
+
+       
         foreach($products as $product){
 
             if($product['meta_data']){
@@ -113,26 +115,41 @@ class Admin extends BaseController
             $category_name = [];
             $category_id = [];
 
-
             foreach($product['categories'] as $cat){
                 $category_name[] = $cat['name'];
                 $category_id[] = $cat['id'];
             }
             
+            $ids = array_column($product['attributes'], "name");
+            $clesRecherchees = array_keys($ids,  "Volume");
 
-            $insert_products [] = [
-                'product_woocommerce_id' => $product['id'],
-                'category' =>  implode(',', $category_name),
-                'category_id' => implode(',', $category_id),
-                'variation_id' => implode(',', $product['variations']),
-                'name' => $product['name'],
-                'status' => $product['status'],
-                'price' => $product['price'],
-                'barcode' => $barcode,
-            ];
+            if(count($clesRecherchees) > 0 && count($product['variations']) > 0){
+                $option = $product['attributes'][$clesRecherchees[0]]['options'];
+                foreach($option as $key => $op){
+                    $insert_products [] = [
+                        'product_woocommerce_id' => $product['variations'][$key],
+                        'category' =>  implode(',', $category_name),
+                        'category_id' => implode(',', $category_id),
+                        'variation' => 1,
+                        'name' => $product['name'].' - '.$op,
+                        'status' => $product['status'],
+                        'price' => $product['variation_prices'][$key],
+                        'barcode' => $product['barcodes_list'][$key]
+                    ];
+                }
+            } else {
+                $insert_products [] = [
+                    'product_woocommerce_id' => $product['id'],
+                    'category' =>  implode(',', $category_name),
+                    'category_id' => implode(',', $category_id),
+                    'variation' => 0,
+                    'name' => $product['name'],
+                    'status' => $product['status'],
+                    'price' => $product['price'],
+                    'barcode' => $barcode,
+                ];
+            }
         }
-
-
 
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
@@ -179,5 +196,66 @@ class Admin extends BaseController
         }
 
         echo json_encode(['name' => $name, 'prepared_count' => $prepared_count, 'finished_count' => $finished_count]);
+    }
+
+    public function roles(){
+        $roles = $this->role->getRoles();
+        $role_can_not_delete = [1,2,3,4];
+        return view('admin.roles', ['roles' => $roles, 'role_can_not_delete' =>  $role_can_not_delete]);
+    }
+
+    public function createRole(Request $request){
+        $role = $request->post('role');
+        $color = $request->post('color');
+
+        $data = [
+            'role' => $role,
+            'color' => $color
+        ];
+        
+        if($this->role->createRole($data)){
+            return redirect()->route('roles')->with('success', 'Rôle créé avec succès !');
+        } else {
+            return redirect()->route('roles')->with('error', 'Le rôle n\'a pas pu être créé');
+        }
+    }
+
+    public function updateRole(Request $request){
+        $update_role = $request->post('update_role');
+        $update_color = $request->post('update_color');
+        $role_id = $request->post('role_id');
+        $data = [
+            'role' => $update_role,
+            'color' => $update_color,
+            'role_id' => $role_id
+        ];
+
+        if($this->role->updateRole($data)){
+            return redirect()->route('roles')->with('success', 'Rôle modifié avec succès !');
+        } else {
+            return redirect()->route('roles')->with('error', 'Le rôle n\'a pas pu être modifié');
+        }
+    }
+
+    public function deleteRole(Request $request){
+        $role_can_not_delete = [1,2,3,4];
+        $role_id = $request->post('role_id');
+
+        if(in_array($role_id, $role_can_not_delete)){
+            return redirect()->route('roles')->with('error', 'Le rôle ne peut pas être supprimé !');
+        } else {
+            
+            $role_attr = $this->user->getUsersByRole([$role_id]);
+
+            if(count($role_attr) > 0){
+                return redirect()->route('roles')->with('error', 'Impossible de supprimer un rôle déjà attribué !');
+            } else {
+                if($this->role->deleteRole($role_id)){
+                    return redirect()->route('roles')->with('success', 'Rôle supprimé avec succès !');
+                } else {
+                    return redirect()->route('roles')->with('error', 'Le rôle n\'a pas pu être supprimé');
+                }
+            }
+        }
     }
 }

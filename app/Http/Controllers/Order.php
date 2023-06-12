@@ -91,7 +91,6 @@ class Order extends BaseController
           }
 
         }
-
         return $orders;
       }
       
@@ -132,7 +131,7 @@ class Order extends BaseController
       }
 
       if(count($array_user) == 0){
-        echo json_encode(['success' => false, 'message' => 'Il n\'y a pas de préparateur !']);
+        echo json_encode(['success' => false, 'message' => 'Il n\'y a pas de préparateurs !']);
         return;
       }
 
@@ -148,7 +147,7 @@ class Order extends BaseController
 
       // Liste des commandes Woocommerce
       $orders = $this->orders();
-
+      
       $ids = array_column($orders, "id");
       foreach($orders_id as $id){
         $clesRecherchees = array_keys($ids,  $id);
@@ -157,7 +156,7 @@ class Order extends BaseController
         }
       }
 
-      // Supprime du tableau les commandes à ne pas prendre en compte
+      // Supprime du tableau les commandes à ne pas prendre en compte si déjà attribuées
       foreach($array_user as $key => $array){
         foreach($array as $key2 => $arr){
           if(in_array($arr['order_woocommerce_id'], $orders_to_delete)){
@@ -171,9 +170,7 @@ class Order extends BaseController
 
       // Répartitions des commandes
       foreach($orders as $order){  
-      
         foreach($array_user as $key => $array){
-
           // Check si commande pas déjà répartie
           if(!in_array($order['id'], $orders_id)){
             $tailles = array_map('count', $array_user);
@@ -184,15 +181,11 @@ class Order extends BaseController
               break;
             }
           }
-         
         }
       }
-
-      // List orders by users
+      // Insert orders by users
       $this->order->insertOrdersByUsers($array_user);
-      
     }
-
 
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
@@ -243,9 +236,9 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
 
         // $order_id = $request->post('order_id');
-        $order_id = 70000; // Données de test.
+        $order_id = 64795; // Données de test
         $order = $this->order->getOrderById($order_id);
-      
+
         if($order){
 
             $order_new_array = [];
@@ -283,9 +276,14 @@ class Order extends BaseController
        
             // Construis le tableau de la même manière que woocommerce
             foreach($order as $key => $or){
-              $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation_id'], 
+              $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
               'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
               'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+
+           
+              if($or['total_price'] == 0){
+                $products['line_items'][0]['real_price'] = $or['price'];
+              }
 
               foreach($or as $key2 => $or2){
                 if (str_contains($key2, 'billing')) {
@@ -306,11 +304,20 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
+           
             // envoi des données pour créer des facture via api dolibar....
-            $this->factorder->Transferorder($orders);
-
+            // $this->factorder->Transferorder($orders);
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
             // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+            // $this->order->updateOrdersById([$order_id], "ready_to_ship");
+            // Insert la commande dans histories
+            // $data = [
+            //   'order_id' => $order_id,
+            //   'user_id' => Auth()->user()->id,
+            //   'status' => 'finished',
+            //   'poste' => Auth()->user()->poste
+            // ];
+            // $this->history->save($data);
             // Génération de l'étiquette colissimo
             // return $this->generateLabel($orders);
         } else {
@@ -335,9 +342,10 @@ class Order extends BaseController
 
           $weight = $weight + ($or['weight'] *$or['quantity']);
         } 
-
+        
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
-
+        // $label['label'] = file_get_contents('labelPDF.pdf');
+    
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
           if($this->label->save($label)){

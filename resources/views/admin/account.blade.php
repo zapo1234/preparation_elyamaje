@@ -90,59 +90,62 @@
 						</div>
 					@endif
 
-					<div class="row">
-						<div class="card card_table_mobile_responsive">
-							<div class="card-body">
-								<table id="example" class="table_mobile_responsive w-100 table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>Nom</th>
-											<th>Rôles</th>
-											<th class="col-md-1">Action</th>
-										</tr>
-									</thead>
-
-									<tbody>
-										@foreach ($users as $user)
-											<tr>
-												<td data-label="Nom">{{ $user['name'] }}</td>
-												<td data-label="Status">	
-													@foreach($roles as $role)
-														@if(in_array($role['id'], $user['role_id']))
-															<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
-														@endif
-													@endforeach
-												</td>
-												<td class="d-flex justify-content-between" data-label="Action" >
-													@if(in_array('Admin', $user['role']) && !$isAdmin)
-														<div class="d-flex">
-															<div class="action_table font-22 text-secondary">	
-																<i class="text-secondary fadeIn animated bx bx-edit"></i>
-															</div>
-														</div>
-													@else 
-														<div class="d-flex">
-															<div data-id="{{ $user['user_id'] }}" class="update_action action_table font-22 text-primary">	
-																<i class="fadeIn animated bx bx-edit"></i>
-															</div>
-															@if($user['user_id'] != 1)
-																<div data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
-																	<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
-																</div>
-															@endif
-														</div>
-													@endif
-												</td>
-											</tr>
-										@endforeach
-									</tbody>
-								</table>
+					<div class="card card_table_mobile_responsive">
+						<div class="card-body">
+							<div class="d-flex justify-content-center">
+								<div class="loading spinner-border text-dark" role="status"> 
+									<span class="visually-hidden">Loading...</span>
+								</div>
 							</div>
+							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Nom</th>
+										<th>Rôles</th>
+										<th class="col-md-1">Action</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									@foreach ($users as $user)
+										<tr>
+											<td data-label="Nom">{{ $user['name'] }}</td>
+											<td data-label="Status">	
+												@foreach($roles as $role)
+													@if(in_array($role['id'], $user['role_id']))
+														<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
+													@endif
+												@endforeach
+											</td>
+											<td class="d-flex justify-content-between" data-label="Action" >
+												@if(in_array('Admin', $user['role']) && !$isAdmin)
+													<div class="d-flex">
+														<div class="action_table font-22 text-secondary">	
+															<i class="text-secondary fadeIn animated bx bx-edit"></i>
+														</div>
+													</div>
+												@else 
+													<div class="d-flex">
+														<div data-id="{{ $user['user_id'] }}" class="update_action action_table font-22 text-primary">	
+															<i class="fadeIn animated bx bx-edit"></i>
+														</div>
+														@if($user['user_id'] != 1)
+															<div data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
+																<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
+															</div>
+														@endif
+													</div>
+												@endif
+											</td>
+										</tr>
+									@endforeach
+								</tbody>
+							</table>
 						</div>
 					</div>
+
 				</div>
 			</div>
-
 
 
 			<!-- Modal Suppression -->
@@ -163,7 +166,6 @@
 					</div>
 				</div>
 			</div>
-
 
 
 			<!-- Modal modification de compte -->
@@ -247,7 +249,10 @@
 			$('.select2-selection__rendered').html('');
 
 			$('#example').DataTable({
-
+				"initComplete": function(settings, json) {
+					$(".loading").hide()
+					$("#example").removeClass('d-none')
+				}
 			})
 
 		})

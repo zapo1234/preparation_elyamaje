@@ -36,7 +36,13 @@
 													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
-													<h6 class="mb-1 font-14">{{ Auth()->user()->id == $team['user_id'] ? $team['name'].' (Moi)' : $team['name']}}</h6>
+													<h6 class="mb-1 font-14">
+														@if(Auth()->user()->id == $team['user_id'])
+															{{ $team['name'] }}<strong> (Moi)</strong>
+														@else 
+															{{ $team['name'] }}
+														@endif
+													</h6>
 													<p class="mb-0 font-13 text-secondary">{{ $team['email'] }}</p>
 												</div>
 												<div class="list-inline d-flex align-items-center list_role_user customers-contacts ms-auto">	
@@ -69,7 +75,13 @@
 													<div class="d-flex align-items-center">
 														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 														<div class="ms-2">
-															<h6 id="user_{{ $team['id'] }}" class="mb-1 font-14">{{  Auth()->user()->id == $team['id'] ? $team['name'].' (Moi)' : $team['name'] }}</h6>
+															<h6 id="team_user_{{ $team['id'] }}" class="mb-1 font-14">
+																@if(Auth()->user()->id == $team['id'])
+																	{{ $team['name'] }}<strong> (Moi)</strong>
+																@else 
+																	{{ $team['name'] }}
+																@endif
+															</h6>
 														</div>
 													</div>
 													
@@ -249,6 +261,11 @@
 							var users = json.users;
 							// Combiner les données des commandes (orders) et des utilisateurs (users)
 							var combinedData = orders.map(function(order) {
+							var coupons = false;
+
+								order['coupon_lines'].forEach(function(cp){
+									coupons = cp['code'];
+								})
 
 								return {
 									id: order.id,
@@ -260,10 +277,10 @@
 									date_created: order.date_created,
 									line_items: order.line_items,
 									user_id: order.user_id,
+									coupons: coupons,
 									users: users
 								};
 							});
-
 							return combinedData;
 						}
 					},
@@ -326,7 +343,6 @@
             			},
 						{data: null,
 							render: function(data, type, row) {
-							
 								return `
 									<div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
@@ -353,6 +369,7 @@
 														).join('')}
 														</div>
 														<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
+															${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
 															<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
 															<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
 														</div>
@@ -421,6 +438,18 @@
 
 			})
 
+			if($(window).width() < 650){
+				$(".dataTables_scrollBody").css('max-height', '100%')
+			}
+
+			$(window).resize(function(){
+				if($(window).width() < 650){
+					$(".dataTables_scrollBody").css('max-height', '100%')
+				} else {
+					$(".dataTables_scrollBody").css('max-height', '59vh')
+				}
+			})
+
 
 			$(".allocation_of_orders").on("click", function(){
 				$('#allocationOrders').modal({
@@ -487,10 +516,9 @@
 					var from_user = $(this).attr('id').split('_')[1]
 					var to_user = $(this).val()
 					var to_user_text = $("#user_name_"+$(this).val()).text()
-
-
+					
 					$(".from_to_user").val(from_user+','+to_user)
-					$("#from_user").text($("#user_"+from_user).text())
+					$("#from_user").text($("#team_user_"+from_user).text())
 					$("#to_user").text(to_user_text)
 					$("#reallocationOrders").modal('show')
 				}

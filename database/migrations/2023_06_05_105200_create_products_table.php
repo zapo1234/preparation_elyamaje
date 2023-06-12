@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->integer('product_woocommerce_id');
             $table->string('category');
             $table->string('category_id');
-            $table->integer('variation_id')->nullable();
+            $table->boolean('variation');
             $table->string('name');
             $table->float('price');
             $table->string('barcode')->nullable();

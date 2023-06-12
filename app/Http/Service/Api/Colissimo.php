@@ -106,10 +106,9 @@ class Colissimo
         $customer_key = config('app.woocommerce_customer_key');
         $customer_secret = config('app.woocommerce_customer_secret');
       
-
         try {
             $response = Http::withBasicAuth($customer_key, $customer_secret) 
-                ->post("https://staging.elyamaje.com/wp-json/wc/v3/colissimo/", [
+                ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/colissimo/", [
                     'data' => $data
                 ]); 
 

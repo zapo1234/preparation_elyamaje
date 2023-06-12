@@ -64,7 +64,7 @@
 										<tr>
 											<td data-label="Nom">{{ $product->name }}</td>
 											<td data-label="Prix (TTC)">{{ $product->price }} {{ config('app.currency_symbol') }}</td>
-											<td data-label="Code Barre">{{ $product->barcode ?? "Aucun"}}</td>
+											<td data-label="Code Barre">{{ $product->barcode != "" ?  $product->barcode : "Aucun"}}</td>
 											<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
 											<td data-label="Status">
 												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	

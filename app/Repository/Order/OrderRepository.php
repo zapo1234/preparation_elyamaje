@@ -101,7 +101,7 @@ class OrderRepository implements OrderInterface
 
                   $productsToInsert[] = [
                      'order_id' => $orderData['id'],
-                     'product_woocommerce_id' => $value['product_id'],
+                     'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
                      'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
                      'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'quantity' => $value['quantity'],
@@ -167,8 +167,6 @@ class OrderRepository implements OrderInterface
       $orders = json_decode(json_encode($orders), true);
 
 
-      // dd($orders);
-
       foreach($orders as $key => $order){
          if($distributeur){
             if(in_array($order['customer_id'], $distributeurs_id)){
@@ -209,7 +207,7 @@ class OrderRepository implements OrderInterface
       return $list;
    }
 
-   public function updateOrdersById($ids, $status = "done"){
+   public function updateOrdersById($ids, $status = "ready_to_ship"){
       $this->model::whereIn('order_woocommerce_id', $ids)->update(['status' => $status]);
    }
 
@@ -247,7 +245,6 @@ class OrderRepository implements OrderInterface
             'order_id' => $order_id,
             'user_id' => Auth()->user()->id,
             'status' => 'prepared',
-            'poste' => Auth()->user()->poste
          ]);
          
          // Modifie le status de la commande sur Woocommerce en "Commande préparée"
@@ -355,7 +352,7 @@ class OrderRepository implements OrderInterface
 
                   $productsToInsert[] = [
                      'order_id' => $insert_order_by_user['id'],
-                     'product_woocommerce_id' => $value['product_id'],
+                     'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
                      'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
                      'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'quantity' => $value['quantity'],
@@ -390,12 +387,12 @@ class OrderRepository implements OrderInterface
    }
    
    public function getHistoryByUser($user_id){
-
+  
       $list = [];
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
-      $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
-      $queryOrder .= "ELSE 3 END";
+      // $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
+      // $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
+      // $queryOrder .= "ELSE 3 END";
 
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
@@ -407,7 +404,7 @@ class OrderRepository implements OrderInterface
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
          ->orderBy('orders.updated_at', 'DESC')
          ->orderBy('categories.order_display', 'ASC')
-         ->orderByRaw($queryOrder)
+         // ->orderByRaw($queryOrder)
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
