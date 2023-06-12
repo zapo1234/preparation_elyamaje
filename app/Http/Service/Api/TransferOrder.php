@@ -196,7 +196,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-              dd($orders);
+              dump($orders);
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
@@ -208,7 +208,6 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
 
-                 dump($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
