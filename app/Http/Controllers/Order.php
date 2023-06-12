@@ -239,7 +239,7 @@ class Order extends BaseController
         $order_id = 70000; // Données de test
         $order = $this->order->getOrderById($order_id);
 
-        dd($order);
+        
         if($order){
 
             $order_new_array = [];
