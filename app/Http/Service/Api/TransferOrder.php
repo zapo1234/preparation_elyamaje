@@ -197,6 +197,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
              
+            dd($orders);
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
@@ -206,11 +207,8 @@ class TransferOrder
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
-
-                 dd($listproduct);
-
-                 //Recuperer les ref_client existant dans dolibar
+                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
+                //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
@@ -264,7 +262,6 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-                  dd($data_list_product);
 
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -464,7 +461,15 @@ class TransferOrder
                       }
 
 
-                      // insert le client avec ses cadeaux..
+                       // insert le client avec ses cadeaux..
+                       $nombre_kdo = count($data_kdo);
+                       
+                       if($nombre_kdo !=0){
+
+                        // recupérer les champs qu'il faut .
+                          
+                          
+                       }
                         
                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
