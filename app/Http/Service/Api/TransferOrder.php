@@ -196,12 +196,13 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-               
+             
+              dd($orders);
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                 $method = "GET";
-                $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-                $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+                $apiKey = env('KEY_API_DOLIBAR');
+                $apiUrl = env('KEY_API_URL');
 
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -292,12 +293,12 @@ class TransferOrder
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
-                                   $date = date('Y-m-d');
-                                   $dat = explode('-', $date);
-                                   $a1 = $dat[0];
-                                   // recupérer les deux deniers chiffre;
-                                   $a11= substr($a1,-2);
-                                   $a2 = $dat[1];
+                                    $date = date('Y-m-d');
+                                    $dat = explode('-', $date);
+                                    $a1 = $dat[0];
+                                    // recupérer les deux deniers chiffre;
+                                    $a11= substr($a1,-2);
+                                    $a2 = $dat[1];
                                  
                                    $socid = $id_cl;
                                    $woo ="woocommerce";
@@ -332,32 +333,32 @@ class TransferOrder
                                       $ref="";
                                      
                                       if($fk_product!=""){
-                                            // details  array article libéllé(product sur la commande) pour dolibarr.
+                                             // details  array article libéllé(product sur la commande) pour dolibarr.
                                             if($values['subtotal']==0){
-                                                $data_kdo[] = [
-                                                "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                "product_label" =>$values['name'],
-                                                "qty" => $values['quantity'],
-                                                "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
-                                                ];
+                                                 $data_kdo[] = [
+                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                 "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                 "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                 "product_label" =>$values['name'],
+                                                 "qty" => $values['quantity'],
+                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                   ];
                                                   // recupérer les produit en kdo avec leur prix initial.
                                                 }
                                          
                                              $data_product[] = [
-                                             "multicurrency_subprice"=> floatval($values['subtotal']),
-                                             "multicurrency_total_ht" => floatval($values['subtotal']),
-                                             "multicurrency_total_tva" => floatval($values['total_tax']),
-                                             "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                             "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                             "product_label" =>$values['name'],
+                                              "multicurrency_subprice"=> floatval($values['subtotal']),
+                                              "multicurrency_total_ht" => floatval($values['subtotal']),
+                                              "multicurrency_total_tva" => floatval($values['total_tax']),
+                                              "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                              "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                              "product_label" =>$values['name'],
                                               "qty" => $values['quantity'],
-                                             "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                             "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                              "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                              "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
                                      }
@@ -379,7 +380,7 @@ class TransferOrder
                                 //lié le client les  produits qui compose son achat .
                                 if($this->testing($key_commande,$donnees['order_id'])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                                     $data_options = [
+                                       $data_options = [
                                       "options_idw"=>$donnees['order_id'],
                                       "options_idc"=>$donnees['coupons']
                                        ];
@@ -412,10 +413,10 @@ class TransferOrder
                                    }
                                     else{
                                          $data_tiers = [];
+                                         $data_kdo = [];// si le details est deja crée via un order_id.
                                     }
                                     // recupérer les id_commande deja pris
-                                   if($this->testing($key_commande,$donnees['order_id'])==true)
-                                   {
+                                   if($this->testing($key_commande,$donnees['order_id'])==true){
                                      $id_commande_existe[] = $donnees['order_id'];
                                    }
                     
@@ -433,9 +434,7 @@ class TransferOrder
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
 
-                       // recupérer les données de produit en kdo 
-                       $temps = array_unique(array_column($data_kdo, 'socid'));
-                       $unique_arrs = array_intersect_key($data_kdo, $temps);
+                       
 
                        // trier les produits qui ne sont pas en kdo
                        foreach($unique_arr as $r => $val){
@@ -446,16 +445,9 @@ class TransferOrder
                            }
                       }
 
-                      // les produits qui sont en kdo.
-                      foreach($unique_arrs as $rs => $vals){
-                        foreach($vals['lines'] as $qs => $vaks) {
-                          if($vals['socid']!=$vaks['ref_ext']){
-                             unset($unique_arrs[$rs]['lines'][$qs]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
-                          }
-                        }
-                   }
-      
-                   
+                      
+                      
+
                       
                          foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -467,11 +459,8 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                       }
 
-                    
-                       foreach($unique_arrs as $donns){
-                        // insérer le details pour la facture kdo
-                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donns));
-                     }
+
+                      // insert le client avec ses cadeaux..
                         
                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
@@ -623,12 +612,7 @@ class TransferOrder
              $fac = intval($inv+1);
              $facs = intval($inv);
              
-             dump($facs);
-             dd($fac);
-
-              dd($array_ids_facture);
-             
-               // valider les facture dans dolibar
+              // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
