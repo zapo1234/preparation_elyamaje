@@ -37,7 +37,7 @@ class TiersController extends BaseController
     public function postiers()
     { 
         // recupérer le traitement des tiers pour les inserts dans la table...
-        
+        $this->tiers->insertiers();
         dd('zapo');
         $this->orders->Transferorders();
         //$this->tiers->insertiers();// mise à jours des tiers.......
