@@ -22,7 +22,7 @@ class CreateLabelTable extends Migration
 
         });
 
-        DB::statement("ALTER TABLE labels ADD label MEDIUMBLOB AFTER order_id");
+        DB::statement("ALTER TABLE prepa_labels ADD label MEDIUMBLOB AFTER order_id");
     }
 
     /**
