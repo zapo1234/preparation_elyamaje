@@ -88,6 +88,8 @@ class TiersRepository implements TiersInterface
             $data_ids = array('3087');
             // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();
+
+           dd($array_tiers);
             foreach($lists as $key=>$values)
             {
                
