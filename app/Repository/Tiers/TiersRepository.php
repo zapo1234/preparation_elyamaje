@@ -70,7 +70,7 @@ class TiersRepository implements TiersInterface
          //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
 
            // recuperer les données api dolibar copie projet tranfer x.
-           $method = "GET";
+              $method = "GET";
                $apiKey ="0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
                $apiUrl ="https://www.transfertx.elyamaje.com/api/index.php/";
               
