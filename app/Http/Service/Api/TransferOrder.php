@@ -275,6 +275,8 @@ class TransferOrder
                      $orders_d = [];// le nombre de orders non distributeur..
                      $orders_distributeur = [];// le nombre de orders des distributeurs...
                      $data_kdo =[] ; // recupérer les produit qui sont cadeaux 
+                     $data_options_kdo =[];// option coupons et id_commande.
+                     $data_infos_user =[];
                 
                     foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -287,10 +289,20 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
+                             $data =  $this->tiers->gettiersid($socid);
+                             $data_infos_user[] =[
+                             'nom'=> $data['nom']
+                              ];
+
                            }
         
                            if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
+                               $data =  $this->tiers->gettiersid($socid);
+                               // recupérer dans la bdd en fonction du socid 
+                                $data_infos_user[] =[
+                                'nom'=> $data['nom']
+                                 ];
                            }
         
                             if($fk_tiers=="" && $fk_tier=="") {
@@ -320,7 +332,11 @@ class TransferOrder
                                     'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
-           
+                                 
+
+                                   $data_infos_user[] = [
+                                       'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                     ];
                               }
 
                              foreach($donnees['line_items'] as $key => $values){
@@ -338,21 +354,24 @@ class TransferOrder
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
                                             if($values['subtotal']=="0.0"){
                                                  $data_kdo[] = [
-                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                 "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                 "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                 "product_label" =>$values['name'],
-                                                 "qty" => $values['quantity'],
-                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                  "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                  "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                  "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                  "product_label" =>$values['name'],
+                                                  "qty" => $values['quantity'],
+                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                  "real_price"=> $values['real_price'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
-                                                  "coupons"=>$donnees['coupons'],
-                                                  "date" => $donnees['date'],
-                                                  "total_order" =>$donnees['total_order'],
-                                                   "order_id"=>$donnees['oder_id']
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
+
+                                                  $data_options_kdo[] = [
+                                                    "order_id"=>$donnees['order_id'],
+                                                    "counpons"=>$donnees['coupons']
+
+                                                   ];
                                                 }
                                          
                                              $data_product[] = [
@@ -420,6 +439,8 @@ class TransferOrder
                                     else{
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
+                                         $data_infos_user =[];
+                                         $data_options_kdo =[];
                                     }
                                     // recupérer les id_commande deja pris
                                    if($this->testing($key_commande,$donnees['order_id'])==true){
@@ -451,9 +472,24 @@ class TransferOrder
                            }
                       }
 
+                      // TRAITER LES données des cadeaux 
+                      // merger le client et les data coupons
+                      $x1[] =[
+                        'x'=>'zapo',
+                        'y'=>'zapo'
+                      ];
+
+                      $y1[] =[
+                        'h'=>'mourad',
+                        'v'=>'samir'
+                      ];
+
+                      $r = array_merge($x1,$y1);
+
+                      dd($r);
+
+                      $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
                       
-                       dump($data_tiers);
-                       dd($data_kdo);
 
                       
                          foreach($data_tiers as $data) {
