@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Repository\Dons;
+namespace App\Repository\Don;
 
 use Hash;
 use Exception;
 use App\Models\Dons;
 
 
-class DonsRepository implements DonsInterface
+class DonRepository implements DonInterface
 {
 
    private $model;
