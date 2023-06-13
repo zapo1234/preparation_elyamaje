@@ -274,8 +274,9 @@ class TransferOrder
                      $orders_d = [];// le nombre de orders non distributeur..
                      $orders_distributeur = [];// le nombre de orders des distributeurs...
                      $data_kdo =[] ; // recupérer les produit qui sont cadeaux 
-                     $data_options_kdo =[];// option coupons et id_commande.
-                     $data_infos_user =[];
+                     $data_options_kdo =[];// données des kdo 
+                     $data_infos_user =[];// pour gestion de kdo
+                     $data_amount_kdo = [];// pour gestion kdo
                 
                     foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -362,15 +363,12 @@ class TransferOrder
                                                   "qty" => $values['quantity'],
                                                   "fk_product" => $fk_product,//  insert id product dans dolibar.
                                                   "real_price"=> $values['real_price'],
+                                                  "order_id" => $donnees['order_id'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
 
-                                                  $data_options_kdo[] = [
-                                                    "order_id"=>$donnees['order_id'],
-                                                    "counpons"=>$donnees['coupons']
-
-                                                   ];
+                                                  
                                                 }
                                          
                                              $data_product[] = [
@@ -405,12 +403,11 @@ class TransferOrder
                                 if($this->testing($key_commande,$donnees['order_id'])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                        $data_options = [
-                                      "options_idw"=>$donnees['order_id'],
-                                      "options_idc"=>$donnees['coupons']
+                                       "options_idw"=>$donnees['order_id'],
+                                       "options_idc"=>$donnees['coupons']
                                        ];
                                         
-                                       
-                                       // pour les factures non distributeurs...
+                                         // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
                                         $data_lines[] = [
@@ -426,6 +423,13 @@ class TransferOrder
                                         'array_options'=> $data_options,
                                     
                                       ];
+
+                                      $data_options_kdo[] = [
+                                        "order_id"=>$donnees['order_id'],
+                                        "coupons"=>$donnees['coupons'],
+                                        "total_order"=> floatval($donnees['total_order']),
+                                        "date_order" => $donnees['date'],
+                                       ];
                               
                                        // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
@@ -473,22 +477,12 @@ class TransferOrder
 
                       // TRAITER LES données des cadeaux 
                       // merger le client et les data coupons
-                      $x1[] =[
-                        'x'=>'zapo',
-                        'y'=>'zapo'
-                      ];
+                     
 
-                      $y1[] =[
-                        'h'=>'mourad',
-                        'v'=>'samir'
-                      ];
-
-                      $r = array_merge($x1,$y1);
-
-                      dd($r);
 
                       $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
                       
+                      dd($data_infos_order);
 
                       
                          foreach($data_tiers as $data) {
