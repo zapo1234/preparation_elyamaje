@@ -196,18 +196,19 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-             
+            
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
-               $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+               $apiKey = env('KEY_API_DOLIBAR');
+               $apiUrl = env('KEY_API_URL');
     
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibar
-                 //Recuperer les ref_client existant dans dolibar
+                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
+
+                //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
@@ -238,6 +239,8 @@ class TransferOrder
                         $data_code[$val['socid']] = $code_cls;
                       }
                   }
+
+                
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
@@ -261,7 +264,6 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-                  dd($data_list_product);
 
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -274,6 +276,9 @@ class TransferOrder
                      $orders_d = [];// le nombre de orders non distributeur..
                      $orders_distributeur = [];// le nombre de orders des distributeurs...
                      $data_kdo =[] ; // recupérer les produit qui sont cadeaux 
+                     $data_options_kdo =[];// données des kdo 
+                     $data_infos_user =[];// pour gestion de kdo
+                     $data_amount_kdo = [];// pour gestion kdo
                 
                     foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -286,11 +291,31 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
-                           }
-        
-                           if($fk_tier!="" && $fk_tiers==""){
+                            
+                             }
+
+                           // construire le tableau
+                             if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
-                           }
+                                // recupérer dans la bdd en fonction du socid 
+                            }
+
+                            $data =  $this->tiers->gettiersid($socid);
+                            if(count($data)==0){
+                              $data_infos_user =[];
+                            }else{
+
+                                   foreach($data as $valu)
+                                   {
+                                     $nom =$valu['nom'];
+                                   }
+                                   $data_infos_user[] = [
+                                    'name'=> $nom,
+                                  ];
+                            }
+
+                            dd($data_infos_user);
+
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
@@ -319,7 +344,11 @@ class TransferOrder
                                     'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
-           
+                                 
+
+                                   $data_infos_user[] = [
+                                       'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                     ];
                               }
 
                              foreach($donnees['line_items'] as $key => $values){
@@ -335,19 +364,23 @@ class TransferOrder
                                      
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
-                                            if($values['subtotal']==0){
+                                            if($values['subtotal']=="0.0"){
                                                  $data_kdo[] = [
-                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                 "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                 "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                 "product_label" =>$values['name'],
-                                                 "qty" => $values['quantity'],
-                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                  "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                  "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                  "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                  "product_label" =>$values['name'],
+                                                  "qty" => $values['quantity'],
+                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                  "real_price"=> $values['real_price'],
+                                                  "order_id" => $donnees['order_id'],
+                                                  "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
+
+                                                  
                                                 }
                                          
                                              $data_product[] = [
@@ -382,12 +415,11 @@ class TransferOrder
                                 if($this->testing($key_commande,$donnees['order_id'])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                        $data_options = [
-                                      "options_idw"=>$donnees['order_id'],
-                                      "options_idc"=>$donnees['coupons']
+                                       "options_idw"=>$donnees['order_id'],
+                                       "options_idc"=>$donnees['coupons']
                                        ];
                                         
-                                       
-                                       // pour les factures non distributeurs...
+                                         // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
                                         $data_lines[] = [
@@ -403,6 +435,13 @@ class TransferOrder
                                         'array_options'=> $data_options,
                                     
                                       ];
+
+                                      $data_options_kdo[] = [
+                                        "order_id"=>$donnees['order_id'],
+                                        "coupons"=>$donnees['coupons'],
+                                        "total_order"=> floatval($donnees['total_order']),
+                                        "date_order" => $donnees['date'],
+                                       ];
                               
                                        // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
@@ -415,6 +454,8 @@ class TransferOrder
                                     else{
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
+                                         $data_infos_user =[];
+                                         $data_options_kdo =[];
                                     }
                                     // recupérer les id_commande deja pris
                                    if($this->testing($key_commande,$donnees['order_id'])==true){
@@ -446,8 +487,14 @@ class TransferOrder
                            }
                       }
 
+                      // TRAITER LES données des cadeaux 
+                      // merger le client et les data coupons
+                     
+
+
+                      $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
                       
-                      
+                      dd($data_infos_order);
 
                       
                          foreach($data_tiers as $data) {
@@ -461,7 +508,15 @@ class TransferOrder
                       }
 
 
-                      // insert le client avec ses cadeaux..
+                       // insert le client avec ses cadeaux..
+                       $nombre_kdo = count($data_kdo);
+                       
+                       if($nombre_kdo !=0){
+
+                        // recupérer les champs qu'il faut .
+                          
+                          
+                       }
                         
                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
@@ -637,7 +692,7 @@ class TransferOrder
          
               //environement test local
          
-              //Recuperer les ref et id product dans un tableau
+              //Recuperer les ref et id product dans un tableau.
 
               $produitParam = ["limit" => 700, "sortfield" => "rowid"];
               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
