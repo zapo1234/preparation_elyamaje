@@ -314,8 +314,6 @@ class TransferOrder
                                   ];
                             }
 
-                            dd($data_infos_user);
-
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
