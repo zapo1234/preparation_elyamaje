@@ -292,11 +292,12 @@ class TransferOrder
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
 
-                             dd($fk_tiers);
+                             dump($fk_tiers);
                              $data =  $this->tiers->gettiersid($socid);
 
-                          
-                             $data_infos_user[] =[
+                             dd($data);
+
+                              $data_infos_user[] =[
                              'nom'=> $data['nom']
                               ];
 
