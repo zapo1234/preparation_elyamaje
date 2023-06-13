@@ -288,32 +288,31 @@ class TransferOrder
                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
-                            $data =[];
+                      
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
-                             $data =  $this->tiers->gettiersid($socid);
-                             }
 
-                            if($fk_tier!="" && $fk_tiers==""){
+                             dump($fk_tiers);
+                             $data =  $this->tiers->gettiersid($socid);
+
+                             dd($data);
+
+
+
+                           }
+
+                           // construire le tableau
+
+        
+                           if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
                                $data =  $this->tiers->gettiersid($socid);
                                // recupérer dans la bdd en fonction du socid 
-                              }
-
-                            // construire le tableau
-                            $nom="";
-                            foreach($data as $vals){
-                              $nom = $val['nom'];
-                            }
-                            
-                            if($fk_tiers!="" OR $fk_tier!="") {
-                               $data_infos_user[] = [
-                              'name'=> $nom
-                               ];
-
-                            }
-
-                            dd($data_infos_user);
+                                $data_infos_user[] =[
+                                'nom'=> $data['nom']
+                                 ];
+                           }
+        
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
                                     $date = date('Y-m-d');
