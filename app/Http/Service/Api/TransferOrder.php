@@ -299,7 +299,8 @@ class TransferOrder
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
-
+                            
+                          
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -313,8 +314,6 @@ class TransferOrder
                                     'name'=> $nom,
                                   ];
                             }
-
-                            dd($data_infos_user);
 
         
                             if($fk_tiers=="" && $fk_tier=="") {
@@ -489,8 +488,10 @@ class TransferOrder
 
                       // TRAITER LES données des cadeaux 
                       // merger le client et les data coupons
-                     
 
+                      dump($data_options_kdo);
+                     
+                       dd($data_infos_user);
 
                       $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
                       
