@@ -291,27 +291,19 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
-
-                             dump($fk_tiers);
-                             $data =  $this->tiers->gettiersid($socid);
-
-                             dd($data);
-
-
-
-                           }
+                            
+                             }
 
                            // construire le tableau
-
-        
-                           if($fk_tier!="" && $fk_tiers==""){
+                             if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
-                               $data =  $this->tiers->gettiersid($socid);
-                               // recupérer dans la bdd en fonction du socid 
-                                $data_infos_user[] =[
-                                'nom'=> $data['nom']
-                                 ];
-                           }
+                                // recupérer dans la bdd en fonction du socid 
+                            }
+
+                            $data =  $this->tiers->gettiersid($socid);
+
+                            dd($data);
+
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
