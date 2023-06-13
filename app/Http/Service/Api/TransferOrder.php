@@ -300,7 +300,7 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                            dd($socid);
+                          
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -489,7 +489,7 @@ class TransferOrder
                       // TRAITER LES données des cadeaux 
                       // merger le client et les data coupons
                      
-
+                   dd($data_infos_user);
 
                       $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
                       
