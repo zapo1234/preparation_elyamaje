@@ -221,11 +221,11 @@ class Order extends BaseController
                 $name = $lead['name'];
 
                 //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
-                    $message->to('adrien@elyamaje.com');
-                    $message->from('no-reply@elyamaje.com');
-                    $message->subject('Commande incomplète');
-                });
+                // Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
+                //     $message->to($email);
+                //     $message->from('no-reply@elyamaje.com');
+                //     $message->subject('Commande incomplète');
+                // });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);

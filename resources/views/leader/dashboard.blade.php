@@ -328,9 +328,9 @@
 						{data: null,
 							render: function(data, type, row) {
 
-								if(row.status != "processing" && row.status != 'prepared-order'){
+								if(row.status == "waiting_to_validate"){
 									var selectOptions = '<option selected value="'+row.status+'">'+row.status_text+'</option>';
-									selectOptions += `<option value="processing">En cours</option>`;
+									selectOptions += `<option value="waiting_validate">En cours</option>`;
 									var selectHtml = `<select onchange="changeStatusOrder(${row.id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
 
 									return selectHtml;
