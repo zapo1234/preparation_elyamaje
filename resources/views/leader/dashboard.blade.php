@@ -260,6 +260,8 @@
 
 							// Récupérer les données des commandes (orders)
 							var orders = json.orders;
+							// Récupère la liste des produits déjà pick
+							var products_pick = json.products_pick
 							// Récupérer les données des utilisateurs (users)
 							var users = json.users;
 							// Combiner les données des commandes (orders) et des utilisateurs (users)
@@ -271,10 +273,13 @@
 									last_name: order.billing.last_name,
 									total: order.total,
 									name: order.name,
+									status: order.status,
+									status_text: order.status_text ?? 'En cours',
 									date_created: order.date_created,
 									line_items: order.line_items,
 									user_id: order.user_id,
-									users: users
+									users: users,
+									products_pick: products_pick
 								};
 							});
 
@@ -302,7 +307,7 @@
 
 								})
 								
-								var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id})" id="select_${row.id}" class="select_user">${selectOptions}</select>`;
+								var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
 
 								if($("#select_"+row.id).val() == "Non attribuée"){
 									$("#select_"+row.id).addClass('empty_select')
@@ -322,16 +327,33 @@
             			},
 						{data: null,
 							render: function(data, type, row) {
-								return `
-									<div class="badge rounded-pill text-success bg-light-success p-2 text-uppercase px-3">
-										<i class="bx bxs-circle align-middle me-1"></i>En cours
+
+								if(row.status != "processing" && row.status != 'prepared-order'){
+									var selectOptions = '<option selected value="'+row.status+'">'+row.status_text+'</option>';
+									selectOptions += `<option value="processing">En cours</option>`;
+									var selectHtml = `<select onchange="changeStatusOrder(${row.id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
+
+									return selectHtml;
+								} else {
+									return `
+									<div class="badge rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
+										<i class="bx bxs-circle align-middle me-1"></i>`+row.status_text+`
 									</div>`;
+								}
+								
 							}
             			},
 						{ data: 'total' },
 						{data: null,
 							render: function(data, type, row) {
-							
+								var id = []
+								Object.entries(row.products_pick).forEach(([key, value]) => {
+									if (value.order_id == row.id){
+										row.pick_items = true
+										id.push(value.product_woocommerce_id) 
+									} 
+								}) 
+
 								return `
 									<div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
@@ -346,8 +368,9 @@
 														</div>	
 
 														<div class="body_detail_product_order">
-															${row.line_items.map((element) => `
-																<div class="d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+															${row.line_items.map((element) => 
+																`
+																<div class="${id.includes(element.product_id) || id.includes(element.variation_id) ? 'pick' : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 																	<div class="column11 d-flex align-items-center detail_product_name_order">
 																		${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
 																	</div>
@@ -378,6 +401,7 @@
 						var info = $('#example').DataTable().page.info();
 						var total = 0
 						var attribution = 0
+						var order_progress = 0
 
 						// Calcul total valeur des commandes
 						$('#example').DataTable().rows().eq(0).each( function ( index ) {
@@ -391,18 +415,20 @@
 							var row = $('#example').DataTable().row( index );
 							var data = row.data();
 							data.name != "Non attribuée" ? attribution = attribution + 1 : attribution = attribution
+							data.status == "processing" ? order_progress = order_progress + 1 : order_progress = order_progress 
 						} );
 						
-						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s)</span>')
+						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' en cours</span>')
 						$(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
 						$(".allocation_of_orders").attr('disabled', false)
 						$(".dataTables_paginate").parent().removeClass("col-md-7")
 					},
 
 					"fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-						var selectElements = nRow.getElementsByTagName('select');
+						var selectElements = nRow.getElementsByClassName('order_attribution');
 						for (var i = 0; i < selectElements.length; i++) {
 							var select = selectElements[i];
+
 							if (select.value != 'Non attribuée') {
 								select.classList.add('no_empty_select');
 								// select.classList.remove('no_empty_select');
@@ -469,35 +495,6 @@
 				});
 			})
 
-
-			// $(".change_user_role").on("change", function(){
-			// 	var user_id = $(this).attr('id')
-			// 	var role_id = $(this).val()
-			// 	$(".user_role_id").val(user_id+','+role_id)
-			// 	$("#valid_change_user_role").modal('show')
-			// })
-
-			// $(".change_user_role_button").on("click", function(){
-			// 	var user_id = $(".user_role_id").val().split(',')[0]
-			// 	var role_id = $(".user_role_id").val().split(',')[1]
-
-			// 	$.ajax({
-			// 		url: "{{ route('updateRole') }}",
-			// 		method: 'POST',
-			// 		data: {_token: $('input[name=_token]').val(), user_id: user_id, role_id: role_id}
-			// 	}).done(function(data) {
-			// 		if(JSON.parse(data).success){
-			// 			$("#valid_change_user_role").modal('hide')
-			// 			if($(".change_attribution_order").length > 0){
-			// 				location.reload()
-			// 			}
-			// 		} else {
-			// 			alert('Erreur !')
-			// 		}
-			// 	});
-			// })
-
-
 			$(".change_attribution_order").on("change", function(){
 				if($(this).val() != ""){
 					var from_user = $(this).attr('id').split('_')[1]
@@ -545,6 +542,26 @@
 				})
 
 				$("#order_"+id).modal('show')
+
+			}
+
+			function changeStatusOrder(order_id){
+				var order_id = order_id
+				var status = $("#selectStatus_"+order_id).val()
+
+				$.ajax({
+					url: "{{ route('updateOrderStatus') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						console.log(order_id)
+						$("#selectStatus_"+order_id).removeClass('empty_select')
+						$("#selectStatus_"+order_id).addClass('no_empty_select')
+					} else {
+						alert('Erreur !')
+					}
+				});
 
 			}
 
