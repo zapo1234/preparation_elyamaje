@@ -12,13 +12,15 @@ interface OrderInterface
 
    public function getOrdersByUsers();
 
+   public function getAllOrdersByUsersNotFinished();
+
    public function getUsersWithOrder();
 
    public function getOrdersByIdUser($id);
 
    public function updateOrdersById($ids);
 
-   public function checkIfDone($order_id, $barcode_array);
+   public function checkIfDone($order_id, $barcode_array, $partial = false);
 
    public function orderReset($order_id);
 

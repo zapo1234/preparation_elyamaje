@@ -105,7 +105,8 @@
 				$(".loading").hide()
 				$(".chart_6").removeClass('d-none')
 
-				if(data.name.length != 0){
+				if(data != 0){
+
 					let prepared_count = data.prepared_count.reduce(add, 0)
 					let finished_count = data.finished_count.reduce(add, 0)
 					

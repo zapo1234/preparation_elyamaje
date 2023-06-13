@@ -185,6 +185,7 @@ class Admin extends BaseController
     public function getAnalytics(Request $request){
         $date = $request->get('date') != "false" ? $request->get('date') : date('Y-m-d');
         $histories = $this->history->getHistoryByDate($date);
+  
         $name = [];
         $prepared_count = [];
         $finished_count = [];

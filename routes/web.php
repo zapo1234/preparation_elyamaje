@@ -104,6 +104,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
+    Route::post("/updateOrderStatus", [Order::class, "updateOrderStatus"])->name('updateOrderStatus');
     Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
     Route::get("/account", [Admin::class, "account"])->name('account');
     Route::post("/account", [User::class, "createAccount"])->name('account.create');

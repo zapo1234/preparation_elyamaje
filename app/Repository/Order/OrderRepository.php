@@ -135,6 +135,10 @@ class OrderRepository implements OrderInterface
       return $this->model->select('orders.*', 'users.name')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
+   public function getAllOrdersByUsersNotFinished(){
+      return $this->model->select('orders.*', 'users.name')->where('status', '!=', 'finished')->join('users', 'users.id', '=', 'orders.user_id')->get();
+   }
+
 
    public function getUsersWithOrder(){
       return $this->model->select('users.*')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
@@ -156,10 +160,11 @@ class OrderRepository implements OrderInterface
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
-         ->where('orders.status', 'processing')
-         ->select('orders.*', 'products.*', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
-         ->orderBy('date', 'ASC')
+         ->orderBy('orders.date', 'ASC')
          ->orderBy('categories.order_display', 'ASC')
          // ->orderByRaw($queryOrder)
          ->get();
@@ -207,11 +212,16 @@ class OrderRepository implements OrderInterface
       return $list;
    }
 
-   public function updateOrdersById($ids, $status = "ready_to_ship"){
-      $this->model::whereIn('order_woocommerce_id', $ids)->update(['status' => $status]);
+   public function updateOrdersById($ids, $status = "finished"){
+      try{
+         $this->model::whereIn('order_woocommerce_id', $ids)->update(['status' => $status]);
+         return true;
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
    }
 
-   public function checkIfDone($order_id, $barcode_array) {
+   public function checkIfDone($order_id, $barcode_array, $partial = false) {
 
       $list_prouct_orders = DB::table('products')
       ->select('barcode')
@@ -227,31 +237,44 @@ class OrderRepository implements OrderInterface
       ->update(['pick' => 1]);
 
 
-      $missing_product = false;
+      if(!$partial){
+         $missing_product = false;
 
-      foreach($list_prouct_orders as $product_order){
-         if(!in_array($product_order->barcode, $barcode_array)){
-            $missing_product = true;
+         foreach($list_prouct_orders as $product_order){
+            if(!in_array($product_order->barcode, $barcode_array)){
+               $missing_product = true;
+            }
          }
-      }
-
-  
-      if(!$missing_product){
-         // Modifie le status de la commande en "Commande préparée",
-         $update_status_local = $this->updateOrdersById([$order_id], "prepared-order");
-
-         // Insert la commande dans histories
-         DB::table('histories')->insert([
-            'order_id' => $order_id,
-            'user_id' => Auth()->user()->id,
-            'status' => 'prepared',
-         ]);
-         
-         // Modifie le status de la commande sur Woocommerce en "Commande préparée"
-         $update = $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
-         return json_encode(['success' => is_bool($update) ?? false, "message" => is_bool($update) ? "" : $update]);
+   
+         if(!$missing_product){
+            // Modifie le status de la commande en "Commande préparée",
+            $update_status_local = $this->updateOrdersById([$order_id], "prepared-order");
+   
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+            ]);
+            
+            // Modifie le status de la commande sur Woocommerce en "Commande préparée"
+            try{
+               $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+               return true;
+            } catch(Exception $e){
+               return $e->getMessage();
+            }
+         } else {
+            return false;
+         }
       } else {
-         return json_encode(['success' => false]);
+          // Modifie le status de la commande en "en attente de validation"
+         try{
+            $this->updateOrdersById([$order_id], "waiting_to_validate");
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
       }
    }
 
@@ -399,7 +422,7 @@ class OrderRepository implements OrderInterface
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('user_id', $user_id)
-         ->where('orders.status', '!=', 'processing')
+         ->whereIn('orders.status', ['finished', 'prepared-order'])
          ->select('orders.*', 'products.*', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
          ->orderBy('orders.updated_at', 'DESC')

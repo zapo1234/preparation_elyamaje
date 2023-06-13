@@ -31,7 +31,7 @@ class CreatePdf
         foreach ($data as $row) {
             $table .= '<tr>';
                 $table .= '<td  style="border:1px solid black" bgcolor="white">' . $row['name'] . '</td>';
-                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $row['poste'] ?? '' . '</td>';
+                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $row['user_poste'] ?? '' . '</td>';
                 $table .= '<td  style="word-break:break-word;border:1px solid black" bgcolor="white">' . $row['prepared_order'] . '</td>';
                 $table .= '<td  style="word-break:break-word;border:1px solid black" bgcolor="white">' . $row['finished_order'] . '</td>';
             $table .= '</tr>';

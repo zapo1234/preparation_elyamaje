@@ -9,12 +9,13 @@
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2">
 						<div class="breadcrumb-title pe-3">Historique des commandes</div>
+						<input id="order_selected" type="hidden" value="">
 					</div>
 
 
 					@if(count($history) > 0)
 						@foreach($history as $histo)
-							<div class="courses-container">
+							<div class="courses-container mb-4">
 								<div class="course">
 									<div class="course-preview order_history">
 										<h6>Commande</h6>
@@ -25,7 +26,7 @@
 										<h2 class="customer_name">{{ $histo['details']['first_name']  }} {{ $histo['details']['last_name']  }}</h2>
 										<div class="d-flex">
 											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
-											<button id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
+											<button data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
 
 											<!-- <button id="{{ $histo['details']['id'] }}" class="show_order_history btn">Détail</button> -->
 										</div>
@@ -34,7 +35,7 @@
 							</div>
 							
 							<!-- MODAL -->
-							<div class="modal_order modal fade" data-order="{{ $histo['details']['id'] }}" id="order_{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							<div class="modal_order modal fade order_{{ $histo['details']['id'] }}" data-order="{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal-body detail_product_order">
@@ -57,7 +58,7 @@
 																@endif
 															</div>
 															<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
-															<span class="column33"> {{ $item['quantity'] }} </span>
+															<span class="quantity column33"> {{ $item['quantity'] }} </span>
 															<!-- <span class="column44">{{  $item['barcode'] }} </span> -->
 														</div>
 													@endforeach
@@ -99,10 +100,15 @@
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal-body detail_product_order">
-											<div class="detail_product_order_head d-flex flex-column justify-content-between h-100">
-												<div class="mt-5 d-flex w-100 justify-content-center body_qr_code"></div>
+											<div class="qrcode_print_{{ $histo['details']['id'] }} detail_product_order_head d-flex flex-column ">
+												<div id="qrcode" class="mt-5 d-flex w-100 justify-content-center body_qr_code_{{ $histo['details']['id'] }}"></div>
+												
+												
+												<span class="d-flex info_order"></span>
+												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
+
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">
-													<button style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
+													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
 												</div>
 
 												
@@ -111,8 +117,8 @@
 														<span class="mt-1 mb-2 montant_toltal_order">#{{ $histo['details']['id'] }} </span>
 														<span class="mt-1 mb-2 montant_toltal_order">Total: {{ $histo['details']['total'] }}€</span>
 													</div>
-													<div class="w-100 d-flex justify-content-between">
-														<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
+													<div class="w-100 d-flex justify-content-between mb-3">
+														<button data-id="{{ $histo['details']['id'] }}" type="button" class="close_modal btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													</div>
 													
 												</div>
@@ -122,19 +128,8 @@
 									</div>
 								</div>
 							</div>
-							
 						@endforeach
-
-						
-						
 					@endif
-
-
-
-
-		
-				
-					
 				</div>
 			</div>
 		@endsection
@@ -148,34 +143,34 @@
 		<script>
 
 			$('body').on('click', '.show_order_history', function() {
-				var id = $(this).attr('id')
-				$('#order_'+id).modal({
-					backdrop: 'static',
-					keyboard: false
-				})
-				$("#order_"+id).modal('show')
+				var id = $(this).attr('data-order')
+
+				$(".order_"+id).modal('show')
 			})
 
 
 			$('body').on('click', '.show_order_history_code', function() {
-				var id = $(this).attr('id')
-				$('#code_'+id).modal({
-					backdrop: 'static',
-					keyboard: false
-				})
+				var id = $(this).attr('data-order')
 
-				var order_id = $(this).attr('data-order')
 				var product = $(this).attr('data-product')
 				var customer_name = $(this).attr('data-customer')
 
-				const href = order_id+","+product+","+customer_name;
+				const href = id+","+product+","+customer_name;
 				const size = 300;
-				$(".info_order").text("#Commande "+order_id+" - "+product+" Produit(s)")
+				
+				// $(".info_order").text("#Commande "+id+" - "+pick_items.length+" Produit(s)"+" - "+customer_name)
+				var list_products = ""
+				$(".order_"+id+" .product_order" ).each(function() {
+					list_products += '<span>'+$( this ).children( "div" ).children( "span" ).text()+' - x'+$( this ).children( ".quantity " ).text()+'</span>'
+				});
 
-				$(".body_qr_code").children('canvas').remove()
-				$(".body_qr_code").children('img').remove()
+				$(".info_order_product").children('span').remove()
+				$(".info_order_product").append(list_products)
 
-				new QRCode(document.querySelector(".body_qr_code"), {
+				$(".body_qr_code_"+id).children('canvas').remove()
+				$(".body_qr_code_"+id).children('img').remove()
+
+				new QRCode(document.querySelector(".body_qr_code_"+id), {
 					text: href,
 					width: size,
 					height: size,
@@ -187,10 +182,25 @@
 				$("#code_"+id).modal('show')
 			})
 
-			$(".impression_code").on('click', function(){
-				window.print()
+			$('body').on('click', '.close_modal', function() {
+				id = $(this).attr('data-id')
+				$("#code_"+id).hide()
+				$(".modal-backdrop").hide()
+			})
+
+			$('body').on('click', '.impression_code', function() {
+				imprimerPages($(this).attr('data-id'))
 				$(".close_modal_validation").removeClass("d-none")
 			})
+
+			function imprimerPages(id) {
+				var pageHeight = window.innerHeight;
+				var originalContents = document.body.innerHTML;
+				var printReport= document.querySelector('.qrcode_print_'+id).innerHTML;
+				document.body.innerHTML = printReport;
+				window.print();
+				document.body.innerHTML = originalContents;
+			}
 
         </script>
 	@endsection

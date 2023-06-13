@@ -77,13 +77,54 @@ class Controller extends BaseController
     // PRÉPARATEUR COMMANDES CLASSIQUES
     public function orderPreparateur(){
         $orders = $this->orderController->getOrder();
-        return view('preparateur.index_preparateur', ['user' => Auth()->user()->name, 'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
+        $order_process = [] ;
+        $orders_waiting_to_validate = [];
+        $orders_validate = [];
+
+        foreach($orders as $order){
+            if($order['details']['status'] == "processing"){
+                $order_process[] = $order;
+            } else if($order['details']['status'] == "waiting_to_validate"){
+                $orders_waiting_to_validate[] = $order;
+            } else {
+                $orders_validate[] = $order;
+            }
+        }
+
+        return view('preparateur.index_preparateur', ['user' => Auth()->user()->name, 
+            'orders_waiting_to_validate' => $orders_waiting_to_validate, 
+            'orders_validate' => $orders_validate, 
+            'orders' => isset($order_process[0]) ? $order_process[0] : [] /* Show only first order */, 
+            'number_orders' =>  count($order_process),
+            'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
+            'number_orders_validate' =>  count($orders_validate)]);
     }
 
     // PRÉPARATEUR COMMANDES DISTRIBUTEURS
     public function ordersDistributeurs(){
         $orders = $this->orderController->getOrderDistributeur();
-        return view('preparateur.distributeur.index_preparateur', ['user' => Auth()->user()->name, 'orders' => $orders[0] ?? $orders /* Show only first order */, 'number_orders' =>  count($orders)]);
+        $order_process = [] ;
+        $orders_waiting_to_validate = [];
+        $orders_validate = [];
+
+
+        foreach($orders as $order){
+            if($order['details']['status'] == "processing"){
+                $order_process[] = $order;
+            } else if($order['details']['status'] == "waiting_to_validate"){
+                $orders_waiting_to_validate[] = $order;
+            } else {
+                $orders_validate[] = $order;
+            }
+        }
+
+        return view('preparateur.distributeur.index_preparateur', ['user' => Auth()->user()->name, 
+            'orders_waiting_to_validate' => $orders_waiting_to_validate, 
+            'orders_validate' => $orders_validate, 
+            'orders' => isset($order_process[0]) ? $order_process[0] : [] /* Show only first order */, 
+            'number_orders' =>  count($order_process),
+            'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
+            'number_orders_validate' =>  count($orders_validate)]);
     }
 
     // INDEX CHEF D'ÉQUIPE

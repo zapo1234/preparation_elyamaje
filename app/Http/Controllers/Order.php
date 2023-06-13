@@ -7,14 +7,16 @@ use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
+use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
-use App\Repository\Label\LabelRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -30,6 +32,8 @@ class Order extends BaseController
     private $pdf;
     private $colissimo;
     private $label;
+    private $product;
+
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -37,7 +41,8 @@ class Order extends BaseController
     HistoryRepository $history,
     CreatePdf $pdf,
     Colissimo $colissimo,
-    LabelRepository $label
+    LabelRepository $label,
+    ProductOrderRepository $product
     ){
       $this->api = $api;
       $this->user = $user;
@@ -47,6 +52,7 @@ class Order extends BaseController
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
       $this->label = $label;
+      $this->product = $product;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -76,35 +82,42 @@ class Order extends BaseController
         }  
 
         // Récupère les commandes attribuée en base s'il y en a 
-        $orders_distributed = $this->order->getOrdersByUsers()->toArray();
-        
+        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
+      
         $ids = array_column($orders_distributed, "order_woocommerce_id");
 
-        foreach($orders as $key => $order){
-          $clesRecherchees = array_keys($ids,  $order['id']);
-          if(count($clesRecherchees) > 0){
-            $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
-            $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
-          } else {
-            $orders[$key]['user_id'] = null;
-            $orders[$key]['name'] = "Non attribuée";
+        if(count($orders_distributed) > 0){
+          foreach($orders as $key => $order){
+            $clesRecherchees = array_keys($ids,  $order['id']);
+            if(count($clesRecherchees) > 0){
+              $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
+              $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
+              $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
+              $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+            } else {
+              $orders[$key]['user_id'] = null;
+              $orders[$key]['name'] = "Non attribuée";
+              $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
+              $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+            }
+  
           }
-
         }
+     
         return $orders;
       }
       
     }
  
     public function getOrder(){
-      // Préparateur
       return $this->orders(Auth()->user()->id);
     }
 
     public function getAllOrders(){
-      // Admin
+      // Préparateur
       $users =  $this->user->getUsersByRole([2]);
-      echo json_encode(['orders' => $this->orders(), 'users' => $users]);
+      $products_pick =  $this->product->getAllProductsPicked()->toArray();
+      echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick]);
     }
 
 
@@ -123,7 +136,7 @@ class Order extends BaseController
       $orders_user = [];
       $orders_id = [];
       $orders_to_delete = [];
-
+      $orders_to_update = [];
 
 
       foreach($users as $user){
@@ -136,7 +149,7 @@ class Order extends BaseController
       }
 
       // Liste des commandes déjà réparties entres les utilisateurs
-      $orders_user = $this->order->getOrdersByUsers()->toArray();
+      $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
 
 
       foreach($orders_user as $order){
@@ -144,15 +157,15 @@ class Order extends BaseController
         $orders_id [] = $order['order_woocommerce_id'];
       }
 
-
       // Liste des commandes Woocommerce
       $orders = $this->orders();
-      
       $ids = array_column($orders, "id");
       foreach($orders_id as $id){
         $clesRecherchees = array_keys($ids,  $id);
-        if(count($clesRecherchees) == 0){
+        if(count($clesRecherchees) > 0){
           $orders_to_delete [] = $id;
+        } else if(count($clesRecherchees) == 0) {
+          $orders_to_update [] = $id;
         }
       }
 
@@ -165,34 +178,56 @@ class Order extends BaseController
         }
       }
 
-      // Modifie le status des commandes qui ne sont plus en cours dans woocommerce
-      $this->order->updateOrdersById($orders_to_delete);
 
-      // Répartitions des commandes
-      foreach($orders as $order){  
-        foreach($array_user as $key => $array){
-          // Check si commande pas déjà répartie
-          if(!in_array($order['id'], $orders_id)){
-            $tailles = array_map('count', $array_user);
-            $cléMin = array_search(min($tailles), $tailles);
-  
-            if($key == $cléMin){
-              array_push($array_user[$key], $order);
-              break;
+      // Modifie le status des commandes qui ne sont plus en cours dans woocommerce
+      $this->order->updateOrdersById($orders_to_update);
+
+      if(count($array_user) > 0){
+        // Répartitions des commandes
+        foreach($orders as $order){  
+          foreach($array_user as $key => $array){
+            // Check si commande pas déjà répartie
+            if(!in_array($order['id'], $orders_id)){
+              $tailles = array_map('count', $array_user);
+              $cléMin = array_search(min($tailles), $tailles);
+
+              if($key == $cléMin){
+                array_push($array_user[$key], $order);
+                break;
+              }
             }
           }
         }
+
+        // Insert orders by users
+        $this->order->insertOrdersByUsers($array_user);
+
       }
-      // Insert orders by users
-      $this->order->insertOrdersByUsers($array_user);
     }
 
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
       $order_id = $request->post('order_id');
+      $partial = $request->post('partial');
 
-      if($barcode_array && $order_id){
-        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array);
+      if($barcode_array && $order_id ){
+        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $partial);
+        if($check_if_order_done && $partial){
+
+            // Récupère les chefs d'équipes
+            $leader = $this->user->getUsersByRole([4]);
+            foreach($leader as $lead){
+                $email = $lead['email'];
+                $name = $lead['name'];
+
+                //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
+                Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
+                    $message->to('adrien@elyamaje.com');
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Commande incomplète');
+                });
+            }
+        }
         echo json_encode(["success" => $check_if_order_done]);
       } else {
         echo json_encode(["success" => false]);
@@ -227,6 +262,19 @@ class Order extends BaseController
         $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
         $number_order_attributed = $this->order->getOrdersByUsers();
         echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
+      } else {
+        echo json_encode(["success" => false]);
+      }
+    }
+
+
+    public function updateOrderStatus(Request $request){
+      $order_id = $request->post('order_id');
+      $status = $request->post('status');
+
+      if($order_id && $status){
+        $number_order_attributed = $this->order->getOrdersByUsers();
+        echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
       } else {
         echo json_encode(["success" => false]);
       }
@@ -308,7 +356,7 @@ class Order extends BaseController
              $this->factorder->Transferorder($orders);
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
             // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-            // $this->order->updateOrdersById([$order_id], "ready_to_ship");
+            // $this->order->updateOrdersById([$order_id], "finished");
             // Insert la commande dans histories
             // $data = [
             //   'order_id' => $order_id,
@@ -359,7 +407,6 @@ class Order extends BaseController
       }
     }
 
-
     public function leaderHistory(){
       $histories = $this->history->getAllHistory();
       $histories_by_date = [];
@@ -368,6 +415,7 @@ class Order extends BaseController
       foreach($histories as $history){
         $histories_by_date[date("Y-m-d", strtotime($history['created_at']))][] = $history;
       }
+
       return view('leader.history', ['histories_by_date' => $histories_by_date]);
     }
 
