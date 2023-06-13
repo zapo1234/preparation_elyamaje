@@ -196,7 +196,8 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-              dump($orders);
+            dd($this->tiers->getalltiers());
+               dump($orders);
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
