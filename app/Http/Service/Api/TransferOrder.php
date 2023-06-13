@@ -299,7 +299,8 @@ class TransferOrder
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
-
+                            
+                            dd($socid);
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
