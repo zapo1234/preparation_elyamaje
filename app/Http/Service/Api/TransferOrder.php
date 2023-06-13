@@ -287,12 +287,14 @@ class TransferOrder
                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
+
+                            dd($fk_tiers);
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
                              $data =  $this->tiers->gettiersid($socid);
 
-                             dd($data);
+                          
                              $data_infos_user[] =[
                              'nom'=> $data['nom']
                               ];
