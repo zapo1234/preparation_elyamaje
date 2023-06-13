@@ -240,7 +240,7 @@ class TransferOrder
                       }
                   }
 
-                  dd($data_list);
+                
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
@@ -291,6 +291,8 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
+
+                             dd($fk_tiers);
                              $data =  $this->tiers->gettiersid($socid);
 
                           
