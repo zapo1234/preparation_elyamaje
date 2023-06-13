@@ -51,10 +51,12 @@ class TiersRepository implements TiersInterface
     public function gettiersid($id)
     {
       // recupérer 
-       //$data =  DB::table('tiers')->select('nom')->where('socid','=',$id)->get();
+       $data =  DB::table('tiers')->select('nom')->where('socid','=',$id)->get();
        // transformer les retour objets en tableau
-       $data = Tier::find($id);
-       return $data;
+       $list = json_encode($data);
+       $lists = json_decode($data,true);
+       
+       return $lists;
 
 
     }
