@@ -490,10 +490,8 @@ class TransferOrder
                       // merger le client et les data coupons
 
                       dump($data_options_kdo);
-                     
-                       dd($data_infos_user);
 
-                      $data_infos_order  = array_merge($data_infos_order,$data_options_kdo);
+                      $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                       
                       dd($data_infos_order);
 
