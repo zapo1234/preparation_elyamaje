@@ -301,8 +301,20 @@ class TransferOrder
                             }
 
                             $data =  $this->tiers->gettiersid($socid);
+                            if(count($data)==0){
+                              $data_infos_user =[];
+                            }else{
 
-                            dd($data);
+                                   foreach($data as $valu)
+                                   {
+                                     $nom =$valu['nom'];
+                                   }
+                                   $data_infos_user[] = [
+                                    'name'=> $nom,
+                                  ];
+                            }
+
+                            dd($data_infos_user);
 
         
                             if($fk_tiers=="" && $fk_tier=="") {
