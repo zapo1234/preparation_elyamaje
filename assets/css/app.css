@@ -852,6 +852,10 @@ a {
 	.modal_order_admin button{
 		margin-bottom: 50px !important;
 	}
+
+	.detail_product_order{
+		padding: 0px !important;
+	} 
 }
 
 @media (max-width: 990px) { 
@@ -6309,6 +6313,12 @@ a{
 	.course{
 		min-height: 150px !important;
 	}
+
+	.detail_product_order_line span,
+	.head_detail_product_order span{
+		font-size: 16px;
+	}
+	
 }
 
 @media screen and (max-width: 550px) {
@@ -6344,7 +6354,7 @@ a{
 	}
 
 	.column1, .column11{
-		width: 45% !important;
+		width: 40% !important;
 	}
 
 	.column2, .column22,
@@ -6353,8 +6363,10 @@ a{
 	}
 
 	.column3, .column33{
-		width: 15%;
+		width: 10%;
 	}
+
+	
 	
 }
 
@@ -6750,3 +6762,9 @@ select:focus, input:focus{
 	font-weight: bold;
 	font-size: 1.3em;
 }
+
+.modal_backfrop_fixe{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+

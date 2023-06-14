@@ -111,6 +111,8 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteAccount", [User::class, "deleteAccount"])->name('account.delete');
     Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
     Route::get("/user", [User::class, "getUser"])->name('account.user');
+    Route::post("/deleteOrderProducts", [Order::class, "deleteOrderProducts"])->name('deleteOrderProducts');
+    Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR

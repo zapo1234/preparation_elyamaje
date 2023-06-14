@@ -23,6 +23,10 @@ class ProductRepository implements ProductInterface
       return $this->model::all();
    }
 
+   public function getAllProductsPublished(){
+      return $this->model::select('*')->where('status', 'publish')->get();
+   }
+
    public function insertProductsOrUpdate($products){
       try{
          // Récupère les produits déjà existants

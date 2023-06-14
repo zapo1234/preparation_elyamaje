@@ -44,6 +44,7 @@ class Controller extends BaseController
     public function index(Request $request){
         $teams = $this->users->getUsersByRole([2, 3, 5]);
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+        $products =  $this->products->getAllProductsPublished();
         $number_preparateur = 0;
         
         foreach($teams as $team){
@@ -54,11 +55,8 @@ class Controller extends BaseController
             }
         }   
 
-        // dd($teams);
-
         $roles = $this->role->getRoles();
-
-        return view('index', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
+        return view('index', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
     }
 
 
@@ -131,6 +129,7 @@ class Controller extends BaseController
     public function dashboard(){
        $teams = $this->users->getUsersByRole([2, 3, 5]);
        $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+       $products =  $this->products->getAllProductsPublished();
        $number_preparateur = 0;
         
         foreach($teams as $team){
@@ -142,7 +141,7 @@ class Controller extends BaseController
         }   
 
         $roles = $this->role->getRoles();
-        return view('leader.dashboard', ['teams' => $teams, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
+        return view('leader.dashboard', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
     }
 
     // INDEX EMBALLEUR 

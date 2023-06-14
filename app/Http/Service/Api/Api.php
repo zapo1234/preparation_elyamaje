@@ -77,6 +77,59 @@ class Api
     }
   }
 
+
+  public function deleteProductOrderWoocommerce($order_id, $line_item_id){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try {
+      $orderItems = [
+          [
+              "id" => $line_item_id,
+              "quantity" => 0,
+              "meta_data" => []
+          ],
+          // Autres éléments de commande
+      ];
+  
+      $response = Http::withBasicAuth($customer_key, $customer_secret)
+          ->put(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$order_id, [
+              "line_items" => $orderItems
+          ]);
+  
+        return $response->json();
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
+  }
+
+  public function addProductOrderWoocommerce($order_id, $product , $quantity){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try {
+
+      $orderItems = [
+          [
+              "product_id" => $product,
+              "quantity" => $quantity,
+          ],
+          // Autres éléments de commande
+      ];
+  
+      $response = Http::withBasicAuth($customer_key, $customer_secret)
+          ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$order_id, [
+              "line_items" => $orderItems
+          ]);
+  
+        return $response->json();
+    } catch (Exception $e) {
+        return false;
+    }
+  }
+
   public function getDataApiWoocommerce(string $urls): array{
       
       // keys authentification API data woocomerce dev copie;
