@@ -447,8 +447,10 @@
 														</div>
 														<div class="align-items-end mt-2 d-flex justify-content-between"> 
 														
-															${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
-															<button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
+															<div class="d-flex flex-column">
+																${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
+																<button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
+															</div>
 															<div class="d-flex flex-column">
 																<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
 																<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>

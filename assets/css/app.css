@@ -858,6 +858,10 @@ a {
 	} 
 }
 
+#addProductOrderModal, #deleteProductOrderModal{
+	z-index: 9999 !important;
+}
+
 @media (max-width: 990px) { 
 
 	.dataTables_scrollBody{

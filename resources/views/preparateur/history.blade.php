@@ -67,7 +67,7 @@
 												</div>
 												
 												<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-													<div class="w-100 d-flex align-items-end justify-content-between">
+													<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 														<span class="mt-1 mb-2 montant_toltal_order">#{{ $histo['details']['id'] }} </span>
 														@if($histo['details']['coupons'])
 															<div><span style="margin-left:12%" class="font-18 badge bg-success">Code : {{ $histo['details']['coupons'] }} (-{{$histo['details']['discount_amount']}}%)</span></div>

@@ -107,7 +107,7 @@
 																</div>
 
 																<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																	<div class="w-100 d-flex align-items-end justify-content-between">
+																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_toltal_order">
 																		@if($orders['details']['coupons'])
 																			<div><span  class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
@@ -191,7 +191,7 @@
 																	</div>
 
 																	<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																		<div class="w-100 d-flex align-items-end justify-content-between">
+																		<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																			<span class="mt-1 mb-2 montant_toltal_order">
 																			@if($order['details']['coupons'])
 																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
@@ -275,7 +275,7 @@
 																	</div>
 
 																	<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																		<div class="w-100 d-flex align-items-end justify-content-between">
+																		<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																			<span class="mt-1 mb-2 montant_toltal_order">
 																			@if($order['details']['coupons'])
 																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
