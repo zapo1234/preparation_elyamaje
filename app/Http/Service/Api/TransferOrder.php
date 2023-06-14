@@ -311,7 +311,8 @@ class TransferOrder
                                      $nom =$valu['nom'];
                                    }
                                    $data_infos_user = [
-                                    'name'=> $nom,
+                                    'first_name'=> $nom,
+                                    'last_name'=>''
                                   ];
                             }
 
@@ -347,6 +348,7 @@ class TransferOrder
 
                                    $data_infos_user = [
                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                       'last_name' =>'',
                                      ];
                               }
 
@@ -363,7 +365,7 @@ class TransferOrder
                                      
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
-                                            if($values['subtotal']=="0.0"){
+                                            if($values['subtotal']==0){
                                                  $data_kdo[] = [
                                                   "multicurrency_subprice"=> floatval($values['subtotal']),
                                                   "multicurrency_total_ht" => floatval($values['subtotal']),
@@ -486,16 +488,13 @@ class TransferOrder
                            }
                       }
 
-                      // TRAITER LES données des cadeaux 
-                      // merger le client et les data coupons
-                       dump($data_infos_user);
-                      dump($data_options_kdo);
-
-                      $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-
-                      // INSERT LES données clients 
-                     
-                      dd($data_infos_order);
+                       // TRAITER LES données des cadeaux 
+                       // merger le client et les data coupons
+                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                        // INSERT LES données clients 
+                        DB::table('dons')->insert($data_infos_order);
+                        // insert les details lie au product
+                        dd($data_infos_order);
 
                       
                          foreach($data_tiers as $data) {
