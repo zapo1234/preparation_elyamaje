@@ -6,6 +6,7 @@ use App\Models\Commandeid;
 use App\Models\Productdiff;
 use App\Models\Transfertrefunded;
 use App\Models\Transfertsucce;
+use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Tiers\TiersRepository;
@@ -494,6 +495,14 @@ class TransferOrder
                         // INSERT LES données clients 
                        // DB::table('prepa_dons')->insert($data_infos_order);
                         // insert les details lie au product
+                        $dons = new Don();
+                        $dons->first_name = $data_infos_order['first_name'];
+                        $dons->last_name = $data_infos_order['last_name'];
+                        $dons->order_id = $data_infos_order['order_id'];
+                        $dons->coupons = $data_infos_order['coupons'];
+                        $dons->total_order = $data_infos_order['total_order'];
+                        $dons->date_order = $data_infos_order['date_order'];
+                        $dons->save();
                         dd($data_infos_order);
 
                       
