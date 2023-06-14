@@ -310,10 +310,12 @@ class TransferOrder
                                    foreach($data as $valu)
                                    {
                                      $nom =$valu['nom'];
+                                     $email = $valu['email'];
                                    }
                                    $data_infos_user = [
                                     'first_name'=> $nom,
-                                    'last_name'=>''
+                                    'last_name'=>'',
+                                    'email'=>$email,
                                   ];
                             }
 
@@ -348,8 +350,9 @@ class TransferOrder
                                  
 
                                    $data_infos_user = [
-                                       'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
-                                       'last_name' =>'',
+                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                        'last_name' =>'',
+                                        'email'=>$donnees['billing']['email'],
                                      ];
                               }
 
@@ -503,6 +506,9 @@ class TransferOrder
                         $dons->total_order = $data_infos_order['total_order'];
                         $dons->date_order = $data_infos_order['date_order'];
                         $dons->save();
+
+                        // insert les produit lié a l'utilisateur qui as eu la commande.
+
                         dd($data_infos_order);
 
                       
