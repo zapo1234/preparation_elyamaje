@@ -310,7 +310,7 @@ class TransferOrder
                                    {
                                      $nom =$valu['nom'];
                                    }
-                                   $data_infos_user[] = [
+                                   $data_infos_user = [
                                     'name'=> $nom,
                                   ];
                             }
@@ -345,7 +345,7 @@ class TransferOrder
                                  ];
                                  
 
-                                   $data_infos_user[] = [
+                                   $data_infos_user = [
                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                      ];
                               }
@@ -435,7 +435,7 @@ class TransferOrder
                                     
                                       ];
 
-                                      $data_options_kdo[] = [
+                                      $data_options_kdo = [
                                         "order_id"=>$donnees['order_id'],
                                         "coupons"=>$donnees['coupons'],
                                         "total_order"=> floatval($donnees['total_order']),
@@ -492,6 +492,12 @@ class TransferOrder
                       dump($data_options_kdo);
 
                       $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+
+                      // INSERT LES données clients 
+                      foreach($data_infos_order as $vals){
+                        // recupérer des données
+                          $kdo = new Don();
+                      }
                       
                       dd($data_infos_order);
 
