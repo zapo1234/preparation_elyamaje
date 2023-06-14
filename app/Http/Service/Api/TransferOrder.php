@@ -492,7 +492,7 @@ class TransferOrder
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                         // INSERT LES données clients 
-                        DB::table('dons')->insert($data_infos_order);
+                        DB::table('prepa_dons')->insert($data_infos_order);
                         // insert les details lie au product
                         dd($data_infos_order);
 
