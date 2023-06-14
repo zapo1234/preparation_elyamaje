@@ -494,11 +494,7 @@ class TransferOrder
                       $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
 
                       // INSERT LES données clients 
-                      foreach($data_infos_order as $vals){
-                        // recupérer des données
-                          $kdo = new Don();
-                      }
-                      
+                     
                       dd($data_infos_order);
 
                       
