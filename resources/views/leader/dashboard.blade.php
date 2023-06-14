@@ -201,7 +201,12 @@
 												<h2 class="text-center">Supprimer ce produit de la commande ?</h2>
 												<input type="hidden" id="order_id" value="">
 												<input type="hidden" id="line_item_id"value="">
-												<div class="w-100 d-flex justify-content-center">
+													<div class="d-none loading_delete d-flex w-100 justify-content-center">
+														<div class="spinner-border" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+													</div>
+												<div class="delete_modal w-100 d-flex justify-content-center">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
 													<button onclick="deleteProductOrderConfirm()" style="margin-left:15px" type="button" class="btn btn-dark px-5 ">Oui</button>
 												</div>
@@ -216,7 +221,7 @@
 										<div class="modal-content">
 											<div class="modal-body">
 												<h2 class="mb-3 text-center">Choisissez le produits à ajouter</h2>
-												<input type="hidden" value="" id="order_id_add_product">
+													<input type="hidden" value="" id="order_id_add_product">
 													<div class="d-flex justify-content-between">
 														<select name="products" class="list_product_to_add mb-3">
 															@foreach($products as $product)
@@ -225,7 +230,12 @@
 															<input id="quantity_product" style="width:50px" type="number" value="1">
 														</select>
 													</div>
-												<div class="w-100 d-flex justify-content-center mt-3">
+													<div class="d-none loading_add d-flex w-100 justify-content-center mt-3">
+														<div class="spinner-border" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+													</div>
+												<div class="w-100 add_modal d-flex justify-content-center mt-3">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
 													<button onclick="addProductOrderConfirm()" style="margin-left:15px" type="button" class="btn btn-dark px-5 ">Ajouter</button>
 												</div>
@@ -605,6 +615,9 @@
 			})
 
 			function addProductOrderConfirm(){
+				$(".loading_add").removeClass('d-none')
+				$(".add_modal").addClass('d-none')
+
 				var product = $(".list_product_to_add").val()
 				var order_id = $("#order_id_add_product").val()
 				var quantity = $("#quantity_product").val()
@@ -615,10 +628,30 @@
 					data: {_token: $('input[name=_token]').val(), order_id: order_id, product: product, quantity: quantity}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
+
+						var order_id = JSON.parse(data).order.id
+						var line_items = JSON.parse(data).order.line_items
+						var last_line_items = JSON.parse(data).order.line_items[line_items.length - 1]
+						
+						$("#order_"+order_id+" .body_detail_product_order").append(`
+							<div class="`+order_id+`_`+last_line_items.id+`  d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+								<div class="column11 d-flex align-items-center detail_product_name_order">
+									<span>`+last_line_items.name+`</span>
+								</div>
+								<span class="column22">`+last_line_items.price+`</span>
+								<span class="column33"> `+last_line_items.quantity+` </span>
+								<span class="column44">`+last_line_items.subtotal+`</span>
+								<span class="column55"><i onclick="deleteProduct(`+order_id+`,`+last_line_items.id+`)" class="edit_order bx bx-trash"></i></span>
+							</div>`
+						)
+
+						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
 						$("#addProductOrderModal").modal('hide')
 					} else {
 						alert('Erreur !')
 					}
+					$(".loading_add").addClass('d-none')
+					$(".add_modal").removeClass('d-none')
 				});
 				
 			}
@@ -640,6 +673,8 @@
 			}
 
 			function deleteProductOrderConfirm(){
+				$(".loading_delete").removeClass('d-none')
+				$(".delete_modal").addClass('d-none')
 				var order_id = $("#order_id").val()
 				var line_item_id = $("#line_item_id").val()
 
@@ -649,12 +684,15 @@
 					data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
+						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
 						$('.'+order_id+'_'+line_item_id).fadeOut()
 						$('.'+order_id+'_'+line_item_id).remove()
-						$("#deleteProductOrderModal").modal('hide')
+						$(".loading_delete").addClass('d-none')
 					} else {
 						alert('Erreur !')
 					}
+					$(".delete_modal").removeClass('d-none')
+					$("#deleteProductOrderModal").modal('hide')
 				});
 			}
 

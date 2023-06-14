@@ -20,6 +20,8 @@ interface OrderInterface
 
    public function updateOrdersById($ids);
 
+   public function updateTotalOrders($data);
+
    public function checkIfDone($order_id, $barcode_array, $partial = false);
 
    public function orderReset($order_id);

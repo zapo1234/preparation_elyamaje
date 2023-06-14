@@ -464,6 +464,13 @@ class OrderRepository implements OrderInterface
        }
        return null; // Si la clé n'est pas trouvée
    }
+
+   public function updateTotalOrders($data){
+      return $this->model->update([
+         'total_tax_order' => $data['total_tax'],
+         'total_order' => $data['total']
+      ]);
+   }
 }
 
 

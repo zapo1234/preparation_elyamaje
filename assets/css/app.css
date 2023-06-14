@@ -5792,6 +5792,29 @@ input::placeholder {
 
 }
 
+@media screen and (max-width: 800px) {
+	.nav_mobile_responsive{
+		justify-content: center;
+	}
+
+	.nav_mobile_responsive li{
+		width: 100%;
+	}
+
+	.nav_div_mobile_responsive{
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.nav-link.active{
+		border-color: #000000 #000000 #0000001f !important;
+	}
+
+	.nav-tabs{
+		border-bottom: none !important;
+	}
+}
+
 
 @media screen and (max-width: 767px) {
 
@@ -5871,20 +5894,6 @@ input::placeholder {
 
 @media screen and (max-width: 520px) {
 
-	.nav_mobile_responsive{
-		justify-content: center;
-	}
-
-	.nav_mobile_responsive li{
-		width: 100%;
-	}
-
-	.nav_div_mobile_responsive{
-		width: 100%;
-		justify-content: space-between;
-	}
-
-	
 
 	.chat-footer-menu,
 
@@ -6418,6 +6427,7 @@ a{
 	padding: 30px;
 	position: relative;
 	width: 100%;
+	flex-wrap: wrap;
 }
 
 
@@ -6429,7 +6439,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 12px 25px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 30px;
 	letter-spacing: 1px;
@@ -6442,7 +6452,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 8px 15px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 30px;
 	letter-spacing: 1px;
@@ -6455,7 +6465,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 8px 15px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 100px;
 	letter-spacing: 1px;

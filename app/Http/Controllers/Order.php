@@ -357,7 +357,7 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
-            
+            dd($orders);
             // envoi des données pour créer des facture via api dolibar....
              $this->factorder->Transferorder($orders);
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
@@ -444,7 +444,7 @@ class Order extends BaseController
       $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id);
 
       if($delete){
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true, 'order' => $delete]);
       } else {
         echo json_encode(['success' => false]);
       }
@@ -459,7 +459,7 @@ class Order extends BaseController
 
       if($product_order_woocommerce){
         $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
-        echo json_encode(['success' => $insert_product_order]); 
+        echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
       } else {
         echo json_encode(['success' => false]); 
       }
