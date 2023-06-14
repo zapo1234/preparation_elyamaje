@@ -488,7 +488,7 @@ class TransferOrder
 
                       // TRAITER LES données des cadeaux 
                       // merger le client et les data coupons
-
+                       dump($data_infos_user);
                       dump($data_options_kdo);
 
                       $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
