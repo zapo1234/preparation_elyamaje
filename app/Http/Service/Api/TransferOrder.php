@@ -6,6 +6,7 @@ use App\Models\Commandeid;
 use App\Models\Productdiff;
 use App\Models\Transfertrefunded;
 use App\Models\Transfertsucce;
+use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Tiers\TiersRepository;
@@ -309,9 +310,12 @@ class TransferOrder
                                    foreach($data as $valu)
                                    {
                                      $nom =$valu['nom'];
+                                     $email = $valu['email'];
                                    }
-                                   $data_infos_user[] = [
-                                    'name'=> $nom,
+                                   $data_infos_user = [
+                                    'first_name'=> $nom,
+                                    'last_name'=>'',
+                                    'email'=>$email,
                                   ];
                             }
 
@@ -345,8 +349,10 @@ class TransferOrder
                                  ];
                                  
 
-                                   $data_infos_user[] = [
-                                       'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                   $data_infos_user = [
+                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                        'last_name' =>'',
+                                        'email'=>$donnees['billing']['email'],
                                      ];
                               }
 
@@ -363,7 +369,7 @@ class TransferOrder
                                      
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
-                                            if($values['subtotal']=="0.0"){
+                                            if($values['subtotal']==0){
                                                  $data_kdo[] = [
                                                   "multicurrency_subprice"=> floatval($values['subtotal']),
                                                   "multicurrency_total_ht" => floatval($values['subtotal']),
@@ -435,7 +441,7 @@ class TransferOrder
                                     
                                       ];
 
-                                      $data_options_kdo[] = [
+                                      $data_options_kdo = [
                                         "order_id"=>$donnees['order_id'],
                                         "coupons"=>$donnees['coupons'],
                                         "total_order"=> floatval($donnees['total_order']),
@@ -486,14 +492,24 @@ class TransferOrder
                            }
                       }
 
-                      // TRAITER LES données des cadeaux 
-                      // merger le client et les data coupons
+                       // TRAITER LES données des cadeaux 
+                       // merger le client et les data coupons
+                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                        // INSERT LES données clients 
+                       // DB::table('prepa_dons')->insert($data_infos_order);
+                        // insert les details lie au product
+                        $dons = new Don();
+                        $dons->first_name = $data_infos_order['first_name'];
+                        $dons->last_name = $data_infos_order['last_name'];
+                        $dons->order_id = $data_infos_order['order_id'];
+                        $dons->coupons = $data_infos_order['coupons'];
+                        $dons->total_order = $data_infos_order['total_order'];
+                        $dons->date_order = $data_infos_order['date_order'];
+                        $dons->save();
 
-                      dump($data_options_kdo);
+                        // insert les produit lié a l'utilisateur qui as eu la commande.
 
-                      $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                      
-                      dd($data_infos_order);
+                        dd($data_infos_order);
 
                       
                          foreach($data_tiers as $data) {
