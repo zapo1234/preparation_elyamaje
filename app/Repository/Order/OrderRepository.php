@@ -146,7 +146,13 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersByIdUser($id, $distributeur = false){
-      $distributeurs_id = ['4996', '4997', '1707', '3550', '3594'];
+
+      // Liste des distributeurs
+      $distributeurs = DB::table('distributors')->select('customer_id')->get();
+      $distributeurs_id = [];
+      foreach($distributeurs as $distributeur){
+         $distributeurs_id[] = $distributeur->customer_id;
+      }
 
       $list = [];
       $list2 = [];

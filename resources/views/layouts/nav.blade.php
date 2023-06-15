@@ -77,6 +77,8 @@
                     </li>
                     <li> <a href="{{ url('roles') }}"><i class="bx bx-right-arrow-alt"></i>Roles</a>
                     </li>
+                    <li> <a href="{{ url('distributors') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
+                    </li>
                 </ul>
             </li>
 

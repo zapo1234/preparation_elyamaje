@@ -73,6 +73,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::put("/roles", [Admin::class, "updateRole"])->name('role.update');
     Route::delete("/roles", [Admin::class, "deleteRole"])->name('role.delete');
 
+     // CRUD Role
+     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
+     Route::post("/distributors", [Admin::class, "createDistributors"])->name('distributors.create');
+     Route::put("/distributors", [Admin::class, "updateDistributors"])->name('distributors.update');
+     Route::delete("/distributors", [Admin::class, "deleteDistributors"])->name('distributors.delete');
 });
 
 // PRÉPARATEUR

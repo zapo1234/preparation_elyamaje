@@ -436,11 +436,15 @@ class Order extends BaseController
     public function deleteOrderProducts(Request $request){
       $order_id = $request->post('order_id');
       $line_item_id = $request->post('line_item_id');
+      $increase = $request->post('increase');
+      $quantity = $request->post('quantity');
+      $product_id = $request->post('product_id');
+
 
       //Supprimer de ma base en local le produit lié à la commande
       $delete_product = $this->productOrder->deleteProductOrderByLineItem($order_id, $line_item_id);
       //Supprimer de la commande via api woocommerce
-      $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id);
+      $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
 
       if($delete){
         echo json_encode(['success' => true, 'order' => $delete]);
@@ -454,18 +458,19 @@ class Order extends BaseController
       $product = $request->post('product');
       $quantity = $request->post('quantity');
 
+      if($quantity < 1){
+        $quantity = 1;
+      }
+
       $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
 
       if($product_order_woocommerce){
         $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
+
         echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
       } else {
         echo json_encode(['success' => false]); 
       }
-
-
-    
-
     }
 }
 

@@ -201,14 +201,17 @@
 												<h2 class="text-center">Supprimer ce produit de la commande ?</h2>
 												<input type="hidden" id="order_id" value="">
 												<input type="hidden" id="line_item_id"value="">
+												<input type="hidden" id="product_order_id"value="">
+												<input type="hidden" id="quantity_order"value="">
 													<div class="d-none loading_delete d-flex w-100 justify-content-center">
 														<div class="spinner-border" role="status"> 
 															<span class="visually-hidden">Loading...</span>
 														</div>
 													</div>
-												<div class="delete_modal w-100 d-flex justify-content-center">
+												<div class="delete_modal w-100 d-flex justify-content-center flex-column">
+													<button onclick="deleteProductOrderConfirm(1)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui et remettre en stock</button>
+													<button onclick="deleteProductOrderConfirm(0)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui sans remettre en stock</button>
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-													<button onclick="deleteProductOrderConfirm()" style="margin-left:15px" type="button" class="btn btn-dark px-5 ">Oui</button>
 												</div>
 											</div>
 										</div>
@@ -220,7 +223,7 @@
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div class="modal-body">
-												<h2 class="mb-3 text-center">Choisissez le produits à ajouter</h2>
+												<h2 class="mb-3 text-center">Choisissez le produit à ajouter</h2>
 													<input type="hidden" value="" id="order_id_add_product">
 													<div class="d-flex justify-content-between">
 														<select name="products" class="list_product_to_add mb-3">
@@ -443,8 +446,7 @@
 																	<span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
 																	<span class="column33"> `+element.quantity+` </span>
 																	<span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
-																	<span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`)" class="edit_order bx bx-trash"></i></span>
-
+																	<span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
 																</div>`
 														).join('')}
 														</div>
@@ -641,7 +643,7 @@
 								<span class="column22">`+last_line_items.price+`</span>
 								<span class="column33"> `+last_line_items.quantity+` </span>
 								<span class="column44">`+last_line_items.subtotal+`</span>
-								<span class="column55"><i onclick="deleteProduct(`+order_id+`,`+last_line_items.id+`)" class="edit_order bx bx-trash"></i></span>
+								<span class="column55"><i onclick="deleteProduct(`+order_id+`,`+last_line_items.id+`,`+last_line_items.variation_id+`,`+last_line_items.product_id+`,`+last_line_items.quantity+`)" class="edit_order bx bx-trash"></i></span>
 							</div>`
 						)
 
@@ -666,22 +668,29 @@
 				$("#order_"+id).modal('show')
 			}
 
-			function deleteProduct(order_id, line_item_id){
+			function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
+				var id = variation_id != 0 ? variation_id : product_id
+		
 				$("#order_id").val(order_id)
 				$("#line_item_id").val(line_item_id)
+				$("#product_order_id").val(id)
+				$("#quantity_order").val(quantity)
 				$("#deleteProductOrderModal").modal('show')
 			}
 
-			function deleteProductOrderConfirm(){
+			function deleteProductOrderConfirm(increase){
+
 				$(".loading_delete").removeClass('d-none')
 				$(".delete_modal").addClass('d-none')
 				var order_id = $("#order_id").val()
 				var line_item_id = $("#line_item_id").val()
+				var product_id = $("#product_order_id").val()
+				var quantity = $("#quantity_order").val()
 
 				$.ajax({
 					url: "{{ route('deleteOrderProducts') }}",
 					method: 'POST',
-					data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id}
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id, increase: increase, quantity: quantity, product_id: product_id}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
 						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)

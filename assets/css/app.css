@@ -5822,13 +5822,8 @@ input::placeholder {
 
 @media screen and (max-width: 767px) {
 
-
 	.user-box .user-info {
-
-
 		display: none;
-
-
 	}
 
 	.dataTables_length label,
@@ -6781,4 +6776,6 @@ select:focus, input:focus{
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-
+.edit_order {
+	cursor: pointer;
+}

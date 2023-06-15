@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\Distributor\DistributorRepository;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Product\ProductRepository;
 use App\Repository\Role\RoleRepository;
@@ -24,6 +25,7 @@ class Admin extends BaseController
     private $role;
     private $history;
     private $products;
+    private $distributors;
 
     public function __construct(
         Api $api, 
@@ -31,7 +33,8 @@ class Admin extends BaseController
         UserRepository $user, 
         RoleRepository $role,
         HistoryRepository $history,
-        ProductRepository $products
+        ProductRepository $products,
+        DistributorRepository $distributors
     ){
         $this->api = $api;
         $this->category = $category;
@@ -39,6 +42,7 @@ class Admin extends BaseController
         $this->role = $role;
         $this->history = $history;
         $this->products = $products;
+        $this->distributors = $distributors;
     }
 
     
@@ -134,7 +138,9 @@ class Admin extends BaseController
                         'name' => $product['name'].' - '.$op,
                         'status' => $product['status'],
                         'price' => $product['variation_prices'][$key],
-                        'barcode' => $product['barcodes_list'][$key]
+                        'barcode' => $product['barcodes_list'][$key],
+                        'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
+                        'stock' => $product['stock_quantity_variation'][$key]
                     ];
                 }
             } else {
@@ -147,6 +153,8 @@ class Admin extends BaseController
                     'status' => $product['status'],
                     'price' => $product['price'],
                     'barcode' => $barcode,
+                    'manage_stock' => $product['manage_stock'],
+                    'stock' => $product['stock_quantity']
                 ];
             }
         }
@@ -259,4 +267,53 @@ class Admin extends BaseController
             }
         }
     }
+
+    public function distributors(){
+        $distributors = $this->distributors->getDistributors();
+        return view('admin.distributors', ['distributors' => $distributors]);
+    }
+
+    public function createDistributors(Request $request){
+        $name = $request->post('name');
+        $identifiant = $request->post('identifiant');
+
+        $data = [
+            'name' => $name,
+            'customer_id' => $identifiant
+        ];
+        
+        if($this->distributors->createDistributor($data)){
+            return redirect()->route('distributors')->with('success', 'Distributeur ajouté avec succès !');
+        } else {
+            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être ajouté');
+        }
+    }
+
+    public function updateDistributors(Request $request){
+        $update_name = $request->post('update_name');
+        $update_identifiant = $request->post('update_identifiant');
+        $distributor_id = $request->post('distributor_id');
+        $data = [
+            'name' => $update_name,
+            'customer_id' => $update_identifiant,
+            'id' => $distributor_id
+        ];
+
+        if($this->distributors->updateDistributors($data)){
+            return redirect()->route('distributors')->with('success', 'Distributeur modifié avec succès !');
+        } else {
+            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être modifié');
+        }
+    }
+
+    public function deleteDistributors(Request $request){
+        $distributor_id = $request->post('distributor_id');
+
+        if($this->distributors->deleteDistributor($distributor_id)){
+            return redirect()->route('distributors')->with('success', 'Distributeur supprimé avec succès !');
+        } else {
+            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être supprimé');
+        }
+    }
+    
 }
