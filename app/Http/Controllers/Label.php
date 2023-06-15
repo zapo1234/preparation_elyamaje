@@ -24,7 +24,6 @@ class Label extends BaseController
     public function getlabels(){
         $labels = $this->label->getLabels();
         return view('labels.label', ['labels' => $labels]);
-      
     }
 
     public function labelPDF(Request $request){
@@ -36,6 +35,11 @@ class Label extends BaseController
     
         // Renvoyer le contenu blob en tant que réponse
         return Response::make($blob[0]->label, 200, $headers);
+    }
+
+    public function generateLabels(Request $request){
+        $date = $request->post('date');
+        dd($date);
     }
     
    

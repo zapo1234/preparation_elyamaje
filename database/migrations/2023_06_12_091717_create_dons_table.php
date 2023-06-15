@@ -13,16 +13,13 @@ class CreateDonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('dons', function (Blueprint $table) {
+        Schema::create('dons_products', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
             $table->integer('order_id');
-            $table->float('total');
-            $table->string('coupons');
-            $table->float('total_dons');
+            $table->integer('product_id');
+            $table->string('label');
             $table->integer('quantity');
-            $table->datetime('date_order');
+            $table->float('real_price');
             $table->timestamps();
         });
     }

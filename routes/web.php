@@ -93,7 +93,6 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
 Route::group(['middleware' => ['auth', 'role:3']], function () {
     Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
     Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
-    Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
 });
 
 // CHEF D'ÉQUIPE
@@ -123,6 +122,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
+    Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
+    Route::post("/labels", [Label::class, "generateLabels"])->name('label.generate');
+
 });
 
 

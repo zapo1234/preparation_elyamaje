@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;

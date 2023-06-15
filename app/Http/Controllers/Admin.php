@@ -1,19 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
-use App\Repository\Categorie\CategoriesRepository;
-use App\Repository\Distributor\DistributorRepository;
-use App\Repository\History\HistoryRepository;
-use App\Repository\Product\ProductRepository;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
+use App\Repository\History\HistoryRepository;
+use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\Categorie\CategoriesRepository;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Response;
 
 class Admin extends BaseController
 {

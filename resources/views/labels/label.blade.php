@@ -19,6 +19,32 @@
 								</ol>
 							</nav>
 						</div>
+						<div class="ms-auto ms-auto-responsive">
+							<button id="show_modal_bordereau" type="button" class="btn btn-dark px-5">Générer bordereau</button>
+						</div>
+					</div>
+
+
+
+					<!-- Modal Génération Bordereau par date -->
+					<div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<form method="POST" action="{{ route('label.generate') }}">
+									@csrf
+									<div class="modal-body">
+										<h2 class="text-center">Chosir la date</h2>
+										<div class="d-flex justify-content-center w-100">
+											<input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+										<button type="submit" class="btn btn-primary">Générer</button>
+									</div>
+								</form>
+							</div>
+						</div>
 					</div>
 
 					@if(session()->has('success'))
@@ -62,7 +88,7 @@
 													<span class="badge bg-{{ $label->status }} text-light">{{ $label->status }}</span>
 												</td>
 												<td>{{ $label->tracking_number }}</td>
-												<td>{{ $label->created_at }}</td>
+												<td>{{ $label->created_at->format('d/m/Y') }}</td>
 												<td data-label="PDF">
 													<form method="POST" action="{{ route('label.download') }}">
 														@csrf
@@ -95,6 +121,10 @@
 			$('#example').DataTable({
 				order: [[3, 'desc']],
 			})
+		})
+
+		$("#show_modal_bordereau").on('click', function(){
+			$("#modalBordereau").modal('show')
 		})
 
 

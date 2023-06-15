@@ -38,7 +38,13 @@
                     <div class="menu-title">Historiques</div>
                 </a>
             </li>
-           
+            <li>
+                <a href="{{ url('labels') }}">
+                    <div class="parent-icon"><i class='lni lni-delivery'></i>
+                    </div>
+                    <div class="menu-title">Étiquettes</div>
+                </a>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
