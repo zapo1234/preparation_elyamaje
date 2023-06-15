@@ -16,6 +16,8 @@ interface OrderInterface
 
    public function getUsersWithOrder();
 
+   public function getAllOrdersByIdUser($user_id);
+
    public function getOrdersByIdUser($id);
 
    public function updateOrdersById($ids);

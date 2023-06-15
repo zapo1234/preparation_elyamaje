@@ -604,10 +604,8 @@
 						}
 					});
 				} else {
-
-					var pick_items = JSON.parse(localStorage.getItem('barcode'))
 					// Récupère les produits de cette commande
-					if(pick_items){
+					if($(".pick").length >= 1){
 						$('#modalPartial').modal({
 							backdrop: 'static',
 							keyboard: false

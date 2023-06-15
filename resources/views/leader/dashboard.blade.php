@@ -389,7 +389,7 @@
 								if(row.status == "waiting_to_validate"){
 									var selectOptions = '<option selected value="'+row.status+'">'+row.status_text+'</option>';
 									selectOptions += `<option value="waiting_validate">En cours</option>`;
-									var selectHtml = `<select onchange="changeStatusOrder(${row.id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
+									var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
 
 									return selectHtml;
 								} else {
@@ -705,14 +705,15 @@
 				});
 			}
 
-			function changeStatusOrder(order_id){
+			function changeStatusOrder(order_id, user_id){
 				var order_id = order_id
+				var user_id = user_id
 				var status = $("#selectStatus_"+order_id).val()
 
 				$.ajax({
 					url: "{{ route('updateOrderStatus') }}",
 					method: 'POST',
-					data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status}
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, user_id: user_id}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
 						$("#selectStatus_"+order_id).removeClass('empty_select')

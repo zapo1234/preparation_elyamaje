@@ -18,4 +18,6 @@ return [
     'waiting_validate' => 'En attente validée',
     'prepared-order' => 'Commande préparée',
     'finished' => 'Terminée',
+    "partial_prepared_order" => "Commande partielle",
+    "partial_prepared_order_validate" => "Commande validée",
 ];

@@ -145,7 +145,11 @@ class OrderRepository implements OrderInterface
       return $this->model->select('users.*')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
-   public function getOrdersByIdUser($id, $distributeur = false){
+   public function getAllOrdersByIdUser($user_id){
+      return $this->model->select('*')->where('user_id', $user_id)->get();
+   }
+
+   public function getOrdersByIdUser($id, $distributeur_order = false){
 
       // Liste des distributeurs
       $distributeurs = DB::table('distributors')->select('customer_id')->get();
@@ -155,7 +159,6 @@ class OrderRepository implements OrderInterface
       }
 
       $list = [];
-      $list2 = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       // $queryOrder = "CASE WHEN products_order.name LIKE '%20 ml' THEN 1 ";
@@ -180,7 +183,7 @@ class OrderRepository implements OrderInterface
 
 
       foreach($orders as $key => $order){
-         if($distributeur){
+         if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id)){
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
@@ -214,6 +217,8 @@ class OrderRepository implements OrderInterface
             }
          }
       }
+
+
 
       $list = array_values($list);
       return $list;

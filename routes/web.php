@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Order;
 use App\Http\Controllers\Label;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Notification;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TiersController;
 
@@ -126,6 +127,13 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/labels", [Label::class, "generateLabels"])->name('label.generate');
 
 });
+
+// TOUS LES ROLES
+Route::group(['middleware' =>  ['auth']], function () {
+    Route::get("/notifications", [Notification::class, "notificationRead"])->name('notification.read');
+
+});
+
 
 
 // ROLES NON DÉFINI 

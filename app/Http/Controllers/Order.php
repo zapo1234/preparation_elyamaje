@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
@@ -14,6 +15,7 @@ use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -32,6 +34,7 @@ class Order extends BaseController
     private $label;
     private $product;
     private $productOrder;
+    private $notification;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -41,7 +44,8 @@ class Order extends BaseController
     Colissimo $colissimo,
     LabelRepository $label,
     ProductOrderRepository $product,
-    ProductOrderRepository $productOrder
+    ProductOrderRepository $productOrder,
+    NotificationRepository $notification
     ){
       $this->api = $api;
       $this->user = $user;
@@ -53,6 +57,7 @@ class Order extends BaseController
       $this->label = $label;
       $this->product = $product;
       $this->productOrder = $productOrder;
+      $this->notification = $notification;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -216,16 +221,27 @@ class Order extends BaseController
 
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
+            $from_user = Auth()->user()->id;
             foreach($leader as $lead){
                 $email = $lead['email'];
                 $name = $lead['name'];
 
+                // Insert dans notification
+                $data = [
+                  'from_user' => $from_user,
+                  'to_user' => $lead['user_id'],
+                  'type' => 'partial_prepared_order',
+                  'order_id' => $order_id,
+                  'detail' => "La commande #".$order_id." est incomplète"
+                ];
+                $this->notification->insert($data);
+
                 //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                // Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
-                //     $message->to($email);
-                //     $message->from('no-reply@elyamaje.com');
-                //     $message->subject('Commande incomplète');
-                // });
+                Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Commande incomplète');
+                });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);
@@ -273,8 +289,22 @@ class Order extends BaseController
     public function updateOrderStatus(Request $request){
       $order_id = $request->post('order_id');
       $status = $request->post('status');
+      $user_id = $request->post('user_id');
+
 
       if($order_id && $status){
+
+        if($status == "waiting_validate"){
+          $data = [
+            'from_user' => Auth()->user()->id,
+            'to_user' => $user_id,
+            'type' => 'partial_prepared_order_validate',
+            'order_id' => $order_id,
+            'detail' => "Vous pouvez reprendre la commande #".$order_id
+          ];
+
+          $this->notification->insert($data);
+        }
         $number_order_attributed = $this->order->getOrdersByUsers();
         echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
       } else {

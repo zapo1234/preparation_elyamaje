@@ -4976,7 +4976,7 @@ input::placeholder {
 
 	position: relative;
 
-
+	overflow-y: auto;
 	height: 360px;
 
 
@@ -6783,4 +6783,18 @@ select:focus, input:focus{
 .date_bordereau_input{
 	padding: 10px;
     width: 250px;
+}
+
+.notification_list:focus, 
+.notification_list:focus .msg-info{
+	background-color: #F8F9FA !important;
+	color: #000000;
+}
+
+.notification_list{
+	white-space: inherit !important;
+}
+
+.notification_list .notify{
+	min-width: 45px !important;
 }

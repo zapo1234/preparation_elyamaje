@@ -201,4 +201,14 @@ $( document ).ready(function() {
 		});
 	}
 
+	$(".dropdown-toggle-nocaret").on("click", function(){
+		$.ajax({
+			url: "notifications",
+			method: 'GET',
+		}).done(function() {
+			
+		});
+	})
+
 });
+

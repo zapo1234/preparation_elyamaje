@@ -33,7 +33,7 @@
 								<form method="POST" action="{{ route('label.generate') }}">
 									@csrf
 									<div class="modal-body">
-										<h2 class="text-center">Chosir la date</h2>
+										<h2 class="text-center">Choisir la date</h2>
 										<div class="d-flex justify-content-center w-100">
 											<input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
 										</div>
