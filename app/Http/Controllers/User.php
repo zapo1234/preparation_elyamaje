@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Repository\Order\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -15,9 +17,11 @@ class User extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     private $users;
+    private $orders;
    
-    public function __construct(UserRepository $users){
+    public function __construct(UserRepository $users, OrderRepository $orders){
         $this->users = $users;
+        $this->orders = $orders;
     }
     
     public function updateRole(Request $request){
@@ -67,12 +71,19 @@ class User extends BaseController
         $user_id = $request->post("account_user");
 
         if($user_id != 1){
-            $delete = $this->users->deleteUser($user_id);
-
-            if($delete){
-                return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+            // Vérifie si l'utilisateur à des commandes en cours
+            $orders_users = $this->orders->getAllOrdersByIdUser($user_id)->toArray();
+           
+            if(count($orders_users) > 0){
+                return redirect()->back()->with('error',  'Cet utilisateur à des commandes en cours !');
             } else {
-                return redirect()->back()->with('error',  $delete);
+                $delete = $this->users->deleteUser($user_id);
+
+                if($delete){
+                    return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+                } else {
+                    return redirect()->back()->with('error',  $delete);
+                }
             }
         } else {
             return redirect()->back()->with('error',  'L\'administrateur principal ne peut pas être supprimé !');

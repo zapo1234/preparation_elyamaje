@@ -57,6 +57,7 @@
 										<th>Code Barre</th>
 										<th>Catégorie</th>
 										<th>Status</th>
+										<th>Stock</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -68,6 +69,17 @@
 											<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
 											<td data-label="Status">
 												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
+											</td>
+											<td>
+												@if($product->manage_stock)
+													@if($product->stock > 10)
+														<span class="text-success">{{ $product->stock }}</span>
+													@else
+														<span class="text-danger">{{ $product->stock }}</span>
+													@endif
+												@else 
+													Non géré
+												@endif
 											</td>
 										</tr>
 									@endforeach

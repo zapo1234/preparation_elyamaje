@@ -852,6 +852,14 @@ a {
 	.modal_order_admin button{
 		margin-bottom: 50px !important;
 	}
+
+	.detail_product_order{
+		padding: 10px !important;
+	} 
+}
+
+#addProductOrderModal, #deleteProductOrderModal{
+	z-index: 9999 !important;
 }
 
 @media (max-width: 990px) { 
@@ -4968,7 +4976,7 @@ input::placeholder {
 
 	position: relative;
 
-
+	overflow-y: auto;
 	height: 360px;
 
 
@@ -5788,16 +5796,34 @@ input::placeholder {
 
 }
 
+@media screen and (max-width: 800px) {
+	.nav_mobile_responsive{
+		justify-content: center;
+	}
+
+	.nav_mobile_responsive li{
+		width: 100%;
+	}
+
+	.nav_div_mobile_responsive{
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.nav-link.active{
+		border-color: #000000 #000000 #0000001f !important;
+	}
+
+	.nav-tabs{
+		border-bottom: none !important;
+	}
+}
+
 
 @media screen and (max-width: 767px) {
 
-
 	.user-box .user-info {
-
-
 		display: none;
-
-
 	}
 
 	.dataTables_length label,
@@ -5867,20 +5893,6 @@ input::placeholder {
 
 @media screen and (max-width: 520px) {
 
-	.nav_mobile_responsive{
-		justify-content: center;
-	}
-
-	.nav_mobile_responsive li{
-		width: 100%;
-	}
-
-	.nav_div_mobile_responsive{
-		width: 100%;
-		justify-content: space-between;
-	}
-
-	
 
 	.chat-footer-menu,
 
@@ -6309,6 +6321,12 @@ a{
 	.course{
 		min-height: 150px !important;
 	}
+
+	.detail_product_order_line span,
+	.head_detail_product_order span{
+		font-size: 16px;
+	}
+	
 }
 
 @media screen and (max-width: 550px) {
@@ -6344,7 +6362,7 @@ a{
 	}
 
 	.column1, .column11{
-		width: 45% !important;
+		width: 40% !important;
 	}
 
 	.column2, .column22,
@@ -6353,8 +6371,10 @@ a{
 	}
 
 	.column3, .column33{
-		width: 15%;
+		width: 10%;
 	}
+
+	
 	
 }
 
@@ -6406,6 +6426,7 @@ a{
 	padding: 30px;
 	position: relative;
 	width: 100%;
+	flex-wrap: wrap;
 }
 
 
@@ -6417,7 +6438,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 12px 25px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 30px;
 	letter-spacing: 1px;
@@ -6430,7 +6451,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 8px 15px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 30px;
 	letter-spacing: 1px;
@@ -6443,7 +6464,7 @@ a{
 	color: #fff;
 	font-size: 16px;
 	padding: 8px 15px;
-	position: absolute;
+	height: 50px;
 	bottom: 30px;
 	right: 100px;
 	letter-spacing: 1px;
@@ -6749,4 +6770,31 @@ select:focus, input:focus{
 .quantity_product{
 	font-weight: bold;
 	font-size: 1.3em;
+}
+
+.modal_backfrop_fixe{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.edit_order {
+	cursor: pointer;
+}
+
+.date_bordereau_input{
+	padding: 10px;
+    width: 250px;
+}
+
+.notification_list:focus, 
+.notification_list:focus .msg-info{
+	background-color: #F8F9FA !important;
+	color: #000000;
+}
+
+.notification_list{
+	white-space: inherit !important;
+}
+
+.notification_list .notify{
+	min-width: 45px !important;
 }

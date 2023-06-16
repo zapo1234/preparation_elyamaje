@@ -21,9 +21,11 @@
 										<h6>Commande</h6>
 										<h2>#{{ $histo['details']['id'] }}</h2>
 									</div>
-									<div class="course-info">
-										<h6>{{ \Carbon\Carbon::parse($histo['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-										<h2 class="customer_name">{{ $histo['details']['first_name']  }} {{ $histo['details']['last_name']  }}</h2>
+									<div class="course-info d-flex justify-content-between align-items-center">
+										<div>
+											<h6>{{ \Carbon\Carbon::parse($histo['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
+											<h2 class="customer_name">{{ $histo['details']['first_name']  }} {{ $histo['details']['last_name']  }}</h2>
+										</div>
 										<div class="d-flex">
 											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
 											<button data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
@@ -65,7 +67,7 @@
 												</div>
 												
 												<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-													<div class="w-100 d-flex align-items-end justify-content-between">
+													<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 														<span class="mt-1 mb-2 montant_toltal_order">#{{ $histo['details']['id'] }} </span>
 														@if($histo['details']['coupons'])
 															<div><span style="margin-left:12%" class="font-18 badge bg-success">Code : {{ $histo['details']['coupons'] }} (-{{$histo['details']['discount_amount']}}%)</span></div>

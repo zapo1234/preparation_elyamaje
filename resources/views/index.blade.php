@@ -2,6 +2,8 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
+			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
 
 		@endsection 
 
@@ -191,6 +193,61 @@
 										</div>
 									</div>
 								</div>
+
+								<!-- Modal confirmation supression produit commande -->
+								<div class="modal fade modal_backfrop_fixe" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body">
+												<h2 class="text-center">Supprimer ce produit de la commande ?</h2>
+												<input type="hidden" id="order_id" value="">
+												<input type="hidden" id="line_item_id"value="">
+												<input type="hidden" id="product_order_id"value="">
+												<input type="hidden" id="quantity_order"value="">
+													<div class="d-none loading_delete d-flex w-100 justify-content-center">
+														<div class="spinner-border" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+													</div>
+												<div class="delete_modal w-100 d-flex justify-content-center flex-column">
+													<button onclick="deleteProductOrderConfirm(1)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui et remettre en stock</button>
+													<button onclick="deleteProductOrderConfirm(0)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui sans remettre en stock</button>
+													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Modal ajout de produits -->
+								<div class="modal fade modal_backfrop_fixe" id="addProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body">
+												<h2 class="mb-3 text-center">Choisissez le produit à ajouter</h2>
+													<input type="hidden" value="" id="order_id_add_product">
+													<div class="d-flex justify-content-between">
+														<select name="products" class="list_product_to_add mb-3">
+															@foreach($products as $product)
+																<option value="{{ $product['product_woocommerce_id'] }}">{{ $product['name'] }}</option>
+															@endforeach
+															<input id="quantity_product" style="width:50px" type="number" value="1">
+														</select>
+													</div>
+													<div class="d-none loading_add d-flex w-100 justify-content-center mt-3">
+														<div class="spinner-border" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+													</div>
+												<div class="w-100 add_modal d-flex justify-content-center mt-3">
+													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+													<button onclick="addProductOrderConfirm()" style="margin-left:15px" type="button" class="btn btn-dark px-5 ">Ajouter</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -201,11 +258,12 @@
 
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="assets/plugins/select2/js/select2.min.js"></script>
 
 		<script>
 
 			$(document).ready(function() {
-
+				$(".list_product_to_add").select2({width: "350px", dropdownParent: $("#addProductOrderModal")})
 				// Sélection de la div
 				const paceProgress = document.querySelector('.pace-progress');
 
@@ -330,10 +388,10 @@
             			},
 						{data: null,
 							render: function(data, type, row) {
-								if(row.status != "processing" && row.status != 'prepared-order'){
+								if(row.status == "waiting_to_validate"){
 									var selectOptions = '<option selected value="'+row.status+'">'+row.status_text+'</option>';
-									selectOptions += `<option value="processing">En cours</option>`;
-									var selectHtml = `<select onchange="changeStatusOrder(${row.id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
+									selectOptions += `<option value="waiting_validate">En cours</option>`;
+									var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
 
 									return selectHtml;
 								} else {
@@ -374,24 +432,32 @@
 															<span class="column2 name_column">Coût</span>
 															<span class="column3 name_column">Qté</span>
 															<span class="column4 name_column">Total</span>
+															<span class="column5 name_column">Action</span>
 														</div>	
 
 														<div class="body_detail_product_order">
 															${row.line_items.map((element) => `
-																<div class="${id.includes(element.product_id) || id.includes(element.variation_id) ? 'pick' : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+																<div class="${row.id}_${element.id} ${id.includes(element.product_id) || id.includes(element.variation_id) ? 'pick' : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 																	<div class="column11 d-flex align-items-center detail_product_name_order">
 																		${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
 																	</div>
 																	<span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
-																	<span class="column33"> `+element.quantity+` </span>
+																	<span class="column33 quantity"> `+element.quantity+` </span>
 																	<span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
+																	<span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
 																</div>`
 														).join('')}
 														</div>
-														<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-															${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
-															<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
-															<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+														<div class="align-items-end mt-2 d-flex justify-content-between"> 
+														
+															<div class="d-flex flex-column">
+																${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
+																<button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
+															</div>
+															<div class="d-flex flex-column">
+																<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
+																<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+															</div>
 														</div>
 													</div>
 
@@ -402,6 +468,7 @@
 									<i onclick="show(`+row.id+`)" class="show_detail bx bx-comment-detail"></i>
 									`;
 							}
+
             			},
 					],
 
@@ -570,6 +637,56 @@
 
 			})
 				
+			$('body').on('click', '.add_product_order', function() {
+				$("#order_id_add_product").val($(this).attr('data-order'))
+				$('#addProductOrderModal').modal({
+					backdrop: 'static',
+					keyboard: false
+				})
+				$("#addProductOrderModal").modal('show')
+			})
+
+			function addProductOrderConfirm(){
+				$(".loading_add").removeClass('d-none')
+				$(".add_modal").addClass('d-none')
+
+				var product = $(".list_product_to_add").val()
+				var order_id = $("#order_id_add_product").val()
+				var quantity = $("#quantity_product").val()
+
+				$.ajax({
+					url: "{{ route('addOrderProducts') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, product: product, quantity: quantity}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+
+						var order_id = JSON.parse(data).order.id
+						var line_items = JSON.parse(data).order.line_items
+						var last_line_items = JSON.parse(data).order.line_items[line_items.length - 1]
+						
+						$("#order_"+order_id+" .body_detail_product_order").append(`
+							<div class="`+order_id+`_`+last_line_items.id+`  d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+								<div class="column11 d-flex align-items-center detail_product_name_order">
+									<span>`+last_line_items.name+`</span>
+								</div>
+								<span class="column22">`+parseFloat(last_line_items.price).toFixed(2)+`</span>
+								<span class="column33 quantity"> `+last_line_items.quantity+` </span>
+								<span class="column44">`+parseFloat(last_line_items.subtotal).toFixed(2)+`</span>
+								<span class="column55"><i onclick="deleteProduct(`+order_id+`,`+last_line_items.id+`,`+last_line_items.variation_id+`,`+last_line_items.product_id+`,`+last_line_items.quantity+`)" class="edit_order bx bx-trash"></i></span>
+
+							</div>`
+						)
+						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
+						$("#addProductOrderModal").modal('hide')
+					} else {
+						alert('Erreur !')
+					}
+					$(".loading_add").addClass('d-none')
+					$(".add_modal").removeClass('d-none')
+				});
+				
+			}
 
 			function show(id){
 			
@@ -579,20 +696,56 @@
 				})
 
 				$("#order_"+id).modal('show')
+			}
 
+			function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
+				var id = variation_id != 0 ? variation_id : product_id
+		
+				$("#order_id").val(order_id)
+				$("#line_item_id").val(line_item_id)
+				$("#product_order_id").val(id)
+				$("#quantity_order").val(quantity)
+				$("#deleteProductOrderModal").modal('show')
+			}
+
+			function deleteProductOrderConfirm(increase){
+
+				$(".loading_delete").removeClass('d-none')
+				$(".delete_modal").addClass('d-none')
+				var order_id = $("#order_id").val()
+				var line_item_id = $("#line_item_id").val()
+				var product_id = $("#product_order_id").val()
+				var quantity = $("#quantity_order").val()
+
+				$.ajax({
+					url: "{{ route('deleteOrderProducts') }}",
+					method: 'POST',
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id, increase: increase, quantity: quantity, product_id: product_id}
+				}).done(function(data) {
+					if(JSON.parse(data).success){
+						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
+						$('.'+order_id+'_'+line_item_id).fadeOut()
+						$('.'+order_id+'_'+line_item_id).remove()
+						$(".loading_delete").addClass('d-none')
+					} else {
+						alert('Erreur !')
+					}
+					$(".delete_modal").removeClass('d-none')
+					$("#deleteProductOrderModal").modal('hide')
+				});
 			}
 
 			function changeStatusOrder(order_id){
 				var order_id = order_id
+				var user_id = user_id
 				var status = $("#selectStatus_"+order_id).val()
-
+				
 				$.ajax({
 					url: "{{ route('updateOrderStatus') }}",
 					method: 'POST',
-					data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status}
+					data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, user_id: user_id}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
-						console.log(order_id)
 						$("#selectStatus_"+order_id).removeClass('empty_select')
 						$("#selectStatus_"+order_id).addClass('no_empty_select')
 					} else {

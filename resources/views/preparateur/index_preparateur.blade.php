@@ -67,9 +67,11 @@
 														<h6>Commande</h6>
 														<h2>#{{ $orders['details']['id'] }}</h2>
 													</div>
-													<div class="course-info">
-														<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-														<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+													<div class="course-info d-flex justify-content-between align-items-center">
+														<div>
+															<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
+															<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+														</div>
 														<button id="{{ $orders['details']['id'] }}" class="show_order btn">Préparer</button>
 													</div>
 												</div>
@@ -105,7 +107,7 @@
 																</div>
 
 																<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																	<div class="w-100 d-flex align-items-end justify-content-between">
+																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_toltal_order">
 																		@if($orders['details']['coupons'])
 																			<div><span  class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
@@ -149,9 +151,11 @@
 															<h6>Commande</h6>
 															<h2>#{{ $order['details']['id'] }}</h2>
 														</div>
-														<div class="course-info">
-															<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-															<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+														<div class="course-info d-flex justify-content-between align-items-center">
+															<div>
+																<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
+																<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+															</div>
 															<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 														</div>
 													</div>
@@ -187,7 +191,7 @@
 																	</div>
 
 																	<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																		<div class="w-100 d-flex align-items-end justify-content-between">
+																		<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																			<span class="mt-1 mb-2 montant_toltal_order">
 																			@if($order['details']['coupons'])
 																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
@@ -231,9 +235,11 @@
 															<h6>Commande</h6>
 															<h2>#{{ $order['details']['id'] }}</h2>
 														</div>
-														<div class="course-info">
-															<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-															<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+														<div class="course-info d-flex justify-content-between align-items-center">
+															<div>
+																<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
+																<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+															</div>
 															<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 														</div>
 													</div>
@@ -269,7 +275,7 @@
 																	</div>
 
 																	<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
-																		<div class="w-100 d-flex align-items-end justify-content-between">
+																		<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																			<span class="mt-1 mb-2 montant_toltal_order">
 																			@if($order['details']['coupons'])
 																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
@@ -598,10 +604,8 @@
 						}
 					});
 				} else {
-
-					var pick_items = JSON.parse(localStorage.getItem('barcode'))
 					// Récupère les produits de cette commande
-					if(pick_items){
+					if($(".pick").length >= 1){
 						$('#modalPartial').modal({
 							backdrop: 'static',
 							keyboard: false

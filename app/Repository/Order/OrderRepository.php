@@ -53,7 +53,7 @@ class OrderRepository implements OrderInterface
                $ordersToInsert[] = [
                   'order_woocommerce_id' => $orderData['id'],
                   'customer_id' => $orderData['customer_id'],
-                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
+                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
                   'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
                   'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
                   'billing_customer_first_name' => $orderData['billing']['first_name'] ?? null,
@@ -105,11 +105,12 @@ class OrderRepository implements OrderInterface
                      'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
                      'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'quantity' => $value['quantity'],
-                     'cost' => $value['total'],
+                     'cost' => $value['price'],
                      'subtotal_tax' =>  $value['subtotal_tax'],
                      'total_tax' =>  $value['total_tax'],
-                     'total_price' => floatval($value['quantity']) * floatval($value['total']),
+                     'total_price' => $value['subtotal'],
                      'weight' => $weight,
+                     'line_item_id' => $value['id']
                   ];
                }
             }
@@ -144,11 +145,20 @@ class OrderRepository implements OrderInterface
       return $this->model->select('users.*')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
-   public function getOrdersByIdUser($id, $distributeur = false){
-      $distributeurs_id = ['4996', '4997', '1707', '3550', '3594'];
+   public function getAllOrdersByIdUser($user_id){
+      return $this->model->select('*')->where('user_id', $user_id)->get();
+   }
+
+   public function getOrdersByIdUser($id, $distributeur_order = false){
+
+      // Liste des distributeurs
+      $distributeurs = DB::table('distributors')->select('customer_id')->get();
+      $distributeurs_id = [];
+      foreach($distributeurs as $distributeur){
+         $distributeurs_id[] = $distributeur->customer_id;
+      }
 
       $list = [];
-      $list2 = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       // $queryOrder = "CASE WHEN products_order.name LIKE '%20 ml' THEN 1 ";
@@ -173,7 +183,7 @@ class OrderRepository implements OrderInterface
 
 
       foreach($orders as $key => $order){
-         if($distributeur){
+         if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id)){
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
@@ -207,6 +217,8 @@ class OrderRepository implements OrderInterface
             }
          }
       }
+
+
 
       $list = array_values($list);
       return $list;
@@ -307,7 +319,7 @@ class OrderRepository implements OrderInterface
          } else {
             $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
             if(count($order) == 0){
-               $insert_order_by_user = $this->api->getOrderById($order_id, $user_id);
+               $insert_order_by_user = $this->api->getOrderById($order_id);
 
                $coupons = [];
                $discount = [];
@@ -329,7 +341,7 @@ class OrderRepository implements OrderInterface
                $ordersToInsert = [
                   'order_woocommerce_id' => $insert_order_by_user['id'],
                   'customer_id' => $insert_order_by_user['customer_id'],
-                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : null,
+                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
                   'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
                   'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
                   'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
@@ -379,11 +391,12 @@ class OrderRepository implements OrderInterface
                      'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
                      'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
                      'quantity' => $value['quantity'],
-                     'cost' => $value['total'],
+                     'cost' => $value['price'],
                      'subtotal_tax' =>  $value['subtotal_tax'],
                      'total_tax' =>  $value['total_tax'],
-                     'total_price' => floatval($value['quantity']) * floatval($value['total']),
+                     'total_price' => $value['subtotal'],
                      'weight' => $weight,
+                     'line_item_id' => $value['id']
                   ];
                }
 
@@ -395,7 +408,7 @@ class OrderRepository implements OrderInterface
          }
          return true;
       } catch(Exception $e){
-         return false;
+         return $e->getMessage();
       }
    }
 
@@ -463,6 +476,12 @@ class OrderRepository implements OrderInterface
        return null; // Si la clé n'est pas trouvée
    }
 
+   public function updateTotalOrders($data){
+      return $this->model->update([
+         'total_tax_order' => $data['total_tax'],
+         'total_order' => $data['total']
+      ]);
+   }
 }
 
 

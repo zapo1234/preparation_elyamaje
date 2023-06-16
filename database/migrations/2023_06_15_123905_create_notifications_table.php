@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDonsTable extends Migration
+class CreateNotificationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateDonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('dons_products', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
-            $table->integer('product_id');
-            $table->string('label');
-            $table->integer('quantity');
-            $table->float('real_price');
+            $table->integer('from_user');
+            $table->integer('to_user');
+            $table->string('type');
+            $table->string('detail');
+            $table->integer('order_id')->nullable();
+            $table->boolean('is_read')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ class CreateDonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dons');
+        Schema::dropIfExists('notifications');
     }
 }

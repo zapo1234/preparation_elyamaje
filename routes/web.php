@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Order;
 use App\Http\Controllers\Label;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Notification;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TiersController;
 
@@ -73,6 +74,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::put("/roles", [Admin::class, "updateRole"])->name('role.update');
     Route::delete("/roles", [Admin::class, "deleteRole"])->name('role.delete');
 
+     // CRUD Role
+     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
+     Route::post("/distributors", [Admin::class, "createDistributors"])->name('distributors.create');
+     Route::put("/distributors", [Admin::class, "updateDistributors"])->name('distributors.update');
+     Route::delete("/distributors", [Admin::class, "deleteDistributors"])->name('distributors.delete');
 });
 
 // PRÉPARATEUR
@@ -88,7 +94,6 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
 Route::group(['middleware' => ['auth', 'role:3']], function () {
     Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
     Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
-    Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
 });
 
 // CHEF D'ÉQUIPE
@@ -111,12 +116,24 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteAccount", [User::class, "deleteAccount"])->name('account.delete');
     Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
     Route::get("/user", [User::class, "getUser"])->name('account.user');
+    Route::post("/deleteOrderProducts", [Order::class, "deleteOrderProducts"])->name('deleteOrderProducts');
+    Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
+    Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
+    Route::post("/labels", [Label::class, "generateLabels"])->name('label.generate');
+
 });
+
+// TOUS LES ROLES
+Route::group(['middleware' =>  ['auth']], function () {
+    Route::get("/notifications", [Notification::class, "notificationRead"])->name('notification.read');
+
+});
+
 
 
 // ROLES NON DÉFINI 

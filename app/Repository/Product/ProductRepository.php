@@ -23,6 +23,10 @@ class ProductRepository implements ProductInterface
       return $this->model::all();
    }
 
+   public function getAllProductsPublished(){
+      return $this->model::select('*')->where('status', 'publish')->where('stock','>', 10)->get();
+   }
+
    public function insertProductsOrUpdate($products){
       try{
          // Récupère les produits déjà existants
@@ -46,19 +50,26 @@ class ProductRepository implements ProductInterface
                $difference = [];
                foreach ($products as $item1) {
                   $found = false;
+
                   foreach ($products_exists as $item2) {
-                     if ($item1['name'] === $item2['name'] && $item1['product_woocommerce_id'] === $item2['product_woocommerce_id']) {
-                           $found = true;
-                           break;
+                     if ($item1['product_woocommerce_id'] == $item2['product_woocommerce_id']) {
+                           if($item1 != $item2){
+                              $found = false;
+                              break;
+                           } else {
+                              $found = true;
+                              break;
+                           }
                      }
                   }
-         
+                  
                   if (!$found) {
                      $difference[] = $item1;
                   }
                }
 
                if (!empty($difference)) {
+
                   foreach ($difference as $diff) {
                     
                      try{

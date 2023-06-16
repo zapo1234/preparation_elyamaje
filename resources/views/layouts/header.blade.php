@@ -1,4 +1,39 @@
 <header>
+        @php
+            use App\Models\Notification;
+            $notification = Notification::where('to_user', Auth()->user()->id)->where('is_read', 0)->get();
+            $count_notif = 0;
+            $lists = [];
+
+            foreach($notification as $not) {
+                $count_notif = $count_notif + 1;
+                $lists[] = [
+                    'from_user' => $not['from_user'],
+                    'to_user' => $not['to_user'],
+                    'type' => __('status.'.$not['type']),
+                    'order_id' => $not['order_id'],
+                    'date' => $not['created_at']->diff(date('Y-m-d H:i:s')),
+                    'detail' => $not['detail']
+                ];
+            }
+
+            if($count_notif > 99){
+                $count_notif = "99+";
+            }
+
+            function format_interval(DateInterval $interval) {
+                $result = "";
+
+                if ($interval->y) { $result = $interval->format("%y ans "); }
+                if ($interval->m) { $result .= $interval->format("%m mois "); }
+                if ($interval->d && (!$interval->m && !$interval->y)) { $result .= $interval->format("%d jours "); }
+                if ($interval->h && (!$interval->m && !$interval->y)) { $result .= $interval->format("%h heures "); }
+                if ($interval->i && (!$interval->d && !$interval->m && !$interval->y)) { $result .= $interval->format("%i minutes "); }
+                if ($interval->s && (!$interval->h && !$interval->d && !$interval->i)) { $result .= $interval->format("%s secondes "); }
+
+                return $result;
+            }
+        @endphp 
 
             <div class="topbar d-flex align-items-center">
                 <nav class="navbar navbar-expand">
@@ -14,7 +49,7 @@
                     <div class="top-menu ms-auto">
                         <ul class="navbar-nav align-items-center">
                             <li class="nav-item dropdown dropdown-large">
-                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <span class="alert-count"></span>
+                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <span class="alert-count">{{ $count_notif }}</span>
                                     <i class='bx bx-bell'></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
@@ -25,22 +60,26 @@
                                         </div>
                                     </a>
                                     <div class="header-notifications-list">
-                                        <!-- <a class="dropdown-item" href="javascript:;">
-                                            <div class="d-flex align-items-center">
-                                                <div class="notify bg-light-primary text-primary"><i class="bx bx-group"></i>
+                                        @foreach($lists as $list)
+                                            <a class="dropdown-item notification_list" href="javascript:;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="notify bg-warning text-primary"><i class="text-light bx bx-box"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="msg-name">{{ $list['type'] }}</h6>
+                                                        <span class="msg-info">{{ $list['detail'] }}</span>
+                                                    </div>
+                                                    
                                                 </div>
-                                                <div class="flex-grow-1">
-                                                    <h6 class="msg-name">New Customers<span class="msg-time float-end">14 Sec
-                                                ago</span></h6>
-                                                    <p class="msg-info">5 new user registered</p>
+                                                <div class="w-100 d-flex justify-content-end">
+                                                    <span class="msg-time float-end">{{ format_interval($list['date']) }}</span>
                                                 </div>
-                                            </div>
-                                        </a> -->
-                                    
+                                            </a>
+                                        @endforeach
                                     </div>
-                                    <a href="javascript:;">
+                                    <!-- <a href="javascript:;">
                                         <div class="text-center msg-footer">Voir toutes les notifications</div>
-                                    </a>
+                                    </a> -->
                                 </div>
                             </li>
                         </ul>
@@ -65,6 +104,8 @@
 
 
 
+
+        
 
 
 

@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
@@ -16,6 +15,7 @@ use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -33,7 +33,8 @@ class Order extends BaseController
     private $colissimo;
     private $label;
     private $product;
-
+    private $productOrder;
+    private $notification;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -42,7 +43,9 @@ class Order extends BaseController
     CreatePdf $pdf,
     Colissimo $colissimo,
     LabelRepository $label,
-    ProductOrderRepository $product
+    ProductOrderRepository $product,
+    ProductOrderRepository $productOrder,
+    NotificationRepository $notification
     ){
       $this->api = $api;
       $this->user = $user;
@@ -53,6 +56,8 @@ class Order extends BaseController
       $this->colissimo = $colissimo;
       $this->label = $label;
       $this->product = $product;
+      $this->productOrder = $productOrder;
+      $this->notification = $notification;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -97,8 +102,8 @@ class Order extends BaseController
             } else {
               $orders[$key]['user_id'] = null;
               $orders[$key]['name'] = "Non attribuée";
-              $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
-              $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+              $orders[$key]['status'] =  $orders[$key]['status'];
+              $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
             }
   
           }
@@ -216,16 +221,27 @@ class Order extends BaseController
 
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
+            $from_user = Auth()->user()->id;
             foreach($leader as $lead){
                 $email = $lead['email'];
                 $name = $lead['name'];
 
+                // Insert dans notification
+                $data = [
+                  'from_user' => $from_user,
+                  'to_user' => $lead['user_id'],
+                  'type' => 'partial_prepared_order',
+                  'order_id' => $order_id,
+                  'detail' => "La commande #".$order_id." est incomplète"
+                ];
+                $this->notification->insert($data);
+
                 //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                // Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
-                //     $message->to($email);
-                //     $message->from('no-reply@elyamaje.com');
-                //     $message->subject('Commande incomplète');
-                // });
+                Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Commande incomplète');
+                });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);
@@ -261,7 +277,9 @@ class Order extends BaseController
       if($order_id && $user_id){
         $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
         $number_order_attributed = $this->order->getOrdersByUsers();
+
         echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
+      
       } else {
         echo json_encode(["success" => false]);
       }
@@ -271,8 +289,22 @@ class Order extends BaseController
     public function updateOrderStatus(Request $request){
       $order_id = $request->post('order_id');
       $status = $request->post('status');
+      $user_id = $request->post('user_id');
+
 
       if($order_id && $status){
+
+        if($status == "waiting_validate"){
+          $data = [
+            'from_user' => Auth()->user()->id,
+            'to_user' => $user_id,
+            'type' => 'partial_prepared_order_validate',
+            'order_id' => $order_id,
+            'detail' => "Vous pouvez reprendre la commande #".$order_id
+          ];
+
+          $this->notification->insert($data);
+        }
         $number_order_attributed = $this->order->getOrdersByUsers();
         echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
       } else {
@@ -284,8 +316,9 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
            
         // $order_id = $request->post('order_id');
-        $order_id = 64826; // Données de test
+        $order_id = 64922; // Données de test
         $order = $this->order->getOrderById($order_id);
+
         if($order){
 
             $order_new_array = [];
@@ -344,6 +377,7 @@ class Order extends BaseController
 
             }
 
+
             $order_new_array =  $order[0];
             $order_new_array['line_items'] = $products['line_items'];
             $order_new_array['billing'] = $billing;
@@ -351,7 +385,6 @@ class Order extends BaseController
          
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
-
             // envoi des données pour créer des facture via api dolibar....
              $this->factorder->Transferorder($orders);
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
@@ -427,6 +460,46 @@ class Order extends BaseController
       // Générer mon pdf
       $this->pdf->generateHistoryOrders($histories, $date);
       return redirect()->back();
+    }
+
+    public function deleteOrderProducts(Request $request){
+      $order_id = $request->post('order_id');
+      $line_item_id = $request->post('line_item_id');
+      $increase = $request->post('increase');
+      $quantity = $request->post('quantity');
+      $product_id = $request->post('product_id');
+
+
+      //Supprimer de ma base en local le produit lié à la commande
+      $delete_product = $this->productOrder->deleteProductOrderByLineItem($order_id, $line_item_id);
+      //Supprimer de la commande via api woocommerce
+      $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
+
+      if($delete){
+        echo json_encode(['success' => true, 'order' => $delete]);
+      } else {
+        echo json_encode(['success' => false]);
+      }
+    }
+
+    public function addOrderProducts(Request $request){
+      $order_id = $request->post('order_id');
+      $product = $request->post('product');
+      $quantity = $request->post('quantity');
+
+      if($quantity < 1){
+        $quantity = 1;
+      }
+
+      $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
+
+      if($product_order_woocommerce){
+        $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
+
+        echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
+      } else {
+        echo json_encode(['success' => false]); 
+      }
     }
 }
 
