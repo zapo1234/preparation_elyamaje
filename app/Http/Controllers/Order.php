@@ -368,7 +368,8 @@ class Order extends BaseController
             // Génération de l'étiquette colissimo
             // return $this->generateLabel($orders);
         } else {
-            return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
+           dd('echec');
+          //return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
         }
     }
 

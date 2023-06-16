@@ -15,6 +15,16 @@ class DonRepository implements DonInterface
    public function __construct(Dons $model){
       $this->model = $model;
    }
+
+   public function getdatauser()
+   {
+
+   }
+
+   public function getchiffredons()
+   {
+      
+   }
 }
 
 
