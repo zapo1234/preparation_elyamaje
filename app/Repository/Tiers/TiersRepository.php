@@ -69,8 +69,7 @@ class TiersRepository implements TiersInterface
         $lists = json_decode($data,true);
         $list_code =[];
         
-        foreach($lists as $key =>  $values)
-        {
+        foreach($lists as $key =>  $values){
             $list_code[$values['socid']] = $key;
         }
           return $list_code;
