@@ -400,7 +400,7 @@ class Order extends BaseController
             // envoi des données pour créer des facture via api dolibar....
 
             // if($request->post('from_label') != "true"){
-            //   $this->factorder->Transferorder($orders);
+              $this->factorder->Transferorder($orders);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
                 // $this->order->updateOrdersById([$order_id], "finished");
@@ -415,15 +415,12 @@ class Order extends BaseController
             // }
 
          
-       
-            // Génération de l'étiquette colissimo
-
             // Génère l'étiquette ou non
-            if($request->post('label') == "true"){
-              return $this->generateLabel($orders);
-            } else {
-              echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
-            }
+            // if($request->post('label') == "true"){
+            //   return $this->generateLabel($orders);
+            // } else {
+            //   echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+            // }
         } else {
             echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
             // return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');

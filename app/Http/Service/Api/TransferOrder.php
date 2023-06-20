@@ -197,7 +197,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+            dd($orders);
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
@@ -307,8 +307,7 @@ class TransferOrder
                               $data_infos_user =[];
                             }else{
 
-                                   foreach($data as $valu)
-                                   {
+                                   foreach($data as $valu){
                                      $nom =$valu['nom'];
                                      $email = $valu['email'];
                                    }
@@ -387,17 +386,19 @@ class TransferOrder
 
                                                   
                                                 }
-                                         
-                                             $data_product[] = [
+                                              
+                                              $tva_product = 20;
+                                               $data_product[] = [
                                               "multicurrency_subprice"=> floatval($values['subtotal']),
                                               "multicurrency_total_ht" => floatval($values['subtotal']),
                                               "multicurrency_total_tva" => floatval($values['total_tax']),
                                               "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                              "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                              "product_label" =>$values['name'],
-                                              "qty" => $values['quantity'],
-                                              "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                              "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                               "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                               "product_label" =>$values['name'],
+                                               "qty" => $values['quantity'],
+                                               "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                               "tva_tx" => $tva_product,
+                                                "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
                                      }
