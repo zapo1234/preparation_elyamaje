@@ -94,6 +94,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
 Route::group(['middleware' => ['auth', 'role:3']], function () {
     Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
     Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+    Route::get("/checkExpedition", [Order::class, "checkExpedition"])->name('checkExpedition');
 });
 
 // CHEF D'ÉQUIPE
@@ -124,8 +125,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
-    Route::post("/labels", [Label::class, "generateLabels"])->name('label.generate');
-
+    Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
+    Route::post("/labelDelete", [Label::class, "labelDelete"])->name('label.delete');
+    Route::get("/bordereaux", [Label::class, "bordereaux"])->name('bordereaux');
+    Route::post("/generateBordereau", [Label::class, "generateBordereau"])->name('bordereau.generate');
+    Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
 });
 
 // TOUS LES ROLES
@@ -134,13 +138,10 @@ Route::group(['middleware' =>  ['auth']], function () {
 
 });
 
-
-
 // ROLES NON DÉFINI 
 Route::group(['middleware' =>  ['auth', 'role:5']], function () {
     Route::get("/noRole", [User::class, "noRole"])->name('noRole');
 });
-
 
 // Connexion & Déconnexion
 Route::get("/login", [Auth::class, "login"])->name('login');
@@ -159,10 +160,4 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
-
-
-
-
-
-
 

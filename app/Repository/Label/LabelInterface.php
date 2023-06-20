@@ -11,6 +11,13 @@ interface LabelInterface
    public function getLabels();
 
    public function getLabelById($label);
+
+   public function getParcelNumbersyDate($date);
+
+   public function saveBordereau($bordereau_id, $parcelNumbers_array);
+
+   public function deleteLabelById($label_id);
+
 }
 
 

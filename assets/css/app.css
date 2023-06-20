@@ -6783,6 +6783,7 @@ select:focus, input:focus{
 .date_bordereau_input{
 	padding: 10px;
     width: 250px;
+	border: 1px solid #dee2e6;
 }
 
 .notification_list:focus, 
@@ -6797,4 +6798,18 @@ select:focus, input:focus{
 
 .notification_list .notify{
 	min-width: 45px !important;
+}
+
+.download_label_button{
+	border: none;
+	background-color: transparent;
+	transition: 0.3s;
+}
+
+.download_label_button:hover{
+	color: red;
+}
+
+.download_label_button i{
+	margin-right: 8px;
 }

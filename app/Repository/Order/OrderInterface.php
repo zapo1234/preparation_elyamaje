@@ -8,6 +8,8 @@ interface OrderInterface
 {
    public function getOrderById($order_id);
 
+   public function getOrderAndLabel();
+
    public function insertOrdersByUsers($array_user);
 
    public function getOrdersByUsers();

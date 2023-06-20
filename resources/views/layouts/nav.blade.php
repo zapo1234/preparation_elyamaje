@@ -39,11 +39,17 @@
                 </a>
             </li>
             <li>
-                <a href="{{ url('labels') }}">
+                <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='lni lni-delivery'></i>
                     </div>
-                    <div class="menu-title">Étiquettes</div>
+                    <div class="menu-title">Colissimo</div>
                 </a>
+                <ul>
+                    <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
+                    </li>
+                    <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
+                    </li>
+                </ul>
             </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
@@ -122,6 +128,8 @@
                 </a>
                 <ul>
                     <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
+                    </li>
+                    <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
                     </li>
                 </ul>
             </li>

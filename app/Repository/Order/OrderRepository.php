@@ -48,6 +48,8 @@ class OrderRepository implements OrderInterface
 
             // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
             $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
+            $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+
 
             if(isset($orderData['cart_hash'])){
                $ordersToInsert[] = [
@@ -85,7 +87,9 @@ class OrderRepository implements OrderInterface
                   'user_id' => $userId,
                   'status' => $orderData['status'],
                   'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
+                  'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
                   'product_code' => $productCode,
+                  'pick_up_location_id' => $pickUpLocationId,
                ];
                
 
@@ -335,6 +339,7 @@ class OrderRepository implements OrderInterface
 
                // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
                $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
+               $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
 
 
                // Insert commande
@@ -371,7 +376,9 @@ class OrderRepository implements OrderInterface
                   'user_id' => $user_id,
                   'status' => $insert_order_by_user['status'],
                   'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
+                  'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
                   'product_code' => $productCode,
+                  'pick_up_location_id' => $pickUpLocationId
                ];
 
                // Insert produits
@@ -420,6 +427,12 @@ class OrderRepository implements OrderInterface
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
       ->get()
       ->toArray();
+   }
+
+   public function getOrderAndLabel(){
+      return $this->model::select('orders.*', 'labels.label', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.id as label_id')
+      ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id')
+      ->get();
    }
    
    public function getHistoryByUser($user_id){

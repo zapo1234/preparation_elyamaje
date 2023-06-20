@@ -30,7 +30,7 @@
 					<div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
-								<form method="POST" action="{{ route('label.generate') }}">
+								<form method="POST" action="{{ route('bordereau.generate') }}">
 									@csrf
 									<div class="modal-body">
 										<h2 class="text-center">Choisir la date</h2>
@@ -60,46 +60,110 @@
 						</div>
 					@endif
 
+					<div class="show_messages"></div>
+
 					<div class="row">
 						<div class="card card_table_mobile_responsive">
 							<div class="card-body">
-								<table id="example" class="table_mobile_responsive w-100 table table-striped table-bordered">
+								<div class="d-flex justify-content-center">
+									<div class="loading spinner-border text-dark" role="status"> 
+										<span class="visually-hidden">Loading...</span>
+									</div>
+								</div>
+								<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 									<thead>
 										<tr>
 											<th>Commande</th>
 											<th>Status</th>
-											<th>N° de suivi</th>
 											<th>Date</th>
 											<th class="col-md-2">Étiquette</th>
 										</tr>
 									</thead>
 									<tbody>
-										@foreach($labels as $key => $label)
+										@foreach($orders_labels as $key => $label)
 											<tr>
-												<td>
-													<div class="d-flex justify-content-between">
-														<span>{{ $label->order_id }}</span>
-														@if($key == 0)
-															<span class="rounded-pill badge bg-danger">New</span>
-														@endif
+												<td data-label="Commande">
+													<span>{{ $label->order_woocommerce_id }}</span>
+												</td>
+												<td data-label="Status">
+													<span class="badge bg-light-{{ $label->status }} text-light">{{ __('status.'.$label->status) }}</span>
+												</td>
+												<td data-label="Date">{{ date("d-m-Y", strtotime($label->date)) }}</td>
+												<td data-label="Étiquette">
+													@if($label->label)
+													<div class="d-flex w-100 align-items-center justify-content-between">
+														<div>
+															<form method="POST" action="{{ route('label.show') }}">
+																@csrf
+																<input name="label_id" type="hidden" value="{{ $label->label_id }}">
+																<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label->tracking_number }}</button>
+															</form>
+															<form method="POST" action="{{ route('label.download') }}">
+																@csrf
+																<input name="label_id" type="hidden" value="{{ $label->label_id }}">
+																<input name="order_id" type="hidden" value="{{ $label->order_woocommerce_id }}">
+																<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label->tracking_number }}</button>
+															</form>
+														</div>
+														<div>
+															<button data-order="{{ $label->order_woocommerce_id }}" data-label="{{ $label->label_id }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+														</div>
 													</div>
-												</td>
-												<td>
-													<span class="badge bg-{{ $label->status }} text-light">{{ $label->status }}</span>
-												</td>
-												<td>{{ $label->tracking_number }}</td>
-												<td>{{ $label->created_at->format('d/m/Y') }}</td>
-												<td data-label="PDF">
-													<form method="POST" action="{{ route('label.download') }}">
-														@csrf
-														<input name="label_id" type="hidden" value="{{ $label->id }}">
-														<button type="submit" class="btn btn-outline-danger px-5"><i class="bx bx-file"></i>Voir</button>
-													</form>
+													
+													
+													@else 
+														<div>
+															<button data-order="{{ $label->order_woocommerce_id }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+														</div>
+													@endif
 												</td>
 											</tr>
 										@endforeach
 									</tbody>
 								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Modal supression -->
+			<div class="modal fade" id="deleteLabelModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<h2 class="text-center">Voulez-vous supprimer cette étiquette ?</h2>
+							<form method="POST" action="{{ route('label.delete') }}">
+								@csrf
+								<input id="label_id_to_delete" name="label_id" type="hidden" value="">
+								<input id="order_id_label" name="order_id" type="hidden" value="">
+								<div class="d-flex justify-content-center mt-3 w-100">
+									<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+									<button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Oui</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- Modal generate label -->
+			<div class="modal fade" id="generateLabelModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<h2 class="text-center">Voulez-vous générer une étiquette pour cette commande ?</h2>
+							<input id="order_id_to_create_label" name="order_id" type="hidden" value="">
+							<div class="modal_generate_label_button d-flex justify-content-center mt-3 w-100">
+								<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+								<button style="margin-left:15px" type="submit" class="valid_generate_label btn btn-dark px-5">Oui</button>
+							</div>
+							<div class="d-none loading_generate_label w-100 d-flex justify-content-center">
+								<div class="spinner-border text-dark" role="status"> 
+									<span class="visually-hidden">Loading...</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -114,19 +178,61 @@
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
+
 		<script>
 
-
-		$(document).ready(function() {
-			$('#example').DataTable({
-				order: [[3, 'desc']],
+			$(document).ready(function() {
+				$('#example').DataTable({
+					"order": [[3, 'desc']],
+					"initComplete": function(settings, json) {
+						$(".loading").hide()
+						$("#example").removeClass('d-none')
+					}
+				})
 			})
-		})
 
-		$("#show_modal_bordereau").on('click', function(){
-			$("#modalBordereau").modal('show')
-		})
+			$("#show_modal_bordereau").on('click', function(){
+				$("#modalBordereau").modal('show')
+			})
 
+			$(".delete_label").on('click', function(){
+				$("#label_id_to_delete").val($(this).attr('data-label'))
+				$("#order_id_label").val($(this).attr('data-order'))
+				$("#deleteLabelModalCenter").modal('show')
+			})
+
+
+			$(".generate_label_button").on('click', function(){
+				$("#order_id_to_create_label").val($(this).attr('data-order'))
+				$("#generateLabelModalCenter").modal('show')
+			})
+
+			$(".valid_generate_label").on('click', function(){
+
+				$(".loading_generate_label").removeClass('d-none')
+				$(".modal_generate_label_button").addClass('d-none')
+
+				$.ajax({
+                    url: "{{ route('validWrapOrder') }}",
+                    metho: 'POST',
+                    data : {_token: $('input[name=_token]').val(), order_id: $("#order_id_to_create_label").val(), label: true, from_label: true},
+                    dataType: 'html' 
+                }).done(function(data) {
+                    if(JSON.parse(data).success){
+						location.reload()
+                    } else {
+                        $(".show_messages").prepend(`
+                            <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                                <div class=" text-white">`+JSON.parse(data).message+`</div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `)
+                    }
+					$(".loading_generate_label").addClass('d-none')
+					$(".modal_generate_label_button").removeClass('d-none')
+					$("#generateLabelModalCenter").modal('hide')
+                })
+			})
 
 		</script>
 	@endsection

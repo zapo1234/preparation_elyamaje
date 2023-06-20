@@ -22,6 +22,7 @@ class LabelRepository implements LabelInterface
          'order_id' => $label['order_id'],
          'label' => $label['label'],
          'tracking_number' => $label['tracking_number'],
+         'created_at' => date('Y-m-d H:i:s')
      ]);
    }
 
@@ -33,6 +34,18 @@ class LabelRepository implements LabelInterface
 
    public function getLabelById($label){
       return $this->model::select('label')->where('id', $label)->get();
+   }
+
+   public function getParcelNumbersyDate($date){
+      return $this->model::select('tracking_number')->where('bordereau_id', null)->where('created_at', 'LIKE', '%'.$date.'%')->get();
+   }
+
+   public function saveBordereau($bordereau_id, $parcelNumbers_array){
+      return $this->model::whereIn('tracking_number', $parcelNumbers_array)->update(['bordereau_id' => $bordereau_id]);
+   }
+
+   public function deleteLabelById($label_id){
+      return $this->model::where('id', $label_id)->delete();
    }
 }
 

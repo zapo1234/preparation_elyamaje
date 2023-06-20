@@ -312,11 +312,23 @@ class Order extends BaseController
       }
     }
 
+    public function checkExpedition(Request $request){
+      $order_id = $request->get('order_id');
+      $order = $this->order->getOrderById($order_id);
+
+      if($order){
+        echo json_encode(['success' => true, 'order' => $order[0]]);
+      } else {
+        echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
+      }
+     
+    }
+
 
     public function validWrapOrder(Request $request){
-           
+          
         // $order_id = $request->post('order_id');
-        $order_id = 64922; // Données de test
+        $order_id = 64974; // Données de test
         $order = $this->order->getOrderById($order_id);
 
         if($order){
@@ -386,22 +398,35 @@ class Order extends BaseController
             // recupérer les function d'ecriture  et création de client et facture dans dolibar.
             $orders[] = $order_new_array;
             // envoi des données pour créer des facture via api dolibar....
-             $this->factorder->Transferorder($orders);
-            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-            // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-            // $this->order->updateOrdersById([$order_id], "finished");
-            // Insert la commande dans histories
-            // $data = [
-            //   'order_id' => $order_id,
-            //   'user_id' => Auth()->user()->id,
-            //   'status' => 'finished',
-            //   'poste' => Auth()->user()->poste
-            // ];
-            // $this->history->save($data);
+
+            // if($request->post('from_label') != "true"){
+            //   $this->factorder->Transferorder($orders);
+                // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+                // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+                // $this->order->updateOrdersById([$order_id], "finished");
+                // Insert la commande dans histories
+                // $data = [
+                //   'order_id' => $order_id,
+                //   'user_id' => Auth()->user()->id,
+                //   'status' => 'finished',
+                //   'poste' => Auth()->user()->poste
+                // ];
+                // $this->history->save($data);
+            // }
+
+         
+       
             // Génération de l'étiquette colissimo
-            // return $this->generateLabel($orders);
+
+            // Génère l'étiquette ou non
+            if($request->post('label') == "true"){
+              return $this->generateLabel($orders);
+            } else {
+              echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+            }
         } else {
-            return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
+            echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
+            // return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
         }
     }
 
@@ -419,23 +444,23 @@ class Order extends BaseController
         $weight = 0; // Kg
 
         foreach($order[0]['line_items'] as $or){
-
           $weight = $weight + ($or['weight'] *$or['quantity']);
         } 
-        
+
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
         // $label['label'] = file_get_contents('labelPDF.pdf');
-    
+
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
           if($this->label->save($label)){
-            $headers = [
-              'Content-Type' => 'application/pdf',
-            ];
-            return Response::make($label['label'] , 200, $headers);
+            if($label['label']){
+              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+            } 
+          } else {
+            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
           }
         } else {
-          return redirect()->back()->with('error', $label);
+          echo json_encode(['success' => false, 'message'=> $label]);
         }
       }
     }
