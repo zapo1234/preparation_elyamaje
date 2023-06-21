@@ -18,6 +18,7 @@ interface LabelInterface
 
    public function deleteLabelById($label_id);
 
+   public function updateLabelBordereau($parcel_number);
 }
 
 

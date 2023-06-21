@@ -30,25 +30,25 @@
                                     <div class="form_valid_wrap_order row g-3">
                                         <div class="col-md-3">
                                             <label for="order_id" class="form-label">N° Commande</label>
-                                            <input type="text" name="order_id" class="order_input form-control" id="order_id">
+                                            <input required type="text" name="order_id" class="order_input form-control" id="order_id">
                                         </div>
                                         <div class="col-md-3">
                                             <label for="product_count" class="form-label">Nombre de produit(s)</label>
-                                            <input type="number" name="product_count" class="order_input form-control" id="product_count">
+                                            <input required type="number" name="product_count" class="order_input form-control" id="product_count">
                                         </div>
 
                                         <div class="col-md-3">
                                             <label for="customer" class="form-label">Client</label>
-                                            <input type="text" name="customer" class="order_input form-control" id="customer">
+                                            <input required type="text" name="customer" class="order_input form-control" id="customer">
                                         </div>
 
                                         <div class="col-md-3">
                                             <label for="preparateur" class="form-label">Préparateur</label>
-                                            <input type="text" name="preparateur" class="order_input form-control" id="preparateur">
+                                            <input required type="text" name="preparateur" class="order_input form-control" id="preparateur">
                                         </div>
                                         
                                         <div class="col-12">
-                                            <button  type="button" class="validate_order btn btn-primary px-5">Valider</button>
+                                            <button disabled type="button" class="validate_order btn btn-primary px-5">Valider</button>
                                         </div>
                                     </div>
                                 </div>

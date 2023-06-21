@@ -25,24 +25,23 @@
             </div>
 
 
-
             <!-- Modal Génération Bordereau par date -->
             <div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('bordereau.generate') }}">
-                            @csrf
-                            <div class="modal-body">
+                        <div class="modal-body">
+                            <form method="POST" action="{{ route('bordereau.generate') }}">
+                                @csrf
                                 <h2 class="text-center">Choisir la date</h2>
                                 <div class="d-flex justify-content-center w-100">
                                     <input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                <button type="submit" class="btn btn-primary">Générer</button>
-                            </div>
-                        </form>
+                                <div class="d-flex justify-content-center mt-3 w-100">
+                                    <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+                                    <button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Générer</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,26 +62,36 @@
             <div class="row">
                 <div class="card card_table_mobile_responsive">
                     <div class="card-body">
-                        <table id="example" class="table_mobile_responsive w-100 table table-striped table-bordered">
+                        <div class="d-flex justify-content-center">
+                            <div class="loading spinner-border text-dark" role="status"> 
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Nombre de commandes</th>
-                                    <th class="col-md-2">Bordereau</th>
+                                    <th class="col-md-2">Nombre de commandes</th>
+                                    <th class="col-md-3">Bordereau</th>
                                 </tr>
                             </thead>
                             <tbody>
 
                                 @foreach($bordereaux as $bordereau)
                                     <tr>
-                                        <td>{{ $bordereau['created_at'] }}</td>
-                                        <td>{{ $bordereau['number_order'] }}</td>
-                                        <td data-label="PDF">
-                                            <form method="POST" action="{{ route('bordereau.download') }}">
-                                                @csrf
-                                                <input name="bordereau_id" type="hidden" value="{{ $bordereau['parcel_number'] }}">
-                                                <button type="submit" class="btn btn-outline-danger px-5"><i class="bx bx-file"></i>Voir</button>
-                                            </form>
+                                        <td data-label="Date">{{ $bordereau['created_at'] }}</td>
+                                        <td data-label="Nombre de commandes">{{ $bordereau['number_order'] }}</td>
+                                        <td data-label="Bordereau">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <form method="POST" action="{{ route('bordereau.download') }}">
+                                                    @csrf
+                                                    <input name="bordereau_id" type="hidden" value="{{ $bordereau['parcel_number'] }}">
+                                                    <button type="submit" class="download_bordereau_button"><i class="bx bx-show-alt"></i>Bordereau n°{{ $bordereau['parcel_number'] }} <span class="label_created_at text-secondary">({{ $bordereau['created_at'] }})</span></button>
+                                                </form>
+                                                <div>
+                                                    <button title="Supprimer le bordereau" data-id="{{ $bordereau['parcel_number'] }}" type="submit" class="delete_bordereau download_label_button"><i class="bx bx-trash"></i></button>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -93,6 +102,26 @@
             </div>
         </div>
     </div>
+
+
+    	<!-- Modal supression -->
+        <div class="modal fade" id="deleteBordereauModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h2 class="text-center">Voulez-vous supprimer ce bordereau ?</h2>
+                        <form method="POST" action="{{ route('bordereau.delete') }}">
+                            @csrf
+                            <input id="bordereau_parcel_number_to_delete" name="parcel_number" type="hidden" value="">
+                            <div class="d-flex justify-content-center mt-3 w-100">
+                                <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+                                <button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Oui</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 @endsection
 
@@ -107,12 +136,20 @@
 
         $(document).ready(function() {
             $('#example').DataTable({
-                order: [[3, 'desc']],
+                "initComplete": function(settings, json) {
+                    $(".loading").hide()
+                    $("#example").removeClass('d-none')
+                }
             })
         })
 
         $("#show_modal_bordereau").on('click', function(){
             $("#modalBordereau").modal('show')
+        })
+
+        $(".delete_bordereau").on('click', function(){
+            $("#bordereau_parcel_number_to_delete").val($(this).attr('data-id'))
+            $("#deleteBordereauModalCenter").modal('show')
         })
 
 

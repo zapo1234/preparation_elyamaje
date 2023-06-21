@@ -10,6 +10,8 @@ interface BordereauInterface
     public function save($bordereau_id, $bordereau);
 
     public function getBordereauById($id);
+
+    public function deleteBordereauByParcelNumber($parcel_number);
 }
 
 

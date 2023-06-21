@@ -5355,8 +5355,19 @@ input::placeholder {
 	}
 
 	#example_length, #example_length label, 
-	#example_length label select{
+	#example_length label select, 
+	.select2_custom .selection,
+	.select2_custom .select2-selection{
 		height: 100% !important;
+	}
+
+	.select2_custom .select2-selection{
+		display: flex;
+		align-items: center;
+	}
+
+	.select2_custom .select2-container--default .select2-selection--single .select2-selection__arrow{
+		top: 10px !important;
 	}
 
 	.list_role_user {
@@ -5713,26 +5724,6 @@ input::placeholder {
 
 
 @media screen and (max-width: 991px) {
-
-	.ms-auto-responsive{
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		margin-bottom: 15px;
-		margin-top: 15px;
-	}
-
-	.page-breadcrumb .ps-3{
-		padding-left: 0px !important
-	}
-	
-	.page-breadcrumb .pe-3{
-		padding-right: 0px !important
-	}
-
-	.breadcrumb-title{
-		border: none !important;
-	}
 
 	.section-authentication-signin {
 
@@ -6104,6 +6095,14 @@ input::placeholder {
   }
 
 @media screen and (max-width: 950px) {
+
+	.ms-auto-responsive{
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		margin-bottom: 15px;
+		margin-top: 15px;
+	}
 
 	.team_board {
 		padding: 0px 22px 0px 22px !important;
@@ -6800,16 +6799,28 @@ select:focus, input:focus{
 	min-width: 45px !important;
 }
 
-.download_label_button{
+.download_label_button,
+.download_bordereau_button{
 	border: none;
 	background-color: transparent;
 	transition: 0.3s;
 }
 
-.download_label_button:hover{
+.download_label_button:hover,
+.download_bordereau_button:hover{
 	color: red;
 }
 
-.download_label_button i{
+.download_label_button i,
+.download_bordereau_button i{
 	margin-right: 8px;
+}
+
+.label_created_at{
+	font-size: 12px;
+}
+
+.select2_custom .select2-selection{
+	height: 31px;
+	border: 1px solid #ced4da
 }

@@ -132,25 +132,22 @@ class Colissimo
 
     public function generateBordereauByParcelsNumbers($parcelNumbers_array){
 
-
             $request = [
                 'contractNumber'                    => config('app.colissimo_contractNumber'),
                 'password'                          => config('app.colissimo_password'),
                 'generateBordereauParcelNumberList' => [
-                    'parcelsNumbers' => [
-                        implode(',',$parcelNumbers_array)
-                    ]
+                    'parcelsNumbers' => $parcelNumbers_array
                 ]
             ];
 
 
-          
             try {
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateBordereauByParcelsNumbers";
     
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $request);
+
 
                 preg_match('/--(.*)\b/', $response, $boundary);
     

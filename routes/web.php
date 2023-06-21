@@ -127,6 +127,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
     Route::post("/labelDelete", [Label::class, "labelDelete"])->name('label.delete');
+    Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::get("/bordereaux", [Label::class, "bordereaux"])->name('bordereaux');
     Route::post("/generateBordereau", [Label::class, "generateBordereau"])->name('bordereau.generate');
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');

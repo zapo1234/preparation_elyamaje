@@ -47,6 +47,10 @@ class LabelRepository implements LabelInterface
    public function deleteLabelById($label_id){
       return $this->model::where('id', $label_id)->delete();
    }
+
+   public function updateLabelBordereau($bordereau_id){
+      return $this->model::where('bordereau_id', $bordereau_id)->update(['bordereau_id' => null]);
+   }
 }
 
 

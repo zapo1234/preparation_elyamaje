@@ -24,25 +24,23 @@
 						</div>
 					</div>
 
-
-
 					<!-- Modal Génération Bordereau par date -->
 					<div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
-								<form method="POST" action="{{ route('bordereau.generate') }}">
-									@csrf
-									<div class="modal-body">
+								<div class="modal-body">
+									<form method="POST" action="{{ route('bordereau.generate') }}">
+										@csrf
 										<h2 class="text-center">Choisir la date</h2>
 										<div class="d-flex justify-content-center w-100">
 											<input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
 										</div>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-										<button type="submit" class="btn btn-primary">Générer</button>
-									</div>
-								</form>
+										<div class="d-flex justify-content-center mt-3 w-100">
+											<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+											<button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Générer</button>
+										</div>
+									</form>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -88,29 +86,27 @@
 												<td data-label="Status">
 													<span class="badge bg-light-{{ $label->status }} text-light">{{ __('status.'.$label->status) }}</span>
 												</td>
-												<td data-label="Date">{{ date("d-m-Y", strtotime($label->date)) }}</td>
+												<td data-label="Date">{{ date("d/m/Y", strtotime($label->date)) }}</td>
 												<td data-label="Étiquette">
 													@if($label->label)
-													<div class="d-flex w-100 align-items-center justify-content-between">
-														<div>
-															<form method="POST" action="{{ route('label.show') }}">
-																@csrf
-																<input name="label_id" type="hidden" value="{{ $label->label_id }}">
-																<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label->tracking_number }}</button>
-															</form>
-															<form method="POST" action="{{ route('label.download') }}">
-																@csrf
-																<input name="label_id" type="hidden" value="{{ $label->label_id }}">
-																<input name="order_id" type="hidden" value="{{ $label->order_woocommerce_id }}">
-																<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label->tracking_number }}</button>
-															</form>
+														<div class="d-flex w-100 align-items-center justify-content-between">
+															<div>
+																<form class="d-flex" method="POST" action="{{ route('label.show') }}">
+																	@csrf
+																	<input name="label_id" type="hidden" value="{{ $label->label_id }}">  
+																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label->tracking_number }} <span class="label_created_at text-secondary">({{ date("d/m/Y", strtotime($label->label_created_at)) }})</span></button>
+																</form>
+																<form class="d-flex" method="POST" action="{{ route('label.download') }}">
+																	@csrf
+																	<input name="label_id" type="hidden" value="{{ $label->label_id }}">
+																	<input name="order_id" type="hidden" value="{{ $label->order_woocommerce_id }}">
+																	<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label->tracking_number }}</button>
+																</form>
+															</div>
+															<div>
+																<button data-order="{{ $label->order_woocommerce_id }}" data-label="{{ $label->label_id }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+															</div>
 														</div>
-														<div>
-															<button data-order="{{ $label->order_woocommerce_id }}" data-label="{{ $label->label_id }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
-														</div>
-													</div>
-													
-													
 													@else 
 														<div>
 															<button data-order="{{ $label->order_woocommerce_id }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
@@ -183,7 +179,7 @@
 
 			$(document).ready(function() {
 				$('#example').DataTable({
-					"order": [[3, 'desc']],
+					"order": [[3, 'asc']],
 					"initComplete": function(settings, json) {
 						$(".loading").hide()
 						$("#example").removeClass('d-none')

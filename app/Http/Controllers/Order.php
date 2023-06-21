@@ -88,28 +88,36 @@ class Order extends BaseController
 
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
-      
         $ids = array_column($orders_distributed, "order_woocommerce_id");
+        $list_orders = [];
 
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){
-            $clesRecherchees = array_keys($ids,  $order['id']);
-            if(count($clesRecherchees) > 0){
-              $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
-              $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
-              $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
-              $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
-            } else {
-              $orders[$key]['user_id'] = null;
-              $orders[$key]['name'] = "Non attribuée";
-              $orders[$key]['status'] =  $orders[$key]['status'];
-              $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
+            if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+              $clesRecherchees = array_keys($ids,  $order['id']);
+              if(count($clesRecherchees) > 0){
+                $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
+                $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
+                $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
+                $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+              } else {
+                $orders[$key]['user_id'] = null;
+                $orders[$key]['name'] = "Non attribuée";
+                $orders[$key]['status'] =  $orders[$key]['status'];
+                $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
+              }
+              $list_orders[] = $orders[$key];
             }
-  
+          }
+        } else {
+          foreach($orders as $key => $order){
+            if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+              $list_orders[] = $order;
+            }
           }
         }
-     
-        return $orders;
+
+        return $list_orders;
       }
       
     }
@@ -164,6 +172,7 @@ class Order extends BaseController
 
       // Liste des commandes Woocommerce
       $orders = $this->orders();
+
       $ids = array_column($orders, "id");
       foreach($orders_id as $id){
         $clesRecherchees = array_keys($ids,  $id);
@@ -327,8 +336,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-        // $order_id = $request->post('order_id');
-        $order_id = 64974; // Données de test
+        $order_id = $request->post('order_id');
+        // $order_id = 64974; // Données de test
         $order = $this->order->getOrderById($order_id);
 
         if($order){
@@ -400,7 +409,7 @@ class Order extends BaseController
             // envoi des données pour créer des facture via api dolibar....
 
             // if($request->post('from_label') != "true"){
-              $this->factorder->Transferorder($orders);
+                //$this->factorder->Transferorder($orders);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
                 // $this->order->updateOrdersById([$order_id], "finished");
@@ -416,11 +425,11 @@ class Order extends BaseController
 
          
             // Génère l'étiquette ou non
-            // if($request->post('label') == "true"){
-            //   return $this->generateLabel($orders);
-            // } else {
-            //   echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
-            // }
+            if($request->post('label') == "true"){
+              return $this->generateLabel($orders);
+            } else {
+              echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+            }
         } else {
             echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
             // return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');

@@ -80,6 +80,22 @@ class Label extends BaseController
         }
     }
 
+    public function bordereauDelete(Request $request){
+        $parcel_number = $request->post('parcel_number');
+        // Delete bordereau
+        $delete_bordereau = $this->bordereau->deleteBordereauByParcelNumber($parcel_number);
+        // Update label bordereau_id to null
+        $update_label = $this->label->updateLabelBordereau($parcel_number);
+
+        if(is_int($delete_bordereau) && is_int($update_label)){
+            return redirect()->route('bordereaux')->with('success', 'Le bordereau a été supprimé avec succès !');
+        } else {
+            return redirect()->route('bordereaux')->with('error', 'Le bordereau n\'a pas pu être supprimé !');
+        }
+
+
+    }
+
     public function bordereaux(){
         $bordereaux = $this->bordereau->getBordereaux()->toArray();
         $bordereaux_array = [];
@@ -87,7 +103,7 @@ class Label extends BaseController
         $ids = array_column($bordereaux, "parcel_number");
         foreach($bordereaux as $bordereau){
             $clesRecherchees = array_keys($ids,  $bordereau['parcel_number']);
-            $newDate = date("d/m/Y", strtotime($bordereau['created_at']));  
+            $newDate = date("d/m/Y", strtotime($bordereau['bordereau_created_at']));  
         
             $bordereaux_array[$bordereau['parcel_number']] = [
                 'parcel_number' => $bordereau['parcel_number'],
@@ -111,7 +127,7 @@ class Label extends BaseController
         }
 
         if(count($parcelNumbers_array) == 0){
-            return redirect()->route('labels')->with('error', 'Bordereau déjà généré ou aucune étiquette pour cette date !');
+            return redirect()->route('bordereaux')->with('error', 'Bordereau déjà généré ou aucune étiquette pour cette date !');
         } else {
             $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array);
 
@@ -122,15 +138,16 @@ class Label extends BaseController
                 $this->label->saveBordereau($bordereau_id, $parcelNumbers_array);
                 $this->bordereau->save($bordereau_id, $bordereau['<deliveryPaper>']);
     
-                $pdf = $bordereau['<deliveryPaper>'];
-                $headers = [
-                    'Content-Type' => 'application/pdf',
-                ];
+                // $pdf = $bordereau['<deliveryPaper>'];
+                // $headers = [
+                //     'Content-Type' => 'application/pdf',
+                // ];
             
                 // Renvoyer le contenu en tant que réponse
-                return Response::make($pdf, 200, $headers);
+                return redirect()->route('bordereaux')->with('success', 'Borderau généré avec succès !');
+                // return Response::make($pdf, 200, $headers);
             } else {
-                return redirect()->route('labels')->with('error', $bordereau['<jsonInfos>']['messages'][0]['messageContent']);
+                return redirect()->route('bordereaux')->with('error', $bordereau['<jsonInfos>']['messages'][0]['messageContent']);
             }
         }
     }

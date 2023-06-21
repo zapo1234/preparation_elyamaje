@@ -480,7 +480,7 @@ class OrderRepository implements OrderInterface
 
 
    // Fonction pour récupérer la valeur avec une clé spécifique
-   public function getValueByKey($array, $key) {
+   private function getValueByKey($array, $key) {
        foreach ($array as $item) {
            if ($item['key'] === $key) {
                return $item['value'];

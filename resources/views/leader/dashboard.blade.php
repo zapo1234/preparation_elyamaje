@@ -340,7 +340,7 @@
 									products_pick: products_pick
 								};
 							});
-
+							
 							return combinedData;
 						}
 					},

@@ -186,6 +186,7 @@ $( document ).ready(function() {
 			"showNEntries" : false,
 			"info":     false,
 			"language": {
+				"emptyTable": "Aucune donnée",
 				"search": "",
 				"searchPlaceholder": "Rechercher...",
 				"lengthMenu": "_MENU_",
@@ -196,19 +197,19 @@ $( document ).ready(function() {
 			},
 			"oLanguage": {
 				"sInfo" : "Affichage des entrées de _START_ à _END_ sur un total de _TOTAL_ ",
-				
 			},
 		});
 	}
 
 	$(".dropdown-toggle-nocaret").on("click", function(){
-		$.ajax({
-			url: "notifications",
-			method: 'GET',
-		}).done(function() {
-			
-		});
+		if($(".alert-count").text() != 0){
+			$.ajax({
+				url: "notifications",
+				method: 'GET',
+			}).done(function() {
+				
+			});
+		}
 	})
-
 });
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Role\RoleRepository;
@@ -110,12 +111,7 @@ class Admin extends BaseController
        
         foreach($products as $product){
 
-            if($product['meta_data']){
-                $barcode = $product['meta_data'][array_key_last($product['meta_data'])]['key'] == "barcode" ? $product['meta_data'][array_key_last($product['meta_data'])]['value'] : null;
-             } else {
-                $barcode = null;
-            }  
-
+            $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
 
@@ -124,24 +120,35 @@ class Admin extends BaseController
                 $category_id[] = $cat['id'];
             }
             
-            $ids = array_column($product['attributes'], "name");
-            $clesRecherchees = array_keys($ids,  "Volume");
+            $variation = false;
+            foreach($product['attributes'] as $attribut){
+                if($attribut['variation']){
+                    $variation = $attribut['name'];
+                }
+            }
 
-            if(count($clesRecherchees) > 0 && count($product['variations']) > 0){
+            if($variation){
+                $ids = array_column($product['attributes'], "name");
+                $clesRecherchees = array_keys($ids,  $variation);
+            }
+
+            if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
                 foreach($option as $key => $op){
-                    $insert_products [] = [
-                        'product_woocommerce_id' => $product['variations'][$key],
-                        'category' =>  implode(',', $category_name),
-                        'category_id' => implode(',', $category_id),
-                        'variation' => 1,
-                        'name' => $product['name'].' - '.$op,
-                        'status' => $product['status'],
-                        'price' => $product['variation_prices'][$key],
-                        'barcode' => $product['barcodes_list'][$key],
-                        'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
-                        'stock' => $product['stock_quantity_variation'][$key]
-                    ];
+                    if(isset($product['variations'][$key])){
+                        $insert_products [] = [
+                            'product_woocommerce_id' => $product['variations'][$key],
+                            'category' =>  implode(',', $category_name),
+                            'category_id' => implode(',', $category_id),
+                            'variation' => 1,
+                            'name' => $product['name'].' - '.$op,
+                            'status' => $product['status'],
+                            'price' => $product['variation_prices'][$key],
+                            'barcode' => $product['barcodes_list'][$key],
+                            'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
+                            'stock' => $product['stock_quantity_variation'][$key]
+                        ];
+                    }
                 }
             } else {
                 $insert_products [] = [
@@ -315,5 +322,18 @@ class Admin extends BaseController
             return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être supprimé');
         }
     }
+
+
+    // Fonction pour récupérer la valeur avec une clé spécifique
+    private function getValueByKey($array, $key) {
+        foreach ($array as $item) {
+            if ($item['key'] === $key) {
+                return $item['value'];
+            }
+        }
+        return null; // Si la clé n'est pas trouvée
+    }
+
+    
     
 }

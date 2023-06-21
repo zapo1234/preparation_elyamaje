@@ -17,7 +17,7 @@ class BordereauRepository implements BordereauInterface
    }
 
    public function getBordereaux(){
-      return $this->model::select('bordereau.*', 'labels.*')
+      return $this->model::select('bordereau.parcel_number', 'bordereau.bordereau', 'bordereau.created_at as bordereau_created_at', 'labels.*')
       ->join('labels', 'labels.bordereau_id', '=', 'bordereau.parcel_number')
       // ->where('bordereau', '!=', null)
       ->groupBy('labels.order_id')
@@ -34,6 +34,10 @@ class BordereauRepository implements BordereauInterface
 
    public function getBordereauById($id){
       return $this->model::select('*')->where('parcel_number', $id)->get();
+   }
+
+   public function deleteBordereauByParcelNumber($parcel_number){
+      return $this->model::where('parcel_number', $parcel_number)->delete();
    }
 }
 
