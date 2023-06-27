@@ -203,6 +203,8 @@ class TransferOrder
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
+
+                            dd($socid);
                             
                           if($socid!=""){
                             $data =  $this->tiers->gettiersid($socid);
@@ -404,7 +406,7 @@ class TransferOrder
                          // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dd($data_infos_order);
-                        dump($data_tiers);
+                       // dump($data_tiers);
                          
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
