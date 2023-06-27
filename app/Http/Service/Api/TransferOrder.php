@@ -261,7 +261,7 @@ class TransferOrder
                                      ];
                               }
 
-                              dump($data_info_user);
+                              dump($data_infos_user);
                            
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
@@ -311,7 +311,7 @@ class TransferOrder
 
                                      }
 
-                                    
+                                     dd('zapo');
                
                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu.
