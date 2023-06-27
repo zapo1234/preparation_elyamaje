@@ -362,8 +362,7 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                               
-                                      
-                                       // insert dans base de donnees historiquesidcommandes
+                                      // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
                                        $historique->id_commande = $donnees['order_id'];
@@ -385,9 +384,9 @@ class TransferOrder
                       }
 
                       
-                      dump($data_infos_user);
-                      dump($data_options_kdo);
                       dd('zapo');
+                       
+                      
      
                        // recupérer les deux variable dans les seter
                        $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
@@ -859,7 +858,7 @@ class TransferOrder
                              }
                   
                        }
-   
+                       
                         // recupérer les deux variable dans les seter
                         $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                         $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
