@@ -204,7 +204,6 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
 
-                            dd($socid);
                             
                           if($socid!=""){
                             $data =  $this->tiers->gettiersid($socid);
