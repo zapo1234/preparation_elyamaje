@@ -359,6 +359,7 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                               
+                                       dd($data_options_kdo);
                                        // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
