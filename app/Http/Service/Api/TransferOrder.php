@@ -233,7 +233,7 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
-                            
+                              
                              }
 
                            // construire le tableau
@@ -242,9 +242,9 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                          dd($socid);
-                            $data =  $this->tiers->gettiersid($socid);
-                            if(count($data)==0){
+                            if($socid!=""){
+                              $data =  $this->tiers->gettiersid($socid);
+                             if(count($data)==0){
                               $data_infos_user =[];
                             }else{
 
@@ -258,7 +258,7 @@ class TransferOrder
                                     'email'=>$email,
                                   ];
                             }
-
+                          }
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
