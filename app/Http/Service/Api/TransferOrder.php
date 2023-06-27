@@ -383,6 +383,11 @@ class TransferOrder
                                    }
                     
                       }
+
+                      
+                      dump($data_infos_user);
+                      dump($data_options_kdo);
+                      dd('zapo');
      
                        // recupérer les deux variable dans les seter
                        $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
@@ -412,7 +417,7 @@ class TransferOrder
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert les produit lié a l'utilisateur qui as eu la commande.
 
-                        dd($data_infos_order);
+                        
                        // dump($data_tiers);
                          
                         foreach($data_tiers as $data) {
