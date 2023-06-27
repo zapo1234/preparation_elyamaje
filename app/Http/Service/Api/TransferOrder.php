@@ -326,20 +326,17 @@ class TransferOrder
                                      }
                                  }
                            }       
-                        
+                                    dd($donnees['order_id']);
                                 // verifier si la commande est nouvelle
                                 //lié le client les  produits qui compose son achat .
-                                if($this->testing($key_commande,$donnees['order_id'])==false) {
+                                if(isset($key_commande[$donnees['order_id']])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                        $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$donnees['coupons']
                                        ];
                                         
-
-
-                                       dd($data_options);
-                                         // pour les factures non distributeurs...
+                                        // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
                                         $data_lines[] = [
