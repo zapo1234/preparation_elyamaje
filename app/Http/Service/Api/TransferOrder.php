@@ -148,9 +148,7 @@ class TransferOrder
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-
-                 dd($listproduct);
+                 $listproduct = json_decode($listproduct, true);// la liste des produits dans dolib
                  
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
@@ -448,7 +446,6 @@ class TransferOrder
 
                         dump($data_infos_order);
                         dump($data_tiers);
-                        dump($data_lines);
                         dd($data_lines);
 
                       
