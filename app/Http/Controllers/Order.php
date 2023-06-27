@@ -368,7 +368,7 @@ class Order extends BaseController
           
             $orders = $this->woocommerce->transformArrayOrder($order);
             // envoi des données pour créer des facture via api dolibar....
-            $this->factorder->Transferorder($orders);
+            dd($orders);
             // if($request->post('from_label') != "true"){
                  $this->factorder->Transferorder($orders);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
