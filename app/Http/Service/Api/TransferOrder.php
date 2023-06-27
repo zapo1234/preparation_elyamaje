@@ -9,6 +9,7 @@ use App\Models\Transfertsucce;
 use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
+use App\Repository\Don\DonRepository;
 use App\Repository\Tiers\TiersRepository;
 use Automattic\WooCommerce\Client;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
@@ -28,11 +29,13 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers)
+       TiersRepository $tiers,
+       DonRepository $dons)
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
+         $this->dons = $dons;
        }
     
     
@@ -415,9 +418,7 @@ class TransferOrder
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
 
-                       
-
-                       // trier les produits qui ne sont pas en kdo
+                      // trier les produits qui ne sont pas en kdo
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
@@ -444,7 +445,7 @@ class TransferOrder
                         $dons->save();
                       */
                         // insert les produit lié a l'utilisateur qui as eu la commande.
-
+                        $this->dons->insert($data_infos_order);
                         dump($data_infos_order);
                         dump($data_tiers);
                         dd($data_lines);
