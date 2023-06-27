@@ -112,8 +112,6 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-                 
-                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
