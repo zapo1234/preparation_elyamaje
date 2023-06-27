@@ -19,6 +19,7 @@ class Don extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'email',
         'order_id',
         'coupons',
         'total_order',
