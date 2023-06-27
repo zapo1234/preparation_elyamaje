@@ -168,7 +168,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-
+                    dump($data_list_product);
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
@@ -260,6 +260,8 @@ class TransferOrder
                                         'email'=>$donnees['billing']['email'],
                                      ];
                               }
+
+                              dd($data_tiers);
 
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
