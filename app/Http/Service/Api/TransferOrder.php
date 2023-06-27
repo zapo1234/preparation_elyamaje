@@ -9,7 +9,6 @@ use App\Models\Transfertsucce;
 use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
-use App\Repository\Don\DonRepository;
 use App\Repository\Tiers\TiersRepository;
 use Automattic\WooCommerce\Client;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
@@ -29,13 +28,11 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers,
-       DonRepository $dons)
+       TiersRepository $tiers)
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
-         $this->dons = $dons;
        }
     
     
@@ -98,7 +95,7 @@ class TransferOrder
    }
    
   
-     
+  
       
        public function getDataorders()
        {
@@ -106,14 +103,19 @@ class TransferOrder
 	         // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
               $apiKey = env('KEY_API_DOLIBAR');
-               $apiUrl = env('KEY_API_URL');
-               //environement test local
-              //Recuperer les ref et id product dans un tableau
-	             $produitParam = ["limit" => 700, "sortfield" => "rowid"];
-	             $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+              $apiUrl = env('KEY_API_URL');
+   
+              //environement test local
+           
+               //Recuperer les ref et id product dans un tableau
+	   
+	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
+	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+	            
 	             $lists = json_decode($listproduct,true);
 	            
-	            foreach($lists as $values){
+	            foreach($lists as $values)
+               {
                   // tableau associatve entre ref et label product
                   $product_datas[$values['ref']] = $values['label'];
          
@@ -151,8 +153,9 @@ class TransferOrder
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans dolib
+                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                  
+                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -236,7 +239,7 @@ class TransferOrder
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
-                              
+                            
                              }
 
                            // construire le tableau
@@ -245,9 +248,9 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                            if($socid!=""){
-                              $data =  $this->tiers->gettiersid($socid);
-                             if(count($data)==0){
+                          
+                            $data =  $this->tiers->gettiersid($socid);
+                            if(count($data)==0){
                               $data_infos_user =[];
                             }else{
 
@@ -261,7 +264,7 @@ class TransferOrder
                                     'email'=>$email,
                                   ];
                             }
-                          }
+
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
@@ -271,7 +274,8 @@ class TransferOrder
                                     // recupérer les deux deniers chiffre;
                                     $a11= substr($a1,-2);
                                     $a2 = $dat[1];
-                                    $socid = $id_cl;
+                                 
+                                   $socid = $id_cl;
                                    $woo ="woocommerce";
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce
@@ -313,15 +317,22 @@ class TransferOrder
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
                                             if($values['subtotal']==0){
                                                  $data_kdo[] = [
+                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                  "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                  "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                  "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                  "product_label" =>$values['name'],
+                                                  "qty" => $values['quantity'],
+                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                  "real_price"=> $values['real_price'],
                                                   "order_id" => $donnees['order_id'],
-                                                   "product_id" => $fk_product,//  insert id product dans dolibar.
-                                                   "label" =>$values['name'],
-                                                   "qty" => $values['quantity'],
-                                                   "real_price"=> $values['real_price'],
-                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                  "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
-                                               }
+
+                                                  
+                                                }
                                               
                                               $tva_product = 20;
                                                $data_product[] = [
@@ -371,7 +382,7 @@ class TransferOrder
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
-                                        "total_ttc" =>floatval($donnees['total_order']),
+                                       "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
                                         'lines' =>$data_product,
                                         'array_options'=> $data_options,
@@ -418,7 +429,9 @@ class TransferOrder
                        $temp = array_unique(array_column($data_lines, 'socid'));
                        $unique_arr = array_intersect_key($data_lines, $temp);
 
-                      // trier les produits qui ne sont pas en kdo
+                       
+
+                       // trier les produits qui ne sont pas en kdo
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
@@ -430,25 +443,21 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                      
                         // INSERT LES données clients 
-                        // DB::table('prepa_dons')->insert($data_infos_order);
+                       // DB::table('prepa_dons')->insert($data_infos_order);
                         // insert les details lie au product
                         $dons = new Don();
                         $dons->first_name = $data_infos_order['first_name'];
                         $dons->last_name = $data_infos_order['last_name'];
-                        $dons->email = $data_infos_order['email'];
                         $dons->order_id = $data_infos_order['order_id'];
                         $dons->coupons = $data_infos_order['coupons'];
                         $dons->total_order = $data_infos_order['total_order'];
                         $dons->date_order = $data_infos_order['date_order'];
                         $dons->save();
-                      
+
                         // insert les produit lié a l'utilisateur qui as eu la commande.
-                       //$this->dons->insert($data_infos_order);
-                        dump($data_infos_order);
-                        dump($data_tiers);
-                        dd($data_lines);
+
+                        dd($data_infos_order);
 
                       
                          foreach($data_tiers as $data) {
@@ -484,9 +493,10 @@ class TransferOrder
         {
            
             $method = "GET";
-            $apiKey = env('KEY_API_DOLIBAR');
-             $apiUrl = env('KEY_API_URL');
-            //appelle de la fonction  Api
+            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
+            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+           
+             //appelle de la fonction  Api
             // $data = $this->api->getDatadolibar($apikey,$url);
             // domp affichage test 
             // recupérer le dernière id des facture 
