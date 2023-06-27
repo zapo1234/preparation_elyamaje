@@ -200,6 +200,7 @@
 										<div class="modal-content">
 											<div class="modal-body">
 												<h2 class="text-center">Supprimer ce produit de la commande ?</h2>
+												<span class="d-flex justify-content-center text-danger w-100 mb-2 product_name_to_delete"></span>
 												<input type="hidden" id="order_id" value="">
 												<input type="hidden" id="line_item_id"value="">
 												<input type="hidden" id="product_order_id"value="">
@@ -700,11 +701,13 @@
 
 			function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
 				var id = variation_id != 0 ? variation_id : product_id
-		
+				var name = $("."+order_id+"_"+line_item_id).children('.detail_product_name_order').children('span').text()
+
 				$("#order_id").val(order_id)
 				$("#line_item_id").val(line_item_id)
 				$("#product_order_id").val(id)
 				$("#quantity_order").val(quantity)
+				$(".product_name_to_delete").text(name)
 				$("#deleteProductOrderModal").modal('show')
 			}
 

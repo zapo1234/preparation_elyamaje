@@ -18,7 +18,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function save($label){
-      return $this->model::insert([
+      return $this->model::insertGetId([
          'order_id' => $label['order_id'],
          'label' => $label['label'],
          'tracking_number' => $label['tracking_number'],
@@ -44,12 +44,16 @@ class LabelRepository implements LabelInterface
       return $this->model::whereIn('tracking_number', $parcelNumbers_array)->update(['bordereau_id' => $bordereau_id]);
    }
 
-   public function deleteLabelById($label_id){
-      return $this->model::where('id', $label_id)->delete();
+   public function deleteLabelByTrackingNumber($tracking_number){
+      return $this->model::where('tracking_number', $tracking_number)->delete();
    }
 
    public function updateLabelBordereau($bordereau_id){
       return $this->model::where('bordereau_id', $bordereau_id)->update(['bordereau_id' => null]);
+   }
+
+   public function getAllLabels(){
+      return $this->model::all();
    }
 }
 

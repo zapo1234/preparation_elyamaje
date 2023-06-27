@@ -16,9 +16,11 @@ interface LabelInterface
 
    public function saveBordereau($bordereau_id, $parcelNumbers_array);
 
-   public function deleteLabelById($label_id);
+   public function deleteLabelByTrackingNumber($tracking_number);
 
    public function updateLabelBordereau($parcel_number);
+
+   public function getAllLabels();
 }
 
 

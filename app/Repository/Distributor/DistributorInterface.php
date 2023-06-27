@@ -7,11 +7,9 @@ interface DistributorInterface
 {
     public function getDistributors();
 
-    public function createDistributor($data);
+    public function getDistributorById($id);
 
-    public function updateDistributors($data);
-
-    public function deleteDistributor($distributor_id);
+    public function insertDistributorsOrUpdate($data);
 }
 
 

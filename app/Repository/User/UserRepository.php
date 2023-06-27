@@ -20,7 +20,7 @@ class UserRepository implements UserInterface
    }
 
    public function getUsersAndRoles(){
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste')
          ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
          ->orderBy('users.id', 'ASC')
@@ -85,7 +85,7 @@ class UserRepository implements UserInterface
 
    public function getUserByEmail($email, $user_id = false){
       if($user_id){
-         return $this->model->where('email',$email)->where('id', '!=', $user_id)->count();
+         return $this->model->where('email', $email)->where('id', '!=', $user_id)->count();
       } else {
          return $this->model->where('email', $email)->count();
       }

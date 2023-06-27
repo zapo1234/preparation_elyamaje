@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Http\Service\Api\Api;
+use App\Models\ProductsOrder;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderInterface
@@ -95,14 +96,6 @@ class OrderRepository implements OrderInterface
 
                foreach($orderData['line_items'] as $value){
 
-                  if($value['meta_data']){
-                     // $barcode = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "barcode" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
-                     $weight = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "weight" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
-                  } else {
-                     // $barcode = null;
-                     $weight = 0;
-                  }  
-
                   $productsToInsert[] = [
                      'order_id' => $orderData['id'],
                      'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -113,7 +106,7 @@ class OrderRepository implements OrderInterface
                      'subtotal_tax' =>  $value['subtotal_tax'],
                      'total_tax' =>  $value['total_tax'],
                      'total_price' => $value['subtotal'],
-                     'weight' => $weight,
+                     'pick' => 0,
                      'line_item_id' => $value['id']
                   ];
                }
@@ -154,7 +147,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersByIdUser($id, $distributeur_order = false){
-
       // Liste des distributeurs
       $distributeurs = DB::table('distributors')->select('customer_id')->get();
       $distributeurs_id = [];
@@ -171,24 +163,24 @@ class OrderRepository implements OrderInterface
 
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+         ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
-         ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
-         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
+         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
          ->orderBy('categories.order_display', 'ASC')
          // ->orderByRaw($queryOrder)
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
-
+  
 
       foreach($orders as $key => $order){
          if($distributeur_order){
-            if(in_array($order['customer_id'], $distributeurs_id)){
+            if(in_array($order['customer_id'], $distributeurs_id) || $order['status'] == "order-new-distrib"){
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -204,7 +196,7 @@ class OrderRepository implements OrderInterface
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
          } else {
-            if(!in_array($order['customer_id'], $distributeurs_id)){
+            if(!in_array($order['customer_id'], $distributeurs_id) && $order['status'] != "order-new-distrib"){
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -237,32 +229,56 @@ class OrderRepository implements OrderInterface
       }
    }
 
-   public function checkIfDone($order_id, $barcode_array, $partial = false) {
+   public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
-      $list_prouct_orders = DB::table('products')
-      ->select('barcode')
+      $list_product_orders = DB::table('products')
+      ->select('barcode', 'products_order.quantity', 'products_order.id')
       ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
       ->where('products_order.order_id', $order_id)
-      ->get();
+      ->get()
+      ->toArray();
 
+    
+      $list_product_orders = json_decode(json_encode($list_product_orders), true);
+      $product_pick_in = [];
 
-      $update_products = DB::table('products_order')
-      ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-      ->whereIn('barcode', $barcode_array)
-      ->where('order_id', $order_id)
-      ->update(['pick' => 1]);
+      // Construit le tableaux à update 
+      $barcode_research = array_column($list_product_orders, "barcode");
+      foreach($barcode_array as $key => $barcode){
+         $clesRecherchees = array_keys($barcode_research, $barcode);
+         $product_pick_in[] = [
+            'id' => $list_product_orders[$clesRecherchees[0]]['id'],
+            'barcode' => $barcode,
+            'quantity' => intval($products_quantity[$key])
+         ];
+      }
 
+      // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
+      $barcode = array_column($product_pick_in, "barcode");
+      $diff_quantity = false;
+      $diff_barcode = false;
+
+      foreach($list_product_orders as $list){
+         $clesRecherchees = array_keys($barcode, $list['barcode']);
+         if(count($clesRecherchees) != 0){
+            if($product_pick_in[$clesRecherchees[0]]['quantity'] != $list['quantity']){
+               $diff_quantity = true;
+            }
+         } else {
+            $diff_barcode = true;
+         }
+      }
+
+      // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+      $cases = collect($product_pick_in)->map(function ($item) {
+         return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
+      })->implode(' ');
+
+      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END)";
+      DB::statement($query);
 
       if(!$partial){
-         $missing_product = false;
-
-         foreach($list_prouct_orders as $product_order){
-            if(!in_array($product_order->barcode, $barcode_array)){
-               $missing_product = true;
-            }
-         }
-   
-         if(!$missing_product){
+         if(!$diff_quantity && !$diff_barcode){
             // Modifie le status de la commande en "Commande préparée",
             $update_status_local = $this->updateOrdersById([$order_id], "prepared-order");
    
@@ -271,6 +287,7 @@ class OrderRepository implements OrderInterface
                'order_id' => $order_id,
                'user_id' => Auth()->user()->id,
                'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
             ]);
             
             // Modifie le status de la commande sur Woocommerce en "Commande préparée"
@@ -294,8 +311,63 @@ class OrderRepository implements OrderInterface
       }
    }
 
+   public function checkIfValidDone($order_id, $barcode_array, $products_quantity){
+
+      $list_product_orders = DB::table('products')
+      ->select('barcode', 'products_order.quantity', 'products_order.id')
+      ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
+      ->where('products_order.order_id', $order_id)
+      ->get()
+      ->toArray();
+
+      $list_product_orders = json_decode(json_encode($list_product_orders), true);
+      $product_pick_in = [];
+
+      // Construit le tableaux à update 
+      $barcode_research = array_column($list_product_orders, "barcode");
+      foreach($barcode_array as $key => $barcode){
+         $clesRecherchees = array_keys($barcode_research, $barcode);
+         $product_pick_in[] = [
+            'id' => $list_product_orders[$clesRecherchees[0]]['id'],
+            'barcode' => $barcode,
+            'quantity' => intval($products_quantity[$key])
+         ];
+      }
+
+      // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
+      $barcode = array_column($product_pick_in, "barcode");
+      $diff_quantity = false;
+      $diff_barcode = false;
+
+      foreach($list_product_orders as $list){
+         $clesRecherchees = array_keys($barcode, $list['barcode']);
+         if(count($clesRecherchees) != 0){
+            if($product_pick_in[$clesRecherchees[0]]['quantity'] != $list['quantity']){
+               $diff_quantity = true;
+            }
+         } else {
+            $diff_barcode = true;
+         }
+      }
+
+
+      // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+      $cases = collect($product_pick_in)->map(function ($item) {
+         return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
+      })->implode(' ');
+
+      $query = "UPDATE prepa_products_order SET pick_control = (CASE id {$cases} END)";
+      DB::statement($query);
+
+      if($diff_barcode && $diff_quantity){
+         return true;
+      } else {
+         return false;
+      }
+
+   }
+
    public function orderReset($order_id) {
-      
       try{
          $update_products = DB::table('products_order')->whereIn('order_id', [$order_id])->update(['pick' => 0]);
          return true;
@@ -383,15 +455,6 @@ class OrderRepository implements OrderInterface
 
                // Insert produits
                foreach($insert_order_by_user['line_items'] as $value){
-
-                  if($value['meta_data']){
-                     // $barcode = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "barcode" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
-                     $weight = $value['meta_data'][array_key_last($value['meta_data'])]['key'] == "weight" ? $value['meta_data'][array_key_last($value['meta_data'])]['value'] : null;
-                  } else {
-                     // $barcode = null;
-                     $weight = 0;
-                  }  
-
                   $productsToInsert[] = [
                      'order_id' => $insert_order_by_user['id'],
                      'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -402,7 +465,7 @@ class OrderRepository implements OrderInterface
                      'subtotal_tax' =>  $value['subtotal_tax'],
                      'total_tax' =>  $value['total_tax'],
                      'total_price' => $value['subtotal'],
-                     'weight' => $weight,
+                     'pick' => 0,
                      'line_item_id' => $value['id']
                   ];
                }
@@ -420,8 +483,10 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrderById($order_id){
-      return $this->model::select('orders.*', 'products.*', 'products_order.pick', 'products_order.quantity',
-      'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
+      return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
+      'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
+      'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
+      'products.variation')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
@@ -429,9 +494,23 @@ class OrderRepository implements OrderInterface
       ->toArray();
    }
 
-   public function getOrderAndLabel(){
-      return $this->model::select('orders.*', 'labels.label', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.id as label_id')
-      ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id')
+   public function getOrderByIdWithCustomer($order_id){
+      return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
+      'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
+      'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
+      'products.variation', 'distributors.customer_id as is_distributor')
+      ->where('order_woocommerce_id', $order_id)
+      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+      ->leftJoin('distributors', 'distributors.customer_id', '=', 'orders.customer_id')
+      ->get()
+      ->toArray();
+   }
+
+   public function getAllOrdersAndLabel(){
+      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at')
+      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->get();
    }
    
@@ -450,7 +529,7 @@ class OrderRepository implements OrderInterface
          ->where('user_id', $user_id)
          ->whereIn('orders.status', ['finished', 'prepared-order'])
          ->select('orders.*', 'products.*', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
-         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products_order.weight')
+         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.updated_at', 'DESC')
          ->orderBy('categories.order_display', 'ASC')
          // ->orderByRaw($queryOrder)
@@ -494,6 +573,22 @@ class OrderRepository implements OrderInterface
          'total_tax_order' => $data['total_tax'],
          'total_order' => $data['total']
       ]);
+   }
+
+   public function updateTotalOrder($order_id, $data){
+      return $this->model->where('order_woocommerce_id', $order_id)->update([
+         'total_tax_order' =>  $data['total_tax'],
+         'total_order' =>  $data['total']
+      ]);
+   }
+
+   public function getProductOrder($order_id){
+      return $this->model::select('products.name', 'products.weight', 
+         'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost')
+         ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+         ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+         ->where('orders.order_woocommerce_id', $order_id)
+         ->get();
    }
 }
 

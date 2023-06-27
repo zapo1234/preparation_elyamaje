@@ -15,11 +15,10 @@ class CategoriesRepository implements CategoriesInterface
    }
 
    public function insertCategoriesOrUpdate($categories){
-
       try{
          // Récupère les catégories déjà existante
          try{
-            $categories_exists = $this->model::select('name', 'category_id_woocommerce')->get()->toArray();
+            $categories_exists = $this->model::select('name', 'category_id_woocommerce', 'parent_category_id')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
@@ -32,9 +31,14 @@ class CategoriesRepository implements CategoriesInterface
                foreach ($categories as $item1) {
                   $found = false;
                   foreach ($categories_exists as $item2) {
-                     if ($item1['name'] === $item2['name'] && $item1['category_id_woocommerce'] === $item2['category_id_woocommerce']) {
+                     if ($item1['category_id_woocommerce'] == $item2['category_id_woocommerce']) {
+                        if($item1 != $item2){
+                           $found = false;
+                           break;
+                        } else {
                            $found = true;
                            break;
+                        }
                      }
                   }
          

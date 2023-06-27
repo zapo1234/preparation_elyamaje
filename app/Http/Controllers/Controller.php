@@ -79,12 +79,12 @@ class Controller extends BaseController
         $orders_validate = [];
 
         foreach($orders as $order){
-            if($order['details']['status'] == "processing"){
-                $order_process[] = $order;
-            } else if($order['details']['status'] == "waiting_to_validate"){
+            if($order['details']['status'] == "waiting_to_validate"){
                 $orders_waiting_to_validate[] = $order;
-            } else {
+            } else if($order['details']['status'] == "waiting_validate"){
                 $orders_validate[] = $order;
+            } else {
+                $order_process[] = $order;
             }
         }
 
@@ -104,14 +104,13 @@ class Controller extends BaseController
         $orders_waiting_to_validate = [];
         $orders_validate = [];
 
-
         foreach($orders as $order){
-            if($order['details']['status'] == "processing"){
-                $order_process[] = $order;
-            } else if($order['details']['status'] == "waiting_to_validate"){
+            if($order['details']['status'] == "waiting_to_validate"){
                 $orders_waiting_to_validate[] = $order;
-            } else {
+            } else if($order['details']['status'] == "waiting_validate"){
                 $orders_validate[] = $order;
+            } else {
+                $order_process[] = $order;
             }
         }
 

@@ -51,12 +51,12 @@
 							</div>
 
 							
-									<select class="d-none select2_custom status_dropdown input_form_type">
+									<!-- <select class="d-none select2_custom status_dropdown input_form_type">
 										<option value="">Status</option>
 										<option value="draft">Brouillon</option>
 										<option value="publish">Publiée</option>
 										<option value="private">Pivée</option>
-									</select>
+									</select> -->
 								
 							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 								<thead>
@@ -79,7 +79,7 @@
 											<td data-label="Status">
 												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
 											</td>
-											<td>
+											<td data-label="Stock">
 												@if($product->manage_stock)
 													@if($product->stock > 10)
 														<span class="text-success">{{ $product->stock }}</span>
@@ -114,14 +114,14 @@
 				"initComplete": function(settings, json) {
 					$(".loading_div").addClass('d-none')
 					$("#example").removeClass('d-none')
-					$("#example_length select").css('margin-right', '10px')
-					$(".status_dropdown").appendTo('.dataTables_length')
-					$(".dataTables_length").css('display', 'flex')
-					$(".dataTables_length").addClass('select2_custom')
-					$(".status_dropdown").removeClass('d-none')
-					$(".status_dropdown").select2({
-						width: '150px',
-					});
+					// $("#example_length select").css('margin-right', '10px')
+					// $(".status_dropdown").appendTo('.dataTables_length')
+					// $(".dataTables_length").css('display', 'flex')
+					// $(".dataTables_length").addClass('select2_custom')
+					// $(".status_dropdown").removeClass('d-none')
+					// $(".status_dropdown").select2({
+					// 	width: '150px',
+					// });
 				}
 			})
 		})

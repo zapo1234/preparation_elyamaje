@@ -66,7 +66,7 @@
                                                     <div class="notify bg-warning text-primary"><i class="text-light bx bx-box"></i>
                                                     </div>
                                                     <div class="flex-grow-1">
-                                                        <h6 class="msg-name">{{ $list['type'] }}</h6>
+                                                        <h6 class="msg-name">{{ $list['type'] }} {{ $list['order_id'] ? '#'.$list['order_id'] : '' }}</h6>
                                                         <span class="msg-info">{{ $list['detail'] }}</span>
                                                     </div>
                                                     

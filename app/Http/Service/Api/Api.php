@@ -63,19 +63,53 @@ class Api
     }
   }
 
+  // Récupère les produits publiés sur la boutique
   public function getAllProducts($per_page, $page){
 
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
-      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products?per_page=".$per_page."&page=".$page);
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products?per_page=".$per_page."&page=".$page."&status=publish");
       return $response->json();
 
     } catch(Exception $e){
       return $e->getMessage();
     }
   }
+
+
+    // Récupère les users
+    public function getDistributeurs($per_page, $page, $role){
+
+      $customer_key = config('app.woocommerce_customer_key');
+      $customer_secret = config('app.woocommerce_customer_secret');
+
+      
+      try{
+        $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/customers?per_page=".$per_page."&page=".$page."&role=".$role);
+        return $response->json();
+  
+      } catch(Exception $e){
+        return $e->getMessage();
+      }
+    }
+
+
+    public function getListRole(){
+
+      $customer_key = config('app.woocommerce_customer_key');
+      $customer_secret = config('app.woocommerce_customer_secret');
+
+      
+      try{
+        $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3");
+        return $response->json();
+  
+      } catch(Exception $e){
+        return $e->getMessage();
+      }
+    }
 
 
   public function deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id){

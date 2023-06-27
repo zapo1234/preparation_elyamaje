@@ -10,16 +10,10 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id){
         
-        $productCode_array = [
-            'lpc_expert'     => 'DOS',
-            'lpc_nosign'     => 'DOM',
-            'lpc_sign'       => 'DOS',
-            'local_pickup'   => false
-        ];
-
-        $nonMachinable = ["BPR", "A2P", "BDP", "CMT"];
-        $productCode = $order['product_code'] ?? $productCode_array[$order['shipping_method']];
-
+        $productCode = $this->getProductCode($order);
+        // $nonMachinable = $this->isMachinable($productCode);
+        $insuranceValue = $this->getInsuranceValue($productCode, $order);
+      
         if($productCode){
             try {
                 $requestParameter = [
@@ -40,8 +34,8 @@ class Colissimo
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
-                            'insuranceValue' => $order['total_order'] * 100,
-                            'nonMachinable' => in_array($productCode, $nonMachinable) ? false : true, //  // Format du colis, true pour non standard
+                            'insuranceValue' => $insuranceValue,
+                            // 'nonMachinable' => $nonMachinable, //  // Format du colis, true pour non standard
                             'pickupLocationId' => $order['pick_up_location_id'] ?? null
                         ],
                         'sender' => [
@@ -78,9 +72,6 @@ class Colissimo
                         ]
                     ]
                 ];
-
-
-                
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
@@ -189,7 +180,7 @@ class Colissimo
     }
 
 
-    public function deleteOutwardLabelWordPress($order_id){
+    public function deleteOutwardLabelWordPress($tracking_number){
 
         $customer_key = config('app.woocommerce_customer_key');
         $customer_secret = config('app.woocommerce_customer_secret');
@@ -197,7 +188,7 @@ class Colissimo
         try {
             $response = Http::withBasicAuth($customer_key, $customer_secret) 
                 ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/colissimo/delete", [
-                    'data' => $order_id
+                    'data' => $tracking_number
                 ]); 
             return $response->json();
         } catch(Exception $e) {
@@ -248,6 +239,39 @@ class Colissimo
 
     protected function parseMonoPartBody($body) {
         return json_decode($body, true);
+    }
+
+    protected function getProductCode($order){
+        $productCode_array = [
+            'lpc_expert'     => 'DOS',
+            'lpc_nosign'     => 'DOM',
+            'lpc_sign'       => 'DOS',
+            'local_pickup'   => false
+        ];
+
+        return $order['product_code'] ?? $productCode_array[$order['shipping_method']];
+    }
+
+    protected function getInsuranceValue($product_code, $order){
+        $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
+        if(in_array($product_code, $tranches_except)){
+            if($order['total_order'] * 100 > 100000){
+                return 100000;
+            } else {
+                return $order['total_order'] * 100;
+            }
+        } else {
+            if($order['total_order'] * 100 > 500000){
+                return 500000;
+            } else {
+                return $order['total_order'] * 100;
+            }
+        }
+    }
+
+    protected function isMachinable($product_code){
+        $nonMachinable = ["BPR", "A2P", "BDP", "CMT"];
+        return in_array($product_code, $nonMachinable) ? false : true;
     }
  
 }
