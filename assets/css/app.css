@@ -898,6 +898,11 @@ a {
 }
 
 @media (min-width: 992px) {
+
+	.generate_label_modal .modal-dialog{
+		max-width: 75% !important;
+	}
+
 	.sub_category_1 .show_sub_category, 
 	.sub_category_1 .minus{
 		margin-left: 50px !important;
@@ -5725,6 +5730,10 @@ input::placeholder {
 
 @media screen and (max-width: 991px) {
 
+	.generate_label_modal .modal-dialog{
+		max-width: 100% !important;
+	}
+
 	.section-authentication-signin {
 
 
@@ -5896,6 +5905,17 @@ input::placeholder {
 
 	}
 
+	.generate_label_modal .head_1,
+	.generate_label_modal .head_2,
+	.generate_label_modal .head_3,
+	.generate_label_modal .head_4{
+		font-size: 12px !important;
+	}
+
+	.generate_label_modal .body_line_items_label{
+		max-height: 66vh !important;
+	}
+
 
 }
 .owl-thumbs .owl-thumb-item {
@@ -5970,7 +5990,7 @@ input::placeholder {
 
 .detail_product_order_line{
 	border-bottom: 1px solid #D4D7DF;
-	padding: 15px 0px 15px 5px  !important;
+	padding: 15px 5px 15px 5px  !important;
 }
 
 .body_detail_product_order,
@@ -6102,6 +6122,15 @@ input::placeholder {
 		justify-content: center;
 		margin-bottom: 15px;
 		margin-top: 15px;
+	}
+
+	.breadcrumb-title{
+		border-right: 0px !important;
+		padding-right: 0px !important;
+	}
+
+	.page-breadcrumb .ps-3{
+		padding-left: 0px !important;
 	}
 
 	.team_board {
@@ -6329,6 +6358,16 @@ a{
 }
 
 @media screen and (max-width: 550px) {
+
+	.col-sm-12:has(.table_mobile_responsive){
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+
+	.dataTables_wrapper .row:last-child{
+		padding-bottom: 50px !important;
+	}
+
 	.page-content{
 		padding: 0px !important;
 	}
@@ -6723,6 +6762,11 @@ select:focus, input:focus{
 	background-color: #ffc107;
 }
 
+.bg-light-order-new-distrib{
+	color: #0dcaf0 !important;
+	background-color: rgb(13 202 240 / 18%);
+}
+
 .bg-light-waiting_to_validate,
 .bg-light-waiting_validate{
 	color: #ffc107 !important;
@@ -6793,6 +6837,7 @@ select:focus, input:focus{
 
 .notification_list{
 	white-space: inherit !important;
+	word-break: break-all;
 }
 
 .notification_list .notify{
@@ -6823,4 +6868,59 @@ select:focus, input:focus{
 .select2_custom .select2-selection{
 	height: 31px;
 	border: 1px solid #ced4da
+}
+
+.dataTables_scrollHeadInner{
+	width: 100% !important;
+}
+
+.dataTables_scrollBody{
+	margin-bottom: 15px !important;
+}
+
+.generate_label_modal .modal-content{
+	height: 80vh;
+}
+
+.generate_label_modal .body_line_items_label{
+	overflow-y: auto !important;
+	max-height: 68vh;
+}
+
+.line_items_label{
+	border-bottom: 1px solid #dee2e6;
+	padding-bottom: 15px;
+	padding-top: 15px;
+}
+
+.generate_label_modal .head_1,
+.generate_label_modal .head_2,
+.generate_label_modal .head_3,
+.generate_label_modal .head_4{
+	font-weight: 700 !important;
+}
+
+.generate_label_modal .form-check-input{
+	width: 1.3em !important;
+	height: 1.3em !important;
+	cursor: pointer;
+}
+
+.disabled_text span{
+	color: #C6C6C6;
+}
+
+.line_items_label input[type='number']{
+	border: 1px solid #dee2e6;
+	width: 65px;
+	padding: 5px;
+}
+
+textarea:focus{
+	box-shadow: none !important;
+	outline: 0px !important;
+}
+
+.nav-link:hover{
+	border-bottom: 0px !important;
 }

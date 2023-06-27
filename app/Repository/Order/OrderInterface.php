@@ -8,7 +8,9 @@ interface OrderInterface
 {
    public function getOrderById($order_id);
 
-   public function getOrderAndLabel();
+   public function getOrderByIdWithCustomer($order_id);
+
+   public function getAllOrdersAndLabel();
 
    public function insertOrdersByUsers($array_user);
 
@@ -26,7 +28,9 @@ interface OrderInterface
 
    public function updateTotalOrders($data);
 
-   public function checkIfDone($order_id, $barcode_array, $partial = false);
+   public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false);
+
+   public function checkIfValidDone($order_id, $barcode_array, $products_quantity);
 
    public function orderReset($order_id);
 
@@ -35,6 +39,10 @@ interface OrderInterface
    public function updateOneOrderAttribution($order_id, $user_id);
 
    public function getHistoryByUser($user_id);
+
+   public function updateTotalOrder($order_id, $data);
+
+   public function getProductOrder($order_id);
 }
 
 

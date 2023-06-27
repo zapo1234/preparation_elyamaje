@@ -134,6 +134,23 @@ class Admin extends BaseController
 
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
+
+                // Insertion du produit de base sans les variations
+                $insert_products [] = [
+                    'product_woocommerce_id' => $product['id'],
+                    'category' =>  implode(',', $category_name),
+                    'category_id' => implode(',', $category_id),
+                    'variation' => 1,
+                    'name' => $product['name'],
+                    'status' => $product['status'],
+                    'price' => $product['price'],
+                    'barcode' => $barcode,
+                    'manage_stock' => $product['manage_stock'],
+                    'stock' => $product['stock_quantity'],
+                    'is_variable' => 1,
+                    'weight' =>  $product['weight'] 
+                ];
+
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         $insert_products [] = [
@@ -146,7 +163,9 @@ class Admin extends BaseController
                             'price' => $product['variation_prices'][$key],
                             'barcode' => $product['barcodes_list'][$key],
                             'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
-                            'stock' => $product['stock_quantity_variation'][$key]
+                            'stock' => $product['stock_quantity_variation'][$key],
+                            'is_variable' => 0,
+                            'weight' =>  $product['weight'] != "0" ?  $product['weight'] : $product['weights_variation'][$key]
                         ];
                     }
                 }
@@ -161,7 +180,9 @@ class Admin extends BaseController
                     'price' => $product['price'],
                     'barcode' => $barcode,
                     'manage_stock' => $product['manage_stock'],
-                    'stock' => $product['stock_quantity']
+                    'stock' => $product['stock_quantity'],
+                    'is_variable' => 0,
+                    'weight' =>  $product['weight']
                 ];
             }
         }
@@ -189,6 +210,7 @@ class Admin extends BaseController
         $ids = array_column($rolesUser, "id");
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();
+        
         
         return view('admin.account', ['users' => $users, 'roles' => $roles, 'isAdmin' => $isAdmin]);
     }
@@ -280,38 +302,7 @@ class Admin extends BaseController
         return view('admin.distributors', ['distributors' => $distributors]);
     }
 
-    public function createDistributors(Request $request){
-        $name = $request->post('name');
-        $identifiant = $request->post('identifiant');
 
-        $data = [
-            'name' => $name,
-            'customer_id' => $identifiant
-        ];
-        
-        if($this->distributors->createDistributor($data)){
-            return redirect()->route('distributors')->with('success', 'Distributeur ajouté avec succès !');
-        } else {
-            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être ajouté');
-        }
-    }
-
-    public function updateDistributors(Request $request){
-        $update_name = $request->post('update_name');
-        $update_identifiant = $request->post('update_identifiant');
-        $distributor_id = $request->post('distributor_id');
-        $data = [
-            'name' => $update_name,
-            'customer_id' => $update_identifiant,
-            'id' => $distributor_id
-        ];
-
-        if($this->distributors->updateDistributors($data)){
-            return redirect()->route('distributors')->with('success', 'Distributeur modifié avec succès !');
-        } else {
-            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être modifié');
-        }
-    }
 
     public function deleteDistributors(Request $request){
         $distributor_id = $request->post('distributor_id');

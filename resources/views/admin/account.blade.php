@@ -138,12 +138,66 @@
 												@endif
 											</td>
 										</tr>
+
+
+										<div class="modal fade" id="updateAccount_user_{{ $user['user_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content">
+													<form data-bitwarden-watching="1" method="POST" action="{{ route('account.update') }}">
+														@csrf
+														<input name="account_user_update" type="hidden" id="account_user_update" value="{{ $user['user_id'] }}">
+														<div class="modal-body">
+															<div class="card-body p-5">
+																<div class="card-title d-flex align-items-center">
+																	<div><i class="bx bxs-user me-1 font-22 text-primary"></i>
+																	</div>
+																	<h5 class="mb-0 text-primary">Modifier le compte</h5>
+																</div>
+																<hr>
+																<div class="row g-3">
+																	<div class="col-md-12">
+																		<label for="update_name_last_name" class="form-label">Nom / Prénom</label>
+																		<input value="{{ $user['name'] }}" required name="update_name_last_name" type="text" class="form-control" id="update_name_last_name">
+																	</div>
+																
+																	<div class="col-md-12">
+																		<label for="update_email" class="form-label">Email</label>
+																		<input value="{{ $user['email'] }}" required name="update_email" type="update_email" class="form-control" id="update_email">
+																	</div>
+																	<div class="col-md-12">
+																		<label for="update_role" class="form-label">Rôle</label>
+																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
+																		<select multiple required name="update_role[]" id="update_role" class="form-select">
+																			@foreach($roles as $role)
+																				@if( $role->id != 1 || $isAdmin)
+																					<option value="{{ $role->id }}">{{  $role->role }}</option>
+																				@else 
+																					<option selected disabled value="{{ $role->id }}">{{  $role->role }}</option>
+																				@endif
+																			@endforeach
+																		</select>
+																	</div>
+																	<div class="poste_input d-none col-md-12">
+																		<label for="update_poste" class="form-label">N° du poste</label>
+																		<input value="{{ $user['poste'] }}" name="update_poste" type="number" class="poste_field form-control" id="update_poste">
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+															<button type="submit" class="btn btn-primary px-5">Modifier</button>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+
 									@endforeach
 								</tbody>
 							</table>
 						</div>
 					</div>
-
 				</div>
 			</div>
 
@@ -161,60 +215,6 @@
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
 								<button type="submit" class="btn btn-primary">Oui</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-
-
-			<!-- Modal modification de compte -->
-			<div class="modal fade" id="updateAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
-					<div class="modal-content">
-						<form data-bitwarden-watching="1" method="POST" action="{{ route('account.update') }}">
-							@csrf
-							<input name="account_user_update" type="hidden" id="account_user_update" value="">
-							<div class="modal-body">
-								<div class="card-body p-5">
-									<div class="card-title d-flex align-items-center">
-										<div><i class="bx bxs-user me-1 font-22 text-primary"></i>
-										</div>
-										<h5 class="mb-0 text-primary">Modifier le compte</h5>
-									</div>
-									<hr>
-									<div class="row g-3">
-										<div class="col-md-12">
-											<label for="update_name_last_name" class="form-label">Nom / Prénom</label>
-											<input required name="update_name_last_name" type="text" class="form-control" id="update_name_last_name">
-										</div>
-									
-										<div class="col-md-12">
-											<label for="update_email" class="form-label">Email</label>
-											<input required name="update_email" type="update_email" class="form-control" id="update_email">
-										</div>
-										<div class="col-md-12">
-											<label for="update_role" class="form-label">Rôle</label>
-											<select required name="update_role[]" id="update_role" class="form-select">
-												@foreach($roles as $role)
-													@if( $role->id != 1 || $isAdmin)
-														<option value="{{ $role->id }}">{{  $role->role }}</option>
-													@else 
-														<option disabled value="{{ $role->id }}">{{  $role->role }}</option>
-													@endif
-												@endforeach
-											</select>
-										</div>
-										<div class="poste_input d-none col-md-12">
-											<label for="update_poste" class="form-label">N° du poste</label>
-											<input name="update_poste" type="number" class="poste_field form-control" id="update_poste">
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-								<button type="submit" class="btn btn-primary px-5">Modifier</button>
 							</div>
 						</form>
 					</div>
@@ -254,7 +254,6 @@
 					$("#example").removeClass('d-none')
 				}
 			})
-
 		})
 
 		$("select").on("change", function(){
@@ -280,34 +279,12 @@
 
 		// Modifier compte
 		$(".update_action").on('click', function(){
-			showHidePoste($("#update_role").val())
 			var id_account = $(this).attr('data-id')
-			
-			$.ajax({
-				url:"{{ route('account.user') }}",
-				method: 'GET',
-				data: {user_id: id_account}
-			}).done(function(data) {
-				if(JSON.parse(data).success){
-					var user = JSON.parse(data).user
-					$("#update_name_last_name").val(user.name)
-					$("#update_email").val(user.email)
-					$('#update_role').val(user.roles).trigger('change').select2();
-					$("#account_user_update").val(id_account)
-					$("#update_poste").val(user.poste)
-					$("#updateAccount").modal('show')
-
-				} else {
-					alert(data)
-				}
-			});
-
-
-		})
-			
-		
-
-
+			var roles = $("#updateAccount_user_"+id_account).find('#role_user').val()
+			console.log(roles)
+			$("#updateAccount_user_"+id_account).find('#update_role').val(roles.split(',')).trigger('change').select2();
+			$("#updateAccount_user_"+id_account).modal('show')
+		});
 		</script>
 	@endsection
 

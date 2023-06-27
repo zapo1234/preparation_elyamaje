@@ -3,11 +3,12 @@
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Admin;
-use App\Http\Controllers\Order;
 use App\Http\Controllers\Label;
+use App\Http\Controllers\Order;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Notification;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Distributors;
+use App\Http\Controllers\Notification;
 use App\Http\Controllers\TiersController;
 
 /*
@@ -74,11 +75,10 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::put("/roles", [Admin::class, "updateRole"])->name('role.update');
     Route::delete("/roles", [Admin::class, "deleteRole"])->name('role.delete');
 
-     // CRUD Role
-     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
-     Route::post("/distributors", [Admin::class, "createDistributors"])->name('distributors.create');
-     Route::put("/distributors", [Admin::class, "updateDistributors"])->name('distributors.update');
-     Route::delete("/distributors", [Admin::class, "deleteDistributors"])->name('distributors.delete');
+    // Distributeurs
+    Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
+    Route::get("/syncDistributors", [Distributors::class, "getAllDistributors"])->name('sync.distributors');
+
 });
 
 // PRÉPARATEUR
@@ -126,11 +126,13 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labelPDF", [Label::class, "labelPDF"])->name('label.download');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
+    Route::post("/generateLabel", [Label::class, "generateLabel"])->name('label.generate');
     Route::post("/labelDelete", [Label::class, "labelDelete"])->name('label.delete');
-    Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::get("/bordereaux", [Label::class, "bordereaux"])->name('bordereaux');
     Route::post("/generateBordereau", [Label::class, "generateBordereau"])->name('bordereau.generate');
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
+    Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
+    Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
 });
 
 // TOUS LES ROLES
@@ -161,4 +163,7 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+
+
+
 

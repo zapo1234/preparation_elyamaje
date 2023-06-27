@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Service\Api\Api;
 use App\Repository\Order\OrderRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,10 +19,14 @@ class User extends BaseController
     
     private $users;
     private $orders;
+    private $api;
+
    
-    public function __construct(UserRepository $users, OrderRepository $orders){
+    public function __construct(UserRepository $users, OrderRepository $orders, Api $api){
         $this->users = $users;
         $this->orders = $orders;
+        $this->api = $api;
+
     }
     
     public function updateRole(Request $request){
@@ -99,8 +104,7 @@ class User extends BaseController
         $email =  $input['update_email'];
         $role =  $input['update_role'];
         $poste =  $input['update_poste'] ?? 0;
-
-
+        
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email, $user_id);
         if($email_already_exist > 0){
@@ -132,4 +136,7 @@ class User extends BaseController
     public function noRole(){
         return view('norole');
     }
+
+
+
 }

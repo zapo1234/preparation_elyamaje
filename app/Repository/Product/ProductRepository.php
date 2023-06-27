@@ -20,22 +20,22 @@ class ProductRepository implements ProductInterface
    }
 
    public function getAllProducts(){
-      return $this->model::all();
+      return $this->model::select('*')->where('is_variable', 0)->get();
    }
 
    public function getAllProductsPublished(){
-      return $this->model::select('*')->where('status', 'publish')->where('stock','>', 10)->get();
+      return $this->model::select('*')->where('status', 'publish')->where('stock','>', 10)->where('is_variable', 0)->get();
    }
 
    public function insertProductsOrUpdate($products){
       try{
          // Récupère les produits déjà existants
          try{
-            $products_exists = $this->model::select('name', 'product_woocommerce_id')->get()->toArray();
+            $products_exists = $this->model::select('product_woocommerce_id', 'category', 'category_id', 'variation', 
+            'name', 'status', 'price', 'barcode', 'manage_stock', 'stock', 'is_variable', 'weight')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
-
 
          // Aucun existants
          if(count($products_exists) == 0){
@@ -53,13 +53,13 @@ class ProductRepository implements ProductInterface
 
                   foreach ($products_exists as $item2) {
                      if ($item1['product_woocommerce_id'] == $item2['product_woocommerce_id']) {
-                           if($item1 != $item2){
-                              $found = false;
-                              break;
-                           } else {
-                              $found = true;
-                              break;
-                           }
+                        if($item1 != $item2){
+                           $found = false;
+                           break;
+                        } else {
+                           $found = true;
+                           break;
+                        }
                      }
                   }
                   

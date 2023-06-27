@@ -53,11 +53,10 @@ class ProductOrderRepository implements ProductOrderInterface
          'subtotal_tax' => $subtotal_tax,
          'total_tax' => $total_tax,
          'total_price' => $total_price,
-         'weight' => $weight,
+         'weight' => $weight ?? 0,
          'line_item_id' => $line_item_id
       ]);
    }
-
 }
 
 

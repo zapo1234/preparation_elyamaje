@@ -28,7 +28,7 @@
 										</div>
 										<div class="d-flex">
 											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
-											<button data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
+											<button style="margin-left:10px" data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
 
 											<!-- <button id="{{ $histo['details']['id'] }}" class="show_order_history btn">Détail</button> -->
 										</div>
@@ -51,10 +51,10 @@
 
 												<div class="body_detail_product_order">
 													@foreach($histo['items'] as $item)
-														<div id="barcode_{{ $item['barcode']  ?? 0 }}" class="{{ $item['pick'] == 1 ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+														<div id="barcode_{{ $item['barcode']  ?? 0 }}" class="{{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order">
 																@if($item['cost'] == 0)
-																<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
+																<span><span class="text-danger">(Cadeau) </span>{{ $item['name'] }}</span>
 																@else 
 																	<span>{{ $item['name'] }}</span>
 																@endif

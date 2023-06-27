@@ -8,6 +8,8 @@ use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
+use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
@@ -35,6 +37,8 @@ class Order extends BaseController
     private $product;
     private $productOrder;
     private $notification;
+    private $woocommerce;
+    private $distributor;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -45,7 +49,9 @@ class Order extends BaseController
     LabelRepository $label,
     ProductOrderRepository $product,
     ProductOrderRepository $productOrder,
-    NotificationRepository $notification
+    NotificationRepository $notification,
+    WoocommerceService $woocommerce,
+    DistributorRepository $distributor
     ){
       $this->api = $api;
       $this->user = $user;
@@ -58,6 +64,8 @@ class Order extends BaseController
       $this->product = $product;
       $this->productOrder = $productOrder;
       $this->notification = $notification;
+      $this->woocommerce = $woocommerce;
+      $this->distributor = $distributor;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -66,7 +74,7 @@ class Order extends BaseController
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         return $orders_user;
       } else {
-        $status = "processing"; // Commande en préparation
+        $status = "processing,order-new-distrib"; // Commande en préparation
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
@@ -90,10 +98,18 @@ class Order extends BaseController
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
         $ids = array_column($orders_distributed, "order_woocommerce_id");
         $list_orders = [];
-
+       
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){
-            if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+            $take_order = true;
+
+            if(count($order['shipping_lines']) > 0){
+              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
+                $take_order = false;
+              }
+            } 
+
+            if($take_order == true){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) > 0){
                 $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
@@ -108,11 +124,14 @@ class Order extends BaseController
               }
               $list_orders[] = $orders[$key];
             }
+       
           }
         } else {
           foreach($orders as $key => $order){
-            if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
-              $list_orders[] = $order;
+            if(count($order['shipping_lines']) > 0){
+              if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+                $list_orders[] = $order;
+              }
             }
           }
         }
@@ -221,13 +240,15 @@ class Order extends BaseController
 
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
+      $products_quantity = $request->post('pick_items_quantity');
       $order_id = $request->post('order_id');
       $partial = $request->post('partial');
+      $note_partial_order = $request->post('note_partial_order');
 
-      if($barcode_array && $order_id ){
-        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $partial);
-        if($check_if_order_done && $partial){
-
+      if($barcode_array && $order_id && $products_quantity){
+        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
+       
+        if($check_if_order_done && !intval($partial)){
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
             $from_user = Auth()->user()->id;
@@ -241,16 +262,18 @@ class Order extends BaseController
                   'to_user' => $lead['user_id'],
                   'type' => 'partial_prepared_order',
                   'order_id' => $order_id,
-                  'detail' => "La commande #".$order_id." est incomplète"
+                  'detail' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
                 ];
+
+
                 $this->notification->insert($data);
 
                 //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                Mail::send('email.orderwaiting', ['name' => $name, 'order_id' => $order_id], function($message) use($email){
-                    $message->to($email);
-                    $message->from('no-reply@elyamaje.com');
-                    $message->subject('Commande incomplète');
-                });
+                // Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
+                //     $message->to($email);
+                //     $message->from('no-reply@elyamaje.com');
+                //     $message->subject('Commande incomplète');
+                // });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);
@@ -324,90 +347,27 @@ class Order extends BaseController
     public function checkExpedition(Request $request){
       $order_id = $request->get('order_id');
       $order = $this->order->getOrderById($order_id);
-
       if($order){
-        echo json_encode(['success' => true, 'order' => $order[0]]);
+        // Check si commande distributeur, si oui rebipper les produits
+        $is_distributor = $this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
+        echo json_encode(['success' => true, 'order' => $order, 'is_distributor' => $is_distributor, 'status' =>  __('status.'.$order[0]['status'])]);
       } else {
         echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
       }
      
     }
 
-
     public function validWrapOrder(Request $request){
           
         $order_id = $request->post('order_id');
-         $order_id = 64939; // Données de test
+         $order_id = 64934; // Données de test
         $order = $this->order->getOrderById($order_id);
 
         dd($order);
 
         if($order){
-
-            $order_new_array = [];
-            $products = [];
-
-            $order[0]['order_id'] = $order[0]['order_woocommerce_id'];
-            $billing = [
-              "first_name" => $order[0]['billing_customer_first_name'],
-              "last_name" => $order[0]['billing_customer_last_name'],
-              "company" => $order[0]['billing_customer_company'],
-              "address_1" => $order[0]['billing_customer_address_1'],
-              "address_2" => $order[0]['billing_customer_address_2'],
-              "city" => $order[0]['billing_customer_city'],
-              "state" => $order[0]['billing_customer_state'],
-              "postcode" => $order[0]['billing_customer_postcode'],
-              "country" => $order[0]['billing_customer_country'],
-              "email" => $order[0]['billing_customer_email'],
-              "phone" =>  $order[0]['billing_customer_phone'],
-            ];
-
-            $shipping = [
-              "first_name" => $order[0]['shipping_customer_first_name'],
-              "last_name" => $order[0]['shipping_customer_last_name'],
-              "company" => $order[0]['shipping_customer_company'],
-              "address_1" => $order[0]['shipping_customer_address_1'],
-              "address_2" => $order[0]['shipping_customer_address_2'],
-              "city" => $order[0]['shipping_customer_city'],
-              "state" => $order[0]['shipping_customer_state'],
-              "postcode" => $order[0]['shipping_customer_postcode'],
-              "country" => $order[0]['shipping_customer_country'],
-              "phone" =>  $order[0]['shipping_customer_phone'],
-            ];
-
-
-       
-            // Construis le tableau de la même manière que woocommerce
-            foreach($order as $key => $or){
-              $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-              'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-              'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-
-           
-              if($or['total_price'] == 0){
-                $products['line_items'][0]['real_price'] = $or['price'];
-              }
-
-              foreach($or as $key2 => $or2){
-                if (str_contains($key2, 'billing')) {
-                  unset($order[$key][$key2]);
-                }
-
-                if (str_contains($key2, 'shipping') && !str_contains($key2, 'method')) {
-                  unset($order[$key][$key2]);
-                }
-              }
-
-            }
-
-
-            $order_new_array =  $order[0];
-            $order_new_array['line_items'] = $products['line_items'];
-            $order_new_array['billing'] = $billing;
-            $order_new_array['shipping'] = $shipping;
-         
-            // recupérer les function d'ecriture  et création de client et facture dans dolibar.
-            $orders[] = $order_new_array;
+          
+            $orders = $this->woocommerce->transformArrayOrder($order);
             // envoi des données pour créer des facture via api dolibar....
 
             // if($request->post('from_label') != "true"){
@@ -452,7 +412,7 @@ class Order extends BaseController
         $weight = 0; // Kg
 
         foreach($order[0]['line_items'] as $or){
-          $weight = $weight + ($or['weight'] *$or['quantity']);
+          $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
         } 
 
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
@@ -460,6 +420,7 @@ class Order extends BaseController
 
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+          
           if($this->label->save($label)){
             if($label['label']){
               echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
@@ -468,7 +429,7 @@ class Order extends BaseController
             echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
           }
         } else {
-          echo json_encode(['success' => false, 'message'=> $label]);
+          echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
         }
       }
     }
@@ -506,6 +467,8 @@ class Order extends BaseController
       $delete_product = $this->productOrder->deleteProductOrderByLineItem($order_id, $line_item_id);
       //Supprimer de la commande via api woocommerce
       $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
+      // Update le total de la commande en base de données
+      $update_order = $this->order->updateTotalOrder($order_id, $delete);
 
       if($delete){
         echo json_encode(['success' => true, 'order' => $delete]);
@@ -526,6 +489,7 @@ class Order extends BaseController
       $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
 
       if($product_order_woocommerce){
+        $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
         $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
 
         echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
