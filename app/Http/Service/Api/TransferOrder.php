@@ -120,6 +120,7 @@ class TransferOrder
                  // recuperer les ids commandes
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
+                 dd($key_commande);
                  // recupérer le tableau de ids
                  $ids_commandes =[];
               
