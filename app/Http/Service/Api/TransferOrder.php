@@ -444,7 +444,10 @@ class TransferOrder
 
                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
-                        dd($data_infos_order);
+                        dump($data_infos_order);
+                        dump($data_tiers);
+                        dump($data_lines);
+                        dd($data_lines);
 
                       
                          foreach($data_tiers as $data) {

@@ -91,95 +91,6 @@ class TransfertMutiple
     return $this;
    }
    
-  
-     
-      
-      public function getdataorderid($id)
-      {
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/orders/$id?&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-             
-            return $donnees;
-      }
-      
-      // 
-      public function getDataorder($date_after,$date_before)
-      {
-             $donnees = [];
-           // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<3; $i++)
-          {
-              $urls="https://www.elyamaje.com/wp-json/wc/v3/orders?orderby=date&order=desc&after=$date_after&before=$date_before&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           
-           return $donnees;
-      }
-      
-      
-      public function getdataproduct()
-      {
-          
-        // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<9; $i++)
-          {
-              
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/products?consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           
-           // recuperer les produit (name et les sku  de ces produits)
-           $product_list = [];
-           foreach($donnees as $k => $values)
-           {
-               foreach($values as $val)
-               {
-                 $product_list[$val['sku']]=$val['name'];
-               
-               }
-           }
-           
-           
-           return $product_list;
-              
-      }
-      
-      
-       public function getDataorders()
-       {
-        
-	         // recuperer les données api dolibar copie projet tranfer x.
-              $method = "GET";
-              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-              //environement test local
-           
-               //Recuperer les ref et id product dans un tableau
-	   
-	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
-	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-	            
-	             $lists = json_decode($listproduct,true);
-	            
-	            foreach($lists as $values)
-               {
-                  // tableau associatve entre ref et label product
-                  $product_datas[$values['ref']] = $values['label'];
-         
-              }
-      
-           
-            return $product_datas;
-       }
-        
-      
 
      
      /** 
@@ -189,12 +100,10 @@ class TransfertMutiple
      {
         // excercer un get et post et put en fonction des status .
         
-        
-          // recuperer les données api dolibar copie projet tranfer x.
-              $method = "GET";
-              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
+            $method = "GET";
+            $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = env('KEY_API_URL');
+         
               //environement test local
            
                //Recuperer les ref et id product dans un tableau
@@ -202,10 +111,7 @@ class TransfertMutiple
 	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
 	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
 	            
-	           
-	           
-                  
-                 // reference ref_client dans dolibar
+	          // reference ref_client dans dolibar
                //Recuperer les ref_client existant dans dolibar
 	            $tiers_ref = "";
                $produitParam = ["limit" => 4000, "sortfield" => "rowid",  "sortorder" => "DESC"];
@@ -570,9 +476,9 @@ class TransfertMutiple
        {
            // recuperer les données api dolibar.
           // recuperer les données api dolibar copie projet tranfer x.
-            $method = "GET";
-           $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+          $method = "GET";
+          $apiKey = env('KEY_API_DOLIBAR');
+          $apiUrl = env('KEY_API_URL');
            
            //appelle de la fonction  Api
            // $data = $this->api->getDatadolibar($apikey,$url);
@@ -587,10 +493,8 @@ class TransfertMutiple
 		    "mode" => "1",
 	    	)
       	), true);
-      	
-
-
-                // recupérer le premier id de la facture
+      
+             // recupérer le premier id de la facture
                // recuperer dans un tableau les ref_client existant id.
                $invoices_asc = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 		      "sortfield" => "t.rowid", 
