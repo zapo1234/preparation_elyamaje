@@ -7,7 +7,7 @@ use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
-use App\Http\Service\Woocommerce\Woocommerce;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Bordereau\BordereauRepository;
 use Illuminate\Routing\Controller as BaseController;
@@ -31,7 +31,7 @@ class Label extends BaseController
         Colissimo $colissimo,
         BordereauRepository $bordereau,
         OrderRepository $order,
-        Woocommerce $woocommerce,
+        WoocommerceService $woocommerce,
         LabelProductOrderRepository $labelProductOrder
     ){
         $this->label = $label;

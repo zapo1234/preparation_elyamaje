@@ -2,7 +2,7 @@
 
 namespace App\Http\Service\Woocommerce;
 
-class Woocommerce
+class WoocommerceService
 {
 
     public function transformArrayOrder($order, $specific_product = []){

@@ -8,7 +8,7 @@ use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
-use App\Http\Service\Woocommerce\Woocommerce;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
@@ -50,7 +50,7 @@ class Order extends BaseController
     ProductOrderRepository $product,
     ProductOrderRepository $productOrder,
     NotificationRepository $notification,
-    Woocommerce $woocommerce,
+    WoocommerceService $woocommerce,
     DistributorRepository $distributor
     ){
       $this->api = $api;
