@@ -445,10 +445,18 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                         dd($data_infos_order);
-                        // insert les details lie au product.
-                       //  $this->don->insert($data_infos_order);
-                         // insert les produit lié a l'utilisateur qui as eu la commande.
+                       dd($data_info_order);
+                        // insert les details lie au product
+                        /*$dons = new Don();
+                        $dons->first_name = $data_infos_order['first_name'];
+                        $dons->last_name = $data_infos_order['last_name'];
+                        $dons->order_id = $data_infos_order['order_id'];
+                        $dons->coupons = $data_infos_order['coupons'];
+                        $dons->total_order = $data_infos_order['total_order'];
+                        $dons->date_order = $data_infos_order['date_order'];
+                        $dons->save();
+                      */
+                        // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dd($data_infos_order);
 
