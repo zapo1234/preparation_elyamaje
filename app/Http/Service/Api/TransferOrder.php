@@ -206,7 +206,7 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                          
+                          if($socid!=""){
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -222,6 +222,8 @@ class TransferOrder
                                     'email'=>$email,
                                   ];
                             }
+
+                          }
 
         
                             if($fk_tiers=="" && $fk_tier=="") {
@@ -401,24 +403,12 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        // INSERT LES données clients 
-                       // DB::table('prepa_dons')->insert($data_infos_order);
-                        // insert les details lie au product
-                        $dons = new Don();
-                        $dons->first_name = $data_infos_order['first_name'];
-                        $dons->last_name = $data_infos_order['last_name'];
-                        $dons->order_id = $data_infos_order['order_id'];
-                        $dons->coupons = $data_infos_order['coupons'];
-                        $dons->total_order = $data_infos_order['total_order'];
-                        $dons->date_order = $data_infos_order['date_order'];
-                        $dons->save();
-
-                        // insert les produit lié a l'utilisateur qui as eu la commande.
+                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dd($data_infos_order);
-
-                      
-                         foreach($data_tiers as $data) {
+                        dump($data_tiers);
+                         
+                        foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                       }
