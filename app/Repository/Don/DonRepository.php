@@ -27,7 +27,7 @@ class DonRepository implements DonInterface
          'total_order' => $data['total_order'],
          'date_order' => $data['date_order'],
          'created_at'=> date('Y-m-d H:i:s'),
-         'updated_at' => date('Y-m-d H:i:s'),
+         'updated_at' => date('Y-m-d H:i:s')
       ]);
    }
 

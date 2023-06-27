@@ -447,10 +447,8 @@ class TransferOrder
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          dd($data_infos_order);
                         // insert les details lie au product.
-                         $this->don->insert($data_infos_order);
-                         
-
-                        // insert les produit lié a l'utilisateur qui as eu la commande.
+                       //  $this->don->insert($data_infos_order);
+                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dd($data_infos_order);
 
