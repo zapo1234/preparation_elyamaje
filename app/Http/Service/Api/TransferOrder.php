@@ -242,23 +242,7 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                            if($socid!=""){
-                              $data =  $this->tiers->gettiersid($socid);
-                             if(count($data)==0){
-                              $data_infos_user =[];
-                            }else{
-
-                                   foreach($data as $valu){
-                                     $nom =$valu['nom'];
-                                     $email = $valu['email'];
-                                   }
-                                   $data_infos_user = [
-                                    'first_name'=> $nom,
-                                    'last_name'=>'',
-                                    'email'=>$email,
-                                  ];
-                            }
-                          }
+                           
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
