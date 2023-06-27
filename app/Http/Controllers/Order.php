@@ -363,13 +363,12 @@ class Order extends BaseController
          $order_id = 64797; // Données de test
         $order = $this->order->getOrderById($order_id);
 
-        dd($order);
-
+    
         if($order){
           
             $orders = $this->woocommerce->transformArrayOrder($order);
             // envoi des données pour créer des facture via api dolibar....
-
+            dd($orders);
             // if($request->post('from_label') != "true"){
                  $this->factorder->Transferorder($orders);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
