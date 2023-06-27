@@ -431,9 +431,9 @@ class TransferOrder
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                       
                         // INSERT LES données clients 
-                       // DB::table('prepa_dons')->insert($data_infos_order);
+                         DB::table('prepa_dons')->insert($data_infos_order);
                         // insert les details lie au product
-                        $dons = new Don();
+                       /* $dons = new Don();
                         $dons->first_name = $data_infos_order['first_name'];
                         $dons->last_name = $data_infos_order['last_name'];
                         $dons->email = $data_infos_order['email'];
@@ -442,7 +442,7 @@ class TransferOrder
                         $dons->total_order = $data_infos_order['total_order'];
                         $dons->date_order = $data_infos_order['date_order'];
                         $dons->save();
-                        
+                      */
                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dump($data_infos_order);
