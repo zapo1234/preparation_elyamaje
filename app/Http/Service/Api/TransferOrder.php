@@ -28,13 +28,11 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers,
-       DonRepository $don)
+       TiersRepository $tiers)
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
-         $this->don = $don;
        }
     
     
@@ -97,48 +95,6 @@ class TransferOrder
    }
    
   
-  
-      
-       public function getDataorders()
-       {
-        
-	         // recuperer les données api dolibar copie projet tranfer x.
-              $method = "GET";
-              $apiKey = env('KEY_API_DOLIBAR');
-              $apiUrl = env('KEY_API_URL');
-   
-              //environement test local
-           
-               //Recuperer les ref et id product dans un tableau
-	   
-	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
-	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-	            
-	             $lists = json_decode($listproduct,true);
-	            
-	            foreach($lists as $values)
-               {
-                  // tableau associatve entre ref et label product
-                  $product_datas[$values['ref']] = $values['label'];
-         
-              }
-      
-           
-            return $product_datas;
-       }
-        
-      
-
-       public function testing($array_x,$val)
-       {
-          if(isset($array_x[$val]))
-          {
-           return true;
-          }
-           else{
-           return false;
-        }
-    }
 
      /** 
      *@return array
@@ -156,7 +112,8 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-                
+                 
+                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -249,7 +206,7 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
                             
-                          if($socid!=""){
+                          
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -265,7 +222,7 @@ class TransferOrder
                                     'email'=>$email,
                                   ];
                             }
-                          }
+
         
                             if($fk_tiers=="" && $fk_tier=="") {
                                    
@@ -444,9 +401,10 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                       dd($data_info_order);
+                        // INSERT LES données clients 
+                       // DB::table('prepa_dons')->insert($data_infos_order);
                         // insert les details lie au product
-                        /*$dons = new Don();
+                        $dons = new Don();
                         $dons->first_name = $data_infos_order['first_name'];
                         $dons->last_name = $data_infos_order['last_name'];
                         $dons->order_id = $data_infos_order['order_id'];
@@ -454,7 +412,7 @@ class TransferOrder
                         $dons->total_order = $data_infos_order['total_order'];
                         $dons->date_order = $data_infos_order['date_order'];
                         $dons->save();
-                      */
+
                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
                         dd($data_infos_order);
