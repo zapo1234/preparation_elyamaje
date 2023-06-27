@@ -335,6 +335,9 @@ class TransferOrder
                                        "options_idc"=>$donnees['coupons']
                                        ];
                                         
+
+
+                                       dd($data_options);
                                          // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
@@ -359,7 +362,7 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                               
-                                       dd($data_options_kdo);
+                                      
                                        // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
