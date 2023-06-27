@@ -7,6 +7,7 @@ use App\Models\Productdiff;
 use App\Models\Transfertrefunded;
 use App\Models\Transfertsucce;
 use App\Models\Don;
+use App\Repository\Don\DonRepository;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Tiers\TiersRepository;
@@ -28,11 +29,13 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers)
+       TiersRepository $tiers,
+       DonRepository $don)
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
+         $this->don = $don;
        }
     
     
@@ -442,17 +445,10 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        // INSERT LES données clients 
-                       // DB::table('prepa_dons')->insert($data_infos_order);
-                        // insert les details lie au product
-                        $dons = new Don();
-                        $dons->first_name = $data_infos_order['first_name'];
-                        $dons->last_name = $data_infos_order['last_name'];
-                        $dons->order_id = $data_infos_order['order_id'];
-                        $dons->coupons = $data_infos_order['coupons'];
-                        $dons->total_order = $data_infos_order['total_order'];
-                        $dons->date_order = $data_infos_order['date_order'];
-                        $dons->save();
+                       
+                        // insert les details lie au product.
+                         $this->don->insert($data_infos_order);
+                         dd($data_infos_order);
 
                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
