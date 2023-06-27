@@ -168,7 +168,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-                    dump($data_list_product);
+                    
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
@@ -255,14 +255,14 @@ class TransferOrder
                                  
 
                                    $data_infos_user = [
-                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                        'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
                               }
 
-                              dd($data_tiers);
-
+                              dump($data_info_user);
+                           
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
@@ -310,6 +310,8 @@ class TransferOrder
                                         ];
 
                                      }
+
+                                    
                
                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu.
