@@ -337,7 +337,7 @@ class TransferOrder
                                        "options_idc"=>$donnees['coupons']
                                        ];
                                       
-                                       dump($data_options);
+                                       
                                         // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
@@ -378,7 +378,7 @@ class TransferOrder
                                          $data_options_kdo =[];
                                     }
                                     // recupérer les id_commande deja pris
-                                   if($this->testing($key_commande,$donnees['order_id'])==true){
+                                   if(isset($key_commande[$donnees['id_order']])==true){
                                      $id_commande_existe[] = $donnees['order_id'];
                                    }
                     
