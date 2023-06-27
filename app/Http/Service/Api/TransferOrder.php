@@ -97,79 +97,20 @@ class TransferOrder
   
      
       
-      public function getdataorderid($id)
-      {
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/orders/$id?&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-             
-            return $donnees;
-      }
-      
-      // 
-      public function getDataorder($date_after,$date_before)
-      {
-             $donnees = [];
-           // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<3; $i++)
-          {
-              $urls="https://www.elyamaje.com/wp-json/wc/v3/orders?orderby=date&order=desc&after=$date_after&before=$date_before&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           
-           return $donnees;
-      }
-      
-      
-      public function getdataproduct()
-      {
-          
-        // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<9; $i++)
-          {
-              
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/products?consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           // recuperer les produit (name et les sku  de ces produits)
-           $product_list = [];
-           foreach($donnees as $k => $values)
-           {
-               foreach($values as $val)
-               {
-                 $product_list[$val['sku']]=$val['name'];
-               
-               }
-           }
-              return $product_list;
-              
-      }
-      
-      
        public function getDataorders()
        {
         
 	         // recuperer les données api dolibar copie projet tranfer x.
               $method = "GET";
-              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-              //environement test local
-           
-               //Recuperer les ref et id product dans un tableau
-	   
-	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
-	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-	            
+              $apiKey = env('KEY_API_DOLIBAR');
+               $apiUrl = env('KEY_API_URL');
+               //environement test local
+              //Recuperer les ref et id product dans un tableau
+	             $produitParam = ["limit" => 700, "sortfield" => "rowid"];
+	             $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
 	             $lists = json_decode($listproduct,true);
 	            
-	            foreach($lists as $values)
-               {
+	            foreach($lists as $values){
                   // tableau associatve entre ref et label product
                   $product_datas[$values['ref']] = $values['label'];
          
@@ -209,7 +150,6 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                  
-                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -328,8 +268,7 @@ class TransferOrder
                                     // recupérer les deux deniers chiffre;
                                     $a11= substr($a1,-2);
                                     $a2 = $dat[1];
-                                 
-                                   $socid = $id_cl;
+                                    $socid = $id_cl;
                                    $woo ="woocommerce";
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce
@@ -371,22 +310,15 @@ class TransferOrder
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
                                             if($values['subtotal']==0){
                                                  $data_kdo[] = [
-                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                  "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                  "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                                  "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                  "product_label" =>$values['name'],
-                                                  "qty" => $values['quantity'],
-                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $values['real_price'],
                                                   "order_id" => $donnees['order_id'],
-                                                  "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                   "product_id" => $fk_product,//  insert id product dans dolibar.
+                                                   "label" =>$values['name'],
+                                                   "qty" => $values['quantity'],
+                                                   "real_price"=> $values['real_price'],
+                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
-
-                                                  
-                                                }
+                                               }
                                               
                                               $tva_product = 20;
                                                $data_product[] = [
@@ -436,7 +368,7 @@ class TransferOrder
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
-                                       "total_ttc" =>floatval($donnees['total_order']),
+                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
                                         'lines' =>$data_product,
                                         'array_options'=> $data_options,
@@ -503,6 +435,7 @@ class TransferOrder
                         $dons = new Don();
                         $dons->first_name = $data_infos_order['first_name'];
                         $dons->last_name = $data_infos_order['last_name'];
+                        $dons->email = $data_infos_order['email'];
                         $dons->order_id = $data_infos_order['order_id'];
                         $dons->coupons = $data_infos_order['coupons'];
                         $dons->total_order = $data_infos_order['total_order'];
@@ -547,10 +480,9 @@ class TransferOrder
         {
            
             $method = "GET";
-            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-             //appelle de la fonction  Api
+            $apiKey = env('KEY_API_DOLIBAR');
+             $apiUrl = env('KEY_API_URL');
+            //appelle de la fonction  Api
             // $data = $this->api->getDatadolibar($apikey,$url);
             // domp affichage test 
             // recupérer le dernière id des facture 
