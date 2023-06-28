@@ -124,23 +124,19 @@ class OrderRepository implements OrderInterface
          }
 
       }
-
       echo json_encode(['success' => true]);
-
-    }
-
+   }
 
    public function getOrdersByUsers(){
-      return $this->model->select('orders.*', 'users.name')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->get();
+      return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
    public function getAllOrdersByUsersNotFinished(){
       return $this->model->select('orders.*', 'users.name')->where('status', '!=', 'finished')->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
-
    public function getUsersWithOrder(){
-      return $this->model->select('users.*')->where('status', 'processing')->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
+      return $this->model->select('users.*')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
    public function getAllOrdersByIdUser($user_id){

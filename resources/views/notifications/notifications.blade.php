@@ -32,6 +32,7 @@
 											<th scope="col">Auteur</th>
 											<th scope="col">Message</th>
 											<th scope="col">Date</th>
+											<th scope="col">ID</th> <!-- Pour le tri -->
 										</tr>
 									</thead>
 									<tbody>
@@ -40,6 +41,7 @@
 												<td data-label="Auteur">{{ $notification->name }}</td>
 												<td data-label="Message"><span>{{ $notification->detail }}</span></td>
 												<td data-label="Date">{{ $notification->date }}</td>
+												<td data-label="ID">{{ $notification->id }}</td> <!-- Pour le tri -->
 											</tr>
 										@endforeach
 									</tbody>
@@ -60,10 +62,13 @@
 
 		$(document).ready(function() {
 			$('#example').DataTable({
+				"order": [[3, 'desc']],
+				"aoColumnDefs": [ 
+					{ "bSearchable": false, "bVisible": false, "aTargets": [ 3 ] },
+				],
 				"initComplete": function(settings, json) {
 					$(".loading_notifications").addClass('d-none')
 					$("#example").removeClass('d-none')
-
 				}
 			})
 		})

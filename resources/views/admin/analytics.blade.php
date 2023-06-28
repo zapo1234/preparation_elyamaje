@@ -105,7 +105,7 @@
 				$(".loading").hide()
 				$(".chart_6").removeClass('d-none')
 
-				if(data != 0){
+				if(data.finished_count.length != 0 || data.prepared_count.length != 0){
 
 					let prepared_count = data.prepared_count.reduce(add, 0)
 					let finished_count = data.finished_count.reduce(add, 0)
@@ -126,7 +126,6 @@
 						foreColor: '#9a9797',
 						type: 'bar',
 						height: 260,
-						
 					},
 					grid: {
 					show: true,
@@ -163,24 +162,19 @@
 						opacity: 1
 					},
 				};
-
 					var chart = new ApexCharts(document.querySelector("#chart6"), options);
 					chart.render();
 				} else {
 					$(".prepared_count").text(0)
 					$(".finished_count").text(0)
 				}
-
 			});
 		}
 
 		function add(accumulator, a) {
 			return accumulator + a;
 		}
-
 		
-
-
 	</script>
 
 	@endsection

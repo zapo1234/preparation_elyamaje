@@ -73,7 +73,7 @@
 										<tr>
 											<th>Commande</th>
 											<th>Status</th>
-											<th>Date</th>
+											<th>Date commande</th>
 											<th class="col-md-2">Étiquette</th>
 										</tr>
 									</thead>
@@ -86,7 +86,7 @@
 												<td data-label="Status">
 													<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
 												</td>
-												<td data-label="Date">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
+												<td data-label="Date commande">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
 												<td data-label="Étiquette">
 													@if(isset($order['labels']))
 														@foreach($order['labels'] as $label)

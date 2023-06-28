@@ -1,7 +1,8 @@
 <div class="sidebar-wrapper" data-simplebar="true">
     <div class="sidebar-header">
-        <div>
+        <div class="d-flex flex-column">
             <img src="assets{{ ('/images/Logo_elyamaje.png') }}" class="logo-icon" alt="logo icon">
+            <span class="header_name_logo">Préparation</span>
         </div>
 
         <div class="toggle-icon ms-auto"><i class='bx bx-first-page'></i>

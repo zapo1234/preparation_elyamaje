@@ -6755,3 +6755,8 @@ textarea:focus{
 	border-radius: .25rem;
 }
 
+.header_name_logo{
+	font-weight: bolder !important;
+	font-size: 9px !important;
+	color: #000 !important;
+}
