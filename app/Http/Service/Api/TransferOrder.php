@@ -95,109 +95,13 @@ class TransferOrder
    }
    
   
-     
-      
-      public function getdataorderid($id)
-      {
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/orders/$id?&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-             
-            return $donnees;
-      }
-      
-      // 
-      public function getDataorder($date_after,$date_before)
-      {
-             $donnees = [];
-           // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<3; $i++)
-          {
-              $urls="https://www.elyamaje.com/wp-json/wc/v3/orders?orderby=date&order=desc&after=$date_after&before=$date_before&consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           
-           return $donnees;
-      }
-      
-      
-      public function getdataproduct()
-      {
-          
-        // boucle sur le nombre de paginations trouvées
-          for($i=1; $i<9; $i++)
-          {
-              
-             $urls="https://www.elyamaje.com/wp-json/wc/v3/products?consumer_key=ck_06dc2c28faab06e6532ecee8a548d3d198410969&consumer_secret=cs_a11995d7bd9cf2e95c70653f190f9feedb52e694&page=$i&per_page=100";
-              // recupérer des donnees orders de woocomerce depuis api
-              $donnes = $this->api->getDataApiWoocommerce($urls);
-             $donnees[] = array_merge($donnes);
-           }
-           // recuperer les produit (name et les sku  de ces produits)
-           $product_list = [];
-           foreach($donnees as $k => $values)
-           {
-               foreach($values as $val)
-               {
-                 $product_list[$val['sku']]=$val['name'];
-               
-               }
-           }
-              return $product_list;
-              
-      }
-      
-      
-       public function getDataorders()
-       {
-        
-	         // recuperer les données api dolibar copie projet tranfer x.
-              $method = "GET";
-              $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-               $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-              //environement test local
-           
-               //Recuperer les ref et id product dans un tableau
-	   
-	           $produitParam = ["limit" => 700, "sortfield" => "rowid"];
-	            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-	            
-	             $lists = json_decode($listproduct,true);
-	            
-	            foreach($lists as $values)
-               {
-                  // tableau associatve entre ref et label product
-                  $product_datas[$values['ref']] = $values['label'];
-         
-              }
-      
-           
-            return $product_datas;
-       }
-        
-      
-
-       public function testing($array_x,$val)
-       {
-          if(isset($array_x[$val]))
-          {
-           return true;
-          }
-           else{
-           return false;
-        }
-    }
 
      /** 
      *@return array
      */
       public function Transferorder($orders)
       {
-            dd($orders);
+            
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
@@ -208,7 +112,6 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -265,7 +168,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-
+                    
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
@@ -300,8 +203,9 @@ class TransferOrder
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
+
                             
-                          
+                          if($socid!=""){
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -317,6 +221,8 @@ class TransferOrder
                                     'email'=>$email,
                                   ];
                             }
+
+                          }
 
         
                             if($fk_tiers=="" && $fk_tier=="") {
@@ -349,12 +255,14 @@ class TransferOrder
                                  
 
                                    $data_infos_user = [
-                                        'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                        'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
                               }
 
+                          
+                           
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
@@ -402,6 +310,8 @@ class TransferOrder
                                         ];
 
                                      }
+
+                                     
                
                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu.
@@ -415,17 +325,20 @@ class TransferOrder
                                      }
                                  }
                            }       
-                        
+                                  
                                 // verifier si la commande est nouvelle
                                 //lié le client les  produits qui compose son achat .
-                                if($this->testing($key_commande,$donnees['order_id'])==false) {
+                                if(isset($key_commande[$donnees['order_id']])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
+
+                                     
                                        $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$donnees['coupons']
                                        ];
-                                        
-                                         // pour les factures non distributeurs...
+                                      
+                                       
+                                        // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
                                         $data_lines[] = [
@@ -449,7 +362,7 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                               
-                                       // insert dans base de donnees historiquesidcommandes
+                                      // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
                                        $historique->id_commande = $donnees['order_id'];
@@ -462,13 +375,19 @@ class TransferOrder
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
                                          $data_options_kdo =[];
+
                                     }
                                     // recupérer les id_commande deja pris
-                                   if($this->testing($key_commande,$donnees['order_id'])==true){
+                                   if(isset($key_commande[$donnees['id_order']])==true){
                                      $id_commande_existe[] = $donnees['order_id'];
                                    }
                     
                       }
+
+                      
+                      
+                       dd('zapo');
+                      
      
                        // recupérer les deux variable dans les seter
                        $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
@@ -496,24 +415,12 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        // INSERT LES données clients 
-                       // DB::table('prepa_dons')->insert($data_infos_order);
-                        // insert les details lie au product
-                        $dons = new Don();
-                        $dons->first_name = $data_infos_order['first_name'];
-                        $dons->last_name = $data_infos_order['last_name'];
-                        $dons->order_id = $data_infos_order['order_id'];
-                        $dons->coupons = $data_infos_order['coupons'];
-                        $dons->total_order = $data_infos_order['total_order'];
-                        $dons->date_order = $data_infos_order['date_order'];
-                        $dons->save();
+                         // insert les produit lié a l'utilisateur qui as eu la commande.
 
-                        // insert les produit lié a l'utilisateur qui as eu la commande.
-
-                        dd($data_infos_order);
-
-                      
-                         foreach($data_tiers as $data) {
+                        
+                       // dump($data_tiers);
+                         
+                        foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                       }
@@ -952,7 +859,7 @@ class TransferOrder
                              }
                   
                        }
-   
+                       
                         // recupérer les deux variable dans les seter
                         $this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                         $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur

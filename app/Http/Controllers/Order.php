@@ -375,26 +375,30 @@ class Order extends BaseController
         }
 
 
+    
         if($order){
           
             $orders = $this->woocommerce->transformArrayOrder($order);
+          
             // envoi des données pour créer des facture via api dolibar....
+            $this->factorder->Transferorder($orders);
+            // if($request->post('from_label') != "true"){
+                 $this->factorder->Transferorder($orders);
+                // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+                // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+                // $this->order->updateOrdersById([$order_id], "finished");...
+                // Insert la commande dans histories
+                // $data = [
+                //   'order_id' => $order_id,
+                //   'user_id' => Auth()->user()->id,
+                //   'status' => 'finished',
+                //   'poste' => Auth()->user()->poste
+                // ];
+                // $this->history->save($data);
+            // }
 
-            //$this->factorder->Transferorder($orders);
-            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-            // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-            // $this->order->updateOrdersById([$order_id], "finished");
-            // Insert la commande dans histories
-            $data = [
-              'order_id' => $order_id,
-              'user_id' => Auth()->user()->id,
-              'status' => 'finished',
-              'poste' => Auth()->user()->poste,
-              'created_at' => date('Y-m-d H:i:s')
-            ];
-            $this->history->save($data);
-                    
-            // Génère l'étiquette ou non selon choix de l'emballeur
+         
+            // Génère l'étiquette ou non
             if($request->post('label') == "true"){
               return $this->generateLabel($orders);
             } else {

@@ -102,24 +102,19 @@ class TiersRepository implements TiersInterface
             // recupérer les données essentiel
            $array_tiers = $this-> getallsocid();
 
-            foreach($lists as $key=>$values)
-            {
+            foreach($lists as $key=>$values){
                
-               if($this->testing($array_tiers,$values['id'])==false)
-               {
+               if($this->testing($array_tiers,$values['id'])==false){
                
-                 if(!in_array($values['id'],$data_ids))
-                 {
+                 if(!in_array($values['id'],$data_ids)) {
                     
-                    if($values['client']==1 OR $values['client']==3)
-                    {
+                    if($values['client']==1 OR $values['client']==3){
                           $x = date('Y-m-d H:i:s', $values['date_creation']);
                           $x1 = date("Y-m-d", strtotime($x.'+ 0 days'));
                           $x2 = date("Y-m-d H:i:s", strtotime($x.'+ 0 days')); // AJOUTER +1 ans MAI 2024
                           $y = date('Y-m-d H:i:s', $values['date_modification']);
                           $y2 = date("Y-m-d H:i:s", strtotime($y.'+ 0 days')); // AJOUTER +1 en Mai 2024 rappel
-
-                          // Insert dasn la table.
+                           // Insert dasn la table.
                            $tier = new Tier;
                            $tier->nom = $values['name'];
                            $tier->prenom = $values['name_alias'];
