@@ -397,7 +397,7 @@
 									return selectHtml;
 								} else {
 									return `
-									<div class="badge rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
+									<div class="badge bg-default rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
 										<i class="bx bxs-circle align-middle me-1"></i>`+row.status_text+`
 									</div>`;
 								}
@@ -738,7 +738,7 @@
 				});
 			}
 
-			function changeStatusOrder(order_id){
+			function changeStatusOrder(order_id, user_id){
 				var order_id = order_id
 				var user_id = user_id
 				var status = $("#selectStatus_"+order_id).val()

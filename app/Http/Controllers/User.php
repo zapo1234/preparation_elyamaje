@@ -38,6 +38,11 @@ class User extends BaseController
     public function createAccount(Request $request) {
 
         $input = $request->all();
+
+        if(!isset($input['role']) || !isset($input['email']) || !isset($input['name_last_name'])){
+            return redirect()->back()->with('error',  'Veuillez renseigner les champs obligatoire');
+        }
+
         $user_name_last_name =   $input['name_last_name'];
         $email =  $input['email'];
         $role =  $input['role'];
@@ -49,7 +54,6 @@ class User extends BaseController
             return redirect()->back()->with('error',  'Cet email existe déjà !');
         }
 
-
         $rand_pass = rand(136,50000);
         $password = "elyamaje@$rand_pass";
         // crypter l'email.
@@ -59,11 +63,11 @@ class User extends BaseController
         if($create){
             
             // ENVOIE EMAIL
-            // Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
-            //     $message->to($email);
-            //     $message->from('no-reply@elyamaje.com');
-            //     $message->subject('Confirmation de création de compte Préparation Elyamaje');
-            // });
+            Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
+                $message->to($email);
+                $message->from('no-reply@elyamaje.com');
+                $message->subject('Confirmation de création de compte Préparation Elyamaje');
+            });
 
             return redirect()->back()->with('success', 'Compte créé avec succès !');
         } else {
@@ -99,6 +103,11 @@ class User extends BaseController
     public function updateAccount(Request $request){
 
         $input = $request->all();
+
+        if(!isset($input['update_role']) || !isset($input['update_email']) || !isset($input['update_name_last_name'])){
+            return redirect()->back()->with('error',  'Veuillez renseigner les champs obligatoire');
+        }
+
         $user_id =   $input['account_user_update'];
         $user_name_last_name =  $input['update_name_last_name'];
         $email =  $input['update_email'];

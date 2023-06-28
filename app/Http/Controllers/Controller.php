@@ -9,6 +9,7 @@ use App\Repository\Order\OrderRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\Don\DonRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;

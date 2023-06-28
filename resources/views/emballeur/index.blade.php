@@ -121,8 +121,8 @@
                         <div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
                             <h2 class="text-center">Recommencer la commande ?</h2>
                             <div class="w-100 d-flex justify-content-center">
-                                <button type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
-                                <button style="margin-left:15px" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+                                <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+                                <button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
                             </div>
                         </div>
                     </div>
@@ -244,7 +244,7 @@
                         $(".distributor").text('Distributrice')
                     }
                     $(".status_order").text(JSON.parse(data).status)
-                    $(".status_order").addClass('bg-light-'+order[0]['status'])
+                    $(".status_order").addClass('bg-default bg-light-'+order[0]['status'])
                     $(".customer_name").text(order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name)
                     $(".customer_email").text(order[0].billing_customer_email)
                     $(".shipping_method").text(order[0].shipping_method_detail ?? '')
@@ -285,7 +285,9 @@
                                             $("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
                                             if(parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text()) == 
                                             parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_to_pick_in').text())){
-                                                $("#order_"+order_id+" .barcode_"+item).addClass('pick')
+                                                setTimeout(function(){
+                                                    $("#order_"+order_id+" .barcode_"+item).addClass('pick')
+                                                },0)
                                             }
                                         });
 

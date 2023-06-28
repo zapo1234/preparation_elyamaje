@@ -269,11 +269,11 @@ class Order extends BaseController
                 $this->notification->insert($data);
 
                 //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                // Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
-                //     $message->to($email);
-                //     $message->from('no-reply@elyamaje.com');
-                //     $message->subject('Commande incomplète');
-                // });
+                Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Commande incomplète');
+                });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);
@@ -323,7 +323,6 @@ class Order extends BaseController
       $status = $request->post('status');
       $user_id = $request->post('user_id');
 
-
       if($order_id && $status){
 
         if($status == "waiting_validate"){
@@ -359,8 +358,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-        $order_id = $request->post('order_id');
-        // $order_id = 64974; // Données de test
+        // $order_id = $request->post('order_id');
+        $order_id = 64797; // Données de test
         $order = $this->order->getOrderByIdWithCustomer($order_id);
         $is_distributor = $order[0]['is_distributor'] != null ? true : false;
 

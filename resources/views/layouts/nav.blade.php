@@ -22,12 +22,14 @@
             </li>
             <li>
                 <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-cog'></i>
+                    <div class="parent-icon"><i class='lni lni-delivery'></i>
                     </div>
-                    <div class="menu-title">Configuration</div>
+                    <div class="menu-title">Colissimo</div>
                 </a>
                 <ul>
-                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
+                    <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
+                    </li>
+                    <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
                     </li>
                 </ul>
             </li>
@@ -40,14 +42,12 @@
             </li>
             <li>
                 <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='lni lni-delivery'></i>
+                    <div class="parent-icon"><i class='bx bx-cog'></i>
                     </div>
-                    <div class="menu-title">Colissimo</div>
+                    <div class="menu-title">Configuration</div>
                 </a>
                 <ul>
-                    <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
-                    </li>
-                    <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
+                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
                     </li>
                 </ul>
             </li>

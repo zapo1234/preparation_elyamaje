@@ -107,7 +107,8 @@ class OrderRepository implements OrderInterface
                      'total_tax' =>  $value['total_tax'],
                      'total_price' => $value['subtotal'],
                      'pick' => 0,
-                     'line_item_id' => $value['id']
+                     'line_item_id' => $value['id'],
+                     'pick_control' => 0
                   ];
                }
             }
@@ -157,9 +158,9 @@ class OrderRepository implements OrderInterface
       $list = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      // $queryOrder = "CASE WHEN products_order.name LIKE '%20 ml' THEN 1 ";
-      // $queryOrder .= "WHEN products_order.name LIKE '%50 ml' THEN 2 ";
-      // $queryOrder .= "ELSE 3 END";
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder .= "ELSE prepa_categories.order_display END";
 
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
@@ -171,8 +172,9 @@ class OrderRepository implements OrderInterface
          'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
+         ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
-         // ->orderByRaw($queryOrder)
+         ->orderBy('products.product_woocommerce_id', 'ASC')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -466,7 +468,8 @@ class OrderRepository implements OrderInterface
                      'total_tax' =>  $value['total_tax'],
                      'total_price' => $value['subtotal'],
                      'pick' => 0,
-                     'line_item_id' => $value['id']
+                     'line_item_id' => $value['id'],
+                     'pick_control' => 0
                   ];
                }
 

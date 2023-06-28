@@ -4,7 +4,7 @@ namespace App\Repository\Don;
 
 use Hash;
 use Exception;
-use App\Models\Dons;
+use App\Models\Don;
 
 
 class DonRepository implements DonInterface
@@ -12,7 +12,7 @@ class DonRepository implements DonInterface
 
    private $model;
 
-   public function __construct(Dons $model){
+   public function __construct(Don $model){
       $this->model = $model;
    }
 

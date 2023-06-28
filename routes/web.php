@@ -138,7 +138,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
 // TOUS LES ROLES
 Route::group(['middleware' =>  ['auth']], function () {
     Route::get("/notifications", [Notification::class, "notificationRead"])->name('notification.read');
-
+    Route::get("/allNotification", [Notification::class, "allNotification"])->name('notifications.all');
 });
 
 // ROLES NON DÉFINI 
@@ -162,7 +162,10 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
-Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+
+
+// Route test à enlever par la suite
+Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 
 

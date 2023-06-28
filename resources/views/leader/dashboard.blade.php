@@ -395,7 +395,7 @@
 									return selectHtml;
 								} else {
 									return `
-									<div class="badge rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
+									<div class="badge bg-default rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
 										<i class="bx bxs-circle align-middle me-1"></i>`+row.status_text+`
 									</div>`;
 								}
