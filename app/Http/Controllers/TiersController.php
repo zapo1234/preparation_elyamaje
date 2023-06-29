@@ -19,13 +19,13 @@ class TiersController extends BaseController
     public function __construct(
     Api $api,
     TiersRepository $tiers,
-    TransferOrder $orders,
-    TransfertOrderdol $orderdol
+    TransferOrder $orders
+    
     ){
      $this->tiers = $tiers;
      $this->api = $api;
      $this->orders = $orders;
-     $this->orderdol = $orderdol;
+
       
     }
 
@@ -40,7 +40,7 @@ class TiersController extends BaseController
     public function postiers()
     { 
         // recupérer le traitement des tiers pour les inserts dans la table...
-        dd($this->orderdol->getordersdol());
+      
         $this->tiers->insertiers();
         dd('zapo');
         $this->orders->Transferorders();
