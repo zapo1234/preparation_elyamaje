@@ -419,7 +419,10 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                         // insert les produit lié a l'utilisateur qui as eu la commande.
+                         // insert le tiers dans la BDD.
+                         foreach($data_infos_order as  $val){
+                             $this->don->inserts($val['first_name'],$val['last_name'],$val['email'],$val['coupons'],$val['total_order'],$val['date_order']);
+                        }
                         dump($data_infos_order);
                          dd($data_tiers);
                        // dump($data_tiers);
