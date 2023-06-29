@@ -417,7 +417,7 @@ class TransferOrder
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
-                       
+                       dd($data_infos_order);
 
                          foreach($data_infos_order as  $val){
                             $tiers = new Don();
