@@ -100,9 +100,11 @@ class TiersRepository implements TiersInterface
             $lists = json_decode($listinvoice,true);
             $data_ids = array('3087');
             // recupérer les données essentiel
+
+            dd('zapo');
            $array_tiers = $this-> getallsocid();
 
-           dd($array_tiers);
+    
 
             foreach($lists as $key=>$values){
                
