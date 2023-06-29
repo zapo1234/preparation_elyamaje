@@ -373,7 +373,7 @@ class TransferOrder
                                    }
                                     else{
 
-                                      dd('zapo');
+                                      
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
@@ -382,6 +382,8 @@ class TransferOrder
                                     }
                                     // recupérer les id_commande deja pris
                                    if(isset($key_commande[$donnees['id_order']])==true){
+
+                                    dd('zapo');
                                      $id_commande_existe[] = $donnees['order_id'];
                                    }
                     
