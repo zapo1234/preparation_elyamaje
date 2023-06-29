@@ -394,8 +394,8 @@ class TransferOrder
                        //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                        // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
                        // filtrer les doublons du tableau
-                       dd($id_commande_exit);
                        $id_commande_exist = array_unique($id_commande_existe);
+                       dd($id_commande_exist);
 
                        dd($id_commande_exist);
                        // recupérer le tableau
