@@ -52,7 +52,7 @@ class TiersController extends BaseController
 
     public function imports($token)
     {
-          dd('zapo');
+          
          $token ="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk";
           $this->tiers->insertiers();
           dd('succes');

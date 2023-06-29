@@ -103,9 +103,6 @@ class TiersRepository implements TiersInterface
 
 
            $array_tiers = $this-> getallsocid();
-           
-           dd($array_tiers);
-    
 
             foreach($lists as $key=>$values){
                
