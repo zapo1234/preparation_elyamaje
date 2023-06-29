@@ -361,7 +361,8 @@ class TransferOrder
                                         "total_order"=> floatval($donnees['total_order']),
                                         "date_order" => $donnees['date'],
                                        ];
-                              
+                                        
+                                       dd($data_options_kdo);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
@@ -371,6 +372,8 @@ class TransferOrder
                                        $historique->save();
                                    }
                                     else{
+
+                                      dd('zapo');
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
