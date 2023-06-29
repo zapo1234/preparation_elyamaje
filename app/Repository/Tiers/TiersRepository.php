@@ -67,8 +67,6 @@ class TiersRepository implements TiersInterface
         // transformer les retour objets en tableau
         $list = json_encode($data);
         $lists = json_decode($data,true);
-
-        dd($lists);
         $list_code =[];
         
         foreach($lists as $key =>  $values){
@@ -84,7 +82,6 @@ class TiersRepository implements TiersInterface
           // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
          //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
              
-         dd('zapo');
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
@@ -106,6 +103,43 @@ class TiersRepository implements TiersInterface
 
 
            $array_tiers = $this-> getallsocid();
+           
+           dd($array_tiers);
+    
+
+            foreach($lists as $key=>$values){
+               
+               if($this->testing($array_tiers,$values['id'])==false){
+               
+                 if(!in_array($values['id'],$data_ids)) {
+                    
+                    if($values['client']==1 OR $values['client']==3){
+                          $x = date('Y-m-d H:i:s', $values['date_creation']);
+                          $x1 = date("Y-m-d", strtotime($x.'+ 0 days'));
+                          $x2 = date("Y-m-d H:i:s", strtotime($x.'+ 0 days')); // AJOUTER +1 ans MAI 2024
+                          $y = date('Y-m-d H:i:s', $values['date_modification']);
+                          $y2 = date("Y-m-d H:i:s", strtotime($y.'+ 0 days')); // AJOUTER +1 en Mai 2024 rappel
+                           // Insert dasn la table.
+                           $tier = new Tier;
+                           $tier->nom = $values['name'];
+                           $tier->prenom = $values['name_alias'];
+                           $tier->socid = $values['id'];
+                           $tier->email = $values['email'];
+                           $tier->code_client = $values['code_client'];
+                           $tier->phone = $values['phone'];
+                           $tier->adresse = $values['address'];
+                           $tier->zip_code = $values['zip'];
+                           $tier->ville = $values['town'];
+                            // save clients
+                           $tier->save();
+                 
+                    }
+                
+                }
+                
+               }
+             
+           }
      
 
       }
