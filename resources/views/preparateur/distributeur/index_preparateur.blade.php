@@ -368,8 +368,8 @@
 								<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
 									<h2 class="text-center">Recommencer la commande ?</h2>
 									<div class="w-100 d-flex justify-content-center">
-										<button type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
-										<button style="margin-left:15px" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+										<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+										<button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
 									</div>
 								</div>
 							</div>
@@ -417,7 +417,6 @@
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="{{asset('assets/js/qrcode.js')}}"></script>
 
-
 		<script>
 
 			$('body').on('click', '.show_order', function() {
@@ -442,13 +441,13 @@
 							if(JSON.parse(list_barcode)[k]){
 									var order_id = JSON.parse(list_barcode)[k].order_id
 									JSON.parse(list_barcode)[k].products.forEach(function(item, key){
-									
-									$("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
-									if(parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text()) == 
-									parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_to_pick_in').text())){
-										$("#order_"+order_id+" .barcode_"+item).addClass('pick')
-									}
-
+										$("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
+										if(parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text()) == 
+										parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_to_pick_in').text())){
+											setTimeout(function(){
+												$("#order_"+order_id+" .barcode_"+item).addClass('pick')
+											},0)
+										}
 								});
 
 								if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length){

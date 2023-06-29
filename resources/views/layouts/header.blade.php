@@ -76,10 +76,13 @@
                                                 </div>
                                             </a>
                                         @endforeach
+                                        @if($count_notif == 0)
+                                            <span class="mt-3 msg-time d-flex justify-content-center w-100">Aucune notification non lue</span>
+                                        @endif
                                     </div>
-                                    <!-- <a href="javascript:;">
+                                    <a href="{{ route('notifications.all') }}">
                                         <div class="text-center msg-footer">Voir toutes les notifications</div>
-                                    </a> -->
+                                    </a>
                                 </div>
                             </li>
                         </ul>

@@ -8,6 +8,8 @@ interface NotificationInterface
     public function insert($data);
 
     public function notificationRead($user);
+
+    public function getAllNotifications($user);
 }
 
 

@@ -42,16 +42,16 @@
 											<hr>
 											<div class="row g-3">
 												<div class="col-md-12">
-													<label for="name_last_name" class="form-label">Nom / Prénom</label>
+													<label for="name_last_name" class="form-label">Nom / Prénom*</label>
 													<input required name="name_last_name" type="text" class="form-control" id="name_last_name">
 												</div>
 											
 												<div class="col-md-12">
-													<label for="email" class="form-label">Email</label>
+													<label for="email" class="form-label">Email*</label>
 													<input required name="email" type="email" class="form-control" id="email">
 												</div>
 												<div class="col-md-12">
-													<label for="role" class="form-label">Rôle</label>
+													<label for="role" class="form-label">Rôle*</label>
 													<select required name="role[]" id="role" class="form-select">
 														@foreach($roles as $role)
 															@if( $role->id != 1 || $isAdmin)
@@ -156,16 +156,16 @@
 																<hr>
 																<div class="row g-3">
 																	<div class="col-md-12">
-																		<label for="update_name_last_name" class="form-label">Nom / Prénom</label>
+																		<label for="update_name_last_name" class="form-label">Nom / Prénom*</label>
 																		<input value="{{ $user['name'] }}" required name="update_name_last_name" type="text" class="form-control" id="update_name_last_name">
 																	</div>
 																
 																	<div class="col-md-12">
-																		<label for="update_email" class="form-label">Email</label>
+																		<label for="update_email" class="form-label">Email*</label>
 																		<input value="{{ $user['email'] }}" required name="update_email" type="update_email" class="form-control" id="update_email">
 																	</div>
 																	<div class="col-md-12">
-																		<label for="update_role" class="form-label">Rôle</label>
+																		<label for="update_role" class="form-label">Rôle*</label>
 																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
 																		<select multiple required name="update_role[]" id="update_role" class="form-select">
 																			@foreach($roles as $role)

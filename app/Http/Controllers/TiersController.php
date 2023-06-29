@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Tiers\TiersRepository;
 use App\Http\Service\Api\TransferOrder;
-use App\Http\Service\Api\TransfertOderdol;
+use App\Http\Service\Api\TransfertOrderdol;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -21,7 +21,7 @@ class TiersController extends BaseController
     Api $api,
     TiersRepository $tiers,
     TransferOrder $orders,
-    TransfertOderdol $orderdol
+    TransfertOrderdol $orderdol
     ){
      $this->tiers = $tiers;
      $this->api = $api;

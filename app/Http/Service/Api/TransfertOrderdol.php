@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Service\CallApi;
+namespace App\Http\Service\Api;
 
 use Illuminate\Support\Facades\Http;
 use Automattic\WooCommerce\Client;

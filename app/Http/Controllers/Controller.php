@@ -9,6 +9,7 @@ use App\Repository\Order\OrderRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Repository\Don\DonRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -40,7 +41,7 @@ class Controller extends BaseController
     }
     
      // INDEX ADMIN
-    public function index(Request $request){
+    public function index(){
         $teams = $this->users->getUsersByRole([2, 3, 5]);
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
         $products =  $this->products->getAllProductsPublished();
@@ -58,6 +59,24 @@ class Controller extends BaseController
         return view('index', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
     }
 
+    // INDEX CHEF D'ÉQUIPE
+    public function dashboard(){
+        $teams = $this->users->getUsersByRole([2, 3, 5]);
+        $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+        $products =  $this->products->getAllProductsPublished();
+        $number_preparateur = 0;
+         
+         foreach($teams as $team){
+             foreach($team['role_id'] as $role){
+                 if($role == 2){
+                     $number_preparateur = $number_preparateur + 1;
+                 }
+             }
+         }   
+ 
+        $roles = $this->role->getRoles();
+        return view('leader.dashboard', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
+    }
 
     // CONFIGURATION ADMIN
     public function categories(){
@@ -121,25 +140,6 @@ class Controller extends BaseController
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
             'number_orders_validate' =>  count($orders_validate)]);
-    }
-
-    // INDEX CHEF D'ÉQUIPE
-    public function dashboard(){
-       $teams = $this->users->getUsersByRole([2, 3, 5]);
-       $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
-       $products =  $this->products->getAllProductsPublished();
-       $number_preparateur = 0;
-        
-        foreach($teams as $team){
-            foreach($team['role_id'] as $role){
-                if($role == 2){
-                    $number_preparateur = $number_preparateur + 1;
-                }
-            }
-        }   
-
-        $roles = $this->role->getRoles();
-        return view('leader.dashboard', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
     }
 
     // INDEX EMBALLEUR 

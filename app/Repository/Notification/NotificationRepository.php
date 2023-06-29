@@ -29,6 +29,14 @@ class NotificationRepository implements NotificationInterface
    public function notificationRead($user){
       return $this->model::where('to_user', $user)->update(['is_read' => 1]);
    }
+
+   public function getAllNotifications($user){
+      return $this->model::select('notifications.*', 'users.name')
+      ->join('users', 'users.id', '=', 'notifications.from_user')
+      ->where('to_user', $user)
+      ->orderBy('created_at', 'DESC')
+      ->get();
+   }
 }
 
 

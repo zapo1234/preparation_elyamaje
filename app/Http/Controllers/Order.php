@@ -245,10 +245,12 @@ class Order extends BaseController
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order');
 
+
+
       if($barcode_array && $order_id && $products_quantity){
         $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
        
-        if($check_if_order_done && !intval($partial)){
+        if($check_if_order_done && $partial == "1"){
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
             $from_user = Auth()->user()->id;
@@ -323,7 +325,6 @@ class Order extends BaseController
       $status = $request->post('status');
       $user_id = $request->post('user_id');
 
-
       if($order_id && $status){
 
         if($status == "waiting_validate"){
@@ -359,9 +360,22 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-        $order_id = $request->post('order_id');
-         $order_id = 64797; // Données de test
-        $order = $this->order->getOrderById($order_id);
+        // $order_id = $request->post('order_id');
+        $order_id = 64797; // Données de test
+        $order = $this->order->getOrderByIdWithCustomer($order_id);
+        $is_distributor = $order[0]['is_distributor'] != null ? true : false;
+
+        if($is_distributor){
+          $barcode_array = $request->post('pick_items');
+          $products_quantity = $request->post('pick_items_quantity');
+          $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
+
+          if(!$check_if_order_done){
+            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
+            return;
+          }
+        }
+
 
     
         if($order){
@@ -369,7 +383,7 @@ class Order extends BaseController
             $orders = $this->woocommerce->transformArrayOrder($order);
           
             // envoi des données pour créer des facture via api dolibar....
-            $this->factorder->Transferorder($orders);
+           
             // if($request->post('from_label') != "true"){
                  $this->factorder->Transferorder($orders);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"

@@ -31,46 +31,43 @@
 			<div class="container-fluid">
 				<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
 					<div class="col mx-auto">
-						<div class="mb-4 text-center">
-							<img src="assets{{ ('/images/logo-img.png') }}" width="180" alt="" />
-						</div>
+
 
 						@if(session('error'))
-							<div class="error_login d-flex">
-								<div class="text-center alert alert-danger">
-									{{ session('error') }}
-								</div>
+							<div class="border_radius_alert alert border-0 border-start border-5 border-danger alert-dismissible fade show">
+								<div>{{ session('error') }}</div>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>
 						@endif
 						@if(session('success'))
-							<div class="error_login d-flex">
-								<div class="text-center alert alert-success">
-									{{ session('success') }}
-								</div>
+							<div class="border_radius_alert alert alert-success border-0 bg-success alert-dismissible fade show">
+								<div class="text-white">{{ session('success') }}</div>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>
 						@endif
 
-						<div class="card">
+						<div class="card radius-10">
 							<div class="card-body">
 								<div class="p-4 rounded">
 									<div class="d-grid">
-										<a class="btn my-4 btn-white" href="javascript:;"> 
-											<span class="d-flex justify-content-center align-items-center">
+										<div class="btn my-4 btn-white" href=""> 
+											<span class="d-flex flex-column justify-content-center align-items-center">
 												<img id="imj" src="assets{{ ('/images/Logo_elyamaje.png') }}" width="95px" ;="" height="auto">
+												<strong>Préparation</strong>
 											</span>
-										</a>
+										</div>
 									</div>
-									<div class="form-body">
+									<div class="form-body login_form">
 										<form method="post" action="{{ route('login') }}" class="row g-3">
 											@csrf 
 											<div class="col-12">
 												<label for="inputEmailAddress" class="form-label">Email</label>
-												<input type="email" name="email" class="form-control" id="inputEmailAddress" placeholder="Email">
+												<input required type="email" name="email" class="form-control" id="inputEmailAddress" placeholder="Email">
 											</div>
 											<div class="col-12">
 												<label for="inputChoosePassword" class="form-label">Mot de passe</label>
 												<div class="input-group" id="show_hide_password">
-													<input type="password" name="password" class="form-control border-end-0" id="inputChoosePassword" value="" placeholder="Mot de passe"> <a href="javascript:;" class="input-group-text bg-transparent"><i class='bx bx-hide'></i></a>
+													<input required type="password" name="password" class="form-control border-end-0" id="inputChoosePassword" value="" placeholder="Mot de passe"> <a href="javascript:;" class="input-group-text bg-transparent"><i class='bx bx-hide'></i></a>
 												</div>
 											</div>
 											<div class="w-100 col-md-6 text-end">	

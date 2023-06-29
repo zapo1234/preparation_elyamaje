@@ -93,7 +93,7 @@
 
 															<div class="body_detail_product_order">
 																@foreach($orders['items'] as $item)
-																	<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+																	<div class="barcode_{{ $item['barcode'] ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 																		<div class="column11 d-flex align-items-center detail_product_name_order">
 																			@if($item['cost'] == 0)
 																			<span><span class="text-danger">(Cadeau) </span>{{ $item['name'] }}</span>
@@ -368,8 +368,8 @@
 								<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
 									<h2 class="text-center">Recommencer la commande ?</h2>
 									<div class="w-100 d-flex justify-content-center">
-										<button type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
-										<button style="margin-left:15px" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+										<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
+										<button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
 									</div>
 								</div>
 							</div>
@@ -446,7 +446,9 @@
 									$("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
 									if(parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_pick_in').text()) == 
 									parseInt($("#order_"+order_id+" .barcode_"+item).find('.quantity_to_pick_in').text())){
-										$("#order_"+order_id+" .barcode_"+item).addClass('pick')
+										setTimeout(function(){
+											$("#order_"+order_id+" .barcode_"+item).addClass('pick')
+										},0)
 									}
 
 								});
