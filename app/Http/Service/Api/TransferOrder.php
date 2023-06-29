@@ -362,7 +362,6 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                                         
-                                       dd($data_options_kdo);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
@@ -396,8 +395,6 @@ class TransferOrder
                        // filtrer les doublons du tableau
                        $id_commande_exist = array_unique($id_commande_existe);
                        dd($id_commande_exist);
-
-                       dd($id_commande_exist);
                        // recupérer le tableau
                        $this->setDataidcommande($id_commande_exist);
                        // renvoyer un tableau unique par tiers via le socid.
@@ -422,8 +419,7 @@ class TransferOrder
                          // insert les produit lié a l'utilisateur qui as eu la commande.
                        
                         dump($data_infos_order);
-
-                        dd($data_tiers);
+                         dd($data_tiers);
                        // dump($data_tiers);
                          
                         foreach($data_tiers as $data) {
