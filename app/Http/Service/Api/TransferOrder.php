@@ -394,7 +394,6 @@ class TransferOrder
                        // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
                        // filtrer les doublons du tableau
                        $id_commande_exist = array_unique($id_commande_existe);
-                       dd($id_commande_exist);
                        // recupérer le tableau
                        $this->setDataidcommande($id_commande_exist);
                        // renvoyer un tableau unique par tiers via le socid.
