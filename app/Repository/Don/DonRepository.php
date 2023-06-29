@@ -16,19 +16,19 @@ class DonRepository implements DonInterface
       $this->model = $model;
    }
 
-   public function insert($data)
+
+   public function inserts($first_name,$last_name,$email,$order_id,$coupons,$total_order,$date_order)
    {
-      return $this->model::insert([
-         'first_name' => $data['first_name'],
-         'last_name' => $data['last_name'],
-         'email' => $data['email'],
-         'order_id' => $data['order_id'],
-         'coupons' => $data['coupons'],
-         'total_order' => $data['total_order'],
-         'date_order' => $data['date_order'],
-         'created_at'=> date('Y-m-d H:i:s'),
-         'updated_at' => date('Y-m-d H:i:s')
-      ]);
+        $tiers = new Don();
+        $tiers->first_name = $first_name;
+        $tiers->last_name = $lastname;
+        $tiers->email = $email;
+        $tiers->order_id = $order_id;
+        $tiers->coupons = $coupons;
+        $tiers->total_order = $total_order;
+        $tiers->date_order = $date_order;
+        $tiers->save();
+       
    }
 
    
