@@ -381,15 +381,12 @@ class TransferOrder
 
                                     }
                                     // recupérer les id_commande deja pris
-                                   if(isset($key_commande[$donnees['id_order']])==true){
-
-                                    dd('zapo');
-                                     $id_commande_existe[] = $donnees['order_id'];
-                                   }
+                                   
                     
                       }
 
                       
+                      dd('zapo');
                        // recupérer les deux variable dans les setter.
                        //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                        // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
