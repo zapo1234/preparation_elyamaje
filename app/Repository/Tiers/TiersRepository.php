@@ -81,7 +81,8 @@ class TiersRepository implements TiersInterface
           // $method = "GET";
           // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
          //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
-
+             
+         dd('zapo');
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
@@ -101,7 +102,7 @@ class TiersRepository implements TiersInterface
             $data_ids = array('3087');
             // recupérer les données essentiel
 
-            dd('zapo');
+
            $array_tiers = $this-> getallsocid();
 
     
