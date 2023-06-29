@@ -381,16 +381,20 @@ class TransferOrder
 
                                     }
                                     // recupérer les id_commande deja pris
-                                   
+                                    if(isset($key_commande[$donnees['order_id']])==true) {
+                                        // 
+                                        $id_commande_existe[] = $donnees['order_id'];
+                                    }
                     
                       }
 
                       
-                      dd('zapo');
+                      
                        // recupérer les deux variable dans les setter.
                        //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                        // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
                        // filtrer les doublons du tableau
+                       dd($id_commande_exit);
                        $id_commande_exist = array_unique($id_commande_existe);
 
                        dd($id_commande_exist);
