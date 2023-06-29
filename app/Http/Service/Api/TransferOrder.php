@@ -9,6 +9,7 @@ use App\Models\Transfertsucce;
 use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
+use App\Repository\Don\DonRepository;
 use App\Repository\Tiers\TiersRepository;
 use Automattic\WooCommerce\Client;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
@@ -28,12 +29,14 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers
+       TiersRepository $tiers,
+       DonRepository $don
        )
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
+         $this->don = $don;
        }
     
     
