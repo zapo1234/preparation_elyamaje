@@ -10,7 +10,6 @@ use App\Models\Don;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Tiers\TiersRepository;
-use App\Repository\Don\DonRepository;
 use Automattic\WooCommerce\Client;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 use DateTime;
@@ -29,14 +28,12 @@ class TransferOrder
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
-       TiersRepository $tiers,
-       DonRepository $don
+       TiersRepository $tiers
        )
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
-         $this->don = $don;
        }
     
     
@@ -420,11 +417,21 @@ class TransferOrder
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
-                         foreach($data_infos_order as  $val){
-                             $this->don->inserts($val['first_name'],$val['last_name'],$val['email'],$val['coupons'],$val['total_order'],$val['date_order']);
-                        }
-                        dump($data_infos_order);
+                         dump($data_infos_order);
                          dd($data_tiers);
+
+                         foreach($data_infos_order as  $val){
+                            $tiers = new Don();
+                            $tiers->first_name = $val['first_name'];
+                            $tiers->last_name =  $val['last_name'];
+                            $tiers->email =  $val['email'];
+                            $tiers->order_id = $val['order_id'];
+                            $tiers->coupons = $val['coupons'];
+                            $tiers->total_order = $val['total_order'];
+                            $tiers->date_order = $val['date_order'];
+                            $tiers->save();
+                        }
+                         
                        // dump($data_tiers);
                          
                         foreach($data_tiers as $data) {
