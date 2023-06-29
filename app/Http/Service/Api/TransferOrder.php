@@ -412,8 +412,10 @@ class TransferOrder
                        // merger le client et les data coupons
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert les produit lié a l'utilisateur qui as eu la commande.
+                       
+                        dump($data_infos_order);
 
-                        dd($data_infos_order);
+                        dd($data_tiers);
                        // dump($data_tiers);
                          
                         foreach($data_tiers as $data) {
