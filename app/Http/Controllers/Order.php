@@ -382,6 +382,7 @@ class Order extends BaseController
           
             $orders = $this->woocommerce->transformArrayOrder($order);
           
+            dd($orders);
             // envoi des données pour créer des facture via api dolibar....
            
             // if($request->post('from_label') != "true"){
