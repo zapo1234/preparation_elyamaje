@@ -34,7 +34,6 @@ class TransferOrder
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
-         $this->don = $don;
        }
     
     
