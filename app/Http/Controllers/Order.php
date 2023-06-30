@@ -363,27 +363,21 @@ class Order extends BaseController
         // $order_id = $request->post('order_id');
         $order_id = 80279; // Données de test
         $order = $this->order->getOrderByIdWithCustomer($order_id);
-        if(count($order) > 0){
-          $is_distributor = $order[0]['is_distributor'] != null ? true : false;
-        } else {
-          $is_distributor = false;
-        }
-        
 
-        if($is_distributor){
-          $barcode_array = $request->post('pick_items');
-          $products_quantity = $request->post('pick_items_quantity');
-          $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
-
-          if(!$check_if_order_done){
-            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
-            return;
-          }
-        }
-
-
-    
         if($order){
+
+          $is_distributor = $order[0]['is_distributor'] != null ? true : false;
+   
+          if($is_distributor){
+            $barcode_array = $request->post('pick_items');
+            $products_quantity = $request->post('pick_items_quantity');
+            $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
+  
+            if(!$check_if_order_done){
+              echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
+              return;
+            }
+          }
           
             $orders = $this->woocommerce->transformArrayOrder($order);
           // envoi des données pour créer des facture via api dolibar....
