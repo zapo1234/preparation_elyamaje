@@ -433,7 +433,6 @@ class TransferOrder
                         
                         // recupérer les cadeaux associé a l'utilisateur.
                          if(count($data_kdo)!=0){
-
                           foreach($data_kdo as $val){
                               $this->don->inserts($val['order_id'],$val['fk_product'],$val['qty'],$val['rela_price']);
                           }
