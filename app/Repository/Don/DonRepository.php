@@ -5,6 +5,7 @@ namespace App\Repository\Don;
 use Hash;
 use Exception;
 use App\Models\Don;
+use Illuminate\Support\Facades\DB;
 
 
 class DonRepository implements DonInterface
