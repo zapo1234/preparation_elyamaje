@@ -108,6 +108,7 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
+             dd($orders);
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
@@ -171,7 +172,7 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
-
+       
                     
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -290,7 +291,7 @@ class TransferOrder
                                                   "product_label" =>$values['name'],
                                                   "qty" => $values['quantity'],
                                                   "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $values['real_price'],
+                                                  "real_price"=> $donnees['real_price'],
                                                   "order_id" => $donnees['order_id'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
@@ -385,7 +386,7 @@ class TransferOrder
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
-                                        // 
+                                        // .....
                                         $id_commande_existe[] = $donnees['order_id'];
                                     }
                     
@@ -393,17 +394,17 @@ class TransferOrder
 
                       
                       
-                       // recupérer les deux variable dans les setter.
-                       //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                       // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
-                       // filtrer les doublons du tableau
-                       $id_commande_exist = array_unique($id_commande_existe);
-                       // recupérer le tableau
-                       $this->setDataidcommande($id_commande_exist);
-                       // renvoyer un tableau unique par tiers via le socid.
-                       // données des non distributeurs
-                       $temp = array_unique(array_column($data_lines, 'socid'));
-                       $unique_arr = array_intersect_key($data_lines, $temp);
+                         // recupérer les deux variable dans les setter.
+                          //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
+                          // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                          // filtrer les doublons du tableau
+                           $id_commande_exist = array_unique($id_commande_existe);
+                         // recupérer le tableau
+                          $this->setDataidcommande($id_commande_exist);
+                          // renvoyer un tableau unique par tiers via le socid.
+                          // données des non distributeurs
+                          $temp = array_unique(array_column($data_lines, 'socid'));
+                          $unique_arr = array_intersect_key($data_lines, $temp);
 
                        
 
@@ -418,19 +419,26 @@ class TransferOrder
 
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
+              
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
-                         $tiers = new Don();
-                         $tiers->first_name = $data_infos_order['first_name'];
-                         $tiers->last_name = $data_infos_order['last_name'];
+                         if(count($data_infos_order)!=0){
+                          $tiers = new Don();
+                          $tiers->first_name = $data_infos_order['first_name'];
+                          $tiers->last_name = $data_infos_order['last_name'];
                          $tiers->email = $data_infos_order['email'];
                          $tiers->order_id = $data_infos_order['order_id'];
                          $tiers->coupons = $data_infos_order['total_order'];
                          $tiers->total_order = $data_infos_order['date_order'];
                          $tiers->save();
                         
+                       }
+                         // insert 
+
+                         // JOINTRE les produits.
                        
                         dump($data_infos_order);
+                        dump($data_kdo);
                         dd($data_tiers);
                        // dump($data_tiers);
                          
