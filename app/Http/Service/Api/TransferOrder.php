@@ -108,7 +108,7 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
-             dd($orders);
+
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
@@ -291,7 +291,7 @@ class TransferOrder
                                                   "product_label" =>$values['name'],
                                                   "qty" => $values['quantity'],
                                                   "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $donnees['real_price'],
+                                                  "real_price"=> $values['real_price'],
                                                   "order_id" => $donnees['order_id'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
@@ -423,19 +423,20 @@ class TransferOrder
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
-                          $tiers = new Don();
-                          $tiers->first_name = $data_infos_order['first_name'];
-                          $tiers->last_name = $data_infos_order['last_name'];
-                         $tiers->email = $data_infos_order['email'];
-                         $tiers->order_id = $data_infos_order['order_id'];
-                         $tiers->coupons = $data_infos_order['total_order'];
-                         $tiers->total_order = $data_infos_order['date_order'];
-                         $tiers->save();
-                        
+                            // insert 
+                           $tiers_exist = $this->don->gettiers();
+                           if(isset($tiers_exist[$data_infos_order['email']])==false){
+                            $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                            // JOINTRE les produits.
+                           }
                        }
-                         // insert 
-
-                         // JOINTRE les produits.
+                        
+                        // recupérer les cadeaux associé a l'utilisateur.
+                         if(count($data_kdo)!=0){
+                          foreach($data_kdo as $val){
+                              $this->don->inserts($val['order_id'],$val['fk_product'],$val['qty'],$val['rela_price']);
+                          }
+                       }
                        
                         dump($data_infos_order);
                         dump($data_kdo);
