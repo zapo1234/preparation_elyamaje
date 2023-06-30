@@ -32,7 +32,7 @@ class ProductRepository implements ProductInterface
          // Récupère les produits déjà existants
          try{
             $products_exists = $this->model::select('product_woocommerce_id', 'category', 'category_id', 'variation', 
-            'name', 'status', 'price', 'barcode', 'manage_stock', 'stock', 'is_variable', 'weight')->get()->toArray();
+            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
@@ -53,7 +53,7 @@ class ProductRepository implements ProductInterface
 
                   foreach ($products_exists as $item2) {
                      if ($item1['product_woocommerce_id'] == $item2['product_woocommerce_id']) {
-                        if($item1 != $item2){
+                        if(count(array_diff($item1, $item2)) > 0){
                            $found = false;
                            break;
                         } else {
@@ -67,6 +67,8 @@ class ProductRepository implements ProductInterface
                      $difference[] = $item1;
                   }
                }
+
+
 
                if (!empty($difference)) {
 

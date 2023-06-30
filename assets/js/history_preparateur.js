@@ -12,7 +12,7 @@ $('body').on('click', '.show_order_history_code', function() {
     var customer_name = $(this).attr('data-customer')
 
     const href = id+","+product+","+customer_name;
-    const size = 300;
+    const size = 150;
     
     // $(".info_order").text("#Commande "+id+" - "+pick_items.length+" Produit(s)"+" - "+customer_name)
     var list_products = ""

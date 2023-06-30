@@ -32,7 +32,7 @@ class CategoriesRepository implements CategoriesInterface
                   $found = false;
                   foreach ($categories_exists as $item2) {
                      if ($item1['category_id_woocommerce'] == $item2['category_id_woocommerce']) {
-                        if($item1 != $item2){
+                        if(count(array_diff($item1, $item2)) > 0){
                            $found = false;
                            break;
                         } else {
