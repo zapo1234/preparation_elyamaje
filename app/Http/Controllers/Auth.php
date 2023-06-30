@@ -25,7 +25,7 @@ class Auth extends BaseController
 
     public function login(Request $request){
         if(!Auth()->user()){
-            return view('login');
+            return view('login_v2');
         } else {
             return redirect()->route('/');
         }
