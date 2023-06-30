@@ -23,6 +23,7 @@ class DonsProductRepository implements DonsproductInterface
         $product->order_id = $order_id;
         $product->product_id = $product_id;
         $product->label = $label;
+        $product->quantity = $qty;
         $product->real_price = $real_price;
         $product->save();
        
