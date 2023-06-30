@@ -30,13 +30,15 @@ class TransferOrder
        public function __construct(Api $api,
        CommandeidsRepository $commande,
        TiersRepository $tiers,
-       DonRepository $don
+       DonRepository $don,
+       DonsproductRepository $dons
        )
        {
          $this->api=$api;
          $this->commande = $commande;
          $this->tiers = $tiers;
          $this->don = $don;
+         $this->dons = $dons;
        }
     
     
@@ -434,7 +436,7 @@ class TransferOrder
                         // recupérer les cadeaux associé a l'utilisateur.
                          if(count($data_kdo)!=0){
                           foreach($data_kdo as $val){
-                              $this->don->inserts($val['order_id'],$val['fk_product'],$val['qty'],$val['rela_price']);
+                              $this->dons->inserts($val['order_id'],$val['fk_product'],$val['qty'],$val['real_price']);
                           }
                        }
                        
