@@ -424,12 +424,20 @@ class TransferOrder
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
                             // insert 
-                           $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                          // JOINTRE les produits.
-                      
-
+                           $tiers_exist = $this->don->gettiers();
+                           if(isset($tiers_exist[$data_infos_order['email']])==false){
+                            $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                            // JOINTRE les produits.
+                           }
                        }
                         
+                        // recupérer les cadeaux associé a l'utilisateur.
+                         if(count($data_kdo)!=0){
+
+                          foreach($data_kdo as $val){
+                              $this->don->inserts($val['order_id'],$val['fk_product'],$val['qty'],$val['rela_price']);
+                          }
+                       }
                        
                         dump($data_infos_order);
                         dump($data_kdo);
