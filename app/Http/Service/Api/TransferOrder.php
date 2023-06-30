@@ -291,7 +291,7 @@ class TransferOrder
                                                   "product_label" =>$values['name'],
                                                   "qty" => $values['quantity'],
                                                   "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $values['real_price'],
+                                                  "real_price"=> $donnees['real_price'],
                                                   "order_id" => $donnees['order_id'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
