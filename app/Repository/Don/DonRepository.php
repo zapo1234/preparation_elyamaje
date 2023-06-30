@@ -21,7 +21,7 @@ class DonRepository implements DonInterface
    {
         $tiers = new Don();
         $tiers->first_name = $first_name;
-        $tiers->last_name = $lastname;
+        $tiers->last_name = $last_name;
         $tiers->email = $email;
         $tiers->order_id = $order_id;
         $tiers->coupons = $coupons;
