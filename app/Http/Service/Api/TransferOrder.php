@@ -418,17 +418,19 @@ class TransferOrder
 
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
+                       if(count($data_infos_order)==0){
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
-                         $tiers = new Don();
-                         $tiers->first_name = $data_infos_order['first_name'];
-                         $tiers->last_name = $data_infos_order['last_name'];
+                          $tiers = new Don();
+                          $tiers->first_name = $data_infos_order['first_name'];
+                          $tiers->last_name = $data_infos_order['last_name'];
                          $tiers->email = $data_infos_order['email'];
                          $tiers->order_id = $data_infos_order['order_id'];
                          $tiers->coupons = $data_infos_order['total_order'];
                          $tiers->total_order = $data_infos_order['date_order'];
                          $tiers->save();
                         
+                       }
                          // insert 
 
                          // JOINTRE les produits.
