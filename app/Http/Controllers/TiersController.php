@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Tiers\TiersRepository;
 use App\Http\Service\Api\TransferOrder;
-use App\Http\Service\Api\TransfertOrderdol;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -20,13 +19,13 @@ class TiersController extends BaseController
     public function __construct(
     Api $api,
     TiersRepository $tiers,
-    TransferOrder $orders,
-    TransfertOrderdol $orderdol
+    TransferOrder $orders
+    
     ){
      $this->tiers = $tiers;
      $this->api = $api;
      $this->orders = $orders;
-     $this->orderdol = $orderdol;
+
       
     }
 
@@ -41,7 +40,7 @@ class TiersController extends BaseController
     public function postiers()
     { 
         // recupérer le traitement des tiers pour les inserts dans la table...
-        dd($this->orderdol->getordersdol());
+      
         $this->tiers->insertiers();
         dd('zapo');
         $this->orders->Transferorders();
@@ -53,7 +52,8 @@ class TiersController extends BaseController
 
     public function imports($token)
     {
-          $token ="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk";
+          
+         $token ="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk";
           $this->tiers->insertiers();
           dd('succes');
 
