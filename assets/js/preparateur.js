@@ -136,9 +136,8 @@ document.addEventListener("keydown", function(e) {
 
 $(".validate_pick_in").on('click', function(){
     var order_id = $("#order_in_progress").val()
-    if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode')
-    && !localStorage.getItem('product_quantity_verif')){
 
+    if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode')){
         // Ouvre la modal de loading
         $(".loading_prepared_command").removeClass('d-none')
         $("#modalSuccess").modal('show')
@@ -159,22 +158,22 @@ $(".validate_pick_in").on('click', function(){
 
         var customer_name = $(".customer_name_"+order_id).text()
         var user_name = $("#userinfo").val()
+
         $.ajax({
             url: "ordersPrepared",
             method: 'POST',
             data: {_token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0}
         }).done(function(data) {
-            
             $(".loading_prepared_command").addClass('d-none')
 
             if(JSON.parse(data).success){
                 $(".success_prepared_command").removeClass('d-none')
                 const href =order_id+","+pick_items.length+","+customer_name+","+user_name;
-                const size = 300;
+                const size = 150;
                 $(".info_order").text("#Commande "+order_id+" - "+pick_items.length+" Produit(s)"+" - "+customer_name)
 
                 var list_products = ""
-                $(".product_order" ).each(function() {
+                $("#order_"+order_id+" .product_order" ).each(function() {
                     list_products += '<span>'+$( this ).children( "div" ).children( "span" ).text()+' - x'+$( this ).children( ".quantity " ).text()+'</span>'
                 });
 
