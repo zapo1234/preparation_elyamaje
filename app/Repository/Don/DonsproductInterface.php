@@ -7,7 +7,7 @@ interface DonsproductInterface
 {
      public function inserts($order_id,$product_id,$label,$qty,$real_price);
 
-     public function gettiers();
+     public function getproduct();
      
 }
 

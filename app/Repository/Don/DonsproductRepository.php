@@ -31,7 +31,7 @@ class DonsProductRepository implements DonsproductInterface
 
    public function getproduct()
    {
-      $data =  DB::table('dons_product')->select('product_id')->get();
+      $data =  DB::table('dons_products')->select('product_id')->get();
       // transformer les retour objets en tableau
       $list = json_encode($data);
       $lists = json_decode($data,true);
