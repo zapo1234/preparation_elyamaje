@@ -23,72 +23,78 @@
 	<title>Elyamaje – Préparation des commandes</title>
 </head>
 
-<body>
-	<!--wrapper-->
+<body class="bg-lock-screen  pace-done"><div class="pace  pace-inactive"><div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+  <div class="pace-progress-inner"></div>
+</div>
+<div class="pace-activity"></div></div>
+	<!-- wrapper -->
 	<div class="wrapper">
-		<div class="authentication-header"></div>
-		<div class="section-authentication-signin d-flex align-items-center justify-content-center my-5 my-lg-0">
-			<div class="container-fluid">
-				<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
-					<div class="col mx-auto">
+		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
 
+            @if(session('error'))
+                <div class="card shadow-none bg-transparent">
+                    <div class="card-body p-md-5 text-center">
+                        <h2 class="text-white">{{ date('H:i') }}</h2>
+                        <h5 class="text-capitalize mb-5 text-white">{{ $date }}</h5>
+                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+                        </div>
+                        <form method="post" action="{{ route('login') }}" class="form_login_error">
+                            @csrf 
+                            <div class="mb-3 mt-3">
+                                <input name="email" type="email" class="form-control" placeholder="Email">
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <div class="input-group" id="show_hide_password">
+                                    <input  name="password" type="password" class="form-control" placeholder="Mot de passe">
+                                    <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark">Connexion</button>
+                            </div>
+                            <div class="mt-2 d-flex justify-content-center">
+                                <a class="text-light" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @else 
+                <div class="card shadow-none bg-transparent">
+                    <div class="card-body p-md-5 text-center">
+                        <h2 class="text-white">{{ date('H:i') }}</h2>
+                        <h5 class="text-capitalize mb-5 text-white">{{ $date }}</h5>
+                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+                        </div>
+                        <form method="post" action="{{ route('login') }}" class="">
+                            @csrf 
+                            <div class="mb-3 mt-3">
+                                <input required name="email" type="email" class="form-control" placeholder="Email">
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <div class="input-group" id="show_hide_password">
+                                    <input required name="password" type="password" class="form-control" placeholder="Mot de passe">
+                                    <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
+                                </div>
+                               
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark">Connexion</button>	
+                            </div>
+                            <div class="mt-2 d-flex justify-content-center">
+                                <a class="text-light" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endif
+           
 
-						@if(session('error'))
-							<div class="border_radius_alert alert border-0 border-start border-5 border-danger alert-dismissible fade show">
-								<div>{{ session('error') }}</div>
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						@endif
-						@if(session('success'))
-							<div class="border_radius_alert alert alert-success border-0 bg-success alert-dismissible fade show">
-								<div class="text-white">{{ session('success') }}</div>
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						@endif
-
-						<div class="card radius-10">
-							<div class="card-body">
-								<div class="p-4 rounded">
-									<div class="d-grid">
-										<div class="btn my-4 btn-white" href=""> 
-											<span class="d-flex flex-column justify-content-center align-items-center">
-												<img id="imj" src="assets{{ ('/images/Logo_elyamaje.png') }}" width="95px" ;="" height="auto">
-												<strong>Préparation</strong>
-											</span>
-										</div>
-									</div>
-									<div class="form-body login_form">
-										<form method="post" action="{{ route('login') }}" class="row g-3">
-											@csrf 
-											<div class="col-12">
-												<label for="inputEmailAddress" class="form-label">Email</label>
-												<input required type="email" name="email" class="form-control" id="inputEmailAddress" placeholder="Email">
-											</div>
-											<div class="col-12">
-												<label for="inputChoosePassword" class="form-label">Mot de passe</label>
-												<div class="input-group" id="show_hide_password">
-													<input required type="password" name="password" class="form-control border-end-0" id="inputChoosePassword" value="" placeholder="Mot de passe"> <a href="javascript:;" class="input-group-text bg-transparent"><i class='bx bx-hide'></i></a>
-												</div>
-											</div>
-											<div class="w-100 col-md-6 text-end">	
-												<a href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
-											</div>
-											<div class="col-12">
-												<div class="d-grid">
-													<button type="submit" class="btn btn-primary"><i class="bx bxs-lock-open"></i>Se connecter</button>
-												</div>
-											</div>
-										</form>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<!--end row-->
-			</div>
+		
 		</div>
 	</div>
+
 	<!--end wrapper-->
 	<!-- Bootstrap JS -->
 	<script src="assets/js/bootstrap.bundle.min.js"></script>
@@ -117,5 +123,6 @@
 	<!--app JS-->
 	<script src="assets/js/app.js"></script>
 </body>
+
 
 </html>
