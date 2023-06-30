@@ -408,9 +408,7 @@ class TransferOrder
                           $temp = array_unique(array_column($data_lines, 'socid'));
                           $unique_arr = array_intersect_key($data_lines, $temp);
 
-                       
-
-                       // trier les produits qui ne sont pas en kdo
+                        // trier les produits qui ne sont pas en kdo
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
@@ -457,6 +455,9 @@ class TransferOrder
                         
                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
+
+                         
+
                          dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
