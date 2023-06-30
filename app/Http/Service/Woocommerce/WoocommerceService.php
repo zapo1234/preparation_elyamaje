@@ -46,19 +46,18 @@ class WoocommerceService
                     'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
                     'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
           
-                 
+                  
                     if($or['total_price'] == 0){
-                      $products['line_items'][0]['real_price'] = $or['price'];
+                      $products['line_items'][$key]['real_price'] = $or['price'];
                     }
                 }
             } else {
                 $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                 'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
                 'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-      
              
                 if($or['total_price'] == 0){
-                  $products['line_items'][0]['real_price'] = $or['price'];
+                  $products['line_items'][$key]['real_price'] = $or['price'];
                 }
             }
 
