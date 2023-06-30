@@ -363,7 +363,12 @@ class Order extends BaseController
         // $order_id = $request->post('order_id');
         $order_id = 80279; // Données de test
         $order = $this->order->getOrderByIdWithCustomer($order_id);
-        $is_distributor = $order[0]['is_distributor'] != null ? true : false;
+        if(count($order) > 0){
+          $is_distributor = $order[0]['is_distributor'] != null ? true : false;
+        } else {
+          $is_distributor = false;
+        }
+        
 
         if($is_distributor){
           $barcode_array = $request->post('pick_items');
