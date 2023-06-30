@@ -424,7 +424,7 @@ class TransferOrder
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
                             // insert 
-                           $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                           $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_info_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                           // JOINTRE les produits.
                       
 
