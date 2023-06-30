@@ -418,7 +418,7 @@ class TransferOrder
 
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
-                       if(count($data_infos_order)==0){
+                       if(count($data_infos_order)!=0){
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
                           $tiers = new Don();
