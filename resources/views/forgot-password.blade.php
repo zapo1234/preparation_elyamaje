@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="html_login" lang="en">
 
 <head>
 	<!-- Required meta tags -->
@@ -7,7 +7,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
 	<link rel="icon" href="assets{{ ('/images/icons/elyamaje_logo_mini.jpg') }}" type="image/jpg" />
-
+	<!--plugins-->
+	<link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
+	<link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
 	<!-- loader-->
 	<link href="assets/css/pace.min.css" rel="stylesheet" />
 	<script src="assets/js/pace.min.js"></script>
@@ -20,56 +23,66 @@
 	<title>Elyamaje – Préparation des commandes</title>
 </head>
 
-<body>
+<body class="bg-lock-screen  pace-done"><div class="pace  pace-inactive"><div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+  <div class="pace-progress-inner"></div>
+</div>
+<div class="pace-activity"></div></div>
 	<!-- wrapper -->
 	<div class="wrapper">
-		<div class="authentication-header"></div>
-		<div class="authentication-forgot d-flex align-items-center justify-content-center">
-			<div class="card forgot-box">
-				<div class="card-body">
-					<div class="p-4 rounded">
-						<div class="text-center">
-							<img src="assets{{ ('/images/icons/lock_black.png') }}" width="120" alt="" />
-						</div>
-						<h4 class="text-center mt-5 font-weight-bold">Mot de passe oublié ?</h4>
-						<p class="text-muted">Entrez votre email pour réinitialiser votre mot de passe</p>
-						<form method="post" action="{{ route('password.reset') }}">
-							@csrf
-							<div class="my-4">
-								<label class="form-label">Email</label>
-								<input type="text" name="email" class="form-control form-control-lg" placeholder="example@user.com" />
-							</div>
+		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
 
-							@if(session('error'))
-								<div class="d-flex w-100">
-									<div class="w-100 text-center alert alert-danger">
-										{{ session('error') }}
+        
+                <div class="card shadow-none bg-transparent">
+                    <div class="card-body p-md-5 text-center">
+                        <div class="mt-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+                        </div>
+                        <form method="post" action="{{ route('password.reset') }}">
+                            @csrf 
+                            <div class="mb-3 mt-3">
+                                <input name="email" type="email" class="form-control" placeholder="Email">
+                            </div>
+                            <div class="d-grid">
+
+								@if(session('error'))
+									<div class="d-flex w-100">
+										<div style="width:250px" class="text-center alert alert-danger">
+											{{ session('error') }}
+										</div>
 									</div>
-								</div>
-							@endif
-							@if(session('success'))
-								<div class="d-flex w-100">
-									<div class="w-100 text-center alert alert-success">
-										{{ session('success') }}
+								@endif
+								@if(session('success'))
+									<div class="d-flex w-100">
+										<div style="width:250px" class="text-center alert alert-success">
+											{{ session('success') }}
+										</div>
 									</div>
+								@endif
+
+								<div class="d-grid gap-2">
+									<button type="submit" class="btn btn-dark">Envoyer</button>
+
+									<a href="{{ url('login') }}">
+										<div class="d-grid">
+											<button type="button" class="btn btn-white">
+												<i class='bx bx-arrow-back me-1'></i>	
+												Connexion
+											</button>
+										</div>
+									</a>
+
 								</div>
-							@endif
+                            </div>
+                        </form>
+                    </div>
+                </div>
+           
+           
 
-
-							<div class="d-grid gap-2">
-								<button type="submit" class="btn btn-primary btn-lg">Envoyer</button>
-								<a href="{{ url('login') }}" class="btn btn-white btn-lg">
-									<i class='bx bx-arrow-back me-1'></i>
-									Connexion
-								</a>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
+		
 		</div>
 	</div>
-	<!-- end wrapper -->
 </body>
+
 
 </html>

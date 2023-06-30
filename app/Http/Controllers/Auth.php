@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
@@ -25,7 +26,9 @@ class Auth extends BaseController
 
     public function login(Request $request){
         if(!Auth()->user()){
-            return view('login_v2');
+            $date = Carbon::parse(date('Y-m-d H:i:s'));
+            $newDate = $date->isoFormat('dddd DD MMM YYYY');
+            return view('login',['date' => $newDate]);
         } else {
             return redirect()->route('/');
         }
@@ -98,7 +101,7 @@ class Auth extends BaseController
     public function resetLinkPage(Request $request){
         $token_exist = $this->user->getUserByToken($request->get('token'));
 
-        if($token_exist > 0) {
+        if($token_exist > 0 && $request->get('token') != null) {
             return view('resetpassword', ['token' => $request->get('token')]);
         } else {
             return redirect()->route('authentication-forgot-password')->with('error','Le lien est incorrect !');

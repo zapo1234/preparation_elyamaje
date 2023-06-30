@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="html_login" lang="en">
 
 <head>
 	<!-- Required meta tags -->
@@ -7,6 +7,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
 	<link rel="icon" href="assets{{ ('/images/icons/elyamaje_logo_mini.jpg') }}" type="image/jpg" />
+	<!--plugins-->
+	<link href="assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
+	<link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
 	<!-- loader-->
 	<link href="assets/css/pace.min.css" rel="stylesheet" />
 	<script src="assets/js/pace.min.js"></script>
@@ -19,69 +23,76 @@
 	<title>Elyamaje – Préparation des commandes</title>
 </head>
 
-<body>
+<body class="bg-lock-screen  pace-done"><div class="pace  pace-inactive"><div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+  <div class="pace-progress-inner"></div>
+</div>
+<div class="pace-activity"></div></div>
 	<!-- wrapper -->
 	<div class="wrapper">
-		<div class="authentication-header"></div>
-		 <div class="authentication-reset-password d-flex align-items-center justify-content-center">
-			<div class="row">
-				<div class="col-12 col-lg-10 mx-auto">
-					<div class="card">
-						<div class="row g-0">
-							<div class="col-lg-5 border-end">
-								<div class="card-body">
-									<div class="p-5">
-										<div class="text-start">
-											<img src="{{ asset('assets/images/Logo_elyamaje.png')}}" width="100" alt="">
-										</div>
-										<h4 class="mt-5 font-weight-bold">Réinitialisation</h4>
-										<p class="text-muted">Veuillez entrer un nouveau mot de passe</p>
-										<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
-											@csrf
-											<input  name="token"  type="hidden" value="{{ $token }}"/>
-											<div class="mb-3 mt-5">
-												<label class="form-label">Nouveau mot de passe</label>
-												<input id="pass1" name="pass1" type="text" class="form-control" placeholder="Nouveau mot de passe" />
-											</div>
-											<div class="mb-3">
-												<label class="form-label">Confirmation du mot de passe</label>
-												<input id="pass2" name="pass2"  type="text" class="form-control" placeholder="Confirmation du mot de passe" />
-												<span class="same_password text-danger"></span>
-											</div>
+		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
 
-											@if(session('error'))
-												<div class="d-flex w-100">
-													<div class="w-100 text-center alert alert-danger">
-														{{ session('error') }}
-													</div>
-												</div>
-											@endif
+         
 
-											<div class="d-grid gap-2">
-												<button type="submit" class="btn btn-primary">Modifier mot de passe</button> <a href="{{ url('login') }}" class="btn btn-light"><i class='bx bx-arrow-back mr-1'></i>Connexion</a>
-											</div>
-										</form>
-									</div>
+                <div class="card shadow-none bg-transparent">
+                    <div class="card-body p-md-5 text-center">
+                      
+                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
+                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+                        </div>
+						<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
+                            @csrf 
+                            <div class="mb-3 mt-3">
+								<input id="pass1" name="pass1" type="password" class="form-control" placeholder="Nouveau mot de passe" />
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <div class="input-group" id="show_hide_password">
+									<input id="pass2" name="pass2"  type="password" class="form-control" placeholder="Confirmation" />
+                                    <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
+                                </div>
+
+								<div style="height:17px" >
+									<span class="same_password text-danger"></span>
 								</div>
-							</div>
-							<div class="col-lg-7 d-flex align-items-center">
-								<img src="assets/images/login-images/forgot-password-frent-img.jpg" class="card-img login-img" alt="...">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-dark">Connexion</button>	
+                            </div>
+                        </form>
+                    </div>
+                </div>
+           
+           
+
+		
 		</div>
 	</div>
-	<!-- end wrapper -->
-</body>
 
-</html>
+	<!--end wrapper-->
+	<!-- Bootstrap JS -->
+	<script src="assets/js/bootstrap.bundle.min.js"></script>
+	<!--plugins-->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
+	<script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
+	<script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+	<!--Password show & hide js -->
+	<script>
+		$(document).ready(function () {
+			$("#show_hide_password a").on('click', function (event) {
+				event.preventDefault();
+				if ($('#show_hide_password input').attr("type") == "text") {
+					$('#show_hide_password input').attr('type', 'password');
+					$('#show_hide_password i').addClass("bx-hide");
+					$('#show_hide_password i').removeClass("bx-show");
+				} else if ($('#show_hide_password input').attr("type") == "password") {
+					$('#show_hide_password input').attr('type', 'text');
+					$('#show_hide_password i').removeClass("bx-hide");
+					$('#show_hide_password i').addClass("bx-show");
+				}
+			});
+		});
 
-
-<script src="assets/js/jquery.min.js"></script>
-<script>
-
+		
 	const inputElement = document.getElementById('pass2');
 	const inputElement2 = document.getElementById('pass1');
 
@@ -100,5 +111,10 @@
 		}
 
 	})
+	</script>
+	<!--app JS-->
+	<script src="assets/js/app.js"></script>
+</body>
 
-</script>
+
+</html>
