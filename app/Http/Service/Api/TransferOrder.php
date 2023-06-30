@@ -385,7 +385,7 @@ class TransferOrder
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
-                                        // 
+                                        // .....
                                         $id_commande_existe[] = $donnees['order_id'];
                                     }
                     
@@ -393,17 +393,17 @@ class TransferOrder
 
                       
                       
-                       // recupérer les deux variable dans les setter.
-                       //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                       // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
-                       // filtrer les doublons du tableau
-                       $id_commande_exist = array_unique($id_commande_existe);
-                       // recupérer le tableau
-                       $this->setDataidcommande($id_commande_exist);
-                       // renvoyer un tableau unique par tiers via le socid.
-                       // données des non distributeurs
-                       $temp = array_unique(array_column($data_lines, 'socid'));
-                       $unique_arr = array_intersect_key($data_lines, $temp);
+                         // recupérer les deux variable dans les setter.
+                          //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
+                          // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                          // filtrer les doublons du tableau
+                           $id_commande_exist = array_unique($id_commande_existe);
+                         // recupérer le tableau
+                          $this->setDataidcommande($id_commande_exist);
+                          // renvoyer un tableau unique par tiers via le socid.
+                          // données des non distributeurs
+                          $temp = array_unique(array_column($data_lines, 'socid'));
+                          $unique_arr = array_intersect_key($data_lines, $temp);
 
                        
 
@@ -429,8 +429,12 @@ class TransferOrder
                          $tiers->total_order = $data_infos_order['date_order'];
                          $tiers->save();
                         
+                         // insert 
+
+                         // JOINTRE les produits.
                        
                         dump($data_infos_order);
+                        dump($data_kdo);
                         dd($data_tiers);
                        // dump($data_tiers);
                          
