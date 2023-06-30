@@ -108,7 +108,7 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
-             dd($orders);
+
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
@@ -291,7 +291,7 @@ class TransferOrder
                                                   "product_label" =>$values['name'],
                                                   "qty" => $values['quantity'],
                                                   "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $donnees['real_price'],
+                                                  "real_price"=> $values['real_price'],
                                                   "order_id" => $donnees['order_id'],
                                                   "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                                    ];
