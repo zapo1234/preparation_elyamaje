@@ -423,10 +423,11 @@ class TransferOrder
                        // merger le client et les data coupons.
                          $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
 
-                         $tiers_exist = $this->don->gettiers();
+                         //$tiers_exist = $this->don->gettiers();
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
                             // insert 
+                            $tiers_exist = $this->don->gettiers();
                            if(isset($tiers_exist[$data_infos_order['email']])==false){
                             $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                             // JOINTRE les produits.
