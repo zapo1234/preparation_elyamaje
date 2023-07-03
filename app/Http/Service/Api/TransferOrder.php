@@ -421,12 +421,7 @@ class TransferOrder
 
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
-                        dump($data_kdo);
-                        dd($data_lines);
-                      
-                      
-              
-                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
                             // insert 
@@ -444,10 +439,7 @@ class TransferOrder
                           }
                        }
                        
-                        dump($data_infos_order);
-                        dump($data_kdo);
-                        dd($data_tiers);
-                       // dump($data_tiers);
+                        
                          
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
