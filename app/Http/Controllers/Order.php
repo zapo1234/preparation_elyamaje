@@ -34,7 +34,6 @@ class Order extends BaseController
     private $pdf;
     private $colissimo;
     private $label;
-    private $product;
     private $productOrder;
     private $notification;
     private $woocommerce;
@@ -47,7 +46,6 @@ class Order extends BaseController
     CreatePdf $pdf,
     Colissimo $colissimo,
     LabelRepository $label,
-    ProductOrderRepository $product,
     ProductOrderRepository $productOrder,
     NotificationRepository $notification,
     WoocommerceService $woocommerce,
@@ -61,7 +59,6 @@ class Order extends BaseController
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
       $this->label = $label;
-      $this->product = $product;
       $this->productOrder = $productOrder;
       $this->notification = $notification;
       $this->woocommerce = $woocommerce;
@@ -74,7 +71,7 @@ class Order extends BaseController
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         return $orders_user;
       } else {
-        $status = "processing,order-new-distrib"; // Commande en préparation
+        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
@@ -148,8 +145,9 @@ class Order extends BaseController
     public function getAllOrders(){
       // Préparateur
       $users =  $this->user->getUsersByRole([2]);
-      $products_pick =  $this->product->getAllProductsPicked()->toArray();
-      echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick]);
+      $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
+      $status_list = __('status_order');
+      echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick, 'status_list' => $status_list]);
     }
 
 
@@ -246,8 +244,7 @@ class Order extends BaseController
       $note_partial_order = $request->post('note_partial_order');
 
 
-
-      if($barcode_array && $order_id && $products_quantity){
+      if($barcode_array != "false" && $order_id && $products_quantity != "false"){
         $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
        
         if($check_if_order_done && $partial == "1"){
@@ -280,7 +277,21 @@ class Order extends BaseController
         }
         echo json_encode(["success" => $check_if_order_done]);
       } else {
-        echo json_encode(["success" => false]);
+        // Check if all products are picked
+        $products = $this->productOrder->getProductsByOrderId($order_id);
+        $picked = true;
+        foreach($products as $p){
+          if($p->pick != 1){
+            $picked = false;
+          }
+        }
+
+        if($picked){
+          $this->order->updateOrdersById([$order_id], "prepared-order");
+          $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+        }
+        
+        echo json_encode(["success" => $picked]);
       }
      
     }
@@ -339,6 +350,18 @@ class Order extends BaseController
           $this->notification->insert($data);
         }
         $number_order_attributed = $this->order->getOrdersByUsers();
+
+        // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
+        $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
+
+        if(!in_array($status,  $ignore_status)){
+          if($status == "finished"){
+            $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+          } else {
+            $this->api->updateOrdersWoocommerce($status, $order_id);
+          } 
+        }
+
         echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
       } else {
         echo json_encode(["success" => false]);
@@ -500,7 +523,7 @@ class Order extends BaseController
 
       $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
 
-      if($product_order_woocommerce){
+      if(is_array($product_order_woocommerce)){
         $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
         $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
 

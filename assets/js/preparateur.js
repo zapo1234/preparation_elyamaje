@@ -142,18 +142,22 @@ $(".validate_pick_in").on('click', function(){
         $(".loading_prepared_command").removeClass('d-none')
         $("#modalSuccess").modal('show')
         var pick_items = JSON.parse(localStorage.getItem('barcode'))
+        var order_object = false
 
-        // Récupère les produits de cette commande
-        const order_object = pick_items.find(
-            element => element.order_id == order_id
-        )
+        if(pick_items){
+            // Récupère les produits de cette commande
+            order_object = pick_items.find(
+                element => element.order_id == order_id
+            )
+        } 
+      
 
         if(order_object){
             pick_items = order_object.products
             pick_items_quantity = order_object.quantity
         } else {
-            alert("Erreur !")
-            return;
+            pick_items = false
+            pick_items_quantity = false
         }
 
         var customer_name = $(".customer_name_"+order_id).text()
@@ -294,8 +298,8 @@ $('body').on('click', '.valid_partial_order', function() {
             pick_items = order_object.products
             pick_items_quantity = order_object.quantity
         } else {
-            alert("Erreur !")
-            return;
+           alert('Erreur !')
+           return
         }
 
         var customer_name = $(".customer_name").text()

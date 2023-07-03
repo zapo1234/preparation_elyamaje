@@ -40,7 +40,6 @@ class ProductOrderRepository implements ProductOrderInterface
       $subtotal_tax = $product_order_woocommerce['line_items'][$last_key_product]['subtotal_tax'];
       $total_tax = $product_order_woocommerce['line_items'][$last_key_product]['total_tax'];
       $total_price = $product_order_woocommerce['line_items'][$last_key_product]['subtotal'];
-      $weight =  $product_order_woocommerce['line_items'][$last_key_product]['meta_data'][array_key_last($product_order_woocommerce['line_items'][$last_key_product]['meta_data'])]['key'] == "weight" ? $product_order_woocommerce['line_items'][$last_key_product]['meta_data'][array_key_last($product_order_woocommerce['line_items'][$last_key_product]['meta_data'])]['value'] : null;
       $line_item_id = $product_order_woocommerce['line_items'][$last_key_product]['id'];
 
       return $this->model::insert([
@@ -53,9 +52,15 @@ class ProductOrderRepository implements ProductOrderInterface
          'subtotal_tax' => $subtotal_tax,
          'total_tax' => $total_tax,
          'total_price' => $total_price,
-         'weight' => $weight ?? 0,
-         'line_item_id' => $line_item_id
+         'pick' => 0,
+         'line_item_id' => $line_item_id,
+         'pick_control' => 0,
+         'created_at' => date('Y-m-d H:i:s')
       ]);
+   }
+
+   public function getProductsByOrderId($order_id){
+      return $this->model::where('order_id', $order_id)->get();
    }
 }
 
