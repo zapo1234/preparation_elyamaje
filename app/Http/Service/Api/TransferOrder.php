@@ -426,7 +426,7 @@ class TransferOrder
                          if(count($data_infos_order)!=0){
                             // insert 
                            $tiers_exist = $this->don->gettiers();
-                           dd($tier_exist);
+                           dd($tiers_exist);
                            if(isset($tiers_exist[$data_infos_order['email']])==false){
                             $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                             // JOINTRE les produits.
