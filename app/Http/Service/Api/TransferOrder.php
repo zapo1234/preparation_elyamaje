@@ -434,7 +434,7 @@ class TransferOrder
                        }
                         
                         // recupérer les cadeaux associé a l'utilisateur.
-                        
+                        dd($data_kdo);
                          if(count($data_kdo)!=0){
                               $this->dons->inserts($data_kdo);
                           }
