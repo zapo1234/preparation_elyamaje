@@ -62,7 +62,7 @@
             @else 
                 <div class="card shadow-none bg-transparent">
                     <div class="card-body p-md-5 text-center">
-                        <h2 class="text-white">{{ date('H:i') }}</h2>
+                        <h2 class="time text-white">{{ date('H:i') }}</h2>
                         <h5 class="text-capitalize mb-5 text-white">{{ $date }}</h5>
                         <div class="w-100 d-flex flex-column align-items-center justify-content-center">
                             <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
@@ -119,6 +119,19 @@
 				}
 			});
 		});
+
+        function time(){
+            var d = new Date();
+            var s = d.getSeconds();
+            var m = d.getMinutes() < 10 ? "0"+d.getMinutes() : d.getMinutes();
+            var h = d.getHours();
+
+            if($('.time').text() != h + ":" + m){
+                $('.time').text(h + ":" + m)
+            }
+        }
+
+        setInterval(time,1000);
 	</script>
 	<!--app JS-->
 	<script src="assets/js/app.js"></script>

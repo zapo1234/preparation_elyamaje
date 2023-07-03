@@ -320,6 +320,8 @@
 							var orders = json.orders;
 							// Récupère la liste des produits déjà pick
 							var products_pick = json.products_pick
+							// Récupère la liste des status
+							var status_list = json.status_list
 							// Récupérer les données des utilisateurs (users)
 							var users = json.users;
 							// Combiner les données des commandes (orders) et des utilisateurs (users)
@@ -334,6 +336,7 @@
 									name: order.name,
 									status: order.status,
 									status_text: order.status_text ?? 'En cours',
+									status_list: status_list,
 									date_created: order.date_created,
 									line_items: order.line_items,
 									user_id: order.user_id,
@@ -386,20 +389,13 @@
             			},
 						{data: null,
 							render: function(data, type, row) {
-
-								if(row.status == "waiting_to_validate"){
-									var selectOptions = '<option selected value="'+row.status+'">'+row.status_text+'</option>';
-									selectOptions += `<option value="waiting_validate">En cours</option>`;
-									var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id})" id="selectStatus_${row.id}" class="select_user empty_select">${selectOptions}</select>`;
-
-									return selectHtml;
-								} else {
-									return `
-									<div class="badge bg-default rounded-pill bg-light-`+row.status+` p-2 text-uppercase px-3">
-										<i class="bx bxs-circle align-middle me-1"></i>`+row.status_text+`
-									</div>`;
-								}
+								var selectOptions = '';
+								Object.keys(row.status_list).forEach(function(key) {
+									selectOptions += `<option ${key == row.status ? "selected" : ""} value="`+key+`">`+row.status_list[key]+`</option>`
+								});
 								
+								var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id})" id="selectStatus_${row.id}" class="${row.status} select_status select_user empty_select">${selectOptions}</select>`;
+								return selectHtml;
 							}
             			},
 						{data: null,
@@ -489,7 +485,7 @@
 							var row = $('#example').DataTable().row( index );
 							var data = row.data();
 							data.name != "Non attribuée" ? attribution = attribution + 1 : attribution = attribution
-							data.status == "processing" ? order_progress = order_progress + 1 : order_progress = order_progress 
+							data.status == "processing" || data.status == "waiting_validate" ? order_progress = order_progress + 1 : order_progress = order_progress 
 						} );
 						
 						$(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' en cours</span>')

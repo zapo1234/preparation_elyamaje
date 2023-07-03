@@ -82,6 +82,9 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
 
+                  'payment_method' => $orderData['payment_method'] ?? null,
+                  'payment_method_title' => $orderData['payment_method_title'] ?? null,
+
                   'date' => $orderData['date_created'],
                   'total_tax_order' => $orderData['total_tax'],
                   'total_order' => $orderData['total'],
@@ -112,7 +115,6 @@ class OrderRepository implements OrderInterface
                   ];
                }
             }
-          
          }
     
          // Insérer les données dans la base de données par lot
@@ -440,13 +442,17 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_postcode' => $insert_order_by_user['shipping']['postcode'] ?? null,
                   'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
+
+                  'payment_method' => $insert_order_by_user['payment_method'] ?? null,
+                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ?? null,
+
                   'date' => $insert_order_by_user['date_created'],
                   'total_tax_order' => $insert_order_by_user['total_tax'],
                   'total_order' => $insert_order_by_user['total'],
                   'user_id' => $user_id,
                   'status' => $insert_order_by_user['status'],
                   'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
-                  'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
+                  'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId
                ];
