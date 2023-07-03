@@ -3,11 +3,11 @@
 namespace App\Repository\Don;
 
 
-interface DonInterface
+interface DonsproductInterface
 {
-     public function inserts($first_name,$last_name,$email,$order_id,$coupons,$total_order,$date_order);
+     public function inserts($data);
 
-     public function gettiers();
+     public function getproduct();
      
 }
 

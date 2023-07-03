@@ -17,21 +17,16 @@ class DonsProductRepository implements DonsproductInterface
    }
 
 
-   public function inserts($order_id,$product_id,$label,$qty,$real_price)
+   public function inserts($data)
    {
-        $product = new Don();
-        $product->order_id = $order_id;
-        $product->product_id = $product_id;
-        $product->label = $label;
-        $product->real_price = $real_price;
-        $product->save();
+       DB::table('dons_products')->insert($data);
        
    }
 
 
    public function getproduct()
    {
-      $data =  DB::table('dons_product')->select('product_id')->get();
+      $data =  DB::table('dons_products')->select('product_id')->get();
       // transformer les retour objets en tableau
       $list = json_encode($data);
       $lists = json_decode($data,true);
