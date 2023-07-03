@@ -396,7 +396,7 @@ class TransferOrder
                       }
 
                       
-                        dd($data_lines);
+                        
                          // recupérer les deux variable dans les setter.
                           //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
                           // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
