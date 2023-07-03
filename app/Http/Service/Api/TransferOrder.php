@@ -270,8 +270,7 @@ class TransferOrder
                                      ];
                               }
                             
-                              dump($socid);
-                             dd($data_tiers);
+                           
                            
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
@@ -315,7 +314,7 @@ class TransferOrder
                                                "product_label" =>$values['name'],
                                                "qty" => $values['quantity'],
                                                "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                               "tva_tx" => $tva_product,
+                                               "tva_tx" => floatval($tva_product),
                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
@@ -422,6 +421,9 @@ class TransferOrder
 
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
+                        dump($data_kdo);
+                       dd($data_infos_order);
+                      
               
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.

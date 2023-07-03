@@ -10,6 +10,8 @@ interface ProductInterface
     public function getAllProductsPublished();
 
     public function insertProductsOrUpdate($products);
+
+    public function getbarcodeproduct();
 }
 
 
