@@ -285,19 +285,17 @@ class TransferOrder
                                      
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
+                                             // recupérer les données du kdo
                                             if($values['subtotal']==0){
                                                  $data_kdo[] = [
-                                                  "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                  "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                  "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                  "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                                  "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                  "product_label" =>$values['name'],
-                                                  "qty" => $values['quantity'],
-                                                  "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                  "real_price"=> $values['real_price'],
-                                                  "order_id" => $donnees['order_id'],
-                                                  "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                                   "order_id" => $donnees['order_id'],
+                                                   "product_id"=>$$fk_product,
+                                                   "label" =>$values['name'],
+                                                   "quantity" => $values['quantity'],
+                                                   "real_price"=> $values['real_price'],
+                                                   "created_at" => date('Y-m-d h:i:s'),
+                                                   "updated_at" => date('Y-m-d H:is')
+                                                  
                                                    ];
                                                   // recupérer les produit en kdo avec leur prix initial.
 
@@ -435,7 +433,7 @@ class TransferOrder
                        }
                         
                         // recupérer les cadeaux associé a l'utilisateur.
-                        dd($data_kdo);
+                        
                          if(count($data_kdo)!=0){
                               $this->dons->inserts($data_kdo);
                           }
