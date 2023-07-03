@@ -426,7 +426,9 @@ class TransferOrder
                          dump($data_infos_order);
                          $tiers_exist = $this->don->gettiers();
 
-                         dd($tiers_exist);
+                         dump($tiers_exist);
+
+                         dd($data_kdo);
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
                             // insert 
@@ -439,7 +441,7 @@ class TransferOrder
                        }
                         
                         // recupérer les cadeaux associé a l'utilisateur.
-                        dd($data_kdo);
+                    
                          if(count($data_kdo)!=0){
                               $this->dons->inserts($data_kdo);
                           }
