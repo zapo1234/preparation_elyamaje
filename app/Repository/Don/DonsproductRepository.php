@@ -12,7 +12,7 @@ class DonsProductRepository implements DonsproductInterface
 
    private $model;
 
-   public function __construct(Donsproduct $model){
+   public function __construct(DonsProduct $model){
       $this->model = $model;
    }
 
