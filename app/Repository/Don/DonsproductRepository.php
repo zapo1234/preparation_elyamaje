@@ -4,7 +4,7 @@ namespace App\Repository\Don;
 
 use Hash;
 use Exception;
-use App\Models\DonsProduct;
+use App\Models\Donsproduct;
 use Illuminate\Support\Facades\DB;
 
 class DonsProductRepository implements DonsproductInterface
