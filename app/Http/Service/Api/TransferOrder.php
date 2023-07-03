@@ -112,7 +112,7 @@ class TransferOrder
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
              
-               dd($orders);
+              
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
@@ -269,8 +269,9 @@ class TransferOrder
                                         'email'=>$donnees['billing']['email'],
                                      ];
                               }
-
-                          
+                            
+                              dump($socid);
+                             dd($data_tiers);
                            
                              foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
