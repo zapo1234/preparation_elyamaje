@@ -289,7 +289,7 @@ class TransferOrder
                                             if($values['subtotal']==0){
                                                  $data_kdo[] = [
                                                    "order_id" => $donnees['order_id'],
-                                                   "product_id"=>$$fk_product,
+                                                   "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
                                                    "real_price"=> $values['real_price'],
