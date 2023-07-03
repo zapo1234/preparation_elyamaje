@@ -111,7 +111,7 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
-             
+             dd($orders);
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
@@ -357,7 +357,6 @@ class TransferOrder
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
-                                        "mode_reglement_id"=> "4", // mode_reglement_id interne ordre de virement .
                                         'lines' =>$data_product,
                                         'array_options'=> $data_options,
                                     
