@@ -4,7 +4,7 @@ namespace App\Repository\Don;
 
 use Hash;
 use Exception;
-use App\Models\Donsproduct;
+use App\Models\DonsProduct;
 use Illuminate\Support\Facades\DB;
 
 class DonsProductRepository implements DonsproductInterface
@@ -19,7 +19,7 @@ class DonsProductRepository implements DonsproductInterface
 
    public function inserts($order_id,$product_id,$label,$qty,$real_price)
    {
-        $product = new Donsproduct();
+        $product = new DonsProduct();
         $product->order_id = $order_id;
         $product->product_id = $product_id;
         $product->label = $label;
