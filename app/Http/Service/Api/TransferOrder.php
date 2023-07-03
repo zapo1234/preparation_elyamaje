@@ -358,6 +358,7 @@ class TransferOrder
                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
                                         "lines" =>$data_product,
+                                        "mode_reglement_code"=>"CB",
                                         "mode_reglement_id"=> "4",
                                         'array_options'=> $data_options,
                                     
