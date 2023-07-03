@@ -42,7 +42,7 @@ class DonRepository implements DonInterface
       $list_email =[];
       
       foreach($lists as $key =>  $values){
-          $list_code[$values['email']] = $key;
+          $list_email[$values['email']] = $key;
       }
         return $list_email;
 
