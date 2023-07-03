@@ -422,6 +422,7 @@ class TransferOrder
                        // TRAITER LES données des cadeaux 
                        // merger le client et les data coupons
                         dd($data_kdo);
+                        dump($data_lines);
                       
                       
               
