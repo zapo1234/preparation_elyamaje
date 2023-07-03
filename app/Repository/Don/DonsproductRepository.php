@@ -18,13 +18,7 @@ class DonsProductRepository implements DonsproductInterface
 
    public function inserts($order_id,$product_id,$label,$qty,$real_price)
    {
-        $product = new DonsProduct();
-        $product->order_id = $order_id;
-        $product->product_id = $product_id;
-        $product->label = $label;
-        $product->quantity = $qty;
-        $product->real_price = $real_price;
-        $product->save();
+       
        
    }
 
