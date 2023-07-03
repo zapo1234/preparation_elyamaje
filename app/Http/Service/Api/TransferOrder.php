@@ -111,7 +111,8 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
-
+             
+               dd($orders);
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
                $apiUrl = env('KEY_API_URL');
