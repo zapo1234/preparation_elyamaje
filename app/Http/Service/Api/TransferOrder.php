@@ -426,7 +426,7 @@ class TransferOrder
                          $tiers_exist = $this->don->gettiers();
 
                          dd($tiers_exist);
-                         // insert le tiers dans la BDD.
+                         // insert le tiers dans la BDD...
                          if(count($data_infos_order)!=0){
                             // insert 
                             $tiers_exist = $this->don->gettiers();
