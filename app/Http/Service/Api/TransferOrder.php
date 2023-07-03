@@ -350,6 +350,7 @@ class TransferOrder
                                         // pour les factures non distributeurs...
                                         $d=1;
                                         $ref="";
+                                        $cb ="CB";
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
@@ -359,6 +360,7 @@ class TransferOrder
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
+                                        "mode_reglement_code"=> $cb,
                                         'lines' =>$data_product,
                                         'array_options'=> $data_options,
                                     
@@ -419,8 +421,8 @@ class TransferOrder
                            }
                       }
 
-                       // TRAITER LES données des cadeaux 
-                       // merger le client et les data coupons
+                       // Traiter  Les données des cadeaux .
+                       // merger le client et les data coupons.
                          $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                          // insert le tiers dans la BDD.
                          if(count($data_infos_order)!=0){
@@ -433,11 +435,10 @@ class TransferOrder
                        }
                         
                         // recupérer les cadeaux associé a l'utilisateur.
-                        // if(count($data_kdo)!=0){
-                        //  foreach($data_kdo as $val){
-                       //       $this->dons->inserts($val['order_id'],$val['fk_product'],$val['product_label'],$val['qty'],$val['real_price']);
-                      //    }
-                     //  }
+                        dd($data_kdo);
+                         if(count($data_kdo)!=0){
+                              $this->dons->inserts($data_kdo);
+                          }
                        
                         
                          

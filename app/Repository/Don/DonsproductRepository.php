@@ -17,9 +17,9 @@ class DonsProductRepository implements DonsproductInterface
    }
 
 
-   public function inserts($order_id,$product_id,$label,$qty,$real_price)
+   public function inserts($data)
    {
-        
+       DB::table('dons_products')->insert($data);
        
    }
 
