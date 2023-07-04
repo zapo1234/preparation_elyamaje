@@ -111,9 +111,10 @@ class TransferOrder
    
    public function setAccountpay($accountpay)
    {
-       $this->setAccountpay = $accountpay;
-       return $this;
+      $this->accountpay = $accountpay;
+      return $this;
    }
+     
    
 
 
