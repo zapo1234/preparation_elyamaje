@@ -26,8 +26,8 @@ class TransferOrder
       private $dataidcommande;// recupérer les ids commande existant
       private $status; // vartiable string pour statuts(customer et distributeur)
       private $countd = []; // les clients distributeur
-      private $countc = [];// les clients non distributeur
-      private $accountpay ="";
+      private $countc = [];// les clients non distributeur.
+      private $accountpay;
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
@@ -384,7 +384,6 @@ class TransferOrder
                                        ];
                                         
                                        // recupérer le moyen de paiment dans la variable accountpay
-                                       dd($donnees['payment_method']);
                                        $this->setAccountpay($donnees['payment_method']);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
