@@ -398,8 +398,6 @@ class TransferOrder
 
                                    }
                                     else{
-
-                                      
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
@@ -418,10 +416,7 @@ class TransferOrder
                       }
 
                       
-                        
-                         // recupérer les deux variable dans les setter.
-                          //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                          // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                      
                           // filtrer les doublons du tableau
                            $id_commande_exist = array_unique($id_commande_existe);
                          // recupérer le tableau
@@ -435,31 +430,12 @@ class TransferOrder
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
-                                unset($unique_arr[$r]['lines'][$q]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
+                                unset($unique_arr[$r]['lines'][$q]); // filtrer le panier produit qui appartient uniquement que au user anec fonction de socid.
                              }
                            }
                       }
 
-                       // Traiter  Les données des cadeaux .
-                       // merger le client et les data coupons.
-                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-
-                         $tiers_exist = $this->don->gettiers();
-
-                         // insert le tiers dans la BDD...
-                         if(count($data_infos_order)!=0){
-                            // insert 
-                           if(isset($tiers_exist[$data_infos_order['email']])==false){
-                            $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                            // JOINTRE les produits.
-                           }
-                       }
-                        
-                        // recupérer les cadeaux associé a l'utilisateur...
-                    
-                         if(count($data_kdo)!=0){
-                              $this->dons->inserts($data_kdo);
-                          }
+                       
                        
                          
                       foreach($data_tiers as $data) {
@@ -472,8 +448,27 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
                       
-                        // activer le statut payé et lié les paiments  sur les factures.
-                        $this->invoicespay($orders);
+                       // Traiter  Les données des cadeaux .
+                       // merger le client et les data coupons.
+                       $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+
+                       $tiers_exist = $this->don->gettiers();
+                         // insert le tiers dans la BDD...
+                       if(count($data_infos_order)!=0){
+                          // insert 
+                         if(isset($tiers_exist[$data_infos_order['email']])==false){
+                          $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                          // JOINTRE les produits.
+                         }
+                     }
+                      
+                         // recupérer les cadeaux associé a l'utilisateur...
+                          if(count($data_kdo)!=0){
+                            $this->dons->inserts($data_kdo);
+                        }
+
+                         // activer le statut payé et lié les paiments  sur les factures.
+                           $this->invoicespay($orders);
                            dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
