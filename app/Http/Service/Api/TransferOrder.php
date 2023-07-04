@@ -128,13 +128,18 @@ class TransferOrder
                // recuperer les données api dolibar copie projet tranfer x...
              
                $method = "GET";
-               $apiKey = env('KEY_API_DOLIBAR');
-               $apiUrl = env('KEY_API_URL');
+              // $apiKey = env('KEY_API_DOLIBAR');
+               //$apiUrl = env('KEY_API_URL');
+
+               $apiKey =$this->api->getkeydolibar();
+               $apiUrl = $this->api->getUrldolibar();
     
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
+
+                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -483,10 +488,10 @@ class TransferOrder
         {
            
             $method = "GET";
-            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-             //appelle de la fonction  Api
+            $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = env('KEY_API_URL');
+ 
+           //appelle de la fonction  Api
             // $data = $this->api->getDatadolibar($apikey,$url);
             // domp affichage test 
             // recupérer le dernière id des facture 
