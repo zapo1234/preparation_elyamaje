@@ -403,7 +403,8 @@ class TransferOrder
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
                                          $data_options_kdo =[];
-
+                                         $account="";
+                                         $this->setAccountpay($account);
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
@@ -460,6 +461,7 @@ class TransferOrder
                           }
                        
                         
+                          dd($data_lines);
                           // activer le statut payé et lié les paiments  sur les factures.
                           $this->invoicespay($orders);
 
@@ -655,9 +657,7 @@ class TransferOrder
                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
     }
 
-      /** 
-     *@return array
-     */
+    
    
 
   }
