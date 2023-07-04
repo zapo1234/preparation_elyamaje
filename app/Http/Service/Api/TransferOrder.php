@@ -27,7 +27,7 @@ class TransferOrder
       private $status; // vartiable string pour statuts(customer et distributeur)
       private $countd = []; // les clients distributeur
       private $countc = [];// les clients non distributeur
-      private $accontpay ="";
+      private $accountpay ="";
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
