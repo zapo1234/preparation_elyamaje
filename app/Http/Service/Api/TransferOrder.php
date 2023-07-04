@@ -105,14 +105,14 @@ class TransferOrder
   
    public function getAccountpay()
    {
-      return $this->acountpay;
+      return $this->accountpay;
    }
    
    
-   public function setAccount($accountpay)
+   public function setAccountpay($accountpay)
    {
-     $this->setAccountpay = $accountpay;
-      return $this;
+       $this->setAccountpay = $accountpay;
+       return $this;
    }
    
 
@@ -124,9 +124,7 @@ class TransferOrder
       {
             
              // excercer un get et post et put en fonction des status ...
-               // recuperer les données api dolibar copie projet tranfer x.
-
-               dd($orders);
+               // recuperer les données api dolibar copie projet tranfer x...
              
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
@@ -385,6 +383,8 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                                         
+                                       // recupérer le moyen de paiment dans la variable accountpay
+                                       $this->setAccountpay($donnees['payment_method']);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
@@ -392,6 +392,8 @@ class TransferOrder
                                        $historique->date = $date;
                                         // insert to
                                        $historique->save();
+
+
                                    }
                                     else{
 
@@ -407,6 +409,8 @@ class TransferOrder
                                         // .....
                                         $id_commande_existe[] = $donnees['order_id'];
                                     }
+
+                                  
                     
                       }
 
@@ -455,21 +459,21 @@ class TransferOrder
                           }
                        
                         
-                          
-                         
-                        foreach($data_tiers as $data) {
-                        // insérer les données tiers dans dolibar
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                      }
-                    
-                      foreach($unique_arr as $donnes){
-                         // insérer les details des données de la facture dans dolibarr
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                      }
-                        
-                        // activer le statut payé et lié les paiments  sur les factures.
+                         // activer le statut payé et lié les paiments  sur les factures.
                          $this->invoicespay($orders);
 
+                         
+                      /*  foreach($data_tiers as $data) {
+                        // insérer les données tiers dans dolibar
+                         $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                       }
+                    
+                         foreach($unique_arr as $donnes){
+                         // insérer les details des données de la facture dans dolibarr
+                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                       }
+                      */  
+                        
                          
 
                          dd('succes of opération');
@@ -585,8 +589,13 @@ class TransferOrder
                 "idwarehouse"	=> "6",
                  "notrigger" => "0",
                 ];
-             
-                $newCommandepaye = [
+                
+
+                 // recupérer le mode de paiement
+                 $account_id = $this->getAccountpay();
+
+                 dd($account_id);
+                 $newCommandepaye = [
                  "paye"	=> 1,
                  "statut"	=> 2,
                  "mode_reglement_id"=>6,
