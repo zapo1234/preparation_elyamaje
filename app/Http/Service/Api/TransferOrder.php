@@ -460,8 +460,8 @@ class TransferOrder
                           }
                        
                         
-                         // activer le statut payé et lié les paiments  sur les factures.
-                         $this->invoicespay($orders);
+                          // activer le statut payé et lié les paiments  sur les factures.
+                          $this->invoicespay($orders);
 
                          
                       /*  foreach($data_tiers as $data) {
@@ -594,12 +594,29 @@ class TransferOrder
 
                  // recupérer le mode de paiement
                  $account_id = $this->getAccountpay();
+                 
+                 // Moyens de paiments....id 4.....
+                  $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire.
+                  $array_paiement1 = array('bacs','apple_pay','american_express','gift_card');// virement bancaire id.....
 
-                 dd($account_id);
+                 if(in_array($account_id,$array_paiment)){
+                   // defini le mode de paiment commme une carte bancaire
+                     $mode_reglement_id = 6;
+                     $mode_reglement_code ="CB";
+                 }
+
+                 if(in_array($account_id,$array_paiment1)){
+                   // defini le paiment comme virement bancaire.
+                    $mode_reglement_id = 3;
+                    $mode_reglement_code ="PRE";
+                 }
+                  // $mode reglement .
+            
                  $newCommandepaye = [
                  "paye"	=> 1,
                  "statut"	=> 2,
-                 "mode_reglement_id"=>6,
+                 "mode_reglement_code"=>$mode_reglement_code,
+                 "mode_reglement_id"=>$mode_reglement_id,
                   "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -627,8 +644,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-             $fac = intval($inv+1);
-             $facs = intval($inv);
+             
              
               // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
