@@ -80,11 +80,14 @@
                                 <strong>Facturation :</strong>
                                 <span class="customer_name"></span>
                                 <span class="customer_email"></span>
+                                <span class="customer_billing_adresss1"></span>
+                                <span class="customer_billing_adresss2"></span>
                             </div>
 
                             <div class="d-flex flex-column">
                                 <strong>Expédition :</strong>
                                 <span class="customer_shipping_name"></span>
+                                <span class="customer_shipping_company"></span>
                                 <span class="customer_shipping_adresss1"></span>
                                 <span class="customer_shipping_adresss2"></span>
                                 <span class="customer_shipping_country"></span>
@@ -148,7 +151,7 @@
 
                                 <div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
                                     <div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
-                                        <span class="mt-1 mb-2 montant_toltal_order">
+                                        <span class="mt-1 mb-2 montant_total_order">
                                        
                                     </div>
                                     <div class="w-100 d-flex justify-content-between">
@@ -247,7 +250,11 @@
                     $(".status_order").addClass('bg-default bg-light-'+order[0]['status'])
                     $(".customer_name").text(order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name)
                     $(".customer_email").text(order[0].billing_customer_email)
+                    $(".customer_billing_adresss1").text(order[0].billing_customer_address_1 ?? '')
+                    $(".customer_billing_adresss2").text(order[0].billing_customer_address_2 ?? '')
+
                     $(".shipping_method").text(order[0].shipping_method_detail ?? '')
+                    $(".customer_shipping_company").text(order[0].shipping_customer_company ?? '')
                     $(".customer_shipping_name").text(order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name)
                     $(".customer_shipping_adresss1").text(order[0].shipping_customer_address_1)
                     $(".customer_shipping_adresss2").text(order[0].shipping_customer_address_2)

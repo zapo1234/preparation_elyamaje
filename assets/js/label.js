@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $('#example').DataTable({
-        "order": [[3, 'asc']],
+        "order": [[0, 'asc']],
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')

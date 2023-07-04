@@ -227,7 +227,7 @@
 											<div class="modal-body">
 												<h2 class="mb-3 text-center">Choisissez le produit à ajouter</h2>
 													<input type="hidden" value="" id="order_id_add_product">
-													<div class="d-flex justify-content-between">
+													<div class="d-flex justify-content-between flex-wrap">
 														<select name="products" class="list_product_to_add mb-3">
 															@foreach($products as $product)
 																<option value="{{ $product['product_woocommerce_id'] }}">{{ $product['name'] }}</option>
@@ -325,9 +325,17 @@
 							// Combiner les données des commandes (orders) et des utilisateurs (users)
 							var combinedData = orders.map(function(order) {
 							var coupons = false;
+							var coupons_amount = false;
+							var shipping_amount = 0
+
 
 								order['coupon_lines'].forEach(function(cp){
 									coupons = cp['code'];
+									coupons_amount = cp['discount']
+								})
+
+								order['shipping_lines'].forEach(function(sp){
+									shipping_amount = sp['total'];
 								})
 
 								return {
@@ -344,8 +352,12 @@
 									line_items: order.line_items,
 									user_id: order.user_id,
 									coupons: coupons,
+									discount_total: order.discount_total,
+									coupons_amount: coupons_amount,
+									gift_card: order.pw_gift_cards_redeemed ?? false,
 									users: users,
-									products_pick: products_pick
+									products_pick: products_pick,
+									shipping_amount: shipping_amount,
 								};
 							});
 							return combinedData;
@@ -405,14 +417,20 @@
 							render: function(data, type, row) {
 								return `
 									<div class="w-100 d-flex flex-column">
-										<span>Total (HT): <strong>` +parseFloat(row.total -row.total_tax).toFixed(2)+`</strong></span>
+										${row.total != 0.00 ? '<span>Total (HT): <strong>' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong>' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
 										<span>TVA: <strong>` +row.total_tax+`</strong></span>
-										<span>Total (TTC): <strong>` +row.total+`</strong></span>
+										<span>Payé: <strong>`+parseFloat(row.total).toFixed(2)+`</strong></span>
 									</div>`;
 							}
             			},
 						{data: null,
 							render: function(data, type, row) {
+								var total = parseFloat(row.total)
+								var discount_total = parseFloat(row.discount_total)
+								var gift_card = row.gift_card.length > 0 ? parseFloat(row.gift_card[0].amount): 0
+								var total_tax = parseFloat(row.total_tax)
+								var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - parseFloat(row.shipping_amount)
+
 								var id = []
 								Object.entries(row.products_pick).forEach(([key, value]) => {
 									if (value.order_id == row.id){
@@ -447,15 +465,21 @@
 																</div>`
 														).join('')}
 														</div>
-														<div class="align-items-end mt-2 d-flex justify-content-between"> 
-														
+														<div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
 															<div class="d-flex flex-column">
 																${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
 																<button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
 															</div>
-															<div class="d-flex flex-column">
-																<span class="mt-1 mb-2 montant_toltal_order">Total: `+row.total+`€</span>
-																<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+															<div class="d-flex flex-column list_amount">
+																<span class="montant_total_order">Sous-total des articles:<strong>`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
+																${row.coupons && row.coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+row.coupons+` (-`+row.coupons_amount+`€)</strong></span>` : ``}
+																<span class="montant_total_order">Expédition:<strong> `+row.shipping_amount+`€</strong></span>
+																<span class="montant_total_order">TVA: <strong>`+total_tax+`€</strong></span>
+																${row.gift_card.length > 0 ? `<span class="text-danger">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
+																<span class="mt-1 mb-2 montant_total_order">Payé: <strong>`+row.total+`€</strong></span>
+																<div class="d-flex justify-content-end">
+																	<button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+																</div>
 															</div>
 														</div>
 													</div>
@@ -676,7 +700,7 @@
 
 							</div>`
 						)
-						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
+						$("#order_"+order_id+" .montant_total_order").text('Total: '+JSON.parse(data).order.total)
 						$("#addProductOrderModal").modal('hide')
 					} else {
 						alert('Erreur !')
@@ -724,7 +748,7 @@
 					data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id, increase: increase, quantity: quantity, product_id: product_id}
 				}).done(function(data) {
 					if(JSON.parse(data).success){
-						$("#order_"+order_id+" .montant_toltal_order").text('Total: '+JSON.parse(data).order.total)
+						$("#order_"+order_id+" .montant_total_order").text('Total: '+JSON.parse(data).order.total)
 						$('.'+order_id+'_'+line_item_id).fadeOut()
 						$('.'+order_id+'_'+line_item_id).remove()
 						$(".loading_delete").addClass('d-none')

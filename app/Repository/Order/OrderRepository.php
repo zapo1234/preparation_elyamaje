@@ -82,8 +82,9 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
 
-                  'payment_method' => $orderData['payment_method'] ?? null,
-                  'payment_method_title' => $orderData['payment_method_title'] ?? null,
+                  'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+                  'payment_method_title' => $orderData['payment_method_title'] ? $orderData['payment_method_title'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+                  'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
 
                   'date' => $orderData['date_created'],
                   'total_tax_order' => $orderData['total_tax'],
@@ -92,6 +93,8 @@ class OrderRepository implements OrderInterface
                   'status' => $orderData['status'],
                   'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
                   'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
+                  'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? $orderData['shipping_lines'][0]['total'] : null,
+
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
                ];
@@ -192,6 +195,8 @@ class OrderRepository implements OrderInterface
                   'coupons' => $order['coupons'],
                   'discount' => $order['discount'],
                   'discount_amount' => $order['discount_amount'],
+                  'gift_card_amount' => $order['gift_card_amount'],
+                  'shipping_amount' => $order['shipping_amount']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -208,6 +213,8 @@ class OrderRepository implements OrderInterface
                   'coupons' => $order['coupons'],
                   'discount' => $order['discount'],
                   'discount_amount' => $order['discount_amount'],
+                  'gift_card_amount' => $order['gift_card_amount'],
+                  'shipping_amount' => $order['shipping_amount'],
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -443,8 +450,9 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
 
-                  'payment_method' => $insert_order_by_user['payment_method'] ?? null,
-                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ?? null,
+                  'payment_method' => $insert_order_by_user['payment_method'] ? $insert_order_by_user['payment_method'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ? $insert_order_by_user['payment_method_title'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+                  'gift_card_amount' => isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0,
 
                   'date' => $insert_order_by_user['date_created'],
                   'total_tax_order' => $insert_order_by_user['total_tax'],
@@ -453,6 +461,7 @@ class OrderRepository implements OrderInterface
                   'status' => $insert_order_by_user['status'],
                   'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
                   'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
+                  'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId
                ];
@@ -554,6 +563,8 @@ class OrderRepository implements OrderInterface
             'coupons' => $order['coupons'],
             'discount' => $order['discount'],
             'discount_amount' => $order['discount_amount'],
+            'gift_card_amount' => $order['gift_card_amount'],
+            'shipping_amount' => $order['shipping_amount'],
          ];
          $list[$order['order_woocommerce_id']]['items'][] = $order;
       }

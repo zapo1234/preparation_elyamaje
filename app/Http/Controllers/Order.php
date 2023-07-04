@@ -290,7 +290,7 @@ class Order extends BaseController
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
         }
-        
+
         echo json_encode(["success" => $picked]);
       }
      
@@ -386,7 +386,6 @@ class Order extends BaseController
         // $order_id = $request->post('order_id');
         $order_id = 80279; // Données de test
         $order = $this->order->getOrderByIdWithCustomer($order_id);
-
         if($order){
 
           $is_distributor = $order[0]['is_distributor'] != null ? true : false;
@@ -402,7 +401,8 @@ class Order extends BaseController
             }
           }
           
-            $orders = $this->woocommerce->transformArrayOrder($order);
+          $orders = $this->woocommerce->transformArrayOrder($order);
+
           // envoi des données pour créer des facture via api dolibar....
            
             // if($request->post('from_label') != "true"){

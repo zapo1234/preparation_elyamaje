@@ -64,7 +64,7 @@
 							<div class="resize-triggers"><div class="expand-trigger"><div style="width: 459px; height: 461px;"></div></div><div class="contract-trigger"></div></div></div>
 						</div>
 					</div>
-				</div>
+
 			</div>
 		@endsection
 
@@ -174,7 +174,7 @@
 		function add(accumulator, a) {
 			return accumulator + a;
 		}
-		
+
 	</script>
 
 	@endsection

@@ -40,22 +40,20 @@
                         <form method="post" action="{{ route('password.reset') }}">
                             @csrf 
                             <div class="mb-3 mt-3">
-                                <input name="email" type="email" class="form-control" placeholder="Email">
+                                <input required name="email" type="email" class="form-control" placeholder="Email">
                             </div>
                             <div class="d-grid">
 
 								@if(session('error'))
-									<div class="d-flex w-100">
-										<div style="width:250px" class="text-center alert alert-danger">
-											{{ session('error') }}
-										</div>
+									<div class="alert border-0 border-start border-5 border-info-custom alert-dismissible fade show">
+										<div>{{ session('error') }}</div>
+										<!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
 									</div>
 								@endif
 								@if(session('success'))
-									<div class="d-flex w-100">
-										<div style="width:250px" class="text-center alert alert-success">
-											{{ session('success') }}
-										</div>
+									<div class="alert border-0 border-start border-5 border-success-custom alert-dismissible fade show">
+										<div>{{ session('success') }}</div>
+										<!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
 									</div>
 								@endif
 

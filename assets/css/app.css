@@ -670,7 +670,7 @@ a {
 		width: 50px;
 	}
 
-	.montant_toltal_order{
+	.montant_total_order{
 		width: 100%;
 	}
 }
@@ -5848,11 +5848,19 @@ input::placeholder {
 	background-color: #000000 !important;
 }
 
-.montant_toltal_order{
-	font-size: 18px;
-	font-weight: bold;
+.montant_total_order{
+	font-size: 1.2em;
 }
 
+.list_amount span{
+	display: flex;
+	justify-content: space-between;
+}
+
+.list_amount strong,
+.detail_amount strong{
+	margin-left: 25px !important;
+}
 
 .table_mobile_responsive caption {
 	font-size: 1.5em;
@@ -6149,6 +6157,10 @@ a{
 }
 
 @media screen and (max-width: 650px) {
+
+	.montant_total_order{
+		flex-direction: column;
+	}
 	.course .btn1{
 		bottom: 10px !important;
 		right: 10px !important;
@@ -6171,6 +6183,30 @@ a{
 	.head_detail_product_order span{
 		font-size: 16px;
 	}
+
+	.footer_detail_order{
+		flex-wrap: wrap;
+		justify-content: center !important;
+		width: 100%;
+
+	}
+
+	.montant_total_order, .list_amount{
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.list_amount button{
+		width: 100% !important;
+	}
+
+	#quantity_product{
+		margin-top: 10px;
+		width: 350px !important;
+	}
+
+
 	
 }
 
@@ -6602,13 +6638,19 @@ select:focus, input:focus{
 	font-weight: 100 !important;
 }
 
-.montant_toltal_order div{
+.montant_total_order .discount{
+	font-size: 14px;
 	display: flex;
-	justify-content: space-between;
-	margin-bottom: 5px;
+	align-items: center;
 }
 
-.montant_toltal_order div:first-child{
+.montant_total_order div{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 3px;
+}
+
+.montant_total_order div:first-child{
 	margin-top: 5px;
 }
 
@@ -6800,8 +6842,11 @@ textarea:focus{
   }
 
 
-.authentication-lock-screen button, .authentication-lock-screen input{
-	min-width: 250px !important;
+.authentication-lock-screen .form-control, 
+.authentication-lock-screen button[type=submit],
+.authentication-lock-screen .border-info-custom,
+.authentication-lock-screen .border-success-custom {
+	width: 280px !important;
 }
 
 #show_hide_password a{
@@ -6827,4 +6872,18 @@ textarea:focus{
 
 .select_status{
 	width: 150px;
+}
+
+.pick .text-success{
+	color: #000 !important;
+}
+
+.border-info-custom{
+	border-color: #fd3550 !important;
+	background-color: #f7f6ff !important;
+}
+
+.border-success-custom{
+	border-color: #15ca20!important;
+	background-color: #f7f6ff !important;
 }
