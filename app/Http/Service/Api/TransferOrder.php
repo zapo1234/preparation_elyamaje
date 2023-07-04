@@ -384,6 +384,7 @@ class TransferOrder
                                        ];
                                         
                                        // recupérer le moyen de paiment dans la variable accountpay
+                                       dd($donnees['payment_method']);
                                        $this->setAccountpay($donnees['payment_method']);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
