@@ -274,7 +274,7 @@ class Api
   
    public function getkeydolibar(){
     $apiKey = env('KEY_API_DOLIBAR');
-     return $apikey;
+     return $apiKey;
    }
 
    public function getUrldolibar(){
