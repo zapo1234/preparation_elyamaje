@@ -460,13 +460,8 @@ class TransferOrder
                               $this->dons->inserts($data_kdo);
                           }
                        
-                        
-                          dd($data_lines);
-                          // activer le statut payé et lié les paiments  sur les factures.
-                          $this->invoicespay($orders);
-
                          
-                      /*  foreach($data_tiers as $data) {
+                      foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
@@ -475,11 +470,10 @@ class TransferOrder
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
-                      */  
-                        
-                         
-
-                         dd('succes of opération');
+                      
+                        // activer le statut payé et lié les paiments  sur les factures.
+                        $this->invoicespay($orders);
+                           dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
                 
