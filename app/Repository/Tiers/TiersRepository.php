@@ -84,8 +84,10 @@ class TiersRepository implements TiersInterface
              
                // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
-               $apiKey = env('KEY_API_DOLIBAR');
-               $apiUrl = env('KEY_API_URL');
+               // key et url api
+               $apiKey =$this->api->getkeydolibar();
+               $apiUrl = $this->api->getUrldolibar();
+               
                   $produitParam = array(
                     'apikey' => $apiKey,
                     'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-30 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",

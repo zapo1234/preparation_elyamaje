@@ -270,7 +270,19 @@ class Api
      
     // renvoi le resultat sous forme de json
     return $result;   
-  }  
+  }
+  
+   public function getkeydolibar(){
+    $apiKey = env('KEY_API_DOLIBAR');
+     return $apiKey;
+   }
+
+   public function getUrldolibar(){
+        $apiUrl = env('KEY_API_URL');
+       return $apiUrl;
+
+   }
+
 }
 
 

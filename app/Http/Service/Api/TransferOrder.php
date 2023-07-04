@@ -26,7 +26,8 @@ class TransferOrder
       private $dataidcommande;// recupérer les ids commande existant
       private $status; // vartiable string pour statuts(customer et distributeur)
       private $countd = []; // les clients distributeur
-      private $countc = [];// les clients non distributeur
+      private $countc = [];// les clients non distributeur.
+      private $accountpay;
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
@@ -102,6 +103,20 @@ class TransferOrder
    }
    
   
+   public function getAccountpay()
+   {
+      return $this->accountpay;
+   }
+   
+   
+   public function setAccountpay($accountpay)
+   {
+      $this->accountpay = $accountpay;
+      return $this;
+   }
+     
+   
+
 
      /** 
      *@return array
@@ -110,12 +125,12 @@ class TransferOrder
       {
             
              // excercer un get et post et put en fonction des status ...
-               // recuperer les données api dolibar copie projet tranfer x.
+               // recuperer les données api dolibar copie projet tranfer x...
              
-              dd($orders);
                $method = "GET";
-               $apiKey = env('KEY_API_DOLIBAR');
-               $apiUrl = env('KEY_API_URL');
+              // recupérer les clé Api dolibar transfertx.
+               $apiKey =$this->api->getkeydolibar();
+               $apiUrl = $this->api->getUrldolibar();
     
                  $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -358,8 +373,7 @@ class TransferOrder
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
-                                        "mode_reglement_id"=> "6",
-                                        'lines' =>$data_product,
+                                        "lines" =>$data_product,
                                         'array_options'=> $data_options,
                                     
                                       ];
@@ -371,6 +385,8 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                                         
+                                       // recupérer le moyen de paiment dans la variable accountpay
+                                       $this->setAccountpay($donnees['payment_method']);
                                       // insert dans base de donnees historiquesidcommandes
                                        $date = date('Y-m-d');
                                        $historique = new Commandeid();
@@ -378,29 +394,29 @@ class TransferOrder
                                        $historique->date = $date;
                                         // insert to
                                        $historique->save();
+
+
                                    }
                                     else{
-
-                                      
                                          $data_tiers = [];
                                          $data_kdo = [];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
                                          $data_options_kdo =[];
-
+                                         $account="";
+                                         $this->setAccountpay($account);
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
                                         // .....
                                         $id_commande_existe[] = $donnees['order_id'];
                                     }
+
+                                  
                     
                       }
 
                       
-                        dd($data_lines);
-                         // recupérer les deux variable dans les setter.
-                          //$this->setCountd($orders_distributeur);// recupérer le tableau distributeur la variale.
-                          // $this->setCountc($orders_d);// recupérer le tableau des id commande non distributeur
+                      
                           // filtrer les doublons du tableau
                            $id_commande_exist = array_unique($id_commande_existe);
                          // recupérer le tableau
@@ -414,52 +430,46 @@ class TransferOrder
                        foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
-                                unset($unique_arr[$r]['lines'][$q]); // filtrer les produit qui n'appartienne pas à l'utilisateur les enléves.
+                                unset($unique_arr[$r]['lines'][$q]); // filtrer le panier produit qui appartient uniquement que au user anec fonction de socid.
                              }
                            }
                       }
 
-                       // Traiter  Les données des cadeaux .
-                       // merger le client et les data coupons.
-                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-
-                         $tiers_exist = $this->don->gettiers();
-
-                         
-                         // insert le tiers dans la BDD...
-                         if(count($data_infos_order)!=0){
-                            // insert 
-                           if(isset($tiers_exist[$data_infos_order['email']])==false){
-                            $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                            // JOINTRE les produits.
-                           }
-                       }
-                        
-                        // recupérer les cadeaux associé a l'utilisateur...
-                    
-                         if(count($data_kdo)!=0){
-                              $this->dons->inserts($data_kdo);
-                          }
                        
-                        
-                          
+                       
                          
-                        foreach($data_tiers as $data) {
+                      foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                      }
+                       }
                     
-                      foreach($unique_arr as $donnes){
+                         foreach($unique_arr as $donnes){
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                      }
-                        
-                        // activer le statut payé et lié les paiments  sur les factures.
-                         $this->invoicespay($orders);
+                       }
+                      
+                       // Traiter  Les données des cadeaux .
+                       // merger le client et les data coupons.
+                       $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
 
-                         
+                       $tiers_exist = $this->don->gettiers();
+                         // insert le tiers dans la BDD...
+                       if(count($data_infos_order)!=0){
+                          // insert 
+                         if(isset($tiers_exist[$data_infos_order['email']])==false){
+                          $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                          // JOINTRE les produits.
+                         }
+                     }
+                      
+                         // recupérer les cadeaux associé a l'utilisateur...
+                          if(count($data_kdo)!=0){
+                            $this->dons->inserts($data_kdo);
+                        }
 
-                         dd('succes of opération');
+                         // activer le statut payé et lié les paiments  sur les factures.
+                           $this->invoicespay($orders);
+                           dd('succes of opération');
                         // initialiser un array recuperer les ref client.
                         return view('apidolibar');
                 
@@ -469,10 +479,11 @@ class TransferOrder
         {
            
             $method = "GET";
-            $apiKey = "0lu0P9l4gx9H9hV4G7aUIYgaJQ2UCf3a";
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
-           
-             //appelle de la fonction  Api
+            
+            $apiKey =$this->api->getkeydolibar();
+            $apiUrl = $this->api->getUrldolibar();
+ 
+           //appelle de la fonction  Api
             // $data = $this->api->getDatadolibar($apikey,$url);
             // domp affichage test 
             // recupérer le dernière id des facture 
@@ -572,23 +583,45 @@ class TransferOrder
                 "idwarehouse"	=> "6",
                  "notrigger" => "0",
                 ];
-             
-                $newCommandepaye = [
+                
+
+                 // recupérer le mode de paiement
+                 $account_id = $this->getAccountpay();
+                 
+                 // Moyens de paiments....id 4.....
+                  $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire.
+                  $array_paiments = array('bacs','apple_pay','american_express','gift_card');// virement bancaire id.....
+
+                 if(in_array($account_id,$array_paiment)){
+                   // defini le mode de paiment commme une carte bancaire
+                     $mode_reglement_id = 6;
+                     $mode_reglement_code ="CB";
+                 }
+
+                 if(in_array($account_id, $array_paiments)){
+                   // defini le paiment comme virement bancaire.
+                    $mode_reglement_id = 3;
+                    $mode_reglement_code ="PRE";
+                 }
+                  // $mode reglement .
+            
+                 $newCommandepaye = [
                  "paye"	=> 1,
                  "statut"	=> 2,
-                 "mode_reglement_id"=>4,
+                 "mode_reglement_code"=>$mode_reglement_code,
+                 "mode_reglement_id"=>$mode_reglement_id,
                   "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
         
-             // recupérer la datetime et la convertir timestamp
-             // liée la facture à un mode de rélgement
-             // convertir la date en datetime en timestamp.
-            $datetime = date('d-m-Y H:i:s');
-            $d = DateTime::createFromFormat(
-           'd-m-Y H:i:s',
-           $datetime,
-           new DateTimeZone('UTC')
+              // recupérer la datetime et la convertir timestamp
+              // liée la facture à un mode de rélgement
+               // convertir la date en datetime en timestamp.
+              $datetime = date('d-m-Y H:i:s');
+              $d = DateTime::createFromFormat(
+             'd-m-Y H:i:s',
+              $datetime,
+             new DateTimeZone('UTC')
            );
      
             if ($d === false) {
@@ -604,8 +637,7 @@ class TransferOrder
            "accountid"=> 6, // id du compte bancaire.
         ];
            
-             $fac = intval($inv+1);
-             $facs = intval($inv);
+             
              
               // valider les facture dans dolibar
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
@@ -616,9 +648,7 @@ class TransferOrder
                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
     }
 
-      /** 
-     *@return array
-     */
+    
    
 
   }
