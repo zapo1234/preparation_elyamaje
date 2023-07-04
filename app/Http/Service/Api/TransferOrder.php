@@ -597,7 +597,7 @@ class TransferOrder
                  
                  // Moyens de paiments....id 4.....
                   $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire.
-                  $array_paiement1 = array('bacs','apple_pay','american_express','gift_card');// virement bancaire id.....
+                  $array_paiments = array('bacs','apple_pay','american_express','gift_card');// virement bancaire id.....
 
                  if(in_array($account_id,$array_paiment)){
                    // defini le mode de paiment commme une carte bancaire
@@ -605,7 +605,7 @@ class TransferOrder
                      $mode_reglement_code ="CB";
                  }
 
-                 if(in_array($account_id,$array_paiment1)){
+                 if(in_array($account_id, $array_paiments)){
                    // defini le paiment comme virement bancaire.
                     $mode_reglement_id = 3;
                     $mode_reglement_code ="PRE";
