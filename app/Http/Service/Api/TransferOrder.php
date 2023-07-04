@@ -128,9 +128,7 @@ class TransferOrder
                // recuperer les données api dolibar copie projet tranfer x...
              
                $method = "GET";
-              // $apiKey = env('KEY_API_DOLIBAR');
-               //$apiUrl = env('KEY_API_URL');
-
+              // recupérer les clé Api dolibar transfertx.
                $apiKey =$this->api->getkeydolibar();
                $apiUrl = $this->api->getUrldolibar();
     
@@ -138,8 +136,6 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-
-                 dd($listproduct);
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
@@ -488,8 +484,9 @@ class TransferOrder
         {
            
             $method = "GET";
-            $apiKey = env('KEY_API_DOLIBAR');
-            $apiUrl = env('KEY_API_URL');
+            
+            $apiKey =$this->api->getkeydolibar();
+            $apiUrl = $this->api->getUrldolibar();
  
            //appelle de la fonction  Api
             // $data = $this->api->getDatadolibar($apikey,$url);
