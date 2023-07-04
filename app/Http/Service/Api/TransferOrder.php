@@ -27,6 +27,7 @@ class TransferOrder
       private $status; // vartiable string pour statuts(customer et distributeur)
       private $countd = []; // les clients distributeur
       private $countc = [];// les clients non distributeur
+      private $accontpay ="";
     
        public function __construct(Api $api,
        CommandeidsRepository $commande,
@@ -102,6 +103,19 @@ class TransferOrder
    }
    
   
+   public function getAccountpay()
+   {
+      return $this->acountpay;
+   }
+   
+   
+   public function setAccount($accountpay)
+   {
+     $this->setAccountpay = $accountpay;
+      return $this;
+   }
+   
+
 
      /** 
      *@return array
@@ -111,6 +125,8 @@ class TransferOrder
             
              // excercer un get et post et put en fonction des status ...
                // recuperer les données api dolibar copie projet tranfer x.
+
+               dd($orders);
              
                $method = "GET";
                $apiKey = env('KEY_API_DOLIBAR');
@@ -578,14 +594,14 @@ class TransferOrder
                    "notrigger"=>0,
              ];
         
-             // recupérer la datetime et la convertir timestamp
-             // liée la facture à un mode de rélgement
-             // convertir la date en datetime en timestamp.
-            $datetime = date('d-m-Y H:i:s');
-            $d = DateTime::createFromFormat(
-           'd-m-Y H:i:s',
-           $datetime,
-           new DateTimeZone('UTC')
+              // recupérer la datetime et la convertir timestamp
+              // liée la facture à un mode de rélgement
+               // convertir la date en datetime en timestamp.
+              $datetime = date('d-m-Y H:i:s');
+              $d = DateTime::createFromFormat(
+             'd-m-Y H:i:s',
+              $datetime,
+             new DateTimeZone('UTC')
            );
      
             if ($d === false) {
