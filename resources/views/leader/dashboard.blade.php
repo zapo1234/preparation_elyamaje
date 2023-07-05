@@ -31,7 +31,7 @@
 									<!-- Liste des utilisateurs et leur rôle -->
 									<div class="p-3 mb-3 ps ps--active-y">
 										@foreach($teams as $key => $team)
-											<div class="flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
+											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
 													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
 												</div>

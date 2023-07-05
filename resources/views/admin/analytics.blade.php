@@ -41,7 +41,7 @@
 					@endif
 
 					<div class="card">
-						<div class="card-body" style="position: relative;">
+						<div class="card-body" style="min-height:465px;position: relative;">
 								<div class="flex-wrap d-flex align-items-center">
 									<h6 class="mb-0 font-weight-bold">Commandes Préparées & Emballées (Jour)</h6>
 									<div class="d-flex dropdown ms-auto select_chart">

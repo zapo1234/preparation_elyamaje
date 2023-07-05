@@ -162,7 +162,7 @@ a {
 .logo-icon {
 
 
-	width: 45px;
+	width: 120px;
 
 
 }
@@ -552,6 +552,15 @@ a {
 }
 
 @media screen and (min-width: 1025px) {
+
+	.wrapper.toggled:not(.sidebar-hovered) .logo-icon{
+		display: none;
+	}
+
+	.wrapper.toggled:not(.sidebar-hovered) .logo-icon-2{
+		display: block !important;
+		width: 45px;
+	}
 
 	.wrapper.toggled:not(.sidebar-hovered) .sidebar-wrapper .sidebar-header .logo-text {
 		display: none;
@@ -6158,7 +6167,7 @@ a{
 
 @media screen and (max-width: 650px) {
 
-	.montant_total_order{
+	.page-preparateur-order .montant_total_order{
 		flex-direction: column;
 	}
 	.course .btn1{

@@ -5,7 +5,7 @@
 		@endsection 
 
 		@section("wrapper")
-			<div class="page-wrapper">
+			<div class="page-wrapper page-preparateur-order">
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2">
 						<div class="breadcrumb-title pe-3">Préparation</div>

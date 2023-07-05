@@ -55,7 +55,7 @@
 								</div>
                             </div>
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-dark">Connexion</button>	
+                                <button type="submit" class="btn btn-dark">Valider</button>	
                             </div>
                         </form>
                     </div>
