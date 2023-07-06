@@ -758,7 +758,7 @@
 					keyboard: false
 				})
 
-				$("#order_"+id).modal('show')
+				$("#order_"+id).appendTo("body").modal('show')
 			}
 
 
