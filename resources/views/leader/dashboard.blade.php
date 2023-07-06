@@ -309,8 +309,8 @@
 
 
 				$('#example').DataTable({
-					scrollY: '59vh',
-        			scrollCollapse: true,
+					// scrollY: '59vh',
+        			// scrollCollapse: true,
 					order: [ 0, 'asc' ],
 					ajax: {
 						url: '{{ route("leader.getAllOrders") }}',
