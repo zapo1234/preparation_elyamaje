@@ -494,7 +494,7 @@
 									</div>
 									<i onclick="show(`+row.id+`)" class="show_detail bx bx-cube"></i>
 
-									<div class="modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+									<div style="z-index:9999" class="modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 										<div class="modal-dialog modal-dialog-centered" role="document">
 											<div class="modal-content">
 											<div class="modal-body">
