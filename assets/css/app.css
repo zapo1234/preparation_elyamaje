@@ -697,10 +697,7 @@ a {
 		overflow: none !important;
 		max-height: 100% !important;
 	}
-	 
-	.modal-backdrop{
-		display: none !important;
-	}
+
 	.html_login, .html_login body, .html_login .wrapper{
 		height: 100%;
 	}

@@ -769,7 +769,8 @@
 					keyboard: false
 				})
 
-				$("#order_detail_customer_"+id).modal('show')
+				$("#order_detail_customer_"+id).appendTo("body").modal('show');
+
 			}
 
 			function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
