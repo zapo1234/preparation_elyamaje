@@ -706,7 +706,7 @@
 					backdrop: 'static',
 					keyboard: false
 				})
-				$("#addProductOrderModal").modal('show')
+				$("#addProductOrderModal").appendTo("body").modal('show')
 			})
 
 			function addProductOrderConfirm(){
@@ -782,7 +782,7 @@
 				$("#product_order_id").val(id)
 				$("#quantity_order").val(quantity)
 				$(".product_name_to_delete").text(name)
-				$("#deleteProductOrderModal").modal('show')
+				$("#deleteProductOrderModal").appendTo("body").modal('show')
 			}
 
 			function deleteProductOrderConfirm(increase){
