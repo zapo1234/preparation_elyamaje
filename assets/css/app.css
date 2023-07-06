@@ -5992,8 +5992,8 @@ input::placeholder {
 	.allocation_of_orders{
 		display: flex;
 		align-items: center;
-		padding: 25px !important;
-		font-size: 22px;
+		padding: 23px !important;
+		font-size: 20px;
 		margin-top: 15px;
 		margin-bottom: 15px;
 	}
@@ -6217,9 +6217,6 @@ a{
 		margin-top: 10px;
 		width: 350px !important;
 	}
-
-
-	
 }
 
 @media screen and (max-width: 550px) {
@@ -6679,6 +6676,7 @@ select:focus, input:focus{
 .quantity_product{
 	font-weight: bold;
 	font-size: 1.3em;
+	border: 1px solid #CBCBCB;
 }
 
 .modal_backfrop_fixe{
@@ -6929,6 +6927,3 @@ textarea:focus{
 .customer_billing a{
 	color: #0d6efd !important
 }
-
-
-

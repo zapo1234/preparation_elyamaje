@@ -55,7 +55,6 @@ Route::group(['middleware' => ['auth']], function () {
 // ADMIN
 Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
-    Route::get("/getAllOrdersAdmin", [Order::class, "getAllOrders"])->name('getAllOrdersAdmin');
     // traiter les routes pour des tiers
     Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
@@ -100,7 +99,6 @@ Route::group(['middleware' => ['auth', 'role:3']], function () {
 // CHEF D'ÉQUIPE
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
-    Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('leader.getAllOrders');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
     Route::post("/downloadPDF", [Order::class, "downloadPDF"])->name('leader.downloadPDF');
@@ -108,6 +106,7 @@ Route::group(['middleware' => ['auth', 'role:4']], function () {
 
 // ADMIN ET CHEF D'ÉQUIPE
 Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
+    Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('getAllOrders');
     Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
