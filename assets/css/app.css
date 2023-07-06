@@ -656,7 +656,7 @@ a {
 	}
 	
 	.modal_order_admin button{
-		margin-bottom: 50px !important;
+		margin-bottom: 10px !important;
 	}
 
 	.detail_product_order{
@@ -693,7 +693,10 @@ a {
 	.dataTables_scrollBody{
 		position: initial !important;
 	}
-	 
+	.dataTables_scrollBody{
+		overflow: none !important;
+		max-height: 100% !important;
+	}
 	  
 	.html_login, .html_login body, .html_login .wrapper{
 		height: 100%;
@@ -6290,6 +6293,10 @@ a{
 	color: #fff !important;
 	padding: 30px;
 	max-width: 250px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 
 .course-preview a {
@@ -6444,7 +6451,9 @@ a{
 }
 
 .dashboard_leader .show_detail,
-.admin_orders_list .show_detail{
+.admin_orders_list .show_detail,
+.dashboard_leader .show_detail_customer,
+.admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
 	cursor: pointer;
 }
@@ -6896,3 +6905,30 @@ textarea:focus{
 	border-color: #15ca20!important;
 	background-color: #f7f6ff !important;
 }
+
+.order_customer_contact{
+	font-size: 1em;
+	width: 100%;
+}
+
+.order_customer_coupon{
+	font-size: 0.9em;
+	width: 100%;
+}
+
+.customer_detail_title{
+	font-size: 0.9em;
+	margin-bottom: 5px;
+}
+
+.customer_billing,
+.customer_shipping{
+	align-items: flex-start;
+}
+
+.customer_billing a{
+	color: #0d6efd !important
+}
+
+
+

@@ -14,7 +14,7 @@ class CategoriesRepository implements CategoriesInterface
       $this->model = $model;
    }
 
-   public function insertCategoriesOrUpdate($categories){
+   public function insertCategoriesOrUpdate($data){
       try{
          // Récupère les catégories déjà existante
          try{
@@ -25,43 +25,60 @@ class CategoriesRepository implements CategoriesInterface
         
          // Aucune existante
          if(count($categories_exists) == 0){
-            return $this->model->insert($categories);
+            return $this->model->insert($data);
          } else {
-               $difference = [];
-               foreach ($categories as $item1) {
-                  $found = false;
-                  foreach ($categories_exists as $item2) {
-                     if ($item1['category_id_woocommerce'] == $item2['category_id_woocommerce']) {
-                        if(count(array_diff($item1, $item2)) > 0){
-                           $found = false;
-                           break;
-                        } else {
-                           $found = true;
-                           break;
-                        }
-                     }
-                  }
-         
-                  if (!$found) {
-                     $difference[] = $item1;
+            $difference_local = [];
+            $difference_online = [];
+
+            $category_id_on_local = array_column($data, "category_id_woocommerce");
+            $category_id_online = array_column($categories_exists, "category_id_woocommerce");
+
+            // Regarde si les données en local sont correctes
+            foreach ($categories_exists as $item) {
+               $category_exist = array_keys($category_id_on_local,  $item['category_id_woocommerce']);
+               if(count($category_exist) == 0){
+                  $difference_online[] = $item;
+               } else {
+                  if($data[$category_exist[0]] != $item){
+                     $difference_local[] = $data[$category_exist[0]];
                   }
                }
+            }
 
-               if (!empty($difference)) {
-                  foreach ($difference as $diff) {
-                     try{
-                        $update = $this->model->where('category_id_woocommerce', $diff['category_id_woocommerce'])->update($diff);
-                     } catch(Exception $e){
-                        return $e->getMessage();
-                     }
-                    
-                     if($update == 0){
-                        $this->model->insert($diff);
-                     }
+            // Récupère les données sur wordpress non trouvées en local et les insert
+            foreach ($data as $item2) {
+               $category_exist_online = array_keys($category_id_online,  $item2['category_id_woocommerce']);
+               if(count($category_exist_online) == 0){
+                  $difference_local[] = $item2;
+               }
+            }
+
+
+            if (!empty($difference_local)) {
+               foreach ($difference_local as $diff) {
+                  try{
+                     $update = $this->model->where('category_id_woocommerce', $diff['category_id_woocommerce'])->update($diff);
+                  } catch(Exception $e){
+                     return $e->getMessage();
                   }
-               } 
+                  
+                  if($update == 0){
+                     $this->model->insert($diff);
+                  }
+               }
+            } 
 
-               return true;
+            if (!empty($difference_online)) {
+               foreach ($difference_online as $diff) {
+                  try{
+                     $update = $this->model::where('category_id_woocommerce', $diff['category_id_woocommerce'])->delete();
+                  } catch(Exception $e){
+                     return $e->getMessage();
+                  }
+               }
+            }
+
+            return true;
          }
       } catch(Exception $e){
          return $e->getMessage();
@@ -114,13 +131,14 @@ class CategoriesRepository implements CategoriesInterface
 
    public function updateCategoryOrder($id, $order_display, $parent){
       $categories = $this->model::all()->toArray();
-    
+      
       if($parent != "false"){
          $arborescence = $this->trierCategories($categories);
          $ids = array_column($arborescence, "category_id_woocommerce");
          $category = array_keys($ids,  $id);
-         $lits_ids = $this->updateAllChildren($arborescence[$category[0]]['sub_category']);
-         $lits_ids [] = $id;
+         $lits_ids = isset($arborescence[$category[0]]['sub_category']) ? $this->updateAllChildren($arborescence[$category[0]]['sub_category']) : [];
+         $lits_ids[] = $id;
+         
          try{
             $this->model->whereIn('category_id_woocommerce', $lits_ids)->update(['order_display' => $order_display]);
             return true;

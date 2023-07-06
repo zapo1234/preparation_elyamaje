@@ -347,6 +347,8 @@
 									total: order.total,
 									total_tax: order.total_tax,
 									name: order.name,
+									billing: order.billing,
+									shipping: order.shipping,
 									status: order.status,
 									status_text: order.status_text ?? 'En cours',
 									status_list: status_list,
@@ -422,7 +424,7 @@
 									<div class="w-100 d-flex flex-column">
 										${row.total != 0.00 ? '<span>Total (HT): <strong>' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong>' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
 										<span>TVA: <strong>` +row.total_tax+`</strong></span>
-										${row.total != 0.00 ? '<span>Total (TTC): <strong>' +parseFloat(row.total).toFixed(2)+'</strong></span>' : '<span>Total (TTC): <strong>' +parseFloat(row.total_tax).toFixed(2)+'</strong></span>'}
+										<span>Total (TTC): <strong>` +parseFloat(row.total).toFixed(2)+`</strong></span>
 									</div>`;
 							}
             			},
@@ -470,8 +472,10 @@
 														).join('')}
 														</div>
 														<div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
-															<div class="d-flex flex-column">
-																${row.coupons ? `<span class="mt-1 mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
+															<div class="d-flex flex-column justify-content-between">
+																<div class="d-flex flex-column align-items-center justify-content-end">
+																	${row.coupons ? `<span class="order_customer_coupon mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
+																</div>
 																<button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
 															</div>
 															<div class="d-flex flex-column list_amount">
@@ -479,7 +483,7 @@
 																${row.coupons && row.coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+row.coupons+` (-`+row.coupons_amount+`€)</strong></span>` : ``}
 																<span class="montant_total_order">Expédition:<strong> `+row.shipping_amount+`€</strong></span>
 																<span class="montant_total_order">TVA: <strong>`+total_tax+`€</strong></span>
-																${row.gift_card.length > 0 ? `<span class="text-danger">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
+																${row.gift_card.length > 0 ? `<span class="text-success">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
 																<span class="mt-1 mb-2 montant_total_order">Payé: <strong>`+row.total+`€</strong></span>
 																<div class="d-flex justify-content-end">
 																	<button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
@@ -492,7 +496,43 @@
 											</div>
 										</div>
 									</div>
-									<i onclick="show(`+row.id+`)" class="show_detail bx bx-comment-detail"></i>
+									<i onclick="show(`+row.id+`)" class="show_detail bx bx-cube"></i>
+
+									<div class="modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered" role="document">
+											<div class="modal-content">
+											<div class="modal-body">
+												<div class="mt-2 d-flex flex-column w-100 customer_billing">
+													<span class="customer_detail_title badge bg-dark">Facturation</span>
+													<span>${row.billing.first_name} ${row.billing.last_name}</span>
+													<a href="mailto:${row.billing.email}"><span>${row.billing.email}</span></a>
+													<span>${row.billing.phone}</span>
+													<span>${row.billing.company}</span>
+													<span>${row.billing.address_1}</span>
+													<span>${row.billing.address_2}</span>
+													<span>${row.billing.state}</span>
+													<span>${row.billing.postcode}</span>
+													<span>${row.billing.country}</span>
+												</div>
+												<div class="mt-3 d-flex flex-column w-100 customer_shipping">
+													<span class="customer_detail_title badge bg-dark">Expédition</span>
+													<span>${row.shipping.first_name} ${row.shipping.last_name}</span>
+													<span>${row.shipping.company}</span>
+													<span>${row.shipping.address_1}</span>
+													<span>${row.shipping.address_2}</span>
+													<span>${row.shipping.state}</span>
+													<span>${row.shipping.postcode}</span>
+													<span>${row.shipping.country}</span>
+												</div>
+											</div>
+											<div class="modal-footer d-flex w-100 justify-content-between">
+												<span>Commande #${row.id}</span>
+												<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+											</div>
+											</div>
+										</div>
+									</div>
+									<i onclick="showCustomerOrderDetail(`+row.id+`)" class="show_detail_customer bx bx-user"></i>
 									`;
 							}
             			},
@@ -687,7 +727,6 @@
 				
 			}
 				
-
 			function show(id){
 				$('#order_'+id).modal({
 					backdrop: false,
@@ -695,6 +734,15 @@
 				})
 
 				$("#order_"+id).modal('show')
+			}
+
+			function showCustomerOrderDetail(id){
+				$('#order_detail_customer_'+id).modal({
+					backdrop: 'static',
+					keyboard: false
+				})
+
+				$("#order_detail_customer_"+id).modal('show')
 			}
 
 			function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){

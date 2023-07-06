@@ -30,7 +30,6 @@ class DistributorRepository implements DistributorInterface
 
          // Aucun existants
          if(count($distributors_exists) == 0){
-           
             try{
                return $this->model->insert($data);
             } catch(Exception $e){
@@ -38,31 +37,34 @@ class DistributorRepository implements DistributorInterface
             }
            
          } else {
-               $difference = [];
-               foreach ($data as $item1) {
-                  $found = false;
+               $difference_local = [];
+               $difference_online = [];
 
-                  foreach ($distributors_exists as $item2) {
-                     if ($item1['customer_id'] == $item2['customer_id']) {
-                        if($item1 != $item2){
-                           $found = false;
-                           break;
-                        } else {
-                           $found = true;
-                           break;
-                        }
+               $customer_id_on_local = array_column($data, "customer_id");
+               $customer_id_online = array_column($distributors_exists, "customer_id");
+
+               // Regarde si les données en local sont correctes
+               foreach ($distributors_exists as $item) {
+                  $customer_exist = array_keys($customer_id_on_local,  $item['customer_id']);
+                  if(count($customer_exist) == 0){
+                     $difference_online[] = $item;
+                  } else {
+                     if($data[$customer_exist[0]] != $item){
+                        $difference_local[] = $data[$customer_exist[0]];
                      }
-                  }
-                  
-                  if (!$found) {
-                     $difference[] = $item1;
                   }
                }
 
-               if (!empty($difference)) {
+              // Récupère les données sur wordpress non trouvées en local et les insert
+               foreach ($data as $item2) {
+                  $customer_exist_online = array_keys($customer_id_online,  $item2['customer_id']);
+                  if(count($customer_exist_online) == 0){
+                     $difference_local[] = $item2;
+                  }
+               }
 
-                  foreach ($difference as $diff) {
-                    
+               if (!empty($difference_local)) {
+                  foreach ($difference_local as $diff) {
                      try{
                         $update = $this->model::where('customer_id', $diff['customer_id'])->update($diff);
                      } catch(Exception $e){
@@ -75,7 +77,17 @@ class DistributorRepository implements DistributorInterface
                   }
                } 
 
-               return true;
+               if (!empty($difference_online)) {
+                  foreach ($difference_online as $diff) {
+                     try{
+                        $update = $this->model::where('customer_id', $diff['customer_id'])->delete();
+                     } catch(Exception $e){
+                        return $e->getMessage();
+                     }
+                  }
+               }
+
+            return true;
          }
       } catch(Exception $e){
          return $e->getMessage();

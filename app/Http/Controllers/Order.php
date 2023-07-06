@@ -481,6 +481,13 @@ class Order extends BaseController
       return view('leader.history', ['histories_by_date' => $histories_by_date]);
     }
 
+
+    public function leaderHistoryOrder(){
+      $history = $this->order->getAllHistory();
+      // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
+      return view('preparateur.history', ['history' => $history]);
+    }
+
     public function downloadPDF(Request $request){
       $date = $request->post('date_historique');
       $histories = $this->history->getHistoryByDate($date);

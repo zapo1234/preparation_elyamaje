@@ -130,7 +130,7 @@
 																		<div>
 																			<span class="detail_footer_order">TVA: </span><strong>{{ $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																		</div>
-																		<div class="text-danger">
+																		<div class="text-success">
 																			@if($orders['details']['gift_card_amount'] > 0)
 																				</span>Gift Card : <strong class="discount"> ({{-$orders['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																			@endif
@@ -228,7 +228,7 @@
 																			<div>
 																				<span class="detail_footer_order">TVA: </span><strong>{{ $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
-																			<div class="text-danger">
+																			<div class="text-success">
 																				@if($order['details']['gift_card_amount'] > 0)
 																					</span>Gift Card : <strong class="discount"> ({{-$order['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																				@endif
@@ -325,7 +325,7 @@
 																			<div>
 																				<span class="detail_footer_order">TVA: </span><strong>{{ $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
-																			<div class="text-danger">
+																			<div class="text-success">
 																				@if($order['details']['gift_card_amount'] > 0)
 																					</span>Gift Card : <strong class="discount"> ({{-$order['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																				@endif

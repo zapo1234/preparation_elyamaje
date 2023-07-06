@@ -25,6 +25,9 @@
 										<div>
 											<h6>{{ \Carbon\Carbon::parse($histo['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
 											<h2 class="customer_name">{{ $histo['details']['first_name']  }} {{ $histo['details']['last_name']  }}</h2>
+											@if(isset($histo['details']['preparateur']))
+												<span>Préparé par : {{ $histo['details']['preparateur'] }}</span>
+											@endif
 										</div>
 										<div class="d-flex">
 											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
@@ -54,7 +57,7 @@
 														<div id="barcode_{{ $item['barcode']  ?? 0 }}" class="{{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order">
 																@if($item['cost'] == 0)
-																<span><span class="text-danger">(Cadeau) </span>{{ $item['name'] }}</span>
+																<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 																@else 
 																	<span>{{ $item['name'] }}</span>
 																@endif
@@ -90,7 +93,7 @@
 															<div>
 																<span class="detail_footer_order">TVA: </span><strong>{{ $histo['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 															</div>
-															<div class="text-danger">
+															<div class="text-success">
 																@if($histo['details']['gift_card_amount'] > 0)
 																	</span>Gift Card : <strong class="discount"> ({{-$histo['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																@endif

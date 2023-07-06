@@ -102,6 +102,7 @@ Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('leader.getAllOrders');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
+    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
     Route::post("/downloadPDF", [Order::class, "downloadPDF"])->name('leader.downloadPDF');
 });
 
