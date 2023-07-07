@@ -167,6 +167,9 @@ Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name(
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
+Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+
+
 
 
 

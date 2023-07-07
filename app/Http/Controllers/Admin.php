@@ -325,6 +325,11 @@ class Admin extends BaseController
         return null; // Si la clé n'est pas trouvée
     }
 
+
+    public function emailPreview(){
+        return view('email.email-preview');
+    }
+
     
     
 }
