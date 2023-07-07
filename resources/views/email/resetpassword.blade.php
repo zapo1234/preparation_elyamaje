@@ -17,8 +17,7 @@
                         <h1>Bonjour</h1>        
                         <p>Vous avez fait une demande de réinitialisation de mot de passe</p>
                         <p></p>
-                        <p>Cliquez ci-dessous afin d'effectuer la modification :</p>
-                        </br>
+                        <p style="margin-bottom:50px">Cliquez ci-dessous afin d'effectuer la modification :</p>
                         <a 
                             style="letter-spacing: .5px;color: #fff;background-color: #212529;
                                 border-color: #212529;border-radius: 30px;
@@ -29,9 +28,6 @@
                         >
                             Réinitialiser mot de passe !
                         </a>
-                        <p></p>
-                        </br>
-                        </br></br>
                     </td>
                 </tr>
             </table>
