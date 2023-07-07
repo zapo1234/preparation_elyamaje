@@ -6927,3 +6927,34 @@ textarea:focus{
 .customer_billing a{
 	color: #0d6efd !important
 }
+
+.bg-404-no-role{
+	height: 85vh;
+    width: 100%;
+    background-image: url('../images/404.jpg');
+    background-size: contain;
+    padding: 0px;
+    margin: 0px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bg-404{
+	background-image: url('../images/404.jpg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
+.bg-500{
+	background-image: url('../images/500.jpg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}

@@ -17,8 +17,7 @@
                         <h1>Bonjour {{ $name }} </h1>   
                         <p>La commande #{{ $order_id }} n'a pas pu être complétée,</p>
                         <p>Note : {{ $note_partial_order ?? 'Aucune' }}</p>
-                        <p>Merci de consulter son état sur votre tableaux de bord</p>
-                        </br>
+                        <p style="margin-bottom:50px">Merci de consulter son état sur votre tableaux de bord</p>
                     </td>
                 </tr>
             </table>

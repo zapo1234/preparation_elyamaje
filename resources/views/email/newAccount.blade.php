@@ -22,8 +22,7 @@
                         <p></p>
                         <p>Lien : https://preparation.elyamaje.com</p>
                         <p>Identifiant :  {{ $email }}</p>
-                        <p>Mot de passe : {{ $password }}</p>
-                        </br>
+                        <p style="margin-bottom:50px">Mot de passe : {{ $password }}</p>
                     </td>
                 </tr>
             </table>
