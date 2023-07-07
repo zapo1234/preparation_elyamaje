@@ -9,10 +9,10 @@
                 <tr>
                     <td align="center">
                         <a href="">
-                            <img src="assets{{ ('/images/elyamaje_logo_long_noir.png') }}" width="150px"; height="auto"; style="margin-top:35px;";>
+                            <img src="assets{{ ('assets/images/elyamaje_logo_long_noir.png') }}" width="150px"; height="auto"; style="margin-top:35px;";>
                         </a>     
 
-                        <img src="assets{{ ('/images/bg-themes/bg-email.jpg') }}" width="100%"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
+                        <img src="assets{{ ('assets/images/bg-themes/bg-email.jpg') }}" width="100%"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
                         </br>  
                         <h1>Bonjour</h1>        
                         <p>Vous avez fait une demande de réinitialisation de mot de passe</p>
@@ -29,6 +29,7 @@
                         >
                             Réinitialiser mot de passe !
                         </a>
+                        <p></p>
                         </br>
                     </td>
                 </tr>
@@ -38,4 +39,5 @@
 </table>
 
 @endsection
+
 
