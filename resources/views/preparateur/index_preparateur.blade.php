@@ -380,7 +380,7 @@
 										<span class="d-flex  info_order"></span>
 										<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
-										<div class="d-flex  no-print col">
+										<div class="d-flex no-print col">
                                             <button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
                                         </div>
 									</div>

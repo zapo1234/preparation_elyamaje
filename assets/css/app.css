@@ -6427,15 +6427,14 @@ a{
 	body * {
 		visibility: hidden;
 	}
-	
-	.modal-content:has(#qrcode) * {
+	.modal_success  .modal-content * {
 		visibility: visible;
 		overflow: visible;
 	}
 	.main-page * {
 		display: none;
 	}
-	.modal:has(#qrcode)  {
+	.modal_success  {
 		position: absolute;
 		left: 0;
 		top: 0;
@@ -6445,10 +6444,11 @@ a{
 		visibility: visible;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
-	.modal:has(#qrcode) .modal-dialog:has(#qrcode) {
+	.modal_success, .modal_success.modal-dialog {
 		visibility: visible !important;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
+
 }
 
 .name_column{

@@ -50,6 +50,6 @@ $('body').on('click', '.impression_code', function() {
     $(".close_modal_validation").removeClass("d-none")
 })
 
-function imprimerPages(id) {
+function imprimerPages() {
     window.print();
 }
