@@ -2170,9 +2170,6 @@ a {
 
 	}
 
-	#qrcode, .info_order{
-		justify-content: center !important;
-	}
 
 	.invoice footer {
 
@@ -6427,14 +6424,45 @@ a{
     	display: none !important;
     }
 
-	.info_order_product {
+
+	/* .info_order_product {
 		display: block !important;
 		position: relative !important;
 		width: auto !important;
 		height: auto !important;
 		overflow: visible !important;
 		margin-left: 0 !important;
-		display: flex;
+		display: flex !important;
+		flex-direction: column !important;
+	}
+
+	.info_order_product {
+		page-break-after: always !important;
+	} */
+
+	body * {
+		visibility: hidden;
+	}
+	.modal_order  .modal-content * {
+		visibility: visible;
+		overflow: visible;
+	}
+	.main-page * {
+		display: none;
+	}
+	.modal_order  {
+		position: absolute;
+		left: 0;
+		top: 0;
+		margin: 0;
+		padding: 0;
+		height: auto !important;
+		visibility: visible;
+		overflow: visible !important; /* Remove scrollbar for printing. */
+	}
+	.modal_order .modal-dialog {
+		visibility: visible !important;
+		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
 	
 }

@@ -124,8 +124,7 @@
 											<div class="qrcode_print_{{ $histo['details']['id'] }} detail_product_order_head d-flex flex-column ">
 												<div id="qrcode" class="mt-5 d-flex w-100 justify-content-center body_qr_code_{{ $histo['details']['id'] }}"></div>
 												
-												
-												<span class="d-flex info_order"></span>
+	
 												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">

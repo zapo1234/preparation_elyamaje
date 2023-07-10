@@ -22,38 +22,8 @@ $('body').on('click', '.show_order_history_code', function() {
 
     $(".info_order_product").children('span').remove()
     $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append('<span>daaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaad</span>')
 
 
-
-
-    
 
     $(".body_qr_code_"+id).children('canvas').remove()
     $(".body_qr_code_"+id).children('img').remove()
@@ -82,12 +52,5 @@ $('body').on('click', '.impression_code', function() {
 })
 
 function imprimerPages(id) {
-
-    
-    var printDiv = document.querySelector("body")
-  
-
     window.print();
-
-
 }
