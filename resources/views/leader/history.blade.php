@@ -10,22 +10,35 @@
 			<div class="page-wrapper">
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
-						<div class="d-flex flex-wrap justify-content-center">
-							<div class="breadcrumb-title pe-3">Commandes</div>
+						<div class="breadcrumb-title pe-3">Historique</div>
+						<div class="ps-3">
+							<nav aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0 p-0">
+									<li class="breadcrumb-item active" aria-current="page">Commandes</li>
+								</ol>
+							</nav>
 						</div>
 						<div class="ms-auto ms-auto-responsive">
 							<button id="history_by_date" type="button" class="btn btn-dark px-5">Générer historique</button>
 						</div>
 					</div>
 
-				
+
+						@if(session()->has('success'))
+							<div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+								<div class="text-white">{{ session()->get('success') }}</div>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						@endif
+						@if(session()->has('error'))
+							<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+								<div class="text-white">{{ session()->get('error') }}</div>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						@endif
+
 						<div class="card card_table_mobile_responsive radius-10 w-100">
 							<div class="card-body">
-								<!-- <div class="d-flex align-items-center">
-									<div>
-										<h5 class="mb-4">Commandes <span class="text-success total_amount"></span></h5>
-									</div>
-								</div> -->
 								<div class="table-responsive">
 									<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 										<thead>
@@ -42,17 +55,22 @@
 													<td data-label="Préparée">
 														<div class="d-flex flex-column">
 															<div>
-																<span class="badge bg-dark">{{ $histo['prepared'] }}</span>  
+																<span class="badge bg-dark">{{ $histo['prepared'] }}</span>
+																@if($histo['prepared'])
+																	<span class="date_prepared">le {{ $histo['prepared_date'] }}</span>  
+																@endif
 															</div>
-															<span>{{ $histo['prepared_date'] }}</span>
+															
 														</div>
 													</td>
 													<td data-label="Emballée">
 														<div class="d-flex flex-column">
 															<div>
 																<span class="badge bg-dark">{{ $histo['finished'] }}</span>
+																@if($histo['finished'])
+																	<span class="date_finished">le {{ $histo['finished_date'] }}</span>  
+																@endif
 															</div>
-															<span>{{ $histo['finished_date'] }}</span>
 														</div>
 													</td>
 												</tr>

@@ -502,6 +502,10 @@ class Order extends BaseController
       $date = $request->post('date_historique');
       $histories = $this->history->getHistoryByDate($date);
       
+      if(count($histories) == 0){
+        return redirect()->route('leader.history')->with('error', 'Aucun historique pour la date sélectionnée '.$date);
+      }
+
       // Générer mon pdf
       $this->pdf->generateHistoryOrders($histories, $date);
       return redirect()->back();
@@ -510,12 +514,18 @@ class Order extends BaseController
     public function closeDay(){
       $date = date('Y-m-d');
       $histories = $this->history->getHistoryByDate($date);
+
+      if(count($histories) == 0){
+        return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
+      }
+
       $pdf = $this->pdf->generateHistoryOrdersCloseDay($histories, $date);
       return response()->file($pdf);
     }
 
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
+
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
       return view('preparateur.history', ['history' => $history]);
     }

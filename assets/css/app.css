@@ -6963,3 +6963,8 @@ textarea:focus{
 	height: 100%;
 	width: 100%;
 }
+
+.date_prepared, 
+.date_fiinished{
+	margin-left: 5px;;
+}
