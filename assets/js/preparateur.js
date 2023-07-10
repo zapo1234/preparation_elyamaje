@@ -46,9 +46,14 @@ $(document).ready(function() {
 })
 
 document.addEventListener("keydown", function(e) {
+
+    console.log($(".modal_order").hasClass('show'))
+    console.log(!$(".modal_verif_order").hasClass('show'))
+
+
     if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_in_progress").val()
-        console.log($("#barcode").val())
+        
         if (!isNaN(parseInt(e.key))) {
             $("#barcode").val($("#barcode").val()+e.key)
             if($("#barcode").val().length == 13){
