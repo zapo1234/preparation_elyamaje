@@ -55,7 +55,8 @@ document.addEventListener("keydown", function(e) {
             if($("#barcode").val().length == 13){
                 if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).length > 0){
                     if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).hasClass('pick')){
-                        alert('Ce produit à déjà été bippé')
+                        $(".info_message").text("Ce produit à déjà été bippé !")
+                        $("#infoMessageModal").modal('show')
                     } else {
                         $("#order_"+order_id+" .barcode_"+$("#barcode").val()).addClass('pick')
                         var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text())
@@ -98,8 +99,8 @@ document.addEventListener("keydown", function(e) {
                     }
                 } else {
                     $("#barcode").val("")
-                    console.log("Aucun produit ne correspond à ce code barre !")
-                    // $("#barcode").val("")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
 
                 $("#barcode").val("")
@@ -128,7 +129,8 @@ document.addEventListener("keydown", function(e) {
                     $("#barcode_verif").val('')
                 } else {
                     $("#barcode_verif").val('')
-                    alert("Aucun produit ne correspond à ce code barre !")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
                 
             }
@@ -214,7 +216,8 @@ $(".validate_pick_in").on('click', function(){
                 }
 
             } else {
-                alert('Produits manquants !')
+                $(".info_message").text("Produits manquants !")
+                $("#infoMessageModal").modal('show')
                 $(".error_prepared_command").removeClass('d-none')
             }
         });
