@@ -142,7 +142,7 @@ document.addEventListener("keydown", function(e) {
 $(".validate_pick_in").on('click', function(){
     var order_id = $("#order_in_progress").val()
 
-    if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode')){
+    // if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode')){
         // Ouvre la modal de loading
         $(".loading_prepared_command").removeClass('d-none')
         $("#modalSuccess").modal('show')
@@ -168,14 +168,14 @@ $(".validate_pick_in").on('click', function(){
         var customer_name = $(".customer_name_"+order_id).text()
         var user_name = $("#userinfo").val()
 
-        $.ajax({
-            url: "ordersPrepared",
-            method: 'POST',
-            data: {_token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0}
-        }).done(function(data) {
-            $(".loading_prepared_command").addClass('d-none')
+        // $.ajax({
+        //     url: "ordersPrepared",
+        //     method: 'POST',
+        //     data: {_token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0}
+        // }).done(function(data) {
+        //     $(".loading_prepared_command").addClass('d-none')
 
-            if(JSON.parse(data).success){
+        //     if(JSON.parse(data).success){
                 $(".success_prepared_command").removeClass('d-none')
                 const href =order_id+","+pick_items.length+","+customer_name+","+user_name;
                 const size = 150;
@@ -199,39 +199,39 @@ $(".validate_pick_in").on('click', function(){
                 });
 
 
-                if(localStorage.getItem('barcode')){
-                    pick_items = JSON.parse(localStorage.getItem('barcode'))
-                    Object.keys(pick_items).forEach(function(k, v){
-                        if(pick_items[k]){
-                            if(order_id == pick_items[k].order_id){
-                                pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
-                            }
-                        }
-                    })
-                }
+                // if(localStorage.getItem('barcode')){
+                //     pick_items = JSON.parse(localStorage.getItem('barcode'))
+                //     Object.keys(pick_items).forEach(function(k, v){
+                //         if(pick_items[k]){
+                //             if(order_id == pick_items[k].order_id){
+                //                 pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                //             }
+                //         }
+                //     })
+                // }
 
-                if(pick_items.length == 0){
-                    localStorage.removeItem('barcode');
-                } else {
-                    localStorage.setItem('barcode', JSON.stringify(pick_items));
-                }
+                // if(pick_items.length == 0){
+                //     localStorage.removeItem('barcode');
+                // } else {
+                //     localStorage.setItem('barcode', JSON.stringify(pick_items));
+                // }
 
-            } else {
-                $(".info_message").text("Produits manquants !")
-                $("#infoMessageModal").modal('show')
-                $(".error_prepared_command").removeClass('d-none')
-            }
-        });
-    } else {
-        // Récupère les produits de cette commande
-        if($("#order_"+order_id+" .pick").length >= 1){
-            $('#modalPartial').modal({
-                backdrop: 'static',
-                keyboard: false
-            })
-            $("#modalPartial").modal('show')
-        }
-    }
+        //     } else {
+        //         $(".info_message").text("Produits manquants !")
+        //         $("#infoMessageModal").modal('show')
+        //         $(".error_prepared_command").removeClass('d-none')
+        //     }
+        // });
+    // } else {
+    //     // Récupère les produits de cette commande
+    //     if($("#order_"+order_id+" .pick").length >= 1){
+    //         $('#modalPartial').modal({
+    //             backdrop: 'static',
+    //             keyboard: false
+    //         })
+    //         $("#modalPartial").modal('show')
+    //     }
+    // }
 }) 
 
 $(".reset_order").on('click', function(){
