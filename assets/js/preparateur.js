@@ -45,101 +45,6 @@ $(document).ready(function() {
     }
 })
 
-document.addEventListener("keydown", function(e) {
-
-    console.log($(".modal_order").hasClass('show'))
-    console.log(!$(".modal_verif_order").hasClass('show'))
-
-
-    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
-        var order_id = $("#order_in_progress").val()
-        
-        if (!isNaN(parseInt(e.key))) {
-            $("#barcode").val($("#barcode").val()+e.key)
-            if($("#barcode").val().length == 13){
-                if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).length > 0){
-                    if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).hasClass('pick')){
-                        alert('Ce produit à déjà été bippé')
-                    } else {
-                        $("#order_"+order_id+" .barcode_"+$("#barcode").val()).addClass('pick')
-                        var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text())
-                        quantity_pick_in = quantity_pick_in + 1
-
-                        if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text() > 1 && 
-                        (parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0 ){
-
-                            // Update pick quantity
-                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
-                            
-                            $(".quantity_product").text('')
-                            $(".quantity_product").text($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text())
-                            $(".name_quantity_product").text($("#order_"+order_id+" .barcode_"+$("#barcode").val()).children('.detail_product_name_order').children('span').text())
-                            $("#product_to_verif").val($("#barcode").val())
-                            $("#quantity_product_to_verif").text(parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in)
-
-                            $('#modalverification').modal({
-                                backdrop: 'static',
-                                keyboard: false
-                            })
-
-                            $("#modalverification").attr('data-order', order_id)
-                            $("#modalverification").modal('show')
-                            $("#barcode_verif").val($("#barcode").val())
-                            saveItem(order_id, true)
-                        } else if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text() > 1){
-                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
-                            $("#barcode_verif").val($("#barcode").val())
-                            saveItem(order_id, true)
-                        } else {
-                            saveItem(order_id, false)
-                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(1)
-                        }
-
-                        if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length){
-                            $("#order_"+order_id+" .validate_pick_in").css('background-color', '#16e15e')
-                            $("#order_"+order_id+" validate_pick_in").css('border', 'none')
-                        }
-                    }
-                } else {
-                    $("#barcode").val("")
-                    alert("Aucun produit ne correspond à ce code barre !")
-                    $("#barcode").val("")
-                }
-
-                $("#barcode").val("")
-            } 
-        }
-    } else if($(".modal_verif_order").hasClass('show')){
-        var order_id = $(".modal_verif_order").attr('data-order')
-        localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
-        console.log($("#barcode_verif").val())
-        if (!isNaN(parseInt(e.key))) {
-            $("#barcode_verif").val($("#barcode_verif").val()+e.key)
-            if($("#barcode_verif").val().length == 13){
-                
-                if($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif')){
-                    $("#quantity_product_to_verif").text(parseInt($("#quantity_product_to_verif").text()) - 1)
-                
-                    // Update pick quantity
-                    var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode_verif").val()).find('.quantity_pick_in').text())
-                    $("#order_"+order_id+" .barcode_"+$("#barcode_verif").val()).find('.quantity_pick_in').text(quantity_pick_in + 1)
-                    saveItem(order_id, true)
-
-                    if(parseInt($("#quantity_product_to_verif").text()) == 0){
-                        $("#modalverification").modal('hide')
-                        localStorage.removeItem('product_quantity_verif');
-                    }
-                    $("#barcode_verif").val('')
-                } else {
-                    $("#barcode_verif").val('')
-                    alert("Aucun produit ne correspond à ce code barre !")
-                }
-                
-            }
-        }
-    }
-});
-
 $(".validate_pick_in").on('click', function(){
     var order_id = $("#order_in_progress").val()
 
@@ -398,4 +303,101 @@ function imprimerPages() {
     window.print();
     document.body.innerHTML = originalContents;
 }
+
+
+
+document.addEventListener("keydown", function(e) {
+
+    console.log($(".modal_order").hasClass('show'))
+    console.log(!$(".modal_verif_order").hasClass('show'))
+
+
+    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
+        var order_id = $("#order_in_progress").val()
+        
+        if (!isNaN(parseInt(e.key))) {
+            $("#barcode").val($("#barcode").val()+e.key)
+            if($("#barcode").val().length == 13){
+                if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).length > 0){
+                    if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).hasClass('pick')){
+                        alert('Ce produit à déjà été bippé')
+                    } else {
+                        $("#order_"+order_id+" .barcode_"+$("#barcode").val()).addClass('pick')
+                        var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text())
+                        quantity_pick_in = quantity_pick_in + 1
+
+                        if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text() > 1 && 
+                        (parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0 ){
+
+                            // Update pick quantity
+                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
+                            
+                            $(".quantity_product").text('')
+                            $(".quantity_product").text($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text())
+                            $(".name_quantity_product").text($("#order_"+order_id+" .barcode_"+$("#barcode").val()).children('.detail_product_name_order').children('span').text())
+                            $("#product_to_verif").val($("#barcode").val())
+                            $("#quantity_product_to_verif").text(parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in)
+
+                            $('#modalverification').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+
+                            $("#modalverification").attr('data-order', order_id)
+                            $("#modalverification").modal('show')
+                            $("#barcode_verif").val($("#barcode").val())
+                            saveItem(order_id, true)
+                        } else if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_to_pick_in').text() > 1){
+                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
+                            $("#barcode_verif").val($("#barcode").val())
+                            saveItem(order_id, true)
+                        } else {
+                            saveItem(order_id, false)
+                            $("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text(1)
+                        }
+
+                        if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length){
+                            $("#order_"+order_id+" .validate_pick_in").css('background-color', '#16e15e')
+                            $("#order_"+order_id+" validate_pick_in").css('border', 'none')
+                        }
+                    }
+                } else {
+                    $("#barcode").val("")
+                    alert("Aucun produit ne correspond à ce code barre !")
+                    $("#barcode").val("")
+                }
+
+                $("#barcode").val("")
+            } 
+        }
+    } else if($(".modal_verif_order").hasClass('show')){
+        var order_id = $(".modal_verif_order").attr('data-order')
+        localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
+        console.log($("#barcode_verif").val())
+        if (!isNaN(parseInt(e.key))) {
+            $("#barcode_verif").val($("#barcode_verif").val()+e.key)
+            if($("#barcode_verif").val().length == 13){
+                
+                if($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif')){
+                    $("#quantity_product_to_verif").text(parseInt($("#quantity_product_to_verif").text()) - 1)
+                
+                    // Update pick quantity
+                    var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode_verif").val()).find('.quantity_pick_in').text())
+                    $("#order_"+order_id+" .barcode_"+$("#barcode_verif").val()).find('.quantity_pick_in').text(quantity_pick_in + 1)
+                    saveItem(order_id, true)
+
+                    if(parseInt($("#quantity_product_to_verif").text()) == 0){
+                        $("#modalverification").modal('hide')
+                        localStorage.removeItem('product_quantity_verif');
+                    }
+                    $("#barcode_verif").val('')
+                } else {
+                    $("#barcode_verif").val('')
+                    alert("Aucun produit ne correspond à ce code barre !")
+                }
+                
+            }
+        }
+    }
+});
 
