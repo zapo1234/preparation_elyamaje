@@ -168,6 +168,8 @@ $(".validate_pick_in").on('click', function(){
         var customer_name = $(".customer_name_"+order_id).text()
         var user_name = $("#userinfo").val()
 
+        $(".modal_order").modal('hide')
+
         // $.ajax({
         //     url: "ordersPrepared",
         //     method: 'POST',
