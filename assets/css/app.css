@@ -6424,22 +6424,6 @@ a{
     	display: none !important;
     }
 
-
-	/* .info_order_product {
-		display: block !important;
-		position: relative !important;
-		width: auto !important;
-		height: auto !important;
-		overflow: visible !important;
-		margin-left: 0 !important;
-		display: flex !important;
-		flex-direction: column !important;
-	}
-
-	.info_order_product {
-		page-break-after: always !important;
-	} */
-
 	body * {
 		visibility: hidden;
 	}
@@ -6464,7 +6448,6 @@ a{
 		visibility: visible !important;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
-	
 }
 
 .name_column{

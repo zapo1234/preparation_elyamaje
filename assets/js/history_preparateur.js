@@ -24,7 +24,6 @@ $('body').on('click', '.show_order_history_code', function() {
     $(".info_order_product").append(list_products)
 
 
-
     $(".body_qr_code_"+id).children('canvas').remove()
     $(".body_qr_code_"+id).children('img').remove()
 

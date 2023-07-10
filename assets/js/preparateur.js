@@ -388,14 +388,6 @@ function saveItem(order_id, mutiple_quantity){
 }
 
 function imprimerPages() {
-    var pageHeight = window.innerHeight;
-    var scrollHeight = document.documentElement.scrollHeight;
-    var position = 0;
-
-    var originalContents = document.body.innerHTML;
-    var printReport= document.querySelector('.success_prepared_command').innerHTML;
-    document.body.innerHTML = printReport;
     window.print();
-    document.body.innerHTML = originalContents;
 }
 
