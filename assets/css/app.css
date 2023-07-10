@@ -6428,9 +6428,7 @@ a{
         display: none !important;
     }
 
-	body:has(#qrcode){
-		height: 100% !important;
-	}
+
 }
 
 .name_column{

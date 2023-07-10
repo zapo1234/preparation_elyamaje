@@ -22,8 +22,38 @@ $('body').on('click', '.show_order_history_code', function() {
 
     $(".info_order_product").children('span').remove()
     $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append(list_products)
+    $(".info_order_product").append('<span>daaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaad</span>')
 
 
+
+
+    
 
     $(".body_qr_code_"+id).children('canvas').remove()
     $(".body_qr_code_"+id).children('img').remove()
@@ -52,26 +82,9 @@ $('body').on('click', '.impression_code', function() {
 })
 
 function imprimerPages(id) {
-
-    var divElement = document.querySelector('.qrcode_print_'+id);
-    // Clonage de la div
-    var tempDiv = divElement.cloneNode(true);
-
-    // Filtrage des éléments indésirables
-    var exclusions = tempDiv.getElementsByClassName('no-print');
-    while (exclusions.length > 0) {
-        exclusions[0].parentNode.removeChild(exclusions[0]);
-    }
-
-    // Création de la fenêtre d'impression
-    var newWindow = window.open('', '_blank');
-    newWindow.document.write('<html><head><title>Impression</title>');
-    newWindow.document.write('<style>@media print { #qrcode {display:flex; justify-content:center} .info_order_product { display: flex; flex-direction: column; text-align: center; margin-top: 25px;} }</style>');
-    newWindow.document.write('</head><body><div class="print-content">' + tempDiv.innerHTML + '</div></body></html>');
-    newWindow.document.close();
-
-    // Lancement de l'impression
-    newWindow.print();
-    newWindow.close();
-
+    var restorepage = $('body').html();
+    var printcontent = $('.qrcode_print_' + id).clone();
+    $('body').empty().html(printcontent);
+    window.print();
+    $('body').html(restorepage);
 }
