@@ -471,30 +471,53 @@ class Order extends BaseController
 
     public function leaderHistory(){
       $histories = $this->history->getAllHistory();
-      $histories_by_date = [];
+      $histories_order = [];
 
-      // Groupe par date
       foreach($histories as $history){
-        $histories_by_date[date("Y-m-d", strtotime($history['created_at']))][] = $history;
+        if(isset($histories_order[$history['order_id']])){
+          if($histories_order[$history['order_id']]['status'] == "prepared"){
+            $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
+            $histories_order[$history['order_id']]['finished'] = $history['name'];
+            $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
+            $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
+          } else {
+            $histories_order[$history['order_id']]['prepared'] = $history['name'];
+            $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
+            $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
+            $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
+          }
+        } else {
+          $histories_order[$history['order_id']] = $history;
+          $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
+          $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
+          $histories_order[$history['order_id']]['finished_date'] = $history['status'] == 'finished' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
+          $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
+        } 
       }
 
-      return view('leader.history', ['histories_by_date' => $histories_by_date]);
+      return view('leader.history', ['histories' => $histories_order]);
     }
 
-
-    public function leaderHistoryOrder(){
-      $history = $this->order->getAllHistory();
-      // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
-      return view('preparateur.history', ['history' => $history]);
-    }
-
-    public function downloadPDF(Request $request){
+    public function generateHistory(Request $request){
       $date = $request->post('date_historique');
       $histories = $this->history->getHistoryByDate($date);
       
       // Générer mon pdf
       $this->pdf->generateHistoryOrders($histories, $date);
       return redirect()->back();
+    }
+
+    public function closeDay(){
+      $date = date('Y-m-d');
+      $histories = $this->history->getHistoryByDate($date);
+      $pdf = $this->pdf->generateHistoryOrdersCloseDay($histories, $date);
+      return response()->file($pdf);
+    }
+
+    public function leaderHistoryOrder(){
+      $history = $this->order->getAllHistory();
+      // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
+      return view('preparateur.history', ['history' => $history]);
     }
 
     public function deleteOrderProducts(Request $request){

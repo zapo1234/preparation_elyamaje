@@ -30,11 +30,11 @@ class HistoryRepository implements HistoryInterface
          ->toArray();
    }
 
-
    public function getAllHistory(){
       return $this->model::select('histories.id as histo', 'users.id', 'users.name', 'histories.poste', 'histories.created_at', 'histories.order_id',
-         DB::raw('COUNT(CASE WHEN prepa_histories.status = "prepared" THEN 1 ELSE NULL END) AS prepared_count'),
-         DB::raw('COUNT(CASE WHEN prepa_histories.status = "finished" THEN 1 ELSE NULL END) AS finished_count'))
+      'histories.status')
+         // DB::raw('COUNT(CASE WHEN prepa_histories.status = "prepared" THEN 1 ELSE NULL END) AS prepared_count'),
+         // DB::raw('COUNT(CASE WHEN prepa_histories.status = "finished" THEN 1 ELSE NULL END) AS finished_count'))
          ->join('users', 'users.id', '=', 'histories.user_id')
          ->groupBy('histories.id')
          ->orderBy('histories.created_at', 'DESC')

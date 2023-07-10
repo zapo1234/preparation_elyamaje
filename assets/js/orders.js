@@ -171,10 +171,10 @@ $(document).ready(function() {
                     var id = []
                     Object.entries(row.products_pick).forEach(([key, value]) => {
                         if (value.order_id == row.id){
-                            row.pick_items = true
-                            id.push(value.product_woocommerce_id) 
+                            id[value.product_woocommerce_id] = value.pick
                         } 
                     }) 
+
                     return `
                         <div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -184,19 +184,19 @@ $(document).ready(function() {
                                             <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
                                                 <span class="column1 name_column">Article</span>
                                                 <span class="column2 name_column">Coût</span>
-                                                <span class="column3 name_column">Qté</span>
+                                                <span class="column3 name_column">Qté / Pick</span>
                                                 <span class="column4 name_column">Total</span>
                                                 <span class="column5 name_column">Action</span>
                                             </div>	
 
                                             <div class="body_detail_product_order">
                                                 ${row.line_items.map((element) => `
-                                                    <div class="${row.id}_${element.id} ${id.includes(element.product_id) || id.includes(element.variation_id) ? 'pick' : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                                    <div class="${element.product_id}  ${element.variation_id} ${row.id}_${element.id} ${id[element.product_id] ? (id[element.product_id] == element.quantity ? 'pick' : '') : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
                                                         <div class="column11 d-flex align-items-center detail_product_name_order">
                                                             ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                         </div>
                                                         <span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
-                                                        <span class="column33 quantity"> `+element.quantity+` </span>
+                                                        <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
                                                         <span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
                                                     </div>`

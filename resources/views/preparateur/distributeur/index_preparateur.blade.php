@@ -211,23 +211,23 @@
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">
 																			<div>
-																				</span>Sous-total des articles : <strong> {{ $orders['details']['total'] + $orders['details']['discount'] + $orders['details']['gift_card_amount'] - $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
+																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
-																				@if($orders['details']['discount'] > 0)
-																					</span>Code promo: <strong class="discount"> {{ $orders['details']['coupons'] ?? '' }} (-{{ $orders['details']['discount'] }} {{ config('app.currency_symbol') }})</strong>
+																				@if($order['details']['discount'] > 0)
+																					</span>Code promo: <strong class="discount"> {{ $order['details']['coupons'] ?? '' }} (-{{ $order['details']['discount'] }} {{ config('app.currency_symbol') }})</strong>
 																				@endif
 																			</div>
 																			<div>
-																				<span class="detail_footer_order">TVA: </span><strong>{{ $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
+																				<span class="detail_footer_order">TVA: </span><strong>{{ $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
-																				@if($orders['details']['gift_card_amount'] > 0)
-																					</span>Gift Card : <strong class="discount"> ({{-$orders['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
+																				@if($order['details']['gift_card_amount'] > 0)
+																					</span>Gift Card : <strong class="discount"> ({{-$order['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																				@endif
 																			</div>
 																			<div>
-																				<span class="detail_footer_order">Payé:   </span><strong>{{ $orders['details']['total'] }} {{ config('app.currency_symbol') }}</strong>
+																				<span class="detail_footer_order">Payé:   </span><strong>{{ $order['details']['total'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																		</div>
 																	</div>
@@ -305,23 +305,23 @@
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">
 																			<div>
-																				</span>Sous-total des articles : <strong> {{ $orders['details']['total'] + $orders['details']['discount'] + $orders['details']['gift_card_amount'] - $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
+																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
-																				@if($orders['details']['discount'] > 0)
-																					</span>Code promo: <strong class="discount"> {{ $orders['details']['coupons'] ?? '' }} (-{{ $orders['details']['discount'] }} {{ config('app.currency_symbol') }})</strong>
+																				@if($order['details']['discount'] > 0)
+																					</span>Code promo: <strong class="discount"> {{ $order['details']['coupons'] ?? '' }} (-{{ $order['details']['discount'] }} {{ config('app.currency_symbol') }})</strong>
 																				@endif
 																			</div>
 																			<div>
-																				<span class="detail_footer_order">TVA: </span><strong>{{ $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
+																				<span class="detail_footer_order">TVA: </span><strong>{{ $order['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
-																				@if($orders['details']['gift_card_amount'] > 0)
-																					</span>Gift Card : <strong class="discount"> ({{-$orders['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
+																				@if($order['details']['gift_card_amount'] > 0)
+																					</span>Gift Card : <strong class="discount"> ({{-$order['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
 																				@endif
 																			</div>
 																			<div>
-																				<span class="detail_footer_order">Payé:   </span><strong>{{ $orders['details']['total'] }} {{ config('app.currency_symbol') }}</strong>
+																				<span class="detail_footer_order">Payé:   </span><strong>{{ $order['details']['total'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																		</div>
 																	</div>

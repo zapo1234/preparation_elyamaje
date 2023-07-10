@@ -44,9 +44,9 @@
                     <div class="menu-title">Historiques</div>
                 </a>
                 <ul>
-                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Récapitulatifs</a>
+                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
                     </li>
-                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
+                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Préparation</a>
                     </li>
                 </ul>
             </li>

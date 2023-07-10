@@ -6679,6 +6679,10 @@ select:focus, input:focus{
 	border: 1px solid #CBCBCB;
 }
 
+.modal_verif_order  .quantity_product{
+	border: none !important;
+}
+
 .modal_backfrop_fixe{
     background-color: rgba(0, 0, 0, 0.4);
 }
@@ -6687,7 +6691,8 @@ select:focus, input:focus{
 	cursor: pointer;
 }
 
-.date_bordereau_input{
+.date_bordereau_input,
+.date_historique{
 	padding: 10px;
     width: 250px;
 	border: 1px solid #dee2e6;

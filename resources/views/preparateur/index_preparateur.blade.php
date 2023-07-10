@@ -159,6 +159,8 @@
 								<div class="tab-pane fade" id="primaryprofile" role="tabpanel">
 									@if(count($orders_waiting_to_validate) > 0)
 										@foreach($orders_waiting_to_validate as $order)
+
+
 											<div class="courses-container order_waiting mb-4">
 												<div class="course">
 													<div class="course-preview">
@@ -207,15 +209,16 @@
 																<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_total_order">
-																		@if($order['details']['coupons'])
-																			<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
-																		@endif
-																	
-																		#{{ $order['details']['id'] }} </span>
+																			@if($order['details']['coupons'])
+																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
+																			@endif
+																		
+																			#{{ $order['details']['id'] }} 
+																		</span>
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">
 																			<div>
-																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $orders['details']['total_tax'] - $orders['details']['shipping_amount'] }} {{ config('app.currency_symbol') }}</strong>
+																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $order['details']['total_tax'] - $order['details']['shipping_amount'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
 																				@if($order['details']['discount'] > 0)
@@ -312,7 +315,7 @@
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">
 																			<div>
-																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $orders['details']['total_tax'] - $orders['details']['shipping_amount'] }} {{ config('app.currency_symbol') }}</strong>
+																				</span>Sous-total des articles : <strong> {{ $order['details']['total'] + $order['details']['discount'] + $order['details']['gift_card_amount'] - $order['details']['total_tax'] - $order['details']['shipping_amount'] }} {{ config('app.currency_symbol') }}</strong>
 																			</div>
 																			<div class="text-success">
 																				@if($order['details']['discount'] > 0)
