@@ -23,32 +23,32 @@ $('body').on('click', '.show_order_history_code', function() {
     $(".info_order_product").children('span').remove()
     $(".info_order_product").append(list_products)
     $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
-    $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
+    // $(".info_order_product").append(list_products)
 
 
 
@@ -82,18 +82,13 @@ $('body').on('click', '.impression_code', function() {
 })
 
 function imprimerPages(id) {
-    var originalContents = document.body.innerHTML;
-    var printReport= document.querySelector('#code_'+id)
-    document.body.innerHTML = printReport.innerHTML;
-    document.body.style.display = 'block';
-    document.body.style.overflow = 'visible';
-    window.print();
-    document.body.innerHTML = originalContents;
-
-    // var pageHeight = window.innerHeight;
     // var originalContents = document.body.innerHTML;
-    // var printReport= document.querySelector('.qrcode_print_'+id).innerHTML;
-    // document.body.innerHTML = printReport;
-    // window.print();
+    // var printReport= document.querySelector('.qrcode_print_'+id)
+    // document.body.innerHTML = printReport.innerHTML;
+    // document.body.style.display = 'block';
+    // document.body.style.overflow = 'visible';
+    window.print();
     // document.body.innerHTML = originalContents;
+
+  
 }
