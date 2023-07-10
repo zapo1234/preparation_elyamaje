@@ -97,8 +97,7 @@ document.addEventListener("keydown", function(e) {
                     }
                 } else {
                     $("#barcode").val("")
-                    alert($("#barcode").val())
-                    // alert("Aucun produit ne correspond à ce code barre !")
+                    alert("Aucun produit ne correspond à ce code barre !")
                 }
 
                 $("#barcode").val("")
