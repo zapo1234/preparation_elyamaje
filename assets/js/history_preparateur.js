@@ -82,9 +82,12 @@ $('body').on('click', '.impression_code', function() {
 })
 
 function imprimerPages(id) {
-    var restorepage = $('body').html();
-    var printcontent = $('.qrcode_print_' + id).clone();
-    $('body').empty().html(printcontent);
+
+    
+    var printDiv = document.querySelector("body")
+  
+
     window.print();
-    $('body').html(restorepage);
+
+
 }
