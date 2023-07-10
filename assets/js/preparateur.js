@@ -304,9 +304,11 @@ function imprimerPages() {
     document.body.innerHTML = originalContents;
 }
 
+$('body').on('addEventListener', function(e) {
+
+// document.addEventListener("keydown", function(e) {
 
 
-document.addEventListener("keydown", function(e) {
 
     console.log($(".modal_order").hasClass('show'))
     console.log(!$(".modal_verif_order").hasClass('show'))
