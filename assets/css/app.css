@@ -6427,14 +6427,15 @@ a{
 	body * {
 		visibility: hidden;
 	}
-	.modal_order  .modal-content * {
+	
+	.modal-content:has(#qrcode) * {
 		visibility: visible;
 		overflow: visible;
 	}
 	.main-page * {
 		display: none;
 	}
-	.modal_order  {
+	.modal:has(#qrcode)  {
 		position: absolute;
 		left: 0;
 		top: 0;
@@ -6444,7 +6445,7 @@ a{
 		visibility: visible;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
-	.modal_order .modal-dialog {
+	.modal:has(#qrcode) .modal-dialog:has(#qrcode) {
 		visibility: visible !important;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
