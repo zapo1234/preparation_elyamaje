@@ -47,7 +47,8 @@ $(document).ready(function() {
 
 document.addEventListener("keydown", function(e) {
 
-    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
+    // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
+    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') && !$("#infoMessageModal").hasClass('show')){
         var order_id = $("#order_in_progress").val()
         
         if (!isNaN(parseInt(e.key))) {
