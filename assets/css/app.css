@@ -6429,9 +6429,8 @@ a{
     }
 
 	body:has(#qrcode){
-		max-height: 150px !important;
+		height: 100% !important;
 	}
-
 }
 
 .name_column{
@@ -6967,4 +6966,9 @@ textarea:focus{
 .date_prepared, 
 .date_fiinished{
 	margin-left: 5px;;
+}
+
+.info_order_product {
+	max-height: 80vh;
+	overflow-y: auto;
 }
