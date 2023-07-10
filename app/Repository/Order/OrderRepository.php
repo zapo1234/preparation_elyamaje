@@ -532,30 +532,28 @@ class OrderRepository implements OrderInterface
   
       $list = [];
 
- 
-       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-       $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
-       $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
-       $queryOrder .= "ELSE prepa_categories.order_display END";
- 
-       $orders = 
-       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
-          ->where('user_id', $user_id)
-          ->whereIn('orders.status', ['prepared-order'])
-          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-          'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
-          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
-          ->orderBy('orders.date', 'ASC')
-          ->orderByRaw($queryOrder)
-          ->orderBy('categories.order_display', 'ASC')
-          ->orderBy('products.product_woocommerce_id', 'ASC')
-          ->get();
- 
+      // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder .= "ELSE prepa_categories.order_display END";
+
+      $orders = 
+      $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+         ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->where('user_id', $user_id)
+         ->whereIn('orders.status', ['prepared-order'])
+         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
+         ->orderBy('orders.date', 'ASC')
+         ->orderByRaw($queryOrder)
+         ->orderBy('categories.order_display', 'ASC')
+         ->orderBy('products.product_woocommerce_id', 'ASC')
+         ->get();
+
        $orders = json_decode(json_encode($orders), true);
-   
- 
+
        foreach($orders as $key => $order){
             $list[$order['order_woocommerce_id']]['details'] = [
                'id' => $order['order_woocommerce_id'],
@@ -572,17 +570,11 @@ class OrderRepository implements OrderInterface
                'shipping_amount' => $order['shipping_amount'],
             ];
             $list[$order['order_woocommerce_id']]['items'][] = $order;
-         
       }
  
       $list = array_values($list);
       return $list;
    }
-
-
-
-   
-
 
    public function getAllHistory(){
       $list = [];
