@@ -98,10 +98,11 @@ document.addEventListener("keydown", function(e) {
                 } else {
                     $("#barcode").val("")
                     alert("Aucun produit ne correspond à ce code barre !")
+                    $("#barcode").val("")
                 }
 
                 $("#barcode").val("")
-            }
+            } 
         }
     } else if($(".modal_verif_order").hasClass('show')){
         var order_id = $(".modal_verif_order").attr('data-order')
