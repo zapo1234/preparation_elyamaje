@@ -601,7 +601,7 @@ class TransferOrder
                  }
 
                  if(in_array($account_id, $array_paiments)){
-                   // defini le paiment comme virement bancaire....
+                   // defini le paiment comme virement bancaire......
                      $mode_reglement_id = 4;
                      $mode_reglement_code ="PRE";
                      $account_id="";
