@@ -536,8 +536,7 @@ class Order extends BaseController
       
       
       // Générer mon pdf
-      $this->pdf->generateHistoryOrders($list_histories, $date);
-      return redirect()->back();
+      return $this->pdf->generateHistoryOrders($list_histories, $date);
     }
 
     public function closeDay(){
@@ -575,8 +574,7 @@ class Order extends BaseController
           }
       }
 
-      $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
-      return response()->file($pdf);
+      return $this->pdf->generateHistoryOrders($list_histories, $date);
     }
 
     public function leaderHistoryOrder(){
