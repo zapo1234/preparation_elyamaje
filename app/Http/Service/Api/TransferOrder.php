@@ -581,12 +581,16 @@ class TransferOrder
                   $account_id = $this->getAccountpay();
 
                   if($account_id==""){
-                    $status="vir_card";
+                    $account_id="vir_card";
+                  }
+
+                  if($account_id!="bacs"){
+                    $account_id="vir_card1";
                   }
                  
                    // Moyens de paiments....id 4............
 
-                   $array_paiment = array('vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
                  if(in_array($account_id,$array_paiment)){
