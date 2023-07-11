@@ -633,7 +633,7 @@ class TransferOrder
       
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>4,
+              "paymentid"=>6,
               "closepaidinvoices"=> "yes",
               "accountid"=> 6, // id du compte bancaire.
           ];
