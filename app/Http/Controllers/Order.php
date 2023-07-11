@@ -571,6 +571,8 @@ class Order extends BaseController
           }
       }
 
+      dd("dd");
+
       if(count($histories) == 0){
         return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
