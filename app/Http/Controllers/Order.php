@@ -572,7 +572,7 @@ class Order extends BaseController
       }
 
       if(count($histories) == 0){
-        return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
+        return redirect()->route('index')->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
 
       $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
