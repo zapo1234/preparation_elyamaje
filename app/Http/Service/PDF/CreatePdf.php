@@ -43,6 +43,34 @@ class CreatePdf
         $this->dompdf->render();
         return $this->dompdf->stream($name.'.pdf');
     }
+
+    public function generateHistoryOrdersCloseDay($data, $date_historique){
+
+        $date_historique = date("d-m-Y", strtotime($date_historique));
+        $table = '<h3 style="text-align:center">'.$date_historique.'</h3></br>';
+        $table .= '<table style="width: 100%;" cellpadding="1" cellspacing="1">';
+        $table .='<tr>';
+            $table.='<th style="border:1px solid black" bgcolor="white">Nom</th>';
+            $table.='<th style="border:1px solid black" bgcolor="white">Poste</th>';
+            $table.='<th style="border:1px solid black" bgcolor="white">Commandes Préparées</th>';
+            $table.='<th style="border:1px solid black"bgcolor="white">Commandes Emballées</th>';
+        $table .='</tr>';
+
+        foreach ($data as $row) {
+            $table .= '<tr>';
+                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $row['name'] . '</td>';
+                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $row['user_poste'] ?? '' . '</td>';
+                $table .= '<td  style="word-break:break-word;border:1px solid black" bgcolor="white">' . $row['prepared_count'] . '</td>';
+                $table .= '<td  style="word-break:break-word;border:1px solid black" bgcolor="white">' . $row['finished_count'] . '</td>';
+            $table .= '</tr>';
+        }
+        $table .= '</table>';
+  
+        $name = 'preparation_'.$date_historique;
+        $this->dompdf->loadHtml($table);
+        $this->dompdf->render();
+        return $this->dompdf->stream($name.'.pdf');
+    }
       
   }
 

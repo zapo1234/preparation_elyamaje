@@ -82,8 +82,9 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
 
-                  'payment_method' => $orderData['payment_method'] ?? null,
-                  'payment_method_title' => $orderData['payment_method_title'] ?? null,
+                  'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+                  'payment_method_title' => $orderData['payment_method_title'] ? $orderData['payment_method_title'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+                  'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
 
                   'date' => $orderData['date_created'],
                   'total_tax_order' => $orderData['total_tax'],
@@ -92,6 +93,8 @@ class OrderRepository implements OrderInterface
                   'status' => $orderData['status'],
                   'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
                   'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
+                  'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? $orderData['shipping_lines'][0]['total'] : null,
+
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
                ];
@@ -192,6 +195,8 @@ class OrderRepository implements OrderInterface
                   'coupons' => $order['coupons'],
                   'discount' => $order['discount'],
                   'discount_amount' => $order['discount_amount'],
+                  'gift_card_amount' => $order['gift_card_amount'],
+                  'shipping_amount' => $order['shipping_amount']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -208,6 +213,8 @@ class OrderRepository implements OrderInterface
                   'coupons' => $order['coupons'],
                   'discount' => $order['discount'],
                   'discount_amount' => $order['discount_amount'],
+                  'gift_card_amount' => $order['gift_card_amount'],
+                  'shipping_amount' => $order['shipping_amount'],
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -443,8 +450,9 @@ class OrderRepository implements OrderInterface
                   'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
                   'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
 
-                  'payment_method' => $insert_order_by_user['payment_method'] ?? null,
-                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ?? null,
+                  'payment_method' => $insert_order_by_user['payment_method'] ? $insert_order_by_user['payment_method'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ? $insert_order_by_user['payment_method_title'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+                  'gift_card_amount' => isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0,
 
                   'date' => $insert_order_by_user['date_created'],
                   'total_tax_order' => $insert_order_by_user['total_tax'],
@@ -453,6 +461,7 @@ class OrderRepository implements OrderInterface
                   'status' => $insert_order_by_user['status'],
                   'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
                   'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
+                  'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId
                ];
@@ -522,6 +531,53 @@ class OrderRepository implements OrderInterface
    public function getHistoryByUser($user_id){
   
       $list = [];
+
+      // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder .= "ELSE prepa_categories.order_display END";
+
+      $orders = 
+      $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+         ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->where('user_id', $user_id)
+         ->whereIn('orders.status', ['prepared-order'])
+         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
+         ->orderBy('orders.date', 'ASC')
+         ->orderByRaw($queryOrder)
+         ->orderBy('categories.order_display', 'ASC')
+         ->orderBy('products.product_woocommerce_id', 'ASC')
+         ->get();
+
+       $orders = json_decode(json_encode($orders), true);
+
+       foreach($orders as $key => $order){
+            $list[$order['order_woocommerce_id']]['details'] = [
+               'id' => $order['order_woocommerce_id'],
+               'first_name' => $order['billing_customer_first_name'],
+               'last_name' => $order['billing_customer_last_name'],
+               'date' => $order['date'],
+               'total' => $order['total_order'],
+               'total_tax' => $order['total_tax_order'],
+               'status' => $order['status'],
+               'coupons' => $order['coupons'],
+               'discount' => $order['discount'],
+               'discount_amount' => $order['discount_amount'],
+               'gift_card_amount' => $order['gift_card_amount'],
+               'shipping_amount' => $order['shipping_amount'],
+            ];
+            $list[$order['order_woocommerce_id']]['items'][] = $order;
+      }
+ 
+      $list = array_values($list);
+      return $list;
+   }
+
+   public function getAllHistory(){
+      $list = [];
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       // $queryOrder = "CASE WHEN products.name LIKE '%20 ml' THEN 1 ";
       // $queryOrder .= "WHEN products.name LIKE '%50 ml' THEN 2 ";
@@ -531,10 +587,11 @@ class OrderRepository implements OrderInterface
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->where('user_id', $user_id)
-         ->whereIn('orders.status', ['finished', 'prepared-order'])
+         ->join('users', 'users.id', '=', 'orders.user_id')
+         ->where('orders.status', 'prepared-order')
          ->select('orders.*', 'products.*', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
-         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
+         'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
+         'users.name as preparateur')
          ->orderBy('orders.updated_at', 'DESC')
          ->orderBy('categories.order_display', 'ASC')
          // ->orderByRaw($queryOrder)
@@ -554,6 +611,10 @@ class OrderRepository implements OrderInterface
             'coupons' => $order['coupons'],
             'discount' => $order['discount'],
             'discount_amount' => $order['discount_amount'],
+            'gift_card_amount' => $order['gift_card_amount'],
+            'shipping_amount' => $order['shipping_amount'],
+            'preparateur' => $order['preparateur'],
+
          ];
          $list[$order['order_woocommerce_id']]['items'][] = $order;
       }

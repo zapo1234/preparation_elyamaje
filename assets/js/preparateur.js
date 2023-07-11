@@ -46,15 +46,18 @@ $(document).ready(function() {
 })
 
 document.addEventListener("keydown", function(e) {
-    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
-        var order_id = $("#order_in_progress").val()
 
+    // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
+    if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') && !$("#infoMessageModal").hasClass('show')){
+        var order_id = $("#order_in_progress").val()
+        
         if (!isNaN(parseInt(e.key))) {
             $("#barcode").val($("#barcode").val()+e.key)
             if($("#barcode").val().length == 13){
                 if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).length > 0){
                     if($("#order_"+order_id+" .barcode_"+$("#barcode").val()).hasClass('pick')){
-                        alert('Ce produit à déjà été bippé')
+                        $(".info_message").text("Ce produit à déjà été bippé !")
+                        $("#infoMessageModal").modal('show')
                     } else {
                         $("#order_"+order_id+" .barcode_"+$("#barcode").val()).addClass('pick')
                         var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text())
@@ -97,11 +100,12 @@ document.addEventListener("keydown", function(e) {
                     }
                 } else {
                     $("#barcode").val("")
-                    alert("Aucun produit ne correspond à ce code barre !")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
 
                 $("#barcode").val("")
-            }
+            } 
         }
     } else if($(".modal_verif_order").hasClass('show')){
         var order_id = $(".modal_verif_order").attr('data-order')
@@ -126,7 +130,8 @@ document.addEventListener("keydown", function(e) {
                     $("#barcode_verif").val('')
                 } else {
                     $("#barcode_verif").val('')
-                    alert("Aucun produit ne correspond à ce code barre !")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
                 
             }
@@ -151,7 +156,6 @@ $(".validate_pick_in").on('click', function(){
             )
         } 
       
-
         if(order_object){
             pick_items = order_object.products
             pick_items_quantity = order_object.quantity
@@ -162,6 +166,8 @@ $(".validate_pick_in").on('click', function(){
 
         var customer_name = $(".customer_name_"+order_id).text()
         var user_name = $("#userinfo").val()
+
+        $(".modal_order").modal('hide')
 
         $.ajax({
             url: "ordersPrepared",
@@ -212,7 +218,8 @@ $(".validate_pick_in").on('click', function(){
                 }
 
             } else {
-                alert('Produits manquants !')
+                $(".info_message").text("Produits manquants !")
+                $("#infoMessageModal").modal('show')
                 $(".error_prepared_command").removeClass('d-none')
             }
         });
@@ -382,14 +389,6 @@ function saveItem(order_id, mutiple_quantity){
 }
 
 function imprimerPages() {
-    var pageHeight = window.innerHeight;
-    var scrollHeight = document.documentElement.scrollHeight;
-    var position = 0;
-
-    var originalContents = document.body.innerHTML;
-    var printReport= document.querySelector('.success_prepared_command').innerHTML;
-    document.body.innerHTML = printReport;
     window.print();
-    document.body.innerHTML = originalContents;
 }
 

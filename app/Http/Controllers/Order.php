@@ -290,7 +290,7 @@ class Order extends BaseController
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
         }
-        
+
         echo json_encode(["success" => $picked]);
       }
      
@@ -386,7 +386,6 @@ class Order extends BaseController
         // $order_id = $request->post('order_id');
         $order_id = 80279; // Données de test
         $order = $this->order->getOrderByIdWithCustomer($order_id);
-
         if($order){
 
           $is_distributor = $order[0]['is_distributor'] != null ? true : false;
@@ -402,7 +401,8 @@ class Order extends BaseController
             }
           }
           
-            $orders = $this->woocommerce->transformArrayOrder($order);
+          $orders = $this->woocommerce->transformArrayOrder($order);
+
           // envoi des données pour créer des facture via api dolibar....
            
             // if($request->post('from_label') != "true"){
@@ -471,23 +471,63 @@ class Order extends BaseController
 
     public function leaderHistory(){
       $histories = $this->history->getAllHistory();
-      $histories_by_date = [];
+      $histories_order = [];
 
-      // Groupe par date
       foreach($histories as $history){
-        $histories_by_date[date("Y-m-d", strtotime($history['created_at']))][] = $history;
+        if(isset($histories_order[$history['order_id']])){
+          if($histories_order[$history['order_id']]['status'] == "prepared"){
+            $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
+            $histories_order[$history['order_id']]['finished'] = $history['name'];
+            $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
+            $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
+          } else {
+            $histories_order[$history['order_id']]['prepared'] = $history['name'];
+            $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
+            $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
+            $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
+          }
+        } else {
+          $histories_order[$history['order_id']] = $history;
+          $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
+          $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
+          $histories_order[$history['order_id']]['finished_date'] = $history['status'] == 'finished' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
+          $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
+        } 
       }
 
-      return view('leader.history', ['histories_by_date' => $histories_by_date]);
+      return view('leader.history', ['histories' => $histories_order]);
     }
 
-    public function downloadPDF(Request $request){
+    public function generateHistory(Request $request){
       $date = $request->post('date_historique');
       $histories = $this->history->getHistoryByDate($date);
       
+      if(count($histories) == 0){
+        return redirect()->route('leader.history')->with('error', 'Aucun historique pour la date sélectionnée '.$date);
+      }
+
       // Générer mon pdf
       $this->pdf->generateHistoryOrders($histories, $date);
       return redirect()->back();
+    }
+
+    public function closeDay(){
+      $date = date('Y-m-d');
+      $histories = $this->history->getHistoryByDate($date);
+
+      if(count($histories) == 0){
+        return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
+      }
+
+      $pdf = $this->pdf->generateHistoryOrdersCloseDay($histories, $date);
+      return response()->file($pdf);
+    }
+
+    public function leaderHistoryOrder(){
+      $history = $this->order->getAllHistory();
+
+      // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
+      return view('preparateur.history', ['history' => $history]);
     }
 
     public function deleteOrderProducts(Request $request){

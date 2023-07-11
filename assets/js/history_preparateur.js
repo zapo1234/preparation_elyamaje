@@ -23,6 +23,7 @@ $('body').on('click', '.show_order_history_code', function() {
     $(".info_order_product").children('span').remove()
     $(".info_order_product").append(list_products)
 
+
     $(".body_qr_code_"+id).children('canvas').remove()
     $(".body_qr_code_"+id).children('img').remove()
 
@@ -49,11 +50,6 @@ $('body').on('click', '.impression_code', function() {
     $(".close_modal_validation").removeClass("d-none")
 })
 
-function imprimerPages(id) {
-    var pageHeight = window.innerHeight;
-    var originalContents = document.body.innerHTML;
-    var printReport= document.querySelector('.qrcode_print_'+id).innerHTML;
-    document.body.innerHTML = printReport;
+function imprimerPages() {
     window.print();
-    document.body.innerHTML = originalContents;
 }

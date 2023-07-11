@@ -40,6 +40,8 @@ interface OrderInterface
 
    public function getHistoryByUser($user_id);
 
+   public function getAllHistory();
+
    public function updateTotalOrder($order_id, $data);
 
    public function getProductOrder($order_id);

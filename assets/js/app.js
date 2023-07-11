@@ -2,6 +2,11 @@ $(function () {
 	"use strict";
 	/* perfect scrol bar */
 
+	// Clôture d ejournée
+	$(".close_day").on('click', function(){
+		$("#closeDayModal").modal('show')
+	})
+
 	// search bar
 	$(".mobile-search-icon").on("click", function () {
 		$(".search-bar").addClass("full-search-bar");
@@ -181,6 +186,7 @@ $(function () {
 
 
 $( document ).ready(function() {
+
 	if($.fn.dataTable){
 		$.extend(true, $.fn.dataTable.defaults, {
 			"showNEntries" : false,

@@ -19,7 +19,7 @@ class ProductOrderRepository implements ProductOrderInterface
    }
 
    public function getAllProductsPicked(){
-      return $this->model::select('product_woocommerce_id', 'order_id')->where('pick', 1)->get();
+      return $this->model::select('product_woocommerce_id', 'order_id', 'pick')->where('pick', '>',  0)->get();
    }
 
    public function deleteProductOrderByLineItem($order_id, $line_item_id){

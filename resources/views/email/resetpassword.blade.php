@@ -2,20 +2,22 @@
 
 @section('content')
 
-<table style="color:#000000" width="100%" border="0" cellspacing="0" cellpadding="0">
+<table style="font-family:math;color:#000000" width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td align="center">
-            <table style="border-style:solid; border-width:1px; border-color:#edeff1;" width="auto" border="0" cellspacing="0" cellpadding="25">
+            <table style="max-width:600px;border-style:solid; border-width:1px; border-color:#c9c9c9;" width="100%" border="0" cellspacing="0" cellpadding="25">
                 <tr>
                     <td align="center">
-                        <h1>Bonjour</h1>
                         <a href="">
-                            <img src="{{ asset('assets/images/Logo_elyamaje.png')}}" width="95px"; height="auto"; style="margin-top:20px;";>
-                        </a>       
+                            <img src="{{ asset('assets/images/elyamaje_logo_long_noir.png') }}" width="150px"; height="auto"; style="margin-top:10px;";>
+                        </a>     
+
+                        <img src="{{ asset('assets/images/bg-themes/bg-email.jpg') }}" width="100%"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
+                        </br>  
+                        <h1>Bonjour</h1>        
                         <p>Vous avez fait une demande de réinitialisation de mot de passe</p>
                         <p></p>
-                        <p>Cliquez ci-dessous afin d'effectuer la modification :</p>
-                        <p></p>
+                        <p style="margin-bottom:50px">Cliquez ci-dessous afin d'effectuer la modification :</p>
                         <a 
                             style="letter-spacing: .5px;color: #fff;background-color: #212529;
                                 border-color: #212529;border-radius: 30px;
@@ -26,8 +28,6 @@
                         >
                             Réinitialiser mot de passe !
                         </a>
-                        <p></p>
-                        <p>L'équipe Elya Maje</p>
                     </td>
                 </tr>
             </table>
@@ -36,4 +36,6 @@
 </table>
 
 @endsection
+
+
 

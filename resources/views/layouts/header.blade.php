@@ -48,6 +48,16 @@
                     </div> -->
                     <div class="top-menu ms-auto">
                         <ul class="navbar-nav align-items-center">
+
+                            @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
+                            count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
+                                <li class="nav-item dropdown dropdown-large close_day">
+                                    <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" role="button">
+                                        <i class="bx bx-lock-open"></i>
+                                    </a>
+                                </li>
+                            @endif
+                        
                             <li class="nav-item dropdown dropdown-large">
                                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <span class="alert-count">{{ $count_notif }}</span>
                                     <i class='bx bx-bell'></i>
@@ -104,8 +114,26 @@
             </div>
         </header>
 
-
-
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
+        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
+            <!-- Modal clôture de journée -->
+            <div class="modal fade" id="closeDayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <form class="w-100" method="POST" action="{{ route('leader.closeDay') }}">
+                        @csrf
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h2 class="text-center">Clôturer la journée ?</h2>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Non</button>
+                                <button type="submit" class="valid_close_day btn btn-primary" data-bs-dismiss="modal">Oui</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
 
 
         

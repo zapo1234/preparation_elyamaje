@@ -58,6 +58,8 @@
 						</div>
 					@endif
 
+					
+
 					<div class="show_messages"></div>
 
 					<div class="row">
@@ -119,11 +121,6 @@
 													@endif
 												</td>
 											</tr>
-
-											
-
-
-
 										@endforeach
 									</tbody>
 								</table>

@@ -1,8 +1,10 @@
 <div class="sidebar-wrapper" data-simplebar="true">
     <div class="sidebar-header">
         <div class="d-flex flex-column">
-            <img src="assets{{ ('/images/Logo_elyamaje.png') }}" class="logo-icon" alt="logo icon">
-            <span class="header_name_logo">Préparation</span>
+            <img src="assets{{ ('/images/elyamaje_logo_long_noir.png') }}" class="logo-icon" alt="logo icon">
+            <img src="assets{{ ('/images/Logo_elyamaje.png') }}" class="d-none logo-icon-2" alt="logo icon">
+
+            <!-- <span class="header_name_logo">Préparation</span> -->
         </div>
 
         <div class="toggle-icon ms-auto"><i class='bx bx-first-page'></i>
@@ -34,13 +36,24 @@
                     </li>
                 </ul>
             </li>
+
             <li>
-                <a href="{{ url('leaderHistory') }}">
+                <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-history'></i>
                     </div>
                     <div class="menu-title">Historiques</div>
                 </a>
+                <ul>
+                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
+                    </li>
+                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Préparation</a>
+                    </li>
+                </ul>
             </li>
+
+
+           
+          
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-cog'></i>

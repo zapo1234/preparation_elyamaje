@@ -27,7 +27,7 @@ class ProductRepository implements ProductInterface
       return $this->model::select('*')->where('status', 'publish')->where('stock','>', 10)->where('is_variable', 0)->get();
    }
 
-   public function insertProductsOrUpdate($products){
+   public function insertProductsOrUpdate($data){
       try{
          // Récupère les produits déjà existants
          try{
@@ -41,52 +41,64 @@ class ProductRepository implements ProductInterface
          if(count($products_exists) == 0){
            
             try{
-               return $this->model->insert($products);
+               return $this->model->insert($data);
             } catch(Exception $e){
                return $e->getMessage();
             }
            
          } else {
-               $difference = [];
-               foreach ($products as $item1) {
-                  $found = false;
 
-                  foreach ($products_exists as $item2) {
-                     if ($item1['product_woocommerce_id'] == $item2['product_woocommerce_id']) {
-                        if(count(array_diff($item1, $item2)) > 0){
-                           $found = false;
-                           break;
-                        } else {
-                           $found = true;
-                           break;
-                        }
-                     }
-                  }
-                  
-                  if (!$found) {
-                     $difference[] = $item1;
+            $difference_local = [];
+            $difference_online = [];
+
+            $product_id_on_local = array_column($data, "product_woocommerce_id");
+            $product_id_online = array_column($products_exists, "product_woocommerce_id");
+
+            // Regarde si les données en local sont correctes
+            foreach ($products_exists as $item) {
+               $product_exist = array_keys($product_id_on_local,  $item['product_woocommerce_id']);
+               if(count($product_exist) == 0){
+                  $difference_online[] = $item;
+               } else {
+                  if($data[$product_exist[0]] != $item){
+                     $difference_local[] = $data[$product_exist[0]];
                   }
                }
+            }
 
+            // Récupère les données sur wordpress non trouvées en local et les insert
+            foreach ($data as $item2) {
+               $product_exist_online = array_keys($product_id_online,  $item2['product_woocommerce_id']);
+               if(count($product_exist_online) == 0){
+                  $difference_local[] = $item2;
+               }
+            }
 
-
-               if (!empty($difference)) {
-
-                  foreach ($difference as $diff) {
-                    
-                     try{
-                        $update = $this->model::where('product_woocommerce_id', $diff['product_woocommerce_id'])->update($diff);
-                     } catch(Exception $e){
-                        return $e->getMessage();
-                     }
-            
-                     if($update == 0){
-                        $this->model->insert($diff);
-                     }
+            if (!empty($difference_local)) {
+               foreach ($difference_local as $diff) {
+                  try{
+                     $update = $this->model::where('product_woocommerce_id', $diff['product_woocommerce_id'])->update($diff);
+                  } catch(Exception $e){
+                     return $e->getMessage();
                   }
-               } 
+         
+                  if($update == 0){
+                     $this->model->insert($diff);
+                  }
+               }
+            } 
 
-               return true;
+            if (!empty($difference_online)) {
+               foreach ($difference_online as $diff) {
+                  try{
+                     $update = $this->model::where('product_woocommerce_id', $diff['product_woocommerce_id'])->delete();
+                  } catch(Exception $e){
+                     return $e->getMessage();
+                  }
+               }
+            }
+
+            return true;
          }
       } catch(Exception $e){
          return $e->getMessage();
