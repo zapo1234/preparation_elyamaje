@@ -138,7 +138,7 @@ class TransferOrder
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                 //Recuperer les ref_client existant dans dolibar
 
-                dd($data_list_product);
+                dd($listproduct);
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
