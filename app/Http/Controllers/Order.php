@@ -503,6 +503,10 @@ class Order extends BaseController
       $histories = $this->history->getHistoryByDate($date);
       $list_histories = [];
 
+      if(count($histories) == 0){
+        return redirect()->route('leader.history')->with('error', 'Aucun historique pour la date sélectionnée '.$date);
+      }
+
       foreach($histories as $key => $histo){
 
           if(!isset($list_histories[$histo['id']])){
@@ -530,10 +534,7 @@ class Order extends BaseController
           }
       }
       
-      if(count($histories) == 0){
-        return redirect()->route('leader.history')->with('error', 'Aucun historique pour la date sélectionnée '.$date);
-      }
-
+      
       // Générer mon pdf
       $this->pdf->generateHistoryOrders($list_histories, $date);
       return redirect()->back();
@@ -544,8 +545,13 @@ class Order extends BaseController
       $histories = $this->history->getHistoryByDate($date);
       $list_histories = [];
 
-      foreach($histories as $key => $histo){
+      dd(count($histories));
 
+      if(count($histories) == 0){
+        return redirect()->route('index')->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
+      }
+
+      foreach($histories as $key => $histo){
           if(!isset($list_histories[$histo['id']])){
             $list_histories[$histo['id']] = [
               'name' => $histo['name'],
@@ -571,10 +577,7 @@ class Order extends BaseController
           }
       }
 
-      if(count($histories) == 0){
-        return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
-      }
-
+  
       $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
       return response()->file($pdf);
     }
