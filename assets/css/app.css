@@ -6424,22 +6424,16 @@ a{
     	display: none !important;
     }
 
-	body:has(.modal_order ) * {
-		visibility: hidden;
-	}
-
-	body:has(.modal_success ) * {
+	body * {
 		visibility: hidden;
 	}
 
 	.modal_success  .modal-content * {
 		visibility: visible;
 		overflow: visible;
-		background-color: white !important;
 	}
 
 	.modal_success  {
-		background-color: white !important;
 		position: absolute;
 		left: 0;
 		top: 0;
@@ -6451,7 +6445,6 @@ a{
 	}
 	.modal_success, .modal_success.modal-dialog {
 		visibility: visible !important;
-		background-color: white !important;
 		overflow: visible !important; /* Remove scrollbar for printing. */
 	}
 
