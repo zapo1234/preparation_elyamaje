@@ -132,7 +132,7 @@ class TransferOrder
                $apiKey =$this->api->getkeydolibar();
                $apiUrl = $this->api->getUrldolibar();
     
-                 $produitParam = ["limit" => 800, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 80, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
