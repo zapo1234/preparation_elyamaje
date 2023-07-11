@@ -579,21 +579,30 @@ class TransferOrder
 
                   // recupérer le mode de paiement
                   $account_id = $this->getAccountpay();
+
+                  if($account_id==""){
+                    $account_id="vir_card";
+                  }
+
+                  if($account_id!="bacs"){
+                    $account_id="vir_card1";
+                  }
                  
                    // Moyens de paiments....id 4............
-                   $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire....
-                   $array_paiments = array('bacs','apple_pay','american_express','gift_card');// virement bancaire id.....
+
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiments = array('bacs');// virement bancaire id.....
 
                  if(in_array($account_id,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 6;
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="CB";
                      $account_id="";
                  }
 
                  if(in_array($account_id, $array_paiments)){
-                   // defini le paiment comme virement bancaire....
-                     $mode_reglement_id = 3;
+                   // defini le paiment comme virement bancaire......
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="PRE";
                      $account_id="";
                  }
@@ -601,14 +610,14 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>6,
+                   "mode_reglement_id"=>2,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
         
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
-                 // convertir la date en datetime en timestamp.
+                 // convertir la date en datetime en timestamp...
                  $datetime = date('d-m-Y H:i:s');
                  $d = DateTime::createFromFormat(
                  'd-m-Y H:i:s',
@@ -624,9 +633,9 @@ class TransferOrder
       
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>6,
+              "paymentid"=>2,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> 2, // id du compte bancaire.
           ];
            
              
