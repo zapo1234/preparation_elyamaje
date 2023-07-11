@@ -578,6 +578,8 @@ class TransferOrder
 
                   // recupérer le mode de paiement
                   $account_id = $this->getAccountpay();
+
+                  dd($account_id);
                  
                    // Moyens de paiments....id 4............
                    $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire....
