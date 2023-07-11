@@ -51,8 +51,14 @@ class CreatePdf
         try{
             $this->dompdf->loadHtml($table);
             $this->dompdf->render();
-            dd($name.'.pdf');
-            return $this->dompdf->stream($name.'.pdf');
+             
+            // Récupérer le contenu du PDF sous forme de chaîne
+            $pdfContent =  $this->dompdf->output();
+            
+            return response()->make($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $name . '.pdf"'
+            ]);
         } catch(Exception $e){
             dd($e->getMessage());
         }

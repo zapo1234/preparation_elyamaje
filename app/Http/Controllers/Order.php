@@ -536,8 +536,7 @@ class Order extends BaseController
       
       
       // Générer mon pdf
-      $this->pdf->generateHistoryOrders($list_histories, $date);
-      return redirect()->back();
+      return $this->pdf->generateHistoryOrders($list_histories, $date);
     }
 
     public function closeDay(){
@@ -575,13 +574,11 @@ class Order extends BaseController
           }
       }
 
-      $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
-      return response()->file($pdf);
+      return $this->pdf->generateHistoryOrders($list_histories, $date);
     }
 
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
-
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
       return view('preparateur.history', ['history' => $history]);
     }
