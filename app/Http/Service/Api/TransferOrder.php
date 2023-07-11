@@ -125,7 +125,9 @@ class TransferOrder
       {
             
           
-                $method = "GET";
+            
+        
+              $method = "GET";
               // recupérer les clé Api dolibar transfertx.
                $apiKey =$this->api->getkeydolibar();
                $apiUrl = $this->api->getUrldolibar();
@@ -135,6 +137,8 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                 //Recuperer les ref_client existant dans dolibar
+
+                dd($data_list_product);
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
@@ -595,7 +599,7 @@ class TransferOrder
 
                  if(in_array($account_id,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 4;
+                     $mode_reglement_id = 6;
                      $mode_reglement_code ="CB";
                      $account_id="";
                  }
