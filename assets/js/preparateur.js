@@ -256,14 +256,16 @@ $(".confirmation_reset_order").on('click', function(){
                 }
             }
         })
+
+        if(pick_items.length == 0){
+            localStorage.removeItem('barcode');
+        } else {
+            localStorage.setItem('barcode', JSON.stringify(pick_items));
+        }
     }
 
 
-    if(pick_items.length == 0){
-        localStorage.removeItem('barcode');
-    } else {
-        localStorage.setItem('barcode', JSON.stringify(pick_items));
-    }
+    
 
     $.ajax({
             url: "ordersReset",

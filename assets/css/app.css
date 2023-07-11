@@ -5950,6 +5950,10 @@ input::placeholder {
 
 @media screen and (max-width: 950px) {
 
+	.col-md-7:has(.dataTables_paginate){
+		width: 100% !important;
+	}
+
 	.ms-auto-responsive{
 		width: 100%;
 		display: flex;

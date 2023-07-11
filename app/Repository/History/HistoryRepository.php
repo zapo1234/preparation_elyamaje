@@ -40,6 +40,7 @@ class HistoryRepository implements HistoryInterface
       return $this->model::insert($data);
    }
 
+   // Uniquement utilisé par l'admin
    public function getHistoryByDateAdmin($date){
       return $this->model::select('users.id', 'users.name', 
          DB::raw('GROUP_CONCAT(CASE WHEN prepa_histories.poste != 0 THEN prepa_histories.poste ELSE NULL END) AS user_poste'),
