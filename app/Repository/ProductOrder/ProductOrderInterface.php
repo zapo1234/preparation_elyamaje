@@ -12,6 +12,8 @@ interface ProductOrderInterface
     public function insertProductOrder($product_order_woocommerce);
 
     public function getProductsByOrderId($order_id);
+
+    public function getproductdolibar();// recupérer les products via dolibar..
 }
 
 
