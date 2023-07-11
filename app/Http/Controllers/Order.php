@@ -501,25 +501,81 @@ class Order extends BaseController
     public function generateHistory(Request $request){
       $date = $request->post('date_historique');
       $histories = $this->history->getHistoryByDate($date);
+      $list_histories = [];
+
+      foreach($histories as $key => $histo){
+
+          if(!isset($list_histories[$histo['id']])){
+            $list_histories[$histo['id']] = [
+              'name' => $histo['name'],
+              'poste' => [$histo['poste']],
+              'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
+              'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
+              'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
+              'finished_count' => $histo['status'] == "finished" ? 1 : 0,
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+            ];
+          } else {
+            $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
+            $list_histories[$histo['id']]['poste'][] = $histo['poste'];
+            
+            $list_histories[$histo['id']]['prepared_order'] = array_unique($list_histories[$histo['id']]['prepared_order']);
+            $list_histories[$histo['id']]['finished_order'] = array_unique($list_histories[$histo['id']]['finished_order']);
+
+            $list_histories[$histo['id']]['poste'] = array_unique($list_histories[$histo['id']]['poste']);
+
+            $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
+            $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+          }
+      }
       
       if(count($histories) == 0){
         return redirect()->route('leader.history')->with('error', 'Aucun historique pour la date sélectionnée '.$date);
       }
 
       // Générer mon pdf
-      $this->pdf->generateHistoryOrders($histories, $date);
+      $this->pdf->generateHistoryOrders($list_histories, $date);
       return redirect()->back();
     }
 
     public function closeDay(){
       $date = date('Y-m-d');
       $histories = $this->history->getHistoryByDate($date);
+      $list_histories = [];
+
+      foreach($histories as $key => $histo){
+
+          if(!isset($list_histories[$histo['id']])){
+            $list_histories[$histo['id']] = [
+              'name' => $histo['name'],
+              'poste' => [$histo['poste']],
+              'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
+              'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
+              'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
+              'finished_count' => $histo['status'] == "finished" ? 1 : 0,
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+            ];
+          } else {
+            $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
+            $list_histories[$histo['id']]['poste'][] = $histo['poste'];
+            
+            $list_histories[$histo['id']]['prepared_order'] = array_unique($list_histories[$histo['id']]['prepared_order']);
+            $list_histories[$histo['id']]['finished_order'] = array_unique($list_histories[$histo['id']]['finished_order']);
+
+            $list_histories[$histo['id']]['poste'] = array_unique($list_histories[$histo['id']]['poste']);
+
+            $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
+            $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+          }
+      }
 
       if(count($histories) == 0){
         return redirect()->back()->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
 
-      $pdf = $this->pdf->generateHistoryOrdersCloseDay($histories, $date);
+      $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
       return response()->file($pdf);
     }
 

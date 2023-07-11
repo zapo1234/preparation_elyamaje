@@ -6427,13 +6427,12 @@ a{
 	body * {
 		visibility: hidden;
 	}
+
 	.modal_success  .modal-content * {
 		visibility: visible;
 		overflow: visible;
 	}
-	.main-page * {
-		display: none;
-	}
+
 	.modal_success  {
 		position: absolute;
 		left: 0;
