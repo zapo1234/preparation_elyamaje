@@ -575,7 +575,6 @@ class Order extends BaseController
           }
       }
 
-      dd("dd");
       $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
       return response()->file($pdf);
     }
