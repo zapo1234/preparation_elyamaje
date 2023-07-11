@@ -586,14 +586,14 @@ class TransferOrder
 
                  if(in_array($account_id,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 6;
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="CB";
                      $account_id="";
                  }
 
                  if(in_array($account_id, $array_paiments)){
                    // defini le paiment comme virement bancaire....
-                     $mode_reglement_id = 3;
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="PRE";
                      $account_id="";
                  }
@@ -601,7 +601,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>6,
+                   "mode_reglement_id"=>4,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -624,9 +624,9 @@ class TransferOrder
       
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>6,
+              "paymentid"=>4,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> 4, // id du compte bancaire.
           ];
            
              
