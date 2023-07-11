@@ -49,9 +49,7 @@ class CreatePdf
         $name = 'historique_order_'.$date_historique;
 
         try{
-            
             $this->dompdf->loadHtml($table);
-            dd($this->dompdf->render());
             $this->dompdf->render();
             return $this->dompdf->stream($name.'.pdf');
         } catch(Exception $e){
