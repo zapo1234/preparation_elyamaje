@@ -6424,7 +6424,7 @@ a{
     	display: none !important;
     }
 
-	body * {
+	body:has(.modal_order ) * {
 		visibility: hidden;
 	}
 	.modal_success  .modal-content * {

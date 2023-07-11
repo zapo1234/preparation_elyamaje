@@ -117,7 +117,7 @@
 
 
 							<!-- MODAL CODE QR -->
-							<div class="modal_order modal fade" data-order="{{ $histo['details']['id'] }}" id="code_{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							<div class="modal_order modal fade modal_success" data-order="{{ $histo['details']['id'] }}" id="code_{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal-body detail_product_order">
