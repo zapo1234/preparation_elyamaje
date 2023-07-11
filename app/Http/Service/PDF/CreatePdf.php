@@ -51,6 +51,7 @@ class CreatePdf
         try{
             $this->dompdf->loadHtml($table);
             $this->dompdf->render();
+            dd($name.'.pdf');
             return $this->dompdf->stream($name.'.pdf');
         } catch(Exception $e){
             dd($e->getMessage());
