@@ -2,6 +2,7 @@
 
 namespace App\Http\Service\PDF;
 
+use Exception;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -46,11 +47,16 @@ class CreatePdf
         $table .= '</table>';
   
         $name = 'historique_order_'.$date_historique;
-        $this->dompdf->loadHtml($table);
-        $this->dompdf->render();
-        return $this->dompdf->stream($name.'.pdf');
+
+        try{
+            $this->dompdf->loadHtml($table);
+            $this->dompdf->render();
+            return $this->dompdf->stream($name.'.pdf');
+        } catch(Exception $e){
+            dd($e->getMessage());
+        }
     } 
-  }
+}
 
 
   
