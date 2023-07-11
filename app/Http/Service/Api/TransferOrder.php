@@ -610,7 +610,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>3,
+                   "mode_reglement_id"=>6,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -635,7 +635,7 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>4,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 3, // id du compte bancaire.
+              "accountid"=> 107, // id du compte bancaire.
           ];
            
              
