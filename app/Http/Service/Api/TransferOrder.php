@@ -429,6 +429,7 @@ class TransferOrder
                       }
 
 
+
                        // Create le client.
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -578,8 +579,6 @@ class TransferOrder
 
                   // recupérer le mode de paiement
                   $account_id = $this->getAccountpay();
-
-                  dd($account_id);
                  
                    // Moyens de paiments....id 4............
                    $array_paiment = array('payplug','stripe','oney_x3_with_fees','oney_x4_with_fees');// carte bancaire....
@@ -587,14 +586,14 @@ class TransferOrder
 
                  if(in_array($account_id,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 4;
+                     $mode_reglement_id = 6;
                      $mode_reglement_code ="CB";
                      $account_id="";
                  }
 
                  if(in_array($account_id, $array_paiments)){
                    // defini le paiment comme virement bancaire....
-                     $mode_reglement_id = 4;
+                     $mode_reglement_id = 3;
                      $mode_reglement_code ="PRE";
                      $account_id="";
                  }
@@ -602,8 +601,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_code"=>$mode_reglement_code,
-                   "mode_reglement_id"=>$mode_reglement_id,
+                   "mode_reglement_id"=>6,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -626,9 +624,9 @@ class TransferOrder
       
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>4,
+              "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 4, // id du compte bancaire.
+              "accountid"=> 6, // id du compte bancaire.
           ];
            
              
