@@ -545,8 +545,6 @@ class Order extends BaseController
       $histories = $this->history->getHistoryByDate($date);
       $list_histories = [];
 
-      dd(count($histories));
-
       if(count($histories) == 0){
         return redirect()->route('index')->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
@@ -577,7 +575,6 @@ class Order extends BaseController
           }
       }
 
-  
       $pdf = $this->pdf->generateHistoryOrders($list_histories, $date);
       return response()->file($pdf);
     }
