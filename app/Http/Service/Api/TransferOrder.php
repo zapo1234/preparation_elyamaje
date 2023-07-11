@@ -429,9 +429,6 @@ class TransferOrder
                       }
 
 
-                      dump($data_tiers);
-                      dd($data_lines);
-
                        // Create le client.
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -588,14 +585,14 @@ class TransferOrder
 
                  if(in_array($account_id,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 6;
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="CB";
                      $account_id="";
                  }
 
                  if(in_array($account_id, $array_paiments)){
                    // defini le paiment comme virement bancaire....
-                     $mode_reglement_id = 3;
+                     $mode_reglement_id = 4;
                      $mode_reglement_code ="PRE";
                      $account_id="";
                  }
@@ -627,9 +624,9 @@ class TransferOrder
       
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>6,
+              "paymentid"=>4,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> 4, // id du compte bancaire.
           ];
            
              
