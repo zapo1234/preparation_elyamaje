@@ -117,10 +117,6 @@ class Auth extends BaseController
             return redirect()->back()->with('error','Les mots de passe sont différents !');
         } else {
             $password_hash = Hash::make($pass1);
-            dump($pass1);
-            dump($token);
-
-            dd($password_hash);
             $update_password = $this->user->updatePassword($token, $password_hash);
 
             if($update_password){
