@@ -123,8 +123,5 @@ class Auth extends BaseController
                 return redirect()->route('login')->with('success','Mot de passe modifié avec succès !');
             }
         }
-
-      
-
     }
 }

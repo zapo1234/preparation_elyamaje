@@ -30,41 +30,34 @@
 	<!-- wrapper -->
 	<div class="wrapper">
 		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
+			<div class="card shadow-none bg-transparent">
+				<div class="card-body p-md-5 text-center">
+					
+					<div class="w-100 d-flex flex-column align-items-center justify-content-center">
+						<img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+					</div>
+					<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
+						@csrf 
+						<input  name="token"  type="hidden" value="{{ $token }}"/>
+						<div class="mb-3 mt-3">
+							<input id="pass1" name="pass1" type="password" class="form-control" placeholder="Nouveau mot de passe" />
+						</div>
+						<div class="mb-3 mt-3">
+							<div class="input-group" id="show_hide_password">
+								<input id="pass2" name="pass2"  type="password" class="form-control" placeholder="Confirmation" />
+								<a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
+							</div>
 
-         
-
-                <div class="card shadow-none bg-transparent">
-                    <div class="card-body p-md-5 text-center">
-                      
-                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
-                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
-                        </div>
-						<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
-                            @csrf 
-							<input  name="token"  type="hidden" value="{{ $token }}"/>
-                            <div class="mb-3 mt-3">
-								<input id="pass1" name="pass1" type="password" class="form-control" placeholder="Nouveau mot de passe" />
-                            </div>
-                            <div class="mb-3 mt-3">
-                                <div class="input-group" id="show_hide_password">
-									<input id="pass2" name="pass2"  type="password" class="form-control" placeholder="Confirmation" />
-                                    <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
-                                </div>
-
-								<div style="height:17px" >
-									<span class="same_password text-danger"></span>
-								</div>
-                            </div>
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-dark">Valider</button>	
-                            </div>
-                        </form>
-                    </div>
-                </div>
-           
-           
-
-		
+							<div style="height:17px" >
+								<span class="same_password text-danger"></span>
+							</div>
+						</div>
+						<div class="d-grid">
+							<button type="submit" class="btn btn-dark">Valider</button>	
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
 
