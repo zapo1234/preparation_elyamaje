@@ -113,11 +113,13 @@ class Auth extends BaseController
         $pass2 = $request->get('pass2');
         $token = $request->get('token');
 
+        dd($request->get('pass1'));
 
         if($pass1 != $pass2) {
             return redirect()->back()->with('error','Les mots de passe sont différents !');
         } else {
             $password_hash = Hash::make($pass1);
+            dd($password_hash);
             $update_password = $this->user->updatePassword($token, $password_hash);
 
             if($update_password){

@@ -7093,3 +7093,7 @@ textarea:focus{
 	fill: #8833ff  !important;
 	stroke: #8833ff !important;
 }
+
+.font-bold{
+	font-weight: bold;
+}

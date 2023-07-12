@@ -418,7 +418,8 @@ class Order extends BaseController
         //   'order_id' => $order_id,
         //   'user_id' => Auth()->user()->id,
         //   'status' => 'finished',
-        //   'poste' => Auth()->user()->poste
+        //   'poste' => Auth()->user()->poste,
+        //   'created_at' => date('Y-m-d H:i:s')
         // ];
         // $this->history->save($data);
 

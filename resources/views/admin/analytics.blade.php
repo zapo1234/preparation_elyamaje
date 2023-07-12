@@ -114,7 +114,7 @@
 					styledMode: true
 				},
 				title: {
-					text: 'Moyenne préparation'
+					text: 'Moyenne préparation / Jour'
 				},
 				xAxis: {
 					categories: list_name

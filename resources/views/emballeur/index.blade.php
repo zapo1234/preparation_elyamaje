@@ -92,6 +92,10 @@
                                 <span class="customer_shipping_adresss2"></span>
                                 <span class="customer_shipping_country"></span>
                             </div>
+
+                            <div class="d-flex w-100 justify-content-end">
+                                <span class="font-bold"><span class="total_order"></span>{{ config('app.currency_symbol') }}</span>
+                            </div>
                         
                         </div>
                         <div class="modal-footer">
@@ -259,6 +263,7 @@
                     $(".customer_shipping_adresss1").text(order[0].shipping_customer_address_1)
                     $(".customer_shipping_adresss2").text(order[0].shipping_customer_address_2)
                     $(".customer_shipping_country").text(order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode)
+                    $(".total_order").text(order[0].total_order)
                     
                     if(is_distributor){
                         $(".valid_order_and_generate_label").hide()

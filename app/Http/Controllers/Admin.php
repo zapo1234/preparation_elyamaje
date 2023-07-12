@@ -211,7 +211,6 @@ class Admin extends BaseController
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();
         
-        
         return view('admin.account', ['users' => $users, 'roles' => $roles, 'isAdmin' => $isAdmin]);
     }
 
@@ -246,7 +245,6 @@ class Admin extends BaseController
             }
         }
 
-
         // Calcule de la moyenne de commande préparées & emballées et des produits bippés par jour pour chaque préparateur & emballeurs
         $average = [];
         foreach($list_histories as $list){
@@ -260,14 +258,12 @@ class Admin extends BaseController
         $number_finished = 0;
         $number_items_picked = 0;
 
-
         foreach($average as $key => $avg){
             foreach($avg as $av){
                 $number_prepared = $number_prepared + $av['prepared_count'];
                 $number_finished = $number_finished + $av['finished_count'];
                 $number_items_picked = $number_items_picked + $av['items_picked'];
             }
-
             $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
             $number_prepared = 0;
             $number_finished = 0;
