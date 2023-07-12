@@ -41,6 +41,7 @@
                         </div>
 						<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
                             @csrf 
+							<input  name="token"  type="hidden" value="{{ $token }}"/>
                             <div class="mb-3 mt-3">
 								<input id="pass1" name="pass1" type="password" class="form-control" placeholder="Nouveau mot de passe" />
                             </div>
