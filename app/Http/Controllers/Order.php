@@ -383,8 +383,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-      $order_id = $request->post('order_id');
-      // $order_id = 80279; // Données de test
+      // $order_id = $request->post('order_id');
+      $order_id = 80279; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
       if($order){
 
@@ -404,19 +404,19 @@ class Order extends BaseController
         $orders = $this->woocommerce->transformArrayOrder($order);
 
         // envoi des données pour créer des facture via api dolibar....
-        // $this->factorder->Transferorder($orders);
+        $this->factorder->Transferorder($orders);
 
         // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
         // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
         // $this->order->updateOrdersById([$order_id], "finished");...
         // Insert la commande dans histories
-        $data = [
-          'order_id' => $order_id,
-          'user_id' => Auth()->user()->id,
-          'status' => 'finished',
-          'poste' => Auth()->user()->poste
-        ];
-        $this->history->save($data);
+        // $data = [
+        //   'order_id' => $order_id,
+        //   'user_id' => Auth()->user()->id,
+        //   'status' => 'finished',
+        //   'poste' => Auth()->user()->poste
+        // ];
+        // $this->history->save($data);
           
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
