@@ -74,13 +74,12 @@
 				</div>
 
 				<div class="col">
-						<div class="card radius-10">
-							<div class="card-body">
-								<div class="chart_average" id="chart6"></div>
-							</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="chart_average" id="chart6"></div>
 						</div>
 					</div>
-
+				</div>
 
 			</div>
 		</div>

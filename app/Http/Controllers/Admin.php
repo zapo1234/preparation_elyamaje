@@ -165,7 +165,7 @@ class Admin extends BaseController
                             'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
                             'stock' => $product['stock_quantity_variation'][$key],
                             'is_variable' => 0,
-                            'weight' =>  $product['weight'] != "0" ?  $product['weight'] : $product['weights_variation'][$key]
+                            'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight']
                         ];
                     }
                 }
@@ -268,7 +268,7 @@ class Admin extends BaseController
                 $number_items_picked = $number_items_picked + $av['items_picked'];
             }
 
-            $average_by_name[$key] = ['avg_prepared' => $number_prepared / count($avg), 'avg_finished' => $number_finished / count($avg), 'avg_items_picked' => $number_items_picked / count($avg)];
+            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
             $number_prepared = 0;
             $number_finished = 0;
             $number_items_picked = 0;

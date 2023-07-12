@@ -167,7 +167,7 @@
 																	<div class="col-md-12">
 																		<label for="update_role" class="form-label">Rôle*</label>
 																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
-																		<select multiple required name="update_role[]" id="update_role" class="form-select">
+																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" id="update_role" class="form-select">
 																			@foreach($roles as $role)
 																				@if( $role->id != 1 || $isAdmin)
 																					<option value="{{ $role->id }}">{{  $role->role }}</option>
@@ -281,10 +281,11 @@
 		$(".update_action").on('click', function(){
 			var id_account = $(this).attr('data-id')
 			var roles = $("#updateAccount_user_"+id_account).find('#role_user').val()
-			console.log(roles)
 			$("#updateAccount_user_"+id_account).find('#update_role').val(roles.split(',')).trigger('change').select2();
 			$("#updateAccount_user_"+id_account).modal('show')
 		});
+
+
 		</script>
 	@endsection
 
