@@ -22,7 +22,8 @@ class LabelProductOrderRepository implements LabelProductOrderInterface
             'order_id' => $order_id,
             'label_id' => $insert_label,
             'product_id' => $product,
-            'quantity' => $quantity_product[$product]
+            'quantity' => $quantity_product[$product],
+            'created_at' => date('Y-m-d H:i:s')
          ];
       }
 

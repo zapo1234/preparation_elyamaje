@@ -21,6 +21,8 @@ use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+
 
 class Order extends BaseController
 {
@@ -34,6 +36,7 @@ class Order extends BaseController
     private $pdf;
     private $colissimo;
     private $label;
+    private $labelProductOrder;
     private $productOrder;
     private $notification;
     private $woocommerce;
@@ -46,6 +49,7 @@ class Order extends BaseController
     CreatePdf $pdf,
     Colissimo $colissimo,
     LabelRepository $label,
+    LabelProductOrderRepository $labelProductOrder,
     ProductOrderRepository $productOrder,
     NotificationRepository $notification,
     WoocommerceService $woocommerce,
@@ -59,6 +63,7 @@ class Order extends BaseController
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
       $this->label = $label;
+      $this->labelProductOrder = $labelProductOrder;
       $this->productOrder = $productOrder;
       $this->notification = $notification;
       $this->woocommerce = $woocommerce;
@@ -383,8 +388,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-      // $order_id = $request->post('order_id');
-      $order_id = 80279; // Données de test
+      $order_id = $request->post('order_id');
+      // $order_id = 80283; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
       if($order){
 
@@ -402,9 +407,8 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
-
         // envoi des données pour créer des facture via api dolibar....
-        $this->factorder->Transferorder($orders);
+        // $this->factorder->Transferorder($orders);
 
         // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
         // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
@@ -417,7 +421,7 @@ class Order extends BaseController
         //   'poste' => Auth()->user()->poste
         // ];
         // $this->history->save($data);
-          
+
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
           return $this->generateLabel($orders);
@@ -437,26 +441,30 @@ class Order extends BaseController
 
     // Fonction à appelé après validation d'une commande
     private function generateLabel($order){
+     
+      $product_to_add_label = [];
+      $quantity_product = [];
 
       if($order){
         $weight = 0; // Kg
 
         foreach($order[0]['line_items'] as $or){
           $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
+          $product_to_add_label[] = $or['product_id'];
+          $quantity_product[$or['product_id']] = $or['quantity'];
         } 
 
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
-        // $label['label'] = file_get_contents('labelPDF.pdf');
 
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-          
-          if($this->label->save($label)){
-            if($label['label']){
-              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-            } 
+          $insert_label = $this->label->save($label);
+          $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+
+          if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+            echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
           } else {
-            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
+            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
           }
         } else {
           echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
