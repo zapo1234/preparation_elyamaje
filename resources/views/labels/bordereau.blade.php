@@ -59,46 +59,43 @@
                 </div>
             @endif
             
-
-            <div class="row">
-                <div class="card card_table_mobile_responsive">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-center">
-                            <div class="loading spinner-border text-dark" role="status"> 
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
+            <div class="card card_table_mobile_responsive">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <div class="loading spinner-border text-dark" role="status"> 
+                            <span class="visually-hidden">Loading...</span>
                         </div>
-                        <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th class="col-md-2">Nombre de commandes</th>
-                                    <th class="col-md-3">Bordereau</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                @foreach($bordereaux as $bordereau)
-                                    <tr>
-                                        <td data-label="Date">{{ $bordereau['created_at'] }}</td>
-                                        <td data-label="Nombre de commandes">{{ $bordereau['number_order'] }}</td>
-                                        <td data-label="Bordereau">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <form method="POST" action="{{ route('bordereau.download') }}">
-                                                    @csrf
-                                                    <input name="bordereau_id" type="hidden" value="{{ $bordereau['parcel_number'] }}">
-                                                    <button type="submit" class="download_bordereau_button"><i class="bx bx-show-alt"></i>Bordereau n°{{ $bordereau['parcel_number'] }} <span class="label_created_at text-secondary">({{ $bordereau['created_at'] }})</span></button>
-                                                </form>
-                                                <div>
-                                                    <button title="Supprimer le bordereau" data-id="{{ $bordereau['parcel_number'] }}" type="submit" class="delete_bordereau download_label_button"><i class="bx bx-trash"></i></button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
                     </div>
+                    <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th class="col-md-2">Nombre de commandes</th>
+                                <th class="col-md-3">Bordereau</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach($bordereaux as $bordereau)
+                                <tr>
+                                    <td data-label="Date">{{ $bordereau['created_at'] }}</td>
+                                    <td data-label="Nombre de commandes">{{ $bordereau['number_order'] }}</td>
+                                    <td data-label="Bordereau">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <form method="POST" action="{{ route('bordereau.download') }}">
+                                                @csrf
+                                                <input name="bordereau_id" type="hidden" value="{{ $bordereau['parcel_number'] }}">
+                                                <button type="submit" class="download_bordereau_button"><i class="bx bx-show-alt"></i>Bordereau n°{{ $bordereau['parcel_number'] }} <span class="label_created_at text-secondary">({{ $bordereau['created_at'] }})</span></button>
+                                            </form>
+                                            <div>
+                                                <button title="Supprimer le bordereau" data-id="{{ $bordereau['parcel_number'] }}" type="submit" class="delete_bordereau download_label_button"><i class="bx bx-trash"></i></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

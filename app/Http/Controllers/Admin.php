@@ -216,24 +216,65 @@ class Admin extends BaseController
     }
 
     public function analytics(){
-        return view('admin.analytics');
-    }
-
-    public function getAnalytics(Request $request){
-        $date = $request->get('date') != "false" ? $request->get('date') : date('Y-m-d');
-        $histories = $this->history->getHistoryByDateAdmin($date);
+        $date = date('Y-m-d');
+        $histories = $this->history->getHistoryAdmin($date);
+        $list_histories = [];
         
-        $name = [];
-        $prepared_count = [];
-        $finished_count = [];
-
-        foreach($histories as $history){
-            $name[] = $history['name'];
-            $prepared_count[] = $history['prepared_count'];
-            $finished_count[] = $history['finished_count'];
+        // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
+        foreach($histories as $histo){
+            $id = date('d/m/Y', strtotime($histo['created_at']));
+            if(!isset($list_histories[$id][$histo['id']])){
+                $list_histories[date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
+                    'name' => $histo['name'],
+                    'poste' => [$histo['poste']],
+                    'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
+                    'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
+                    'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
+                    'finished_count' => $histo['status'] == "finished" ? 1 : 0,
+                    'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_quantity'] : 0,
+                    'date' => date('d/m/Y', strtotime($histo['created_at']))
+                ];
+            } else {
+                $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);
+                $list_histories[$id][$histo['id']]['poste'][] = $histo['poste'];
+                $list_histories[$id][$histo['id']]['prepared_order'] = array_unique($list_histories[$id][$histo['id']]['prepared_order']);
+                $list_histories[$id][$histo['id']]['finished_order'] = array_unique($list_histories[$id][$histo['id']]['finished_order']);
+                $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
+                $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
+                $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
+                $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_quantity'] : 0;
+            }
         }
 
-        echo json_encode(['name' => $name, 'prepared_count' => $prepared_count, 'finished_count' => $finished_count]);
+
+        // Calcule de la moyenne de commande préparées & emballées et des produits bippés par jour pour chaque préparateur & emballeurs
+        $average = [];
+        foreach($list_histories as $list){
+            foreach($list as $l){
+                $average[$l['name']][$l['date']] = ['finished_count' => $l['finished_count'], 'prepared_count' => $l['prepared_count'], 'items_picked' => $l['items_picked']];
+            }
+        }
+
+        $average_by_name = [];
+        $number_prepared = 0;
+        $number_finished = 0;
+        $number_items_picked = 0;
+
+
+        foreach($average as $key => $avg){
+            foreach($avg as $av){
+                $number_prepared = $number_prepared + $av['prepared_count'];
+                $number_finished = $number_finished + $av['finished_count'];
+                $number_items_picked = $number_items_picked + $av['items_picked'];
+            }
+
+            $average_by_name[$key] = ['avg_prepared' => $number_prepared / count($avg), 'avg_finished' => $number_finished / count($avg), 'avg_items_picked' => $number_items_picked / count($avg)];
+            $number_prepared = 0;
+            $number_finished = 0;
+            $number_items_picked = 0;
+        }
+
+        return view('admin.analytics', ['histories' => $list_histories, 'average_by_name' => $average_by_name]);
     }
 
     public function roles(){
@@ -301,19 +342,6 @@ class Admin extends BaseController
         $distributors = $this->distributors->getDistributors();
         return view('admin.distributors', ['distributors' => $distributors]);
     }
-
-
-
-    public function deleteDistributors(Request $request){
-        $distributor_id = $request->post('distributor_id');
-
-        if($this->distributors->deleteDistributor($distributor_id)){
-            return redirect()->route('distributors')->with('success', 'Distributeur supprimé avec succès !');
-        } else {
-            return redirect()->route('distributors')->with('error', 'Le distributeur n\'a pas pu être supprimé');
-        }
-    }
-
 
     // Fonction pour récupérer la valeur avec une clé spécifique
     private function getValueByKey($array, $key) {

@@ -58,73 +58,68 @@
 						</div>
 					@endif
 
-					
-
 					<div class="show_messages"></div>
-
-					<div class="row">
-						<div class="card card_table_mobile_responsive">
-							<div class="card-body">
-								<div class="d-flex justify-content-center">
-									<div class="loading spinner-border text-dark" role="status"> 
-										<span class="visually-hidden">Loading...</span>
-									</div>
+					<div class="card card_table_mobile_responsive">
+						<div class="card-body">
+							<div class="d-flex justify-content-center">
+								<div class="loading spinner-border text-dark" role="status"> 
+									<span class="visually-hidden">Loading...</span>
 								</div>
-								<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
-									<thead>
-										<tr>
-											<th>Commande</th>
-											<th>Status</th>
-											<th>Date commande</th>
-											<th class="col-md-2">Étiquette</th>
-										</tr>
-									</thead>
-									<tbody>
-										@foreach($orders as $order)
-											<tr>
-												<td data-label="Commande">
-													<span>{{ $order[0]['order_woocommerce_id'] }}</span>
-												</td>
-												<td data-label="Status">
-													<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
-												</td>
-												<td data-label="Date commande">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
-												<td data-label="Étiquette">
-													@if(isset($order['labels']))
-														@foreach($order['labels'] as $label)
-															<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
-																<div>
-																	<form class="d-flex" method="POST" action="{{ route('label.show') }}">
-																		@csrf
-																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
-																		<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }} <span class="label_created_at text-secondary">({{ date("d/m/Y", strtotime($label['label_created_at'])) }})</span></button>
-																	</form>
-																	<form class="d-flex" method="POST" action="{{ route('label.download') }}">
-																		@csrf
-																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
-																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																		<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
-																	</form>
-																</div>
-																<div>
-																	<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
-																</div>
-															</div>
-														@endforeach
-														<div>
-															<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
-														</div>
-													@else 
-														<div>
-															<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
-														</div>
-													@endif
-												</td>
-											</tr>
-										@endforeach
-									</tbody>
-								</table>
 							</div>
+							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Commande</th>
+										<th>Status</th>
+										<th>Date commande</th>
+										<th class="col-md-2">Étiquette</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($orders as $order)
+										<tr>
+											<td data-label="Commande">
+												<span>{{ $order[0]['order_woocommerce_id'] }}</span>
+											</td>
+											<td data-label="Status">
+												<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
+											</td>
+											<td data-label="Date commande">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
+											<td data-label="Étiquette">
+												@if(isset($order['labels']))
+													@foreach($order['labels'] as $label)
+														<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
+															<div>
+																<form class="d-flex" method="POST" action="{{ route('label.show') }}">
+																	@csrf
+																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
+																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }} <span class="label_created_at text-secondary">({{ date("d/m/Y", strtotime($label['label_created_at'])) }})</span></button>
+																</form>
+																<form class="d-flex" method="POST" action="{{ route('label.download') }}">
+																	@csrf
+																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
+																	<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
+																	<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
+																</form>
+															</div>
+															<div>
+																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+															</div>
+														</div>
+													@endforeach
+													<div>
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+													</div>
+												@else 
+													<div>
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+													</div>
+												@endif
+											</td>
+										</tr>
+									@endforeach
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>
