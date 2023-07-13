@@ -77,122 +77,120 @@
 						</div>
 					@endif
 
-					<div class="row">
-						<div class="card card_table_mobile_responsive">
-							<div class="card-body">
-								<div class="d-flex justify-content-center">
-									<div class="loading spinner-border text-dark" role="status"> 
-										<span class="visually-hidden">Loading...</span>
-									</div>
+					<div class="card card_table_mobile_responsive">
+						<div class="card-body">
+							<div class="d-flex justify-content-center">
+								<div class="loading spinner-border text-dark" role="status"> 
+									<span class="visually-hidden">Loading...</span>
 								</div>
-								<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
-									<thead>
+							</div>
+							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Role</th>
+										<th>Couleur</th>
+										<th class="col-md-1">Action</th>
+										<th class="col-md-1">id</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									@foreach ($roles as $role)
 										<tr>
-											<th>Role</th>
-											<th>Couleur</th>
-											<th class="col-md-1">Action</th>
-											<th class="col-md-1">id</th>
-										</tr>
-									</thead>
-
-									<tbody>
-										@foreach ($roles as $role)
-											<tr>
-												<td data-label="Nom">{{ $role['role'] }}</td>
-												<td data-label="Couleur">
-													<div class="w-100 d-flex justify-content-between">
-														<span class="role_color" style="width:75px; height:25px;background-color:{{ $role['color'] }}"></span>
+											<td data-label="Nom">{{ $role['role'] }}</td>
+											<td data-label="Couleur">
+												<div class="w-100 d-flex justify-content-between">
+													<span class="role_color" style="width:75px; height:25px;background-color:{{ $role['color'] }}"></span>
+												</div>
+												
+											</td>
+											<td class="d-flex justify-content-between" data-label="Action" >
+												@if(!in_array($role['id'], $role_can_not_delete))
+													<div class="d-flex">
+														<div data-id="{{ $role['id'] }}" class="update_action action_table font-22 text-primary">	
+															<i class="fadeIn animated bx bx-edit"></i>
+														</div>
+														<div data-id="{{ $role['id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
+															<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
+														</div>
 													</div>
-													
-												</td>
-												<td class="d-flex justify-content-between" data-label="Action" >
-													@if(!in_array($role['id'], $role_can_not_delete))
-														<div class="d-flex">
-															<div data-id="{{ $role['id'] }}" class="update_action action_table font-22 text-primary">	
-																<i class="fadeIn animated bx bx-edit"></i>
-															</div>
-															<div data-id="{{ $role['id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
-																<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
-															</div>
+												@else 
+													<div class="d-flex">
+														<div data-id="{{ $role['id'] }}" class="update_action action_table font-22 text-primary">	
+															<i class="fadeIn animated bx bx-edit"></i>
 														</div>
-													@else 
-														<div class="d-flex">
-															<div data-id="{{ $role['id'] }}" class="update_action action_table font-22 text-primary">	
-																<i class="fadeIn animated bx bx-edit"></i>
-															</div>
-															<div class="action_table font-22 text-secondary" style="margin-left:10px;">	
-																<i class="text-secondary fadeIn animated bx bx-trash-alt"></i>
-															</div>
+														<div class="action_table font-22 text-secondary" style="margin-left:10px;">	
+															<i class="text-secondary fadeIn animated bx bx-trash-alt"></i>
 														</div>
-													@endif
-												</td>
-												<td data-label="ID">{{ $role['id'] }}</td>
-											</tr>
+													</div>
+												@endif
+											</td>
+											<td data-label="ID">{{ $role['id'] }}</td>
+										</tr>
 
-											<!-- Modal modification de rôle -->
-											<div class="modal fade" id="updateRoleModal_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-												<div class="modal-dialog modal-dialog-centered" role="document">
-													<div class="modal-content">
-														<form method="POST" action="{{ route('role.update') }}">
-															@csrf
-															{{ method_field('PUT') }}
-															<div class="modal-body">
-																<div class="card-body p-5">
-																	<div class="card-title d-flex align-items-center">
-																		<div><i class="bx bx-key me-1 font-22 text-primary"></i>
-																		</div>
-																		<h5 class="mb-0 text-primary">Modifier un rôle</h5>
+										<!-- Modal modification de rôle -->
+										<div class="modal fade" id="updateRoleModal_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content">
+													<form method="POST" action="{{ route('role.update') }}">
+														@csrf
+														{{ method_field('PUT') }}
+														<div class="modal-body">
+															<div class="card-body p-5">
+																<div class="card-title d-flex align-items-center">
+																	<div><i class="bx bx-key me-1 font-22 text-primary"></i>
 																	</div>
-																	<hr>
-																	<div class="row g-3">
-																		<div class="col-md-12">
-																			<label for="update_role" class="form-label">Rôle</label>
-																			<input value="{{ $role['role'] }}" required name="update_role" type="text" class="form-control" id="update_role">
-																		</div>
+																	<h5 class="mb-0 text-primary">Modifier un rôle</h5>
+																</div>
+																<hr>
+																<div class="row g-3">
+																	<div class="col-md-12">
+																		<label for="update_role" class="form-label">Rôle</label>
+																		<input value="{{ $role['role'] }}" required name="update_role" type="text" class="form-control" id="update_role">
 																	</div>
-																	<div class="row g-3 mt-2">
-																		<div class="col-md-12">
-																			<label for="update_color" class="form-label">Couleur</label>
-																			<input value="{{ $role['color'] }}" required name="update_color" type="color" class="form-control" id="update_color">
-																		</div>
+																</div>
+																<div class="row g-3 mt-2">
+																	<div class="col-md-12">
+																		<label for="update_color" class="form-label">Couleur</label>
+																		<input value="{{ $role['color'] }}" required name="update_color" type="color" class="form-control" id="update_color">
 																	</div>
 																</div>
 															</div>
-															<div class="modal-footer">
-																<input type="hidden" name="role_id" value="{{ $role['id'] }}">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-																<button type="submit" class="btn btn-primary px-5">Modifier</button>
-															</div>
-														</form>
-													</div>
+														</div>
+														<div class="modal-footer">
+															<input type="hidden" name="role_id" value="{{ $role['id'] }}">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+															<button type="submit" class="btn btn-primary px-5">Modifier</button>
+														</div>
+													</form>
 												</div>
 											</div>
+										</div>
 
-											<!-- Modal Suppression -->
-											<div class="modal fade" id="deleteRole_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-												<div class="modal-dialog modal-dialog-centered" role="document">
-													<div class="modal-content">
-														<form method="POST" action="{{ route('role.delete') }}">
-															@csrf
-															{{ method_field('delete') }}
-															<div class="modal-body">
-																<h2 class="text-center">Supprimer le rôle ?</h2>
-																<input name="account_user" type="hidden" id="account_user" value="">
-															</div>
-															<div class="modal-footer">
-																<input type="hidden" name="role_id" value="{{ $role['id'] }}">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-																<button type="submit" class="btn btn-primary">Oui</button>
-															</div>
-														</form>
-													</div>
+										<!-- Modal Suppression -->
+										<div class="modal fade" id="deleteRole_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered" role="document">
+												<div class="modal-content">
+													<form method="POST" action="{{ route('role.delete') }}">
+														@csrf
+														{{ method_field('delete') }}
+														<div class="modal-body">
+															<h2 class="text-center">Supprimer le rôle ?</h2>
+															<input name="account_user" type="hidden" id="account_user" value="">
+														</div>
+														<div class="modal-footer">
+															<input type="hidden" name="role_id" value="{{ $role['id'] }}">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+															<button type="submit" class="btn btn-primary">Oui</button>
+														</div>
+													</form>
 												</div>
 											</div>
+										</div>
 
-										@endforeach
-									</tbody>
-								</table>
-							</div>
+									@endforeach
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</div>

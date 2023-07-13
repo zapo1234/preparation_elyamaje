@@ -126,12 +126,12 @@
 			})
 		})
 
-		$('.status_dropdown').on('change', function(e){
-            var status_dropdown = $(this).val();
-            $('#example').DataTable()
-            .column(4).search(status_dropdown, true, false)
-            .draw();
-         })
+		// $('.status_dropdown').on('change', function(e){
+        //     var status_dropdown = $(this).val();
+        //     $('#example').DataTable()
+        //     .column(4).search(status_dropdown, true, false)
+        //     .draw();
+        //  })
 
 		</script>
 	@endsection

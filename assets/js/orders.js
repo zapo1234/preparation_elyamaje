@@ -184,7 +184,7 @@ $(document).ready(function() {
                                             <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
                                                 <span class="column1 name_column">Article</span>
                                                 <span class="column2 name_column">Coût</span>
-                                                <span class="column3 name_column">Qté / Pick</span>
+                                                <span class="column3 name_column">Pick / Qté</span>
                                                 <span class="column4 name_column">Total</span>
                                                 <span class="column5 name_column">Action</span>
                                             </div>	

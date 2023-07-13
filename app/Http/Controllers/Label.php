@@ -71,7 +71,10 @@ class Label extends BaseController
             }
         }
 
-        return view('labels.label', ['orders' => $array_order]);
+        // Liste des status
+        $status_list = __('status_order');
+
+        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list]);
     }
 
     public function labelPDF(Request $request){
