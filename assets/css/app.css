@@ -3525,6 +3525,7 @@ a {
 }
 
 
+
 .bg-light-primary {
 
 
@@ -6701,6 +6702,11 @@ select:focus, input:focus{
 	color: #0dcaf0 !important;
 	background-color: rgb(13 202 240 / 18%) !important;
 }	
+
+.bg-light-finished{
+	color: white !important;
+	background-color: #cdc9c9 !important;
+}
 
 
 .bg-private, .bg-processing{
