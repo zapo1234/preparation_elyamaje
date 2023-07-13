@@ -207,7 +207,7 @@ class TransferOrder
                 
                     foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
-                            // créer le client via dolibarr à partir de woocomerce.
+                            // créer le client via dolibarr à partir de woocomerce...
                             $ref_client = rand(4,10);
                             // recupérer id du tiers en fonction de son email...
                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
@@ -617,7 +617,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>107,
+                   "mode_reglement_id"=>106,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
