@@ -173,7 +173,6 @@ class Order extends BaseController
       $orders_to_delete = [];
       $orders_to_update = [];
 
-
       foreach($users as $user){
         $array_user[$user['user_id']] = [];
       }
@@ -185,7 +184,6 @@ class Order extends BaseController
 
       // Liste des commandes déjà réparties entres les utilisateurs
       $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
-
 
       foreach($orders_user as $order){
         $array_user[$order['user_id']][] =  $order;
@@ -214,7 +212,6 @@ class Order extends BaseController
         }
       }
 
-
       // Modifie le status des commandes qui ne sont plus en cours dans woocommerce
       $this->order->updateOrdersById($orders_to_update);
 
@@ -237,7 +234,6 @@ class Order extends BaseController
 
         // Insert orders by users
         $this->order->insertOrdersByUsers($array_user);
-
       }
     }
 
@@ -247,7 +243,6 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order');
-
 
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
         $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
@@ -268,7 +263,6 @@ class Order extends BaseController
                   'order_id' => $order_id,
                   'detail' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
                 ];
-
 
                 $this->notification->insert($data);
 
@@ -294,6 +288,7 @@ class Order extends BaseController
         if($picked){
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+          echo json_encode(["success" => true]);
         }
 
         echo json_encode(["success" => $picked]);
@@ -388,8 +383,8 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-      // $order_id = $request->post('order_id');
-      $order_id = 80283; // Données de test
+      $order_id = $request->post('order_id');
+      // $order_id = 80283; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
       if($order){
 
@@ -411,17 +406,18 @@ class Order extends BaseController
         $this->factorder->Transferorder($orders);
 
         // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-        // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-        // $this->order->updateOrdersById([$order_id], "finished");...
+        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        $this->order->updateOrdersById([$order_id], "finished");
+        
         // Insert la commande dans histories
-        // $data = [
-        //   'order_id' => $order_id,
-        //   'user_id' => Auth()->user()->id,
-        //   'status' => 'finished',
-        //   'poste' => Auth()->user()->poste,
-        //   'created_at' => date('Y-m-d H:i:s')
-        // ];
-        // $this->history->save($data);
+        $data = [
+          'order_id' => $order_id,
+          'user_id' => Auth()->user()->id,
+          'status' => 'finished',
+          'poste' => Auth()->user()->poste,
+          'created_at' => date('Y-m-d H:i:s')
+        ];
+        $this->history->save($data);
 
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){

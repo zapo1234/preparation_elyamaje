@@ -353,5 +353,4 @@ class Admin extends BaseController
     public function emailPreview(){
         return view('email.email-preview');
     }
- 
 }
