@@ -7097,3 +7097,11 @@ textarea:focus{
 .font-bold{
 	font-weight: bold;
 }
+
+.forgot_password > a{
+	transition: 0.3s;
+}
+
+.forgot_password > a:hover{
+	color: #000000 !important;
+}

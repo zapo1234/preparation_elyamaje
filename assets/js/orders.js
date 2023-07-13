@@ -153,10 +153,10 @@ $(document).ready(function() {
             {data: null,
                 render: function(data, type, row) {
                     return `
-                        <div class="w-100 d-flex flex-column">
-                            ${row.total != 0.00 ? '<span>Total (HT): <strong>' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong>' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
-                            <span>TVA: <strong>` +row.total_tax+`</strong></span>
-                            <span>Payé: <strong>`+parseFloat(row.total).toFixed(2)+`</strong></span>
+                        <div id="order_total_${row.id}" class="w-100 d-flex flex-column">
+                            ${row.total != 0.00 ? '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
+                            <span>TVA: <strong class="total_tax_order">` +row.total_tax+`</strong></span>
+                            <span>Payé: <strong class="total_ttc_order">`+parseFloat(row.total).toFixed(2)+`</strong></span>
                         </div>`;
                 }
             },
@@ -210,12 +210,12 @@ $(document).ready(function() {
                                                     <button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
                                                 </div>
                                                 <div class="d-flex flex-column list_amount">
-                                                    <span class="montant_total_order">Sous-total des articles:<strong>`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
+                                                    <span class="montant_total_order">Sous-total des articles:<strong class="total_ht_order">`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
                                                     ${row.coupons && row.coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+row.coupons+` (-`+row.coupons_amount+`€)</strong></span>` : ``}
                                                     <span class="montant_total_order">Expédition:<strong> `+row.shipping_amount+`€</strong></span>
-                                                    <span class="montant_total_order">TVA: <strong>`+total_tax+`€</strong></span>
+                                                    <span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
                                                     ${row.gift_card.length > 0 ? `<span class="text-success">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
-                                                    <span class="mt-1 mb-2 montant_total_order">Payé: <strong>`+row.total+`€</strong></span>
+                                                    <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+row.total+`€</strong></span>
                                                     <div class="d-flex justify-content-end">
                                                         <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
                                                     </div>
@@ -453,7 +453,17 @@ function addProductOrderConfirm(){
 
                 </div>`
             )
-            $("#order_"+order_id+" .montant_total_order").text('Total: '+JSON.parse(data).order.total)
+
+            // Update total modal detail order
+            $("#order_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
+            $("#order_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
+            $("#order_"+order_id+" .total_paid_order").text(JSON.parse(data).order.total)
+
+            // Update total dashboard
+            $("#order_total_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
+            $("#order_total_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
+            $("#order_total_"+order_id+" .total_ttc_order").text(JSON.parse(data).order.total)
+
             $("#addProductOrderModal").modal('hide')
         } else {
             alert('Erreur !')
@@ -513,7 +523,17 @@ function deleteProductOrderConfirm(increase){
         data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id, increase: increase, quantity: quantity, product_id: product_id}
     }).done(function(data) {
         if(JSON.parse(data).success){
-            $("#order_"+order_id+" .montant_total_order").text('Total: '+JSON.parse(data).order.total)
+          
+            // Update total modal detail order
+            $("#order_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
+            $("#order_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
+            $("#order_"+order_id+" .total_paid_order").text(JSON.parse(data).order.total)
+
+            // Update total dashboard
+            $("#order_total_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
+            $("#order_total_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
+            $("#order_total_"+order_id+" .total_ttc_order").text(JSON.parse(data).order.total)
+
             $('.'+order_id+'_'+line_item_id).fadeOut()
             $('.'+order_id+'_'+line_item_id).remove()
             $(".loading_delete").addClass('d-none')
