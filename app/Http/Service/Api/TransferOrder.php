@@ -124,21 +124,16 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-          
-            
-        
-              $method = "GET";
-              // recupérer les clé Api dolibar transfertx.
-               $apiKey =$this->api->getkeydolibar();
-               $apiUrl = $this->api->getUrldolibar();
+                 $method = "GET";
+                 // recupérer les clé Api dolibar transfertx.
+                 $apiKey =$this->api->getkeydolibar();
+                 $apiUrl = $this->api->getUrldolibar();
     
-                 $produitParam = ["limit" => 80, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 800, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                 //Recuperer les ref_client existant dans dolibar
-
-                dd($listproduct);
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
@@ -582,35 +577,43 @@ class TransferOrder
                 
 
                   // recupérer le mode de paiement
-                  $account_id = $this->getAccountpay();
+                  $account_name = $this->getAccountpay();
 
-                  if($account_id==""){
-                    $account_id="vir_card";
+                  if($account_name==""){
+                    $account_name="vir_card";
                   }
 
-                  if($account_id!="bacs"){
-                    $account_id="vir_card1";
+                  if($account_name!="bacs"){
+                    $account_name="vir_card1";
                   }
                  
                    // Moyens de paiments....id 4............
 
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
+                   if($account_name =="stripe"){
+                      // le mode de reglement !!
+                   }
 
-                 if(in_array($account_id,$array_paiment)){
+                 if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
-                     $mode_reglement_id = 6;
-                     $mode_reglement_code ="CB";
-                     $account_id="";
+                     //$mode_reglement_id = 6;
+                  
+                     $account_id=4;// PROD 
+                     $paimentid =4;// PROD
+                     $mode_reglement_id = 6;// prod poserp.
                  }
 
-                 if(in_array($account_id, $array_paiments)){
+                 if(in_array($account_name, $array_paiments)){
                    // defini le paiment comme virement bancaire......
-                     $mode_reglement_id = 4;
-                     $mode_reglement_code ="PRE";
-                     $account_id="";
+                     //$mode_reglement_id = 4;
+              
+                     $account_id=6; // PROD
+                     $paimentid =6;// PROD
+                     $mode_reglement_id =3;// pour la prod poserp....
+                     
                  }
-                   // $mode reglement de la facture ..
+                   // $mode reglement de la facture ....
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
