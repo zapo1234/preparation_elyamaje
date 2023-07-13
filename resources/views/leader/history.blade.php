@@ -54,7 +54,7 @@
 													<td data-label="Commande">#{{ $histo['order_id'] }}</td>
 													<td data-label="Préparée">
 														<div class="d-flex flex-column">
-															<div>
+															<div class="d-flex flex-wrap histo_order align-items-center">
 																<span class="badge bg-dark">{{ $histo['prepared'] }}</span>
 																@if($histo['prepared'])
 																	<span class="date_prepared">le {{ $histo['prepared_date'] }}</span>  
@@ -65,7 +65,7 @@
 													</td>
 													<td data-label="Emballée">
 														<div class="d-flex flex-column">
-															<div>
+															<div class="d-flex flex-wrap histo_order align-items-center">
 																<span class="badge bg-dark">{{ $histo['finished'] }}</span>
 																@if($histo['finished'])
 																	<span class="date_finished">le {{ $histo['finished_date'] }}</span>  

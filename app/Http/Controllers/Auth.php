@@ -109,10 +109,9 @@ class Auth extends BaseController
     }   
 
     public function postResetLinkPage(Request $request){
-        $pass1 = $request->get('pass1');
-        $pass2 = $request->get('pass2');
-        $token = $request->get('token');
-
+        $pass1 = $request->post('pass1');
+        $pass2 = $request->post('pass2');
+        $token = $request->post('token');
 
         if($pass1 != $pass2) {
             return redirect()->back()->with('error','Les mots de passe sont différents !');
@@ -124,8 +123,5 @@ class Auth extends BaseController
                 return redirect()->route('login')->with('success','Mot de passe modifié avec succès !');
             }
         }
-
-      
-
     }
 }

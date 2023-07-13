@@ -66,7 +66,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
-    Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
 
     // CRUD Role
     Route::get("/roles", [Admin::class, "roles"])->name('roles');
@@ -164,14 +163,8 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
-
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 // Email preview
 Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
-
-
-
-
-

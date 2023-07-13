@@ -9,6 +9,8 @@ interface HistoryInterface
 
    public function getAllHistory();
 
+   public function getHistoryAdmin();
+   
    public function save($data);
 }
 

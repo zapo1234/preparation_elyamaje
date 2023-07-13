@@ -36,25 +36,22 @@ class HistoryRepository implements HistoryInterface
          ->toArray();
    }
 
-   public function save($data){
-      return $this->model::insert($data);
-   }
-
    // Uniquement utilisé par l'admin
-   public function getHistoryByDateAdmin($date){
-      return $this->model::select('users.id', 'users.name', 
-         DB::raw('GROUP_CONCAT(CASE WHEN prepa_histories.poste != 0 THEN prepa_histories.poste ELSE NULL END) AS user_poste'),
-         DB::raw('GROUP_CONCAT(CASE WHEN prepa_histories.status = "prepared" THEN prepa_histories.order_id ELSE NULL END) AS prepared_order'),
-         DB::raw('GROUP_CONCAT(CASE WHEN prepa_histories.status = "finished" THEN prepa_histories.order_id ELSE NULL END) AS finished_order'),
-         DB::raw('COUNT(CASE WHEN prepa_histories.status = "prepared" THEN 1 ELSE NULL END) AS prepared_count'),
-         DB::raw('COUNT(CASE WHEN prepa_histories.status = "finished" THEN 1 ELSE NULL END) AS finished_count'))
+   public function getHistoryAdmin(){
+      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
+         DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
+         'products_order.product_woocommerce_id', 'histories.created_at')
          ->join('users', 'users.id', '=', 'histories.user_id')
-         ->groupBy('users.id', 'users.name')
-         ->where('histories.created_at', 'LIKE', '%'.$date.'%')
+         ->join('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         ->join('products_order', 'products_order.order_id', '=', 'histories.order_id')
+         ->groupBy('histories.id')
          ->get()
          ->toArray();
    }
 
+   public function save($data){
+      return $this->model::insert($data);
+   }
 }
 
 

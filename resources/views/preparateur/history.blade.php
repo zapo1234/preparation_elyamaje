@@ -71,7 +71,7 @@
 												
 												<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 													<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
-														<div class="d-flex flex-column">
+														<div class="d-flex flex-column responsive_footer_modal">
 															@if($histo['details']['coupons'])
 																<span class="font-18 badge bg-success">Code : {{ $histo['details']['coupons'] }} (-{{$histo['details']['discount_amount']}}%)</span>
 															@endif
@@ -135,7 +135,7 @@
 												<div class="no-print align-items-end flex-column mt-2 d-flex justify-content-end"> 
 													<div class="w-100 d-flex justify-content-between">
 														<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
-														<span class="mt-1 mb-2 montant_total_order">Total: {{ $histo['details']['total'] }}€</span>
+														<span class="mt-1 mb-2 montant_total_order responsive_montant_modal">Total: {{ $histo['details']['total'] }}€</span>
 													</div>
 													<div class="w-100 d-flex justify-content-between mb-3">
 														<button data-id="{{ $histo['details']['id'] }}" type="button" class="close_modal btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>

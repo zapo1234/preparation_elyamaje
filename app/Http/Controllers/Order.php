@@ -21,6 +21,8 @@ use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+
 
 class Order extends BaseController
 {
@@ -34,6 +36,7 @@ class Order extends BaseController
     private $pdf;
     private $colissimo;
     private $label;
+    private $labelProductOrder;
     private $productOrder;
     private $notification;
     private $woocommerce;
@@ -46,6 +49,7 @@ class Order extends BaseController
     CreatePdf $pdf,
     Colissimo $colissimo,
     LabelRepository $label,
+    LabelProductOrderRepository $labelProductOrder,
     ProductOrderRepository $productOrder,
     NotificationRepository $notification,
     WoocommerceService $woocommerce,
@@ -59,6 +63,7 @@ class Order extends BaseController
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
       $this->label = $label;
+      $this->labelProductOrder = $labelProductOrder;
       $this->productOrder = $productOrder;
       $this->notification = $notification;
       $this->woocommerce = $woocommerce;
@@ -168,7 +173,6 @@ class Order extends BaseController
       $orders_to_delete = [];
       $orders_to_update = [];
 
-
       foreach($users as $user){
         $array_user[$user['user_id']] = [];
       }
@@ -180,7 +184,6 @@ class Order extends BaseController
 
       // Liste des commandes déjà réparties entres les utilisateurs
       $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
-
 
       foreach($orders_user as $order){
         $array_user[$order['user_id']][] =  $order;
@@ -209,7 +212,6 @@ class Order extends BaseController
         }
       }
 
-
       // Modifie le status des commandes qui ne sont plus en cours dans woocommerce
       $this->order->updateOrdersById($orders_to_update);
 
@@ -232,7 +234,6 @@ class Order extends BaseController
 
         // Insert orders by users
         $this->order->insertOrdersByUsers($array_user);
-
       }
     }
 
@@ -242,7 +243,6 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order');
-
 
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
         $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
@@ -263,7 +263,6 @@ class Order extends BaseController
                   'order_id' => $order_id,
                   'detail' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
                 ];
-
 
                 $this->notification->insert($data);
 
@@ -289,6 +288,7 @@ class Order extends BaseController
         if($picked){
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+          echo json_encode(["success" => true]);
         }
 
         echo json_encode(["success" => $picked]);
@@ -383,54 +383,51 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-        // $order_id = $request->post('order_id');
-        $order_id = 80279; // Données de test
-        $order = $this->order->getOrderByIdWithCustomer($order_id);
-        if($order){
+      $order_id = $request->post('order_id');
+      // $order_id = 80283; // Données de test
+      $order = $this->order->getOrderByIdWithCustomer($order_id);
+      if($order){
 
-          $is_distributor = $order[0]['is_distributor'] != null ? true : false;
-   
-          if($is_distributor){
-            $barcode_array = $request->post('pick_items');
-            $products_quantity = $request->post('pick_items_quantity');
-            $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
+        $is_distributor = $order[0]['is_distributor'] != null ? true : false;
   
-            if(!$check_if_order_done){
-              echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
-              return;
-            }
+        if($is_distributor){
+          $barcode_array = $request->post('pick_items');
+          $products_quantity = $request->post('pick_items_quantity');
+          $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
+
+          if(!$check_if_order_done){
+            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
+            return;
           }
-          
-          $orders = $this->woocommerce->transformArrayOrder($order);
-
-          // envoi des données pour créer des facture via api dolibar....
-           
-            // if($request->post('from_label') != "true"){
-                $this->factorder->Transferorder($orders);
-                // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-                // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-                // $this->order->updateOrdersById([$order_id], "finished");...
-                // Insert la commande dans histories
-                // $data = [
-                //   'order_id' => $order_id,
-                //   'user_id' => Auth()->user()->id,
-                //   'status' => 'finished',
-                //   'poste' => Auth()->user()->poste
-                // ];
-                // $this->history->save($data);
-            // }
-
-         
-            // Génère l'étiquette ou non
-            if($request->post('label') == "true"){
-              return $this->generateLabel($orders);
-            } else {
-              echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
-            }
-        } else {
-            echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
-            // return redirect()->back()->with('error','Aucune commande associée, vérifiez l\'id de la commande !');
         }
+        
+        $orders = $this->woocommerce->transformArrayOrder($order);
+        // envoi des données pour créer des facture via api dolibar....
+        $this->factorder->Transferorder($orders);
+
+        // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        $this->order->updateOrdersById([$order_id], "finished");
+        
+        // Insert la commande dans histories
+        $data = [
+          'order_id' => $order_id,
+          'user_id' => Auth()->user()->id,
+          'status' => 'finished',
+          'poste' => Auth()->user()->poste,
+          'created_at' => date('Y-m-d H:i:s')
+        ];
+        $this->history->save($data);
+
+        // Génère l'étiquette ou non
+        if($request->post('label') == "true"){
+          return $this->generateLabel($orders);
+        } else {
+          echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+        }
+      } else {
+          echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
+      }
     }
 
     // Historique commande préparateur
@@ -439,29 +436,32 @@ class Order extends BaseController
       return view('preparateur.history', ['history' => $history]);
     }
 
-
     // Fonction à appelé après validation d'une commande
     private function generateLabel($order){
+     
+      $product_to_add_label = [];
+      $quantity_product = [];
 
       if($order){
         $weight = 0; // Kg
 
         foreach($order[0]['line_items'] as $or){
           $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
+          $product_to_add_label[] = $or['product_id'];
+          $quantity_product[$or['product_id']] = $or['quantity'];
         } 
 
         $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
-        // $label['label'] = file_get_contents('labelPDF.pdf');
 
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-          
-          if($this->label->save($label)){
-            if($label['label']){
-              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-            } 
+          $insert_label = $this->label->save($label);
+          $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+
+          if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+            echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
           } else {
-            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
+            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
           }
         } else {
           echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
