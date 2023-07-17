@@ -32,7 +32,7 @@ class ProductRepository implements ProductInterface
          // Récupère les produits déjà existants
          try{
             $products_exists = $this->model::select('product_woocommerce_id', 'category', 'category_id', 'variation', 
-            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight')->get()->toArray();
+            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight', 'menu_order')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }

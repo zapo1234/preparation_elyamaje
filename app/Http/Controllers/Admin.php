@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Role\RoleRepository;
@@ -46,7 +45,6 @@ class Admin extends BaseController
         $this->distributors = $distributors;
     }
 
-    
     public function syncCategories(){
         $per_page = 100;
         $page = 1;
@@ -67,7 +65,6 @@ class Admin extends BaseController
             $count = count($categories_other);
           }
         }  
-
 
         foreach($categories as $category){
             $insert_categories [] = [
@@ -107,8 +104,6 @@ class Admin extends BaseController
           }
         }  
 
-
-       
         foreach($products as $product){
 
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
@@ -148,7 +143,8 @@ class Admin extends BaseController
                     'manage_stock' => $product['manage_stock'],
                     'stock' => $product['stock_quantity'],
                     'is_variable' => 1,
-                    'weight' =>  $product['weight'] 
+                    'weight' =>  $product['weight'],
+                    'menu_order' => $product['menu_order'],
                 ];
 
                 foreach($option as $key => $op){
@@ -165,7 +161,8 @@ class Admin extends BaseController
                             'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
                             'stock' => $product['stock_quantity_variation'][$key],
                             'is_variable' => 0,
-                            'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight']
+                            'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
+                            'menu_order' => $product['menu_order'],
                         ];
                     }
                 }
@@ -182,7 +179,8 @@ class Admin extends BaseController
                     'manage_stock' => $product['manage_stock'],
                     'stock' => $product['stock_quantity'],
                     'is_variable' => 0,
-                    'weight' =>  $product['weight']
+                    'weight' =>  $product['weight'],
+                    'menu_order' => $product['menu_order'],
                 ];
             }
         }
@@ -348,7 +346,6 @@ class Admin extends BaseController
         }
         return null; // Si la clé n'est pas trouvée
     }
-
 
     public function emailPreview(){
         return view('email.email-preview');

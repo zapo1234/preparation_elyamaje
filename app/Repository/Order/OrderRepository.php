@@ -175,7 +175,7 @@ class OrderRepository implements OrderInterface
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
-         ->orderBy('products.product_woocommerce_id', 'ASC')
+         ->orderBy('products.menu_order', 'ASC')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -549,7 +549,7 @@ class OrderRepository implements OrderInterface
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
-         ->orderBy('products.product_woocommerce_id', 'ASC')
+         ->orderBy('products.menu_order', 'ASC')
          ->get();
 
        $orders = json_decode(json_encode($orders), true);
@@ -595,7 +595,7 @@ class OrderRepository implements OrderInterface
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
-         ->orderBy('products.product_woocommerce_id', 'ASC')
+         ->orderBy('products.menu_order', 'ASC')
          ->get();
 
        $orders = json_decode(json_encode($orders), true);

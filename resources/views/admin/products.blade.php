@@ -26,8 +26,6 @@
 							</form>
                         </div>
 					</div>
-					
-
 
 					@if(session()->has('success'))
 						<div class="alert alert-success border-0 bg-success alert-dismissible fade show">
@@ -50,14 +48,6 @@
 								</div>
 							</div>
 
-							
-									<!-- <select class="d-none select2_custom status_dropdown input_form_type">
-										<option value="">Status</option>
-										<option value="draft">Brouillon</option>
-										<option value="publish">Publiée</option>
-										<option value="private">Pivée</option>
-									</select> -->
-								
 							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 								<thead>
 									<tr>
@@ -114,25 +104,10 @@
 				"initComplete": function(settings, json) {
 					$(".loading_div").addClass('d-none')
 					$("#example").removeClass('d-none')
-					// $("#example_length select").css('margin-right', '10px')
-					// $(".status_dropdown").appendTo('.dataTables_length')
-					// $(".dataTables_length").css('display', 'flex')
-					// $(".dataTables_length").addClass('select2_custom')
-					// $(".status_dropdown").removeClass('d-none')
-					// $(".status_dropdown").select2({
-					// 	width: '150px',
-					// });
 				}
 			})
 		})
-
-		// $('.status_dropdown').on('change', function(e){
-        //     var status_dropdown = $(this).val();
-        //     $('#example').DataTable()
-        //     .column(4).search(status_dropdown, true, false)
-        //     .draw();
-        //  })
-
+		
 		</script>
 	@endsection
 

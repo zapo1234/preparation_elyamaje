@@ -71,7 +71,7 @@ class Label extends BaseController
             }
         }
 
-        // Liste des status
+        // Liste des status commandes
         $status_list = __('status_order');
 
         return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list]);
