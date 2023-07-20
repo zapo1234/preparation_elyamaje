@@ -11,6 +11,8 @@ interface ProductInterface
 
     public function insertProductsOrUpdate($products);
 
+    public function updateProduct($id_product, $data);
+
     public function getbarcodeproduct();
 }
 

@@ -48,6 +48,15 @@
 								</div>
 							</div>
 
+							<!-- categories -->
+							<select class="d-none select2_custom category_dropdown input_form_type">
+								<option value="">Catégorie</option>
+									@foreach($categories as $category)
+										@include('partials.category_select', ['category' => $category])
+									@endforeach
+							</select>
+
+
 							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 								<thead>
 									<tr>
@@ -57,6 +66,8 @@
 										<th>Catégorie</th>
 										<th>Status</th>
 										<th>Stock</th>
+										<th>Order</th>
+										<th>Location</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -80,6 +91,14 @@
 													Non géré
 												@endif
 											</td>
+											<td>{{ $product->menu_order }}</td>
+											<td data-label="Location" class="product_location">
+												<div class="d-flex location_product w-100">
+													<input disabled id="input_{{ $product->product_woocommerce_id }}" class="custom_input" type="text" value="{{ $product->location }}">
+													<i id="edit_{{ $product->product_woocommerce_id }}" data-id="{{ $product->product_woocommerce_id }}" class="edit_product_location font-20 bx bx-edit"></i>
+													<i onclick="save_location( {{ $product->product_woocommerce_id }} )" id="save_{{ $product->product_woocommerce_id }}" class="d-none font-20 fadeIn animated bx bx-save"></i>
+												</div>
+											</td>
 										</tr>
 									@endforeach
 								</tbody>
@@ -90,25 +109,12 @@
 			</div>
 		@endsection
 
-	
 	@section("script")
-
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
-		<script>
-
-		$(document).ready(function() {
-			$('#example').DataTable({
-				"info": false,
-				"initComplete": function(settings, json) {
-					$(".loading_div").addClass('d-none')
-					$("#example").removeClass('d-none')
-				}
-			})
-		})
-		
-		</script>
+		<script src="{{asset('assets/js/product.js')}}"></script>
 	@endsection
 
 
+	

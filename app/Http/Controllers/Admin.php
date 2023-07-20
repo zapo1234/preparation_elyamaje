@@ -194,6 +194,17 @@ class Admin extends BaseController
         }
     }
 
+    public function updateProduct(Request $request){
+        $location = $request->post('location');
+        $id_product = $request->post('id_product');
+
+        $data = [
+            'location' => $location
+        ];
+
+        echo json_encode(['success' => $this->products->updateProduct($id_product, $data)]);
+    }
+
     public function updateOrderCategory(Request $request){
         $id = $request->post('id');
         $order_display = $request->post('order_display');
@@ -204,7 +215,6 @@ class Admin extends BaseController
     public function account(){
         $users = $this->user->getUsersAndRoles();
         $rolesUser =  Auth()->user()->roles->toArray();
-
         $ids = array_column($rolesUser, "id");
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();

@@ -86,8 +86,12 @@ class Controller extends BaseController
 
     // CONFIGURATION LIST PRODUCTS ADMIN
     public function products(){
+        // Get all products
         $products = $this->products->getAllProducts();
-        return view('admin.products', ['products' => $products]);
+        // Get all categories products
+        $categories = $this->categories->getAllCategories();
+        // dd($categories);
+        return view('admin.products', ['products' => $products, 'categories' => $categories]);
     }
 
     // PRÉPARATEUR COMMANDES CLASSIQUES

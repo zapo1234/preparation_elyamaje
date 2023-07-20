@@ -7160,3 +7160,14 @@ textarea:focus{
 .product_name_to_delete{
 	text-align: center;
 }
+
+.custom_input{
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+	padding: 5px;
+}
+
+.location_product i{
+	cursor: pointer;
+	margin-left: 5px;
+}

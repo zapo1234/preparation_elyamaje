@@ -596,9 +596,8 @@ class Order extends BaseController
       //Supprimer de la commande via api woocommerce
       $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
       // Update le total de la commande en base de données
-      $update_order = $this->order->updateTotalOrder($order_id, $delete);
-
-      if($delete){
+      if(is_array($delete)){
+        $update_order = $this->order->updateTotalOrder($order_id, $delete);
         echo json_encode(['success' => true, 'order' => $delete]);
       } else {
         echo json_encode(['success' => false]);
