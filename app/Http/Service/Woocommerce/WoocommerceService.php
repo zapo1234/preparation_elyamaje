@@ -54,11 +54,9 @@ class WoocommerceService
                     if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100){
                       $products['line_items'][$key]['quantity'] = 1;
                       $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
-    
-    
                       $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                        'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
-                        'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+                      'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
+                      'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
                     }
                 }
             } else {
@@ -73,11 +71,9 @@ class WoocommerceService
                 if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100){
                   $products['line_items'][$key]['quantity'] = 1;
                   $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
-
-
                   $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                     'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
-                    'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+                    'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
                 }
             }
 
