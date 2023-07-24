@@ -195,7 +195,7 @@ $(document).ready(function() {
                                                         <div class="column11 d-flex align-items-center detail_product_name_order">
                                                             ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                         </div>
-                                                        <span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
+                                                        <span class="column22">	`+parseFloat(element.subtotal / element.quantity).toFixed(2)+ `</span>
                                                         <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
                                                         <span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
