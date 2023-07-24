@@ -47,8 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
             default:
                 return redirect()->route('logout');
                 break;
-        } 
-        
+        }   
     })->name('/');
 });
 

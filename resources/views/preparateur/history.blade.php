@@ -49,7 +49,7 @@
 													<span class="column1 name_column">Article</span>
 													<span class="column2 name_column">Coût</span>
 													<span class="column3 name_column">Qté</span>
-													<!-- <span class="column4 name_column">Code Barre</span> -->
+													<span class="column4 name_column">Allée</span>
 												</div>	
 
 												<div class="body_detail_product_order">
@@ -64,7 +64,7 @@
 															</div>
 															<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 															<span class="quantity column33"> {{ $item['quantity'] }} </span>
-															<!-- <span class="column44">{{  $item['barcode'] }} </span> -->
+															<span class="column44">{{  $item['location'] }} </span>
 														</div>
 													@endforeach
 												</div>

@@ -88,7 +88,7 @@
 																<span class="column1 name_column">Article</span>
 																<span class="column2 name_column">Coût</span>
 																<span class="column3 name_column">Pick / Qté</span>
-																<!-- <span class="column4 name_column">Code Barre</span> -->
+																<span class="column4 name_column">Allée</span>
 															</div>	
 
 															<div class="body_detail_product_order">
@@ -103,6 +103,7 @@
 																		</div>
 																		<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																		<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																		<span class="column44">{{ $item['location'] }}</span>
 																	</div>
 																@endforeach
 															</div>
@@ -182,7 +183,7 @@
 																	<span class="column1 name_column">Article</span>
 																	<span class="column2 name_column">Coût</span>
 																	<span class="column3 name_column">Pick / Qté</span>
-																	<!-- <span class="column4 name_column">Code Barre</span> -->
+																	<span class="column4 name_column">Allée</span>
 																</div>	
 
 																<div class="body_detail_product_order">
@@ -197,6 +198,7 @@
 																			</div>
 																			<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																			<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																			<span class="column44">{{ $item['location'] }}</span>
 																		</div>
 																	@endforeach
 																</div>
@@ -276,7 +278,7 @@
 																	<span class="column1 name_column">Article</span>
 																	<span class="column2 name_column">Coût</span>
 																	<span class="column3 name_column">Pick / Qté</span>
-																	<!-- <span class="column4 name_column">Code Barre</span> -->
+																	<span class="column4 name_column">Allée</span>
 																</div>	
 
 																<div class="body_detail_product_order">
@@ -291,6 +293,7 @@
 																			</div>
 																			<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																			<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																			<span class="column44">{{ $item['location'] }}</span>
 																		</div>
 																	@endforeach
 																</div>

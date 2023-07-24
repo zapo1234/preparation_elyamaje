@@ -15,7 +15,7 @@
 				@php $level++ @endphp
 				@foreach ($category['sub_category'] as $subCategory)
 					<!-- Appeler la vue récursive pour afficher les sous-catégories et les sous-sous-catégories -->
-					<option value="{{ $subCategory['name'] }}"><?php echo str_repeat('&nbsp;', $level*2.5); ?> {{$subCategory['name'] }}</option>
+					<option value="{{ $subCategory['name'] }}"><?php echo str_repeat('&nbsp;', $level*2.5); ?> &#8226; {{$subCategory['name'] }}</option>
 					@include('partials.category_select', ['category' => $subCategory, 'level' => $level])
 				@endforeach
 			@endif
@@ -27,7 +27,7 @@
 		@php $level++ @endphp
 		@foreach ($category['sub_category'] as $subCategory)
 			<!-- Appeler la vue récursive pour afficher les sous-catégories et les sous-sous-catégories -->
-			<option value="{{ $subCategory['name'] }}"><?php echo str_repeat('&nbsp;', $level*2.5); ?>  {{$subCategory['name'] }}</option>
+			<option value="{{ $subCategory['name'] }}"><?php echo str_repeat('&nbsp;', $level*2.5); ?> &#8226; {{$subCategory['name'] }}</option>
 			@include('partials.category_select', ['category' => $subCategory, 'level' => $level])
 		@endforeach
 	@endif

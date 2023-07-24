@@ -170,7 +170,7 @@ class OrderRepository implements OrderInterface
          ->where('user_id', $id)
          ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
@@ -544,7 +544,7 @@ class OrderRepository implements OrderInterface
          ->where('user_id', $user_id)
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
@@ -554,22 +554,22 @@ class OrderRepository implements OrderInterface
 
        $orders = json_decode(json_encode($orders), true);
 
-       foreach($orders as $key => $order){
-            $list[$order['order_woocommerce_id']]['details'] = [
-               'id' => $order['order_woocommerce_id'],
-               'first_name' => $order['billing_customer_first_name'],
-               'last_name' => $order['billing_customer_last_name'],
-               'date' => $order['date'],
-               'total' => $order['total_order'],
-               'total_tax' => $order['total_tax_order'],
-               'status' => $order['status'],
-               'coupons' => $order['coupons'],
-               'discount' => $order['discount'],
-               'discount_amount' => $order['discount_amount'],
-               'gift_card_amount' => $order['gift_card_amount'],
-               'shipping_amount' => $order['shipping_amount'],
-            ];
-            $list[$order['order_woocommerce_id']]['items'][] = $order;
+      foreach($orders as $key => $order){
+         $list[$order['order_woocommerce_id']]['details'] = [
+            'id' => $order['order_woocommerce_id'],
+            'first_name' => $order['billing_customer_first_name'],
+            'last_name' => $order['billing_customer_last_name'],
+            'date' => $order['date'],
+            'total' => $order['total_order'],
+            'total_tax' => $order['total_tax_order'],
+            'status' => $order['status'],
+            'coupons' => $order['coupons'],
+            'discount' => $order['discount'],
+            'discount_amount' => $order['discount_amount'],
+            'gift_card_amount' => $order['gift_card_amount'],
+            'shipping_amount' => $order['shipping_amount'],
+         ];
+         $list[$order['order_woocommerce_id']]['items'][] = $order;
       }
  
       $list = array_values($list);
@@ -590,7 +590,7 @@ class OrderRepository implements OrderInterface
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)

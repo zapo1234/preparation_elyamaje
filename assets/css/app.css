@@ -5769,8 +5769,6 @@ input::placeholder {
 	.generate_label_modal .body_line_items_label{
 		max-height: 66vh !important;
 	}
-
-
 }
 .owl-thumbs .owl-thumb-item {
 	width: 80px;
@@ -6204,6 +6202,10 @@ a{
 
 @media screen and (max-width: 650px) {
 
+	.column4, .column44{
+		text-align: end !important;
+	}
+	
 	.line_items_label input[type='number']{
 		width: 30px !important;
 	}
@@ -6305,10 +6307,7 @@ a{
 
 	.column3, .column33{
 		width: 10%;
-	}
-
-	
-	
+	}	
 }
 
 .course {

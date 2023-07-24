@@ -124,7 +124,6 @@ class ProductRepository implements ProductInterface
       
       // renvoyer un tableau associatif avec key id_product et value barcode.
       return $array_result;
-
    }
 }
 

@@ -21,7 +21,6 @@ $(document).ready(function() {
             $(".category_dropdown").select2({
                 width: '250px',
             });
-
         }
     })
 })
@@ -49,6 +48,7 @@ function save_location(id_product){
     $.ajax({
         url: "products",
         method: "POST",
+        async: false,
         data : {_token: $('input[name=_token]').val(), id_product: id_product, location: $("#input_"+id_product).val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
@@ -57,7 +57,7 @@ function save_location(id_product){
             $("#input_"+id_product).attr('disabled', false)
             $("#edit_"+id_product).hide()
             $("#save_"+id_product).addClass('d-none')
-            alert('Erreur enregistrement')
+            alert('Erreur enregistrement, veuillez ralentir')
         }
     });
 }
