@@ -47,11 +47,11 @@ class WoocommerceService
                     'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
           
                   
-                    if($or['cost'] == 0){
+                    if($or['total_price'] == 0){
                       $products['line_items'][$key]['real_price'] = $or['price'];
                     }
 
-                    if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100){
+                    if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100 && $or['total_price'] != 0.0){
                       $products['line_items'][$key]['quantity'] = 1;
                       $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
                       $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
@@ -63,12 +63,13 @@ class WoocommerceService
                 $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                 'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
                 'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-             
-                if($or['cost'] == 0){
+
+               
+                if($or['total_price'] == 0){
                   $products['line_items'][$key]['real_price'] = $or['price'];
                 }
 
-                if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100){
+                if($or['cost'] * $or['quantity'] != $or['total_price'] && $or['discount_amount'] == 100 && $or['total_price'] != 0.0){
                   $products['line_items'][$key]['quantity'] = 1;
                   $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
                   $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
