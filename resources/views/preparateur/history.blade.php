@@ -73,9 +73,11 @@
 													<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 														<div class="d-flex flex-column responsive_footer_modal">
 															@if($histo['details']['coupons'])
-																<span class="font-18 badge bg-success">Code : {{ $histo['details']['coupons'] }} (-{{$histo['details']['discount_amount']}}%)</span>
+																@foreach(explode(',', $histo['details']['coupons']) as $key => $coupon)
+																	<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																@endforeach
 															@endif
-																<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
+															<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
 														</div>
 														
 														<div class="mt-1 mb-2 montant_total_order detail_amount">

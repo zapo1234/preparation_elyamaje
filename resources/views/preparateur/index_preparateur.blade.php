@@ -112,10 +112,12 @@
 															<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 																<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																	<span class="mt-1 mb-2 montant_total_order">
-																	@if($orders['details']['coupons'])
-																		<div><span  class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
-																	@endif
-																	#{{ $orders['details']['id'] }} </span>
+																		@if($orders['details']['coupons'])
+																			@foreach(explode(',', $orders['details']['coupons']) as $key => $coupon)
+																				<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																			@endforeach
+																		@endif
+																		#{{ $orders['details']['id'] }} </span>
 																	
 																	<div class="mt-1 mb-2 montant_total_order detail_amount">
 																		<div>
@@ -214,7 +216,9 @@
 																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_total_order">
 																			@if($order['details']['coupons'])
-																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
+																				@foreach(explode(',', $order['details']['coupons']) as $key => $coupon)
+																					<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																				@endforeach
 																			@endif
 																		
 																			#{{ $order['details']['id'] }} 
@@ -314,9 +318,11 @@
 																<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_total_order">
-																		@if($order['details']['coupons'])
-																			<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
-																		@endif
+																			@if($order['details']['coupons'])
+																				@foreach(explode(',', $order['details']['coupons']) as $key => $coupon)
+																					<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																				@endforeach
+																			@endif
 																		#{{ $order['details']['id'] }} </span>
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">
