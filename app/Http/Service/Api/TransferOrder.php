@@ -215,12 +215,12 @@ class TransferOrder
                      $data_amount_kdo = [];// pour gestion kdo
 
                      // travailler sur le nommenclature de la ref facture
-                     /* $date = date('Y-m-d');
+                      $date = date('Y-m-d');
                       $mm = date('m');
                       $jour = date('d');
-                      $int_text ="xxxxx";
-                      $ref_ext ="TC-'.$jour.'-'.$mm.'-'.$int_text.'";
-                    */
+                      $int_text ="000";
+                      $ref_ext ="WC-'.$jour.'-'.$mm.'-'.$int_text.'";
+                    
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
                             // créer le client via dolibarr à partir de woocomerce...
