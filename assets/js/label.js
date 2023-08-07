@@ -4,8 +4,24 @@ $(document).ready(function() {
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
+            $("#example_length select").css('margin-right', '10px')
+            $(".status_dropdown").appendTo('.dataTables_length')
+            $(".dataTables_length").css('display', 'flex')
+            $(".dataTables_length").addClass('select2_custom')
+            $(".status_dropdown").removeClass('d-none')
+            $(".status_dropdown").select2({
+            	width: '150px',
+            });
+
         }
     })
+})
+
+$('.status_dropdown').on('change', function(e){
+    var status_dropdown = $(this).val();
+    $('#example').DataTable()
+    .column(1).search(status_dropdown, true, false)
+    .draw();
 })
 
 $("#show_modal_bordereau").on('click', function(){

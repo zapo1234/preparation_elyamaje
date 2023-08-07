@@ -303,7 +303,7 @@ class TransferOrder
                                       if($fk_product!=""){
                                              // details  array article libéllé(product sur la commande) pour dolibarr.
                                              // recupérer les données du kdo
-                                            if($values['subtotal']==0){
+                                            if($values['total'] == 0){
                                                  $data_kdo[] = [
                                                    "order_id" => $donnees['order_id'],
                                                    "product_id"=>$fk_product,

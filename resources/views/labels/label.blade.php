@@ -66,6 +66,14 @@
 									<span class="visually-hidden">Loading...</span>
 								</div>
 							</div>
+
+							<select class="d-none select2_custom status_dropdown input_form_type">
+								<option value="">Status</option>
+									@foreach($status_list as $status)
+										<option value="{{$status}}">{{$status}}</option>
+									@endforeach
+							</select>
+
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>

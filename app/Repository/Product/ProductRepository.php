@@ -20,7 +20,7 @@ class ProductRepository implements ProductInterface
    }
 
    public function getAllProducts(){
-      return $this->model::select('*')->where('is_variable', 0)->get();
+      return $this->model::select('*')->where('is_variable', 0)->orderBy('menu_order', 'ASC')->get();
    }
 
    public function getAllProductsPublished(){
@@ -32,7 +32,7 @@ class ProductRepository implements ProductInterface
          // Récupère les produits déjà existants
          try{
             $products_exists = $this->model::select('product_woocommerce_id', 'category', 'category_id', 'variation', 
-            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight')->get()->toArray();
+            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight', 'menu_order')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
@@ -50,7 +50,6 @@ class ProductRepository implements ProductInterface
 
             $difference_local = [];
             $difference_online = [];
-
             $product_id_on_local = array_column($data, "product_woocommerce_id");
             $product_id_online = array_column($products_exists, "product_woocommerce_id");
 
@@ -106,7 +105,11 @@ class ProductRepository implements ProductInterface
 
    }
 
-    public function getbarcodeproduct(){
+   public function updateProduct($id_product, $data){
+      return $this->model::where('product_woocommerce_id', $id_product)->update($data);
+   }
+
+   public function getbarcodeproduct(){
       
       // recupérer 
       $data =  DB::table('products')->select('product_woocommerce_id','barcode')->get();
@@ -121,8 +124,7 @@ class ProductRepository implements ProductInterface
       
       // renvoyer un tableau associatif avec key id_product et value barcode.
       return $array_result;
-
-    }
+   }
 }
 
 

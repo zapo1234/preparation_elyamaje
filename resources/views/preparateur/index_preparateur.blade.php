@@ -88,6 +88,7 @@
 																<span class="column1 name_column">Article</span>
 																<span class="column2 name_column">Coût</span>
 																<span class="column3 name_column">Pick / Qté</span>
+																<span class="column4 name_column">Allée</span>
 																<!-- <span class="column4 name_column">Code Barre</span> -->
 															</div>	
 
@@ -103,6 +104,7 @@
 																		</div>
 																		<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																		<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																		<span class="column44">{{ $item['location'] }}</span>
 																	</div>
 																@endforeach
 															</div>
@@ -110,10 +112,12 @@
 															<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 																<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																	<span class="mt-1 mb-2 montant_total_order">
-																	@if($orders['details']['coupons'])
-																		<div><span  class="font-18 badge bg-success">Code : {{ $orders['details']['coupons'] }} (-{{$orders['details']['discount_amount']}}%)</span></div>
-																	@endif
-																	#{{ $orders['details']['id'] }} </span>
+																		@if($orders['details']['coupons'])
+																			@foreach(explode(',', $orders['details']['coupons']) as $key => $coupon)
+																				<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																			@endforeach
+																		@endif
+																		#{{ $orders['details']['id'] }} </span>
 																	
 																	<div class="mt-1 mb-2 montant_total_order detail_amount">
 																		<div>
@@ -187,6 +191,7 @@
 																	<span class="column1 name_column">Article</span>
 																	<span class="column2 name_column">Coût</span>
 																	<span class="column3 name_column">Pick / Qté</span>
+																	<span class="column4 name_column">Allée</span>
 																	<!-- <span class="column4 name_column">Code Barre</span> -->
 																</div>	
 
@@ -202,6 +207,7 @@
 																			</div>
 																			<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																			<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																			<span class="column44">{{ $item['location'] }}</span>
 																		</div>
 																	@endforeach
 																</div>
@@ -210,7 +216,9 @@
 																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_total_order">
 																			@if($order['details']['coupons'])
-																				<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
+																				@foreach(explode(',', $order['details']['coupons']) as $key => $coupon)
+																					<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																				@endforeach
 																			@endif
 																		
 																			#{{ $order['details']['id'] }} 
@@ -286,6 +294,7 @@
 																	<span class="column1 name_column">Article</span>
 																	<span class="column2 name_column">Coût</span>
 																	<span class="column3 name_column">Pick / Qté</span>
+																	<span class="column4 name_column">Allée</span>
 																	<!-- <span class="column4 name_column">Code Barre</span> -->
 																</div>	
 
@@ -301,6 +310,7 @@
 																			</div>
 																			<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 																			<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
+																			<span class="column44">{{ $item['location'] }}</span>
 																		</div>
 																	@endforeach
 																</div>
@@ -308,9 +318,11 @@
 																<div class="align-items-end flex-column mt-2 d-flex justify-content-end"> 
 																	<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 																		<span class="mt-1 mb-2 montant_total_order">
-																		@if($order['details']['coupons'])
-																			<div><span  class="font-18 badge bg-success">Code : {{ $order['details']['coupons'] }} (-{{$order['details']['discount_amount']}}%)</span></div>
-																		@endif
+																			@if($order['details']['coupons'])
+																				@foreach(explode(',', $order['details']['coupons']) as $key => $coupon)
+																					<div><span  class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
+																				@endforeach
+																			@endif
 																		#{{ $order['details']['id'] }} </span>
 																		
 																		<div class="mt-1 mb-2 montant_total_order detail_amount">

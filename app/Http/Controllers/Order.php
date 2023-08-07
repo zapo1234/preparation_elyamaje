@@ -384,12 +384,12 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
           
       $order_id = $request->post('order_id');
-      // $order_id = 80283; // Données de test
+      // $order_id = 80364; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
       if($order){
 
         $is_distributor = $order[0]['is_distributor'] != null ? true : false;
-  
+        
         if($is_distributor){
           $barcode_array = $request->post('pick_items');
           $products_quantity = $request->post('pick_items_quantity');
@@ -596,9 +596,8 @@ class Order extends BaseController
       //Supprimer de la commande via api woocommerce
       $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
       // Update le total de la commande en base de données
-      $update_order = $this->order->updateTotalOrder($order_id, $delete);
-
-      if($delete){
+      if(is_array($delete)){
+        $update_order = $this->order->updateTotalOrder($order_id, $delete);
         echo json_encode(['success' => true, 'order' => $delete]);
       } else {
         echo json_encode(['success' => false]);

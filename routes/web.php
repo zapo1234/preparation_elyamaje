@@ -47,8 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
             default:
                 return redirect()->route('logout');
                 break;
-        } 
-        
+        }   
     })->name('/');
 });
 
@@ -64,6 +63,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
     Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
+    Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
 

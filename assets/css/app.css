@@ -3525,6 +3525,7 @@ a {
 }
 
 
+
 .bg-light-primary {
 
 
@@ -5667,6 +5668,11 @@ input::placeholder {
 	}
 }
 
+@media screen and (min-width: 768px) and (max-width: 1280px){
+	.select2_custom  .select2-container--default .select2-selection--single .select2-selection__arrow{
+		top: 12px !important;
+	}
+}
 
 @media screen and (max-width: 767px) {
 
@@ -5763,8 +5769,6 @@ input::placeholder {
 	.generate_label_modal .body_line_items_label{
 		max-height: 66vh !important;
 	}
-
-
 }
 .owl-thumbs .owl-thumb-item {
 	width: 80px;
@@ -6198,6 +6202,10 @@ a{
 
 @media screen and (max-width: 650px) {
 
+	.column4, .column44{
+		text-align: end !important;
+	}
+	
 	.line_items_label input[type='number']{
 		width: 30px !important;
 	}
@@ -6299,10 +6307,7 @@ a{
 
 	.column3, .column33{
 		width: 10%;
-	}
-
-	
-	
+	}	
 }
 
 .course {
@@ -6702,6 +6707,11 @@ select:focus, input:focus{
 	background-color: rgb(13 202 240 / 18%) !important;
 }	
 
+.bg-light-finished{
+	color: white !important;
+	background-color: #cdc9c9 !important;
+}
+
 
 .bg-private, .bg-processing{
 	background-color: #212529;
@@ -6998,7 +7008,7 @@ textarea:focus{
 .bg-404-no-role{
 	height: 85vh;
     width: 100%;
-    background-image: url('../images/404.jpg');
+    background-image: url('../images/404.svg');
     background-size: contain;
     padding: 0px;
     margin: 0px;
@@ -7006,8 +7016,38 @@ textarea:focus{
     background-position: center;
 }
 
+.bg-400{
+	background-image: url('../images/400.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
+.bg-401{
+	background-image: url('../images/401.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
+.bg-403{
+	background-image: url('../images/403.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
 .bg-404{
-	background-image: url('../images/404.jpg');
+	background-image: url('../images/404.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-color: white;
@@ -7017,7 +7057,17 @@ textarea:focus{
 }
 
 .bg-500{
-	background-image: url('../images/500.jpg');
+	background-image: url('../images/500.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
+.bg-504{
+	background-image: url('../images/403.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-color: white;
@@ -7104,4 +7154,19 @@ textarea:focus{
 
 .forgot_password > a:hover{
 	color: #000000 !important;
+}
+
+.product_name_to_delete{
+	text-align: center;
+}
+
+.custom_input{
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+	padding: 5px;
+}
+
+.location_product i{
+	cursor: pointer;
+	margin-left: 5px;
 }

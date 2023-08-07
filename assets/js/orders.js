@@ -184,7 +184,7 @@ $(document).ready(function() {
                                             <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
                                                 <span class="column1 name_column">Article</span>
                                                 <span class="column2 name_column">Coût</span>
-                                                <span class="column3 name_column">Qté / Pick</span>
+                                                <span class="column3 name_column">Pick / Qté</span>
                                                 <span class="column4 name_column">Total</span>
                                                 <span class="column5 name_column">Action</span>
                                             </div>	
@@ -195,7 +195,7 @@ $(document).ready(function() {
                                                         <div class="column11 d-flex align-items-center detail_product_name_order">
                                                             ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                         </div>
-                                                        <span class="column22">	`+parseFloat(element.price).toFixed(2)+ `</span>
+                                                        <span class="column22">	`+parseFloat(element.subtotal / element.quantity).toFixed(2)+ `</span>
                                                         <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
                                                         <span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
