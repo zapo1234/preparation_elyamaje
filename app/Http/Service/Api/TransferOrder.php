@@ -125,11 +125,11 @@ class TransferOrder
       {
             
                  $method = "GET";
-                 // recupérer les clé Api dolibar transfertx.
+                 // recupérer les clé Api dolibar transfertx......
                  $apiKey =$this->api->getkeydolibar();
                  $apiUrl = $this->api->getUrldolibar();
     
-                 $produitParam = ["limit" => 800, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
@@ -184,7 +184,7 @@ class TransferOrder
                    $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
-                  foreach($listproduct as $values){
+                  foreach($listproduct as $values) {
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
@@ -204,8 +204,15 @@ class TransferOrder
                      $data_options_kdo =[];// données des kdo 
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
-                
-                    foreach($orders as $k => $donnees) {
+
+                     // travailler sur le nommenclature de la ref facture
+                      $date = date('Y-m-d');
+                      $mm = date('m');
+                      $jour = date('d');
+                      $int_text ="xxxxx";
+                      $ref_ext ="TC6-'.$jour.'-'$mm.'-'.$int_text.'";
+                    
+                       foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
                             // créer le client via dolibarr à partir de woocomerce...
                             $ref_client = rand(4,10);
@@ -527,8 +534,7 @@ class TransferOrder
         
               foreach($count_datas as $k =>$valis){
                      $ids_orders[] = $valis['id'];
-                     if(!in_array($valis['id'],$this->getDataidcommande()))
-                      {
+                     if(!in_array($valis['id'],$this->getDataidcommande())) {
                         $data_ids[]= $valis['id'];
                       }
                }
@@ -593,24 +599,36 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name =="stripe"){
                       // le mode de reglement !!
+                      $mode_reglement_id=107; // prod.....
+                   }
+
+                   if($account_name =="payplug"){
+                      // le mode de paiment.
+                       $mode_reglement_id = 106;// prod.....
+                   }
+
+                   if($account_name == "oney_x3_with_fees"){
+                      $mode_reglement_id= 108; // prod...
+                   }
+
+                   if($account_name =="bacs"){
+                      $mode_reglement_id= 3; // ordre de prelevement....
                    }
 
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
-                  
-                     $account_id=4;// PROD 
-                     $paimentid =4;// PROD
-                     $mode_reglement_id = 6;// prod poserp.
+                       $account_id=4;// PROD 
+                       $paimentid =4;// PROD
+                       $mode_reglement_id = 6;// prod poserp.
                  }
 
                  if(in_array($account_name, $array_paiments)){
                    // defini le paiment comme virement bancaire......
                      //$mode_reglement_id = 4;
-              
-                     $account_id=6; // PROD
-                     $paimentid =6;// PROD
-                     $mode_reglement_id =3;// pour la prod poserp....
+                      $account_id=6; // PROD
+                      $paimentid =6;// PROD
+                      $mode_reglement_id =3;// pour la prod poserp....
                      
                  }
                    // $mode reglement de la facture ....

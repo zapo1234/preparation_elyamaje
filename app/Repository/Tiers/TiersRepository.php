@@ -82,7 +82,6 @@ class TiersRepository implements TiersInterface
            // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
            //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
              
-               // recuperer les données api dolibar copie projet tranfer x.
                $method = "GET";
                // key et url api
                $apiKey =$this->api->getkeydolibar();
@@ -96,7 +95,8 @@ class TiersRepository implements TiersInterface
                     'sortorder' => 'DESC',
                 );
 
-         
+          // recuperer les données api dolibar copie projet tranfer x.
+              
     
              $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
              $lists = json_decode($listinvoice,true);
