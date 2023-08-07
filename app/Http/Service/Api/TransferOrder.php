@@ -212,7 +212,7 @@ class TransferOrder
                       $jour = date('d');
                       $int_incr = 1;
                       $int_text ="001'.$int_incr.'";
-                      $ref_ext ="WC-'.$jour.'-'.$mm.'-'.$int_text.'";
+                      $ref_ext ="WC-.$jour.-.$mm.-.$int_text.'";
 
                       dd($ref_ext);
                     
