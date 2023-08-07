@@ -275,6 +275,7 @@ class TransferOrder
                                    'name_alias' => $woo,
                                    'address' => $donnees['billing']['address_1'],
                                    'zip' => $donnees['billing']['postcode'],
+                                   'status'=>'1',
                                    'email' => $donnees['billing']['email'],
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
