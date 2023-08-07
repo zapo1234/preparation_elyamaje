@@ -213,8 +213,6 @@ class TransferOrder
                       $int_incr = 1;
                       $int_text ="00$int_incr";
                       $ref_ext ="WC-$jour$mm-$int_text.'";
-
-                      dd($ref_ext);
                     
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -372,6 +370,7 @@ class TransferOrder
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
+                                       'ref'=>$ref_ext,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
@@ -438,7 +437,8 @@ class TransferOrder
                            }
                       }
 
-                        
+                        dump($data_tiers);
+                        dd($data_lines);
 
                        // Create le client.
                         foreach($data_tiers as $data) {
