@@ -124,6 +124,8 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
+              dd($orders);
+               
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx......
                  $apiKey =$this->api->getkeydolibar();
@@ -206,12 +208,12 @@ class TransferOrder
                      $data_amount_kdo = [];// pour gestion kdo
 
                      // travailler sur le nommenclature de la ref facture
-                      $date = date('Y-m-d');
+                     /* $date = date('Y-m-d');
                       $mm = date('m');
                       $jour = date('d');
                       $int_text ="xxxxx";
-                      $ref_ext ="TC6-'.$jour.'-'.$mm.'-'.$int_text.'";
-                    
+                      $ref_ext ="TC-'.$jour.'-'.$mm.'-'.$int_text.'";
+                    */
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
                             // créer le client via dolibarr à partir de woocomerce...
