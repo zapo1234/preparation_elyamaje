@@ -437,7 +437,8 @@ class TransferOrder
                            }
                       }
 
-                        
+                        dd($data_tiers);
+                        dump($data_lines);
 
                        // Create le client.
                         foreach($data_tiers as $data) {
