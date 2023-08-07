@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-              
+                dd($orders);
                
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx......
@@ -192,7 +192,7 @@ class TransferOrder
                   }
                    
 
-                  dd($data_list_product);
+                  
                     
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
