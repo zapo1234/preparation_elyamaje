@@ -191,11 +191,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
                    
-                   
-                  dd($data_list_product);
-                  
-                    
-                    // recupére les orders des données provenant de  woocomerce
+                   // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -214,8 +210,11 @@ class TransferOrder
                       $date = date('Y-m-d');
                       $mm = date('m');
                       $jour = date('d');
-                      $int_text ="000";
+                      $int_incr = 1;
+                      $int_text ="001'.$int_incr.'";
                       $ref_ext ="WC-'.$jour.'-'.$mm.'-'.$int_text.'";
+
+                      dd($ref_ext);
                     
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
