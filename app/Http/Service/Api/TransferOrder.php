@@ -212,7 +212,7 @@ class TransferOrder
                       $jour = date('d');
                       $int_incr = 1;
                       $int_text ="00$int_incr";
-                      $ref_ext ="WC-$jour$mm-$int_text.'";
+                      $ref_ext ="WC-$jour$mm-$int_text";
                     
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
