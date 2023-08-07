@@ -279,7 +279,6 @@ class TransferOrder
                                    'email' => $donnees['billing']['email'],
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
-                                    'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
                                  
