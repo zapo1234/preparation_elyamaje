@@ -131,9 +131,6 @@ class TransferOrder
                  $apiKey =$this->api->getkeydolibar();
                  $apiUrl = $this->api->getUrldolibar();
 
-                 dump($apiKey);
-                 dd($apiUrl);
-    
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
 
