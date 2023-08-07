@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-                dd($orders);
+                
                
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx......
@@ -133,6 +133,8 @@ class TransferOrder
     
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+
+                 dd($listproduct);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                 //Recuperer les ref_client existant dans dolibar
