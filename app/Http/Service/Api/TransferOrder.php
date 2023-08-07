@@ -177,7 +177,7 @@ class TransferOrder
 		               )
          	         ), true);
 
-                    dump($clientSearch);
+                  
                  foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
                  }
