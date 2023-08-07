@@ -437,8 +437,7 @@ class TransferOrder
                            }
                       }
 
-                        dump($data_tiers);
-                        dd($data_lines);
+                        
 
                        // Create le client.
                         foreach($data_tiers as $data) {
@@ -475,6 +474,8 @@ class TransferOrder
                           // dd('succes of opération');
                           // initialiser un array recuperer les ref client.
                           //return view('apidolibar');
+
+                          dd('succès');
                 
         }
         
