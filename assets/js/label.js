@@ -44,30 +44,34 @@ $(".generate_label_button").on('click', function(){
         }).done(function(data) {
             if(JSON.parse(data).success){
                 $(".line_items_label").remove()
+                $(".total_weight").remove()
+
                 $("#order_id_label").val(order_id)
                 $(".check_all").attr('data-id', order_id)
                 $(".check_all").prop('checked', true)
                 $(".body_line_items_label").attr('id', 'order_'+order_id)
 
-                var product_order = JSON.parse(data).products_order
-                var innerHtml = ''
-                var product = 0
+                var product_order = JSON.parse(data).products_order;
+                var innerHtml = '';
+                var product = 0;
+                var total_weight = 0;
 
                 Object.entries(product_order).forEach(([key, value]) => {
-                    product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1
-                    innerHtml += 
-                    `<div class="${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
-                        <span style="width: 50px">
-                            <input name="label_product[]" ${value.quantity - value.total_quantity == 0 ? 'disabled' : 'checked' } class="checkbox_label form-check-input" type="checkbox" value="${value.product_woocommerce_id}" aria-label="Checkbox for product order">	
-                        </span>
-                        <span class="w-50">${value.name}</span>
-                        <span class="w-25">${value.cost}</span>
-                        <span class="w-25" ><input ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
-                        <span class="w-25">${value.weight}</span>
-                    </div>`
-                    
+                    product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1;
+                    total_weight = parseFloat(total_weight) + parseFloat(value.weight);
+                    innerHtml +=
+                        `<div class="${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
+                            <span style="width: 50px">
+                                <input name="label_product[]" ${value.quantity - value.total_quantity == 0 ? 'disabled' : 'checked' } class="checkbox_label form-check-input" type="checkbox" value="${value.product_woocommerce_id}" aria-label="Checkbox for product order">	
+                            </span>
+                            <span class="w-50">${value.name}</span>
+                            <span class="w-25">${value.cost}</span>
+                            <span class="w-25" ><input ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
+                            <span class="w-25">${value.weight}</span>
+                        </div>`
                 });
                 
+                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(2)+` Kg</div>`
                 // Si tous les produits sont déjà dans des étiquettes alors désactiver le button de génération
                 if(product == 0){
                     $(".button_validate_modal_label").children('button').last().attr('disabled', true)
@@ -98,4 +102,10 @@ $('body').on('click', '.check_all', function() {
     } else {
         $("#order_"+$(this).attr('data-id')+' .checkbox_label').prop('checked', false)
     }
+})
+
+$('body').on('click', '.checkbox_label', function() {
+    $( "line_items_label" ).each(function( index ) {
+        console.log( index + ": " + $( this ).text() );
+    }); 
 })

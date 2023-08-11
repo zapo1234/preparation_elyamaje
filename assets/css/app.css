@@ -7066,6 +7066,16 @@ textarea:focus{
 	width: 100%;
 }
 
+.bg-503{
+	background-image: url('../images/503.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-color: white;
+	background-position: center;
+	height: 100%;
+	width: 100%;
+}
+
 .bg-504{
 	background-image: url('../images/403.svg');
 	background-size: contain;
@@ -7169,4 +7179,8 @@ textarea:focus{
 .location_product i{
 	cursor: pointer;
 	margin-left: 5px;
+}
+
+.total_weight{
+	font-weight: bold;
 }

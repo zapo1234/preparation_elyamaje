@@ -512,10 +512,11 @@ class OrderRepository implements OrderInterface
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation', 'distributors.customer_id as is_distributor')
+      'products.variation', 'distributors.customer_id as is_distributor', 'users.name as preparateur')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+      ->join('users', 'orders.user_id', '=', 'users.id')
       ->leftJoin('distributors', 'distributors.customer_id', '=', 'orders.customer_id')
       ->get()
       ->toArray();
