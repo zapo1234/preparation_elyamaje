@@ -368,8 +368,8 @@ class TransferOrder
                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$donnees['coupons'],
-                                       "options_prepa" => $martial,
-                                       "options_emba" => $adrien,
+                                       "options_prepa" => $donnees['preparateur'],
+                                       "options_emba" => $donnees['emballeur'],
                                        ];
                                       
                                        
