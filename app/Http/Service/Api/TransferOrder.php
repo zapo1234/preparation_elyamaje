@@ -363,12 +363,13 @@ class TransferOrder
                                 //lié le client les  produits qui compose son achat .
                                 if(isset($key_commande[$donnees['order_id']])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-
+                                      $adrien ="adrien";
+                                      $martial = "martial";
                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$donnees['coupons'],
-                                       "options_prepa" => $donnees['preparateur'],
-                                       "options_emba" => $donnees['emballeur']
+                                       "options_prepa" => $martial,
+                                       "options_emba" => $adrien,
                                        ];
                                       
                                        
@@ -445,7 +446,10 @@ class TransferOrder
                            }
                       }
                       
-                    
+                        dump($data_tiers);
+
+                        dd($data_lines);
+
                        // Create le client.
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
