@@ -67,7 +67,7 @@ $(".generate_label_button").on('click', function(){
                             <span class="w-50">${value.name}</span>
                             <span class="w-25">${value.cost}</span>
                             <span class="w-25" ><input ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
-                            <span class="w-25">${value.weight}</span>
+                            <span class="weight w-25">${value.weight}</span>
                         </div>`
                 });
                 
@@ -105,7 +105,16 @@ $('body').on('click', '.check_all', function() {
 })
 
 $('body').on('click', '.checkbox_label', function() {
-    $( "line_items_label" ).each(function( index ) {
-        console.log( index + ": " + $( this ).text() );
+
+    var total_weight = 0;
+
+    $("input:checkbox[type=checkbox]:checked").each(function( index ) {
+        if($(this).hasClass('checkbox_label')){
+            
+            console.log($(".checkbox_label")[index])
+            // total_weight = parseFloat(total_weight) + parseFloat($( this ).children('.weight').text())
+        }
     }); 
+
+    console.log(total_weight.toFixed(2))
 })
