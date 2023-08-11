@@ -124,12 +124,14 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
+                dd($orders);
+               
                  $method = "GET";
-                 // recupérer les clé Api dolibar transfertx.
+                 // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
                  $apiUrl = $this->api->getUrldolibar();
-    
-                 $produitParam = ["limit" => 800, "sortfield" => "rowid"];
+
+                 $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
@@ -175,6 +177,7 @@ class TransferOrder
 		               )
          	         ), true);
 
+                  
                  foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
                  }
@@ -184,13 +187,12 @@ class TransferOrder
                    $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
-                  foreach($listproduct as $values){
+                  foreach($listproduct as $values) {
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
-       
-                    
-                    // recupére les orders des données provenant de  woocomerce
+                   
+                   // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -204,8 +206,18 @@ class TransferOrder
                      $data_options_kdo =[];// données des kdo 
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
-                
-                    foreach($orders as $k => $donnees) {
+
+                     // travailler sur le nommenclature de la ref facture
+                      $date = date('Y-m-d');
+                      $mm = date('m');
+                      $jour = date('d');
+                      $int_incr = 1;
+                      $int_text ="00$int_incr";
+                      $ref_ext ="WC-$jour$mm-$int_text";
+
+                      
+                    
+                       foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
                             // créer le client via dolibarr à partir de woocomerce...
                             $ref_client = rand(4,10);
@@ -213,6 +225,10 @@ class TransferOrder
                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
+
+                            // convertir la date en format timesamp de la facture .
+                              $datetime = $donnees['date'];
+                              $new_date = strtotime($datetime);// convertir la date au format.
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
@@ -265,10 +281,10 @@ class TransferOrder
                                    'name_alias' => $woo,
                                    'address' => $donnees['billing']['address_1'],
                                    'zip' => $donnees['billing']['postcode'],
+                                   'status'=>'1',
                                    'email' => $donnees['billing']['email'],
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
-                                    'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
                                  
@@ -350,7 +366,9 @@ class TransferOrder
 
                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
-                                       "options_idc"=>$donnees['coupons']
+                                       "options_idc"=>$donnees['coupons'],
+                                       "options_prepa" => $donnees['preparateur'],
+                                       "options_emba" => $donnees['emballeur']
                                        ];
                                       
                                        
@@ -426,9 +444,8 @@ class TransferOrder
                              }
                            }
                       }
-
-
-
+                      
+                    
                        // Create le client.
                         foreach($data_tiers as $data) {
                         // insérer les données tiers dans dolibar
@@ -464,6 +481,8 @@ class TransferOrder
                           // dd('succes of opération');
                           // initialiser un array recuperer les ref client.
                           //return view('apidolibar');
+                   
+                          dd('succès');
                 
         }
         
@@ -527,8 +546,7 @@ class TransferOrder
         
               foreach($count_datas as $k =>$valis){
                      $ids_orders[] = $valis['id'];
-                     if(!in_array($valis['id'],$this->getDataidcommande()))
-                      {
+                     if(!in_array($valis['id'],$this->getDataidcommande())) {
                         $data_ids[]= $valis['id'];
                       }
                }
@@ -593,24 +611,36 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name =="stripe"){
                       // le mode de reglement !!
+                      $mode_reglement_id=107; // prod.....
+                   }
+
+                   if($account_name =="payplug"){
+                      // le mode de paiment.
+                       $mode_reglement_id = 106;// prod.....
+                   }
+
+                   if($account_name == "oney_x3_with_fees"){
+                      $mode_reglement_id= 108; // prod...
+                   }
+
+                   if($account_name =="bacs"){
+                      $mode_reglement_id= 3; // ordre de prelevement....
                    }
 
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
-                  
-                     $account_id=4;// PROD 
-                     $paimentid =4;// PROD
-                     $mode_reglement_id = 6;// prod poserp.
+                       $account_id=4;// PROD 
+                       $paimentid =4;// PROD
+                       $mode_reglement_id = 6;// prod poserp.
                  }
 
                  if(in_array($account_name, $array_paiments)){
                    // defini le paiment comme virement bancaire......
                      //$mode_reglement_id = 4;
-              
-                     $account_id=6; // PROD
-                     $paimentid =6;// PROD
-                     $mode_reglement_id =3;// pour la prod poserp....
+                      $account_id=6; // PROD
+                      $paimentid =6;// PROD
+                      $mode_reglement_id =3;// pour la prod poserp....
                      
                  }
                    // $mode reglement de la facture ....

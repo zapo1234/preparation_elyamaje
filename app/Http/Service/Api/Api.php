@@ -283,6 +283,18 @@ class Api
 
    }
 
+
+   public function getkeydolibarprod(){
+    $apiKey = env('KEY_API_DOLIBAR_PROD');
+     return $apiKey;
+   }
+
+   public function getUrldolibarprod(){
+        $apiUrl = env('KEY_API_URL_PROD');
+       return $apiUrl;
+
+   }
+
 }
 
 
