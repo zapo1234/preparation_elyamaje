@@ -234,7 +234,9 @@ class TransferOrder
                               new DateTimeZone('UTC')
                               );
 
-                              dd($datetime);
+                              $new_date = strtotime($datetime);
+
+                              dd($new_date);
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
