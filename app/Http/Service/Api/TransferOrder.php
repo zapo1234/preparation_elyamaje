@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-                dd($orders);
+                
                
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -214,6 +214,8 @@ class TransferOrder
                       $int_incr = 1;
                       $int_text ="00$int_incr";
                       $ref_ext ="WC-$jour$mm-$int_text";
+
+                      
                     
                        foreach($orders as $k => $donnees) {
                             // créer des tiers pour dolibarr via les datas woocomerce. 
@@ -223,6 +225,16 @@ class TransferOrder
                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
+
+                            // convertir la date en format timsemp
+                            $datetime = $donnees['date'];
+                             $d = DateTime::createFromFormat(
+                              'd-m-Y H:i:s',
+                               $datetime,
+                              new DateTimeZone('UTC')
+                              );
+
+                              dd($datetime);
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
@@ -360,7 +372,9 @@ class TransferOrder
 
                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
-                                       "options_idc"=>$donnees['coupons']
+                                       "options_idc"=>$donnees['coupons'],
+                                       "options_prepa" => $donnees['preparateur'],
+                                       "options_emba" => $donnees['emballeur']
                                        ];
                                       
                                        
