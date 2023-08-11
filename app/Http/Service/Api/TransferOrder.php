@@ -226,17 +226,9 @@ class TransferOrder
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
 
-                            // convertir la date en format timsemp
-                            $datetime = $donnees['date'];
-                             $d = DateTime::createFromFormat(
-                              'd-m-Y H:i:s',
-                               $datetime,
-                              new DateTimeZone('UTC')
-                              );
-
-                              $new_date = strtotime($datetime);
-
-                              dd($new_date);
+                            // convertir la date en format timesamp de la facture .
+                              $datetime = $donnees['date'];
+                              $new_date = strtotime($datetime);// convertir la date au format.
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
