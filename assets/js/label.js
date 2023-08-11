@@ -102,19 +102,25 @@ $('body').on('click', '.check_all', function() {
     } else {
         $("#order_"+$(this).attr('data-id')+' .checkbox_label').prop('checked', false)
     }
+
+    var total_weight = 0;
+    $(".line_items_label").each(function( index ) {
+        if($(this).find('.checkbox_label').prop('checked')){
+            total_weight = parseFloat(total_weight) + parseFloat($( this ).find('.weight').text())
+        }
+    }); 
+
+    $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
 })
 
 $('body').on('click', '.checkbox_label', function() {
 
     var total_weight = 0;
-
-    $("input:checkbox[type=checkbox]:checked").each(function( index ) {
-        if($(this).hasClass('checkbox_label')){
-            
-            console.log($(".checkbox_label")[index])
-            // total_weight = parseFloat(total_weight) + parseFloat($( this ).children('.weight').text())
+    $(".line_items_label").each(function( index ) {
+        if($(this).find('.checkbox_label').prop('checked')){
+            total_weight = parseFloat(total_weight) + parseFloat($( this ).find('.weight').text())
         }
     }); 
 
-    console.log(total_weight.toFixed(2))
+    $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
 })
