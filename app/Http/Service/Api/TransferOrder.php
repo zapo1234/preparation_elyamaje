@@ -234,10 +234,7 @@ class TransferOrder
                               new DateTimeZone('UTC')
                               );
 
-                              $new_date_format = $d->getTimestamp();// le format de date à prendre dans la création de facture.
-                              dd($new_date_format);
-
-                              
+                              dd($datetime);
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
