@@ -230,7 +230,7 @@ class TransferOrder
                               $datetime = $donnees['date'];
                               $datec = 1688421600;
                               $datex = "2023-08-14";
-                              $new_date = strtotime($datex);// convertir la date au format.
+                              $new_date = strtotime($datex);// convertir la date au format...
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
