@@ -228,6 +228,8 @@ class TransferOrder
 
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
+                              $datec = 1688421600;
+                              $datex = "2023-08-14";
                               $new_date = strtotime($datetime);// convertir la date au format.
                       
                            if($fk_tiers!="") {
@@ -380,6 +382,7 @@ class TransferOrder
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
+                                       'date'=> $datec,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
