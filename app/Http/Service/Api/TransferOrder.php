@@ -380,6 +380,7 @@ class TransferOrder
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
+                                       "date"=>$new_date,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
