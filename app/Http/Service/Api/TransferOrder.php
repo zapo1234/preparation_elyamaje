@@ -230,7 +230,7 @@ class TransferOrder
                               $datetime = $donnees['date'];
                               $datec = 1688421600;
                               $datex = "2023-08-14";
-                              $new_date = strtotime($datetime);// convertir la date au format.
+                              $new_date = strtotime($datex);// convertir la date au format.
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
@@ -382,7 +382,7 @@ class TransferOrder
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
-                                       'date'=> $datec,
+                                       'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
