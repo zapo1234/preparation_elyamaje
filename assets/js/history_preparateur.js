@@ -70,7 +70,7 @@ function cbConnect(data, ePos) {
       var deviceID = "local_printer";
       ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
     } else {
-     alert(data);// 'error parameter'
+    //  alert(data);
     }
   }
 
@@ -82,7 +82,7 @@ function cbCreateDevice_printer(devobj, retcode) {
         printer.oncoveropen = function () { alert('coveropen'); };
         print();
     } else {
-        alert(retcode);
+        // alert(retcode);
     }
 }
 
@@ -95,24 +95,25 @@ function print() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
    
-
-    canvas.width = 150;
-    canvas.height = 150;
+    canvas.width = 200;
+    canvas.height = 200;
 
     const image = new Image();
     image.src = $(".show img").attr('src')
 
     image.onload = function() {
-        ctx.drawImage(image, 0, 0, 150, 150);
+        ctx.drawImage(image, 0, 0, 200, 200);
 
         // Utilisez le contexte canvas comme argument dans addImage
-        printer.addImage(ctx, 0, 0, 150, 150);
-        $('.show .info_order_product').find('span').each(function(){
-            printer.addText($(this).text()+"\n\n");
-        });
-        
+        printer.addImage(ctx, 0, 0, 200, 200);
+         // On prépare le texte
+         const textLines = [];
+         $('.show .info_order_product').find('span').each(function(){
+             textLines.push($(this).text());
+         });
+
+        printer.addText("\n"+textLines.join("\n\n")+ "\n");
         printer.addCut(printer.CUT_FEED);
         printer.send();
     };
-
 }
