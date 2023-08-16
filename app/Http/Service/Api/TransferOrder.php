@@ -228,7 +228,9 @@ class TransferOrder
 
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
-                              $new_date = strtotime($datetime);// convertir la date au format.
+                              $datec = 1688421600;
+                              $datex = "2023-08-14";
+                              $new_date = strtotime($datex);// convertir la date au format...
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
@@ -380,6 +382,7 @@ class TransferOrder
                                         $data_lines[] = [
                                        'socid'=> $socid,
                                        'ref_client' =>$ref,
+                                       'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
                                        "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
@@ -446,10 +449,9 @@ class TransferOrder
                            }
                       }
                       
-
-                       // Create le client.
+                        // Create le client.
                         foreach($data_tiers as $data) {
-                        // insérer les données tiers dans dolibar
+                          // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
                     
