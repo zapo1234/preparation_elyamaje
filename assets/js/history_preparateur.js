@@ -51,6 +51,68 @@ $('body').on('click', '.impression_code', function() {
     $(".close_modal_validation").removeClass("d-none")
 })
 
+const ePosDev = new epson.ePOSDevice();
+
 function imprimerPages() {
-    window.print();
+
+ 
+    // Adresse IP de l'imprimante
+    console.log(ePosDev)
+
+    // Connexion à l'imprimante
+    // epos.connect('192.168.0.252', "9001", (response) => {
+    ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
+    // window.print();
+}
+
+function cbConnect(data, ePos) {
+    if (data == 'OK' || data == 'SSL_CONNECT_OK') {
+      var deviceID = "local_printer";
+      ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
+    } else {
+     alert(data);// 'error parameter'
+    }
+  }
+
+function cbCreateDevice_printer(devobj, retcode) {
+    if( retcode == 'OK' ) {
+        printer = devobj;
+        printer.timeout = 60000;
+        printer.onreceive = function (res) { alert(res.success); };
+        printer.oncoveropen = function () { alert('coveropen'); };
+        print();
+    } else {
+        alert(retcode);
+    }
+}
+
+function print() {
+    printer.addTextLang('fr');
+    printer.addTextDouble(true, true);
+    printer.addTextSize(1, 1);
+
+    // var base64Image = $(".show img").attr('src').split(',')[1];
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+   
+
+    canvas.width = 150;
+    canvas.height = 150;
+
+    const image = new Image();
+    image.src = $(".show img").attr('src')
+
+    image.onload = function() {
+        ctx.drawImage(image, 0, 0, 150, 150);
+
+        // Utilisez le contexte canvas comme argument dans addImage
+        printer.addImage(ctx, 0, 0, 150, 150);
+        $('.show .info_order_product').find('span').each(function(){
+            printer.addText($(this).text()+"\n\n");
+        });
+        
+        printer.addCut(printer.CUT_FEED);
+        printer.send();
+    };
+
 }

@@ -159,5 +159,7 @@
 	
 	@section("script")
 		<script src="{{asset('assets/js/qrcode.js')}}"></script>
+		<script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
+
 		<script src="{{asset('assets/js/history_preparateur.js')}}"></script>
 	@endsection
