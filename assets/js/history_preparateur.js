@@ -70,7 +70,7 @@ function cbConnect(data, ePos) {
       var deviceID = "local_printer";
       ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
     } else {
-    //  alert(data);
+     alert(data);
     }
   }
 
@@ -82,7 +82,7 @@ function cbCreateDevice_printer(devobj, retcode) {
         printer.oncoveropen = function () { alert('coveropen'); };
         print();
     } else {
-        // alert(retcode);
+        alert(retcode);
     }
 }
 
