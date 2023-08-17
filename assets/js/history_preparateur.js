@@ -47,68 +47,67 @@ $('body').on('click', '.close_modal', function() {
 })
 
 $('body').on('click', '.impression_code', function() {
+    $(".impression_code span").addClass('d-none')
+    $(".impression_code div").removeClass('d-none')
+
     imprimerPages($(this).attr('data-id'))
     $(".close_modal_validation").removeClass("d-none")
 })
 
-const ePosDev = new epson.ePOSDevice();
+
+var printer = null;
+var ePosDev = new epson.ePOSDevice();
 
 function imprimerPages() {
-    // ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
-    window.print();
+    ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
 }
 
-// function cbConnect(data, ePos) {
-//     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
-//       var deviceID = "local_printer";
-//       ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
-//     } else {
-//         console.log('Erreur 11:'+data)
-//         // alert(data);
-//     } 
-//   }
+function cbConnect(data, ePos) {
+    if (data == 'OK' || data == 'SSL_CONNECT_OK') {
+      var deviceID = "local_printer";
+      ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
+    } else {
+        console.log('Erreur 1:'+data)
+        $(".impression_code span").removeClass('d-none')
+        $(".impression_code div").addClass('d-none')
+        window.print()
+    } 
+  }
 
-// function cbCreateDevice_printer(devobj, retcode) {
-//     if( retcode == 'OK' ) {
-//         printer = devobj;
-//         printer.timeout = 60000;
-//         printer.onreceive = function (res) { alert(res.success); };
-//         printer.oncoveropen = function () { alert('coveropen'); };
-//         print();
-//     } else {
-//         console.log('Erreur 2:'+retcode)
-//         // alert(retcode);
-//     }
-// }
+function cbCreateDevice_printer(devobj, retcode) {
+    if( retcode == 'OK' ) {
+        printer = devobj;
+        printer.timeout = 60000;
+        printer.onreceive = function (res) { 
+            if(!res.success){
+                window.print()
+            }
+        };
+        printer.oncoveropen = function () { alert('coveropen'); };
+        printOrder()
+    } else {
+        console.log('Erreur 2:'+retcode)
+        $(".impression_code span").removeClass('d-none')
+        $(".impression_code div").addClass('d-none')
+        window.print()
+    }
+}
 
-// function print() {
-//     printer.addTextLang('fr');
-//     printer.addTextDouble(true, true);
-//     printer.addTextSize(1, 1);
+function printOrder() {
+    printer.addTextLang('fr');
+    printer.addTextAlign(printer.ALIGN_CENTER);
+    printer.addTextDouble(true, true);
+    printer.addTextSize(1, 1);
+    printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
+    $('.show .info_order_product').find('span').each(function(){
+        printer.addText("\n\n"+$(this).text());
+    });
 
-//     // var base64Image = $(".show img").attr('src').split(',')[1];
-//     const canvas = document.createElement('canvas');
-//     const ctx = canvas.getContext('2d');
-   
-//     canvas.width = 200;
-//     canvas.height = 200;
+    printer.addText("\n\n\n");
+    printer.addCut(printer.CUT_FEED);
+    printer.send();
+    $(".impression_code span").removeClass('d-none')
+    $(".impression_code div").addClass('d-none')
+}
 
-//     const image = new Image();
-//     image.src = $(".show img").attr('src')
 
-//     image.onload = function() {
-//         ctx.drawImage(image, 0, 0, 200, 200);
-
-//         // Utilisez le contexte canvas comme argument dans addImage
-//         printer.addImage(ctx, 0, 0, 200, 200);
-//         // On prépare le texte
-//         const textLines = [];
-//         $('.show .info_order_product').find('span').each(function(){
-//             textLines.push($(this).text());
-//         });
-
-//         printer.addText("\n"+textLines.join("\n\n")+ "\n");
-//         printer.addCut(printer.CUT_FEED);
-//         printer.send();
-//     };
-// }

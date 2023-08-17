@@ -130,7 +130,10 @@
 												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">
-													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
+													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+														<span>Imprimer</span>
+														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+													</button>
 												</div>
 
 												
@@ -160,6 +163,5 @@
 	@section("script")
 		<script src="{{asset('assets/js/qrcode.js')}}"></script>
 		<script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
-
 		<script src="{{asset('assets/js/history_preparateur.js')}}"></script>
 	@endsection
