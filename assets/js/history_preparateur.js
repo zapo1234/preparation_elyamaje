@@ -54,66 +54,61 @@ $('body').on('click', '.impression_code', function() {
 const ePosDev = new epson.ePOSDevice();
 
 function imprimerPages() {
-
- 
-    // Adresse IP de l'imprimante
-    console.log(ePosDev)
-
-    // Connexion à l'imprimante
-    // epos.connect('192.168.0.252', "9001", (response) => {
-    ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
-    // window.print();
+    // ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
+    window.print();
 }
 
-function cbConnect(data, ePos) {
-    if (data == 'OK' || data == 'SSL_CONNECT_OK') {
-      var deviceID = "local_printer";
-      ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
-    } else {
-     alert(data);
-    }
-  }
+// function cbConnect(data, ePos) {
+//     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
+//       var deviceID = "local_printer";
+//       ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': true, 'buffer': false }, cbCreateDevice_printer);
+//     } else {
+//         console.log('Erreur 11:'+data)
+//         // alert(data);
+//     } 
+//   }
 
-function cbCreateDevice_printer(devobj, retcode) {
-    if( retcode == 'OK' ) {
-        printer = devobj;
-        printer.timeout = 60000;
-        printer.onreceive = function (res) { alert(res.success); };
-        printer.oncoveropen = function () { alert('coveropen'); };
-        print();
-    } else {
-        alert(retcode);
-    }
-}
+// function cbCreateDevice_printer(devobj, retcode) {
+//     if( retcode == 'OK' ) {
+//         printer = devobj;
+//         printer.timeout = 60000;
+//         printer.onreceive = function (res) { alert(res.success); };
+//         printer.oncoveropen = function () { alert('coveropen'); };
+//         print();
+//     } else {
+//         console.log('Erreur 2:'+retcode)
+//         // alert(retcode);
+//     }
+// }
 
-function print() {
-    printer.addTextLang('fr');
-    printer.addTextDouble(true, true);
-    printer.addTextSize(1, 1);
+// function print() {
+//     printer.addTextLang('fr');
+//     printer.addTextDouble(true, true);
+//     printer.addTextSize(1, 1);
 
-    // var base64Image = $(".show img").attr('src').split(',')[1];
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+//     // var base64Image = $(".show img").attr('src').split(',')[1];
+//     const canvas = document.createElement('canvas');
+//     const ctx = canvas.getContext('2d');
    
-    canvas.width = 200;
-    canvas.height = 200;
+//     canvas.width = 200;
+//     canvas.height = 200;
 
-    const image = new Image();
-    image.src = $(".show img").attr('src')
+//     const image = new Image();
+//     image.src = $(".show img").attr('src')
 
-    image.onload = function() {
-        ctx.drawImage(image, 0, 0, 200, 200);
+//     image.onload = function() {
+//         ctx.drawImage(image, 0, 0, 200, 200);
 
-        // Utilisez le contexte canvas comme argument dans addImage
-        printer.addImage(ctx, 0, 0, 200, 200);
-         // On prépare le texte
-         const textLines = [];
-         $('.show .info_order_product').find('span').each(function(){
-             textLines.push($(this).text());
-         });
+//         // Utilisez le contexte canvas comme argument dans addImage
+//         printer.addImage(ctx, 0, 0, 200, 200);
+//         // On prépare le texte
+//         const textLines = [];
+//         $('.show .info_order_product').find('span').each(function(){
+//             textLines.push($(this).text());
+//         });
 
-        printer.addText("\n"+textLines.join("\n\n")+ "\n");
-        printer.addCut(printer.CUT_FEED);
-        printer.send();
-    };
-}
+//         printer.addText("\n"+textLines.join("\n\n")+ "\n");
+//         printer.addCut(printer.CUT_FEED);
+//         printer.send();
+//     };
+// }
