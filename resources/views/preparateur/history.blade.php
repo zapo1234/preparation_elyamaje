@@ -130,13 +130,13 @@
 												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">
+													
+													<!-- Détails imprimante -->
+													<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
+													<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
+													
 													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
 														<span>Imprimer</span>
-
-														<!-- Détails imprimante -->
-														<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
-														<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
-
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>
 												</div>

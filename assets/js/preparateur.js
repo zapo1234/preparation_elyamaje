@@ -452,10 +452,11 @@ function printOrder() {
     printer.addTextDouble(true, true);
     printer.addTextSize(1, 1);
     printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
+    printer.addText($(".info_order").text());
     $('.show .info_order_product').find('span').each(function () {
         printer.addText("\n\n" + $(this).text());
     });
-
+    
     printer.addText("\n\n\n");
     printer.addCut(printer.CUT_FEED);
     printer.send();

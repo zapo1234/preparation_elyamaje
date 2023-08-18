@@ -377,7 +377,7 @@
 							<h2 class="no-print mb-5 d-flex ">Commande préparée avec succès !</h2>
 							<div class="d-flex" id="qrcode"></div>
 
-							<span class="d-flex  info_order"></span>
+							<span class="d-flex info_order"></span>
 							<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 							<div class="d-flex  no-print col">
@@ -385,8 +385,10 @@
 								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
 								<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
-								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
-								<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+									<span>Imprimer</span>
+									<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+								</button>
 							</div>
 						</div>
 
