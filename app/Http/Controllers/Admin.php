@@ -384,6 +384,13 @@ class Admin extends BaseController
             'user_id' => $user_id
         ];
 
+        $printers = $this->printer->getPrinters();
+        foreach($printers as $printer){
+            if($printer->user_id == $user_id){
+                return redirect()->route('printers')->with('error', 'Ce préparateur possède déjà une imprimante');
+            }
+        }
+
         if($this->printer->addPrinter($data)){
             return redirect()->route('printers')->with('success', 'Imprimante ajoutée avec succès !');
         } else {

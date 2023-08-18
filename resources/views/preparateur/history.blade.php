@@ -140,8 +140,6 @@
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>
 												</div>
-
-												
 												<div class="no-print align-items-end flex-column mt-2 d-flex justify-content-end"> 
 													<div class="w-100 d-flex justify-content-between">
 														<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
@@ -150,10 +148,8 @@
 													<div class="w-100 d-flex justify-content-between mb-3">
 														<button data-id="{{ $histo['details']['id'] }}" type="button" class="close_modal btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													</div>
-													
 												</div>
 											</div>
-
 										</div>
 									</div>
 								</div>

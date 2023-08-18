@@ -14,7 +14,7 @@ class AddFieldPrinters extends Migration
     public function up()
     {
         Schema::table('printers', function (Blueprint $table) {
-            $table->integer('port')->after('address_ip')->default(9100);
+            $table->integer('port')->after('address_ip')->default(9100)->nullable();
         });
     }
 

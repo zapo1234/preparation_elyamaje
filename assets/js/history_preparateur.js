@@ -49,7 +49,7 @@ $('body').on('click', '.close_modal', function () {
 $('body').on('click', '.impression_code', function () {
     $(".impression_code span").addClass('d-none')
     $(".impression_code div").removeClass('d-none')
-
+    $(".impression_code").attr('disabled', true)
     imprimerPages($(this).attr('data-id'))
     $(".close_modal_validation").removeClass("d-none")
 })
@@ -83,6 +83,7 @@ function cbConnect(data, ePos) {
         console.log('Erreur 1:' + data)
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
+        $(".impression_code").attr('disabled', false)
         window.print()
     }
 }
@@ -102,6 +103,7 @@ function cbCreateDevice_printer(devobj, retcode) {
         console.log('Erreur 2:' + retcode)
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
+        $(".impression_code").attr('disabled', false)
         window.print()
     }
 }
@@ -117,10 +119,16 @@ function printOrder() {
     });
 
     printer.addText("\n\n\n");
-    printer.addCut(printer.CUT_FEED);
-    printer.send();
+    // printer.addCut(printer.CUT_FEED);
+    // printer.send();
     $(".impression_code span").removeClass('d-none')
     $(".impression_code div").addClass('d-none')
+    $(".impression_code").attr('disabled', false)
 }
 
 
+window.addEventListener("afterprint", (event) => {
+    $(".impression_code span").removeClass('d-none')
+    $(".impression_code div").addClass('d-none')
+    $(".impression_code").attr('disabled', false)
+});

@@ -460,3 +460,9 @@ function printOrder() {
     $(".impression_code div").addClass('d-none')
 }
 
+
+window.addEventListener("afterprint", (event) => {
+    $(".impression_code span").removeClass('d-none')
+    $(".impression_code div").addClass('d-none')
+    $(".impression_code").attr('disabled', false)
+});
