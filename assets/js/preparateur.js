@@ -330,6 +330,9 @@ $('body').on('click', '.valid_partial_order', function () {
 
 
 $('body').on('click', '.impression_code', function () {
+    $(".impression_code span").addClass('d-none')
+    $(".impression_code div").removeClass('d-none')
+    $(".impression_code").attr('disabled', true)
     imprimerPages()
     $(".close_modal_validation").removeClass("d-none")
 })

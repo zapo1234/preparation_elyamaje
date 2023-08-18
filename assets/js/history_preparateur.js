@@ -119,8 +119,8 @@ function printOrder() {
     });
 
     printer.addText("\n\n\n");
-    // printer.addCut(printer.CUT_FEED);
-    // printer.send();
+    printer.addCut(printer.CUT_FEED);
+    printer.send();
     $(".impression_code span").removeClass('d-none')
     $(".impression_code div").addClass('d-none')
     $(".impression_code").attr('disabled', false)
