@@ -378,7 +378,11 @@
 										<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 										<div class="d-flex  no-print col">
+											@foreach($printer as $print)
+												<input type="hidden" class="printer_id" value="{{ $print->address_ip }}">
+											@endforeach
                                             <button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
+											<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
                                         </div>
 									</div>
 
@@ -469,5 +473,6 @@
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="{{asset('assets/js/qrcode.js')}}"></script>
+		<script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
 		<script src="{{asset('assets/js/preparateur.js')}}"></script>
 	@endsection

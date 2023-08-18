@@ -5,6 +5,7 @@ use App\Http\Controllers\Order;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
+use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Categorie\CategoriesRepository;
@@ -22,13 +23,15 @@ class Controller extends BaseController
     private $role;
     private $categories;
     private $products;
+    private $printer;
 
     public function __construct(Order $orderController, 
         UserRepository $users,
         RoleRepository $role,
         OrderRepository $orders,
         CategoriesRepository $categories,
-        ProductRepository $products
+        ProductRepository $products,
+        PrinterRepository $printer
     ){
       $this->orderController = $orderController;
       $this->users = $users;
@@ -36,6 +39,7 @@ class Controller extends BaseController
       $this->orders = $orders;
       $this->categories = $categories;
       $this->products = $products;
+      $this->printer = $printer;
     }
     
      // INDEX ADMIN
@@ -94,6 +98,7 @@ class Controller extends BaseController
 
     // PRÉPARATEUR COMMANDES CLASSIQUES
     public function orderPreparateur(){
+        $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $orders = $this->orderController->getOrder();
         $order_process = [] ;
         $orders_waiting_to_validate = [];
@@ -115,11 +120,14 @@ class Controller extends BaseController
             'orders' => isset($order_process[0]) ? $order_process[0] : [] /* Show only first order */, 
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
-            'number_orders_validate' =>  count($orders_validate)]);
+            'number_orders_validate' =>  count($orders_validate),
+            'printer' => $printer
+        ]);
     }
 
     // PRÉPARATEUR COMMANDES DISTRIBUTEURS
     public function ordersDistributeurs(){
+        $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $orders = $this->orderController->getOrderDistributeur();
         $order_process = [] ;
         $orders_waiting_to_validate = [];
@@ -141,7 +149,9 @@ class Controller extends BaseController
             'orders' => isset($order_process[0]) ? $order_process[0] : [] /* Show only first order */, 
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
-            'number_orders_validate' =>  count($orders_validate)]);
+            'number_orders_validate' =>  count($orders_validate),
+            'printer' => $printer
+        ]);
     }
 
     // INDEX EMBALLEUR 

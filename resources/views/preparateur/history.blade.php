@@ -132,6 +132,11 @@
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">
 													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
 														<span>Imprimer</span>
+
+														@foreach($printer as $print)
+															<input type="hidden" class="printer_id" value="{{ $print->address_ip }}">
+														@endforeach
+														
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>
 												</div>

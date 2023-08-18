@@ -59,7 +59,14 @@ var printer = null;
 var ePosDev = new epson.ePOSDevice();
 
 function imprimerPages() {
-    ePosDev.connect('192.168.0.252', "9100", cbConnect, { "eposprint": true });
+    // IP à mettre dynamiquement
+    var printer_ip = $(".printer_id").val() ?? false
+
+    if(!printer_ip){
+        window.print()
+    } else {
+        ePosDev.connect(printer_ip, "9100", cbConnect, { "eposprint": true });
+    }
 }
 
 function cbConnect(data, ePos) {

@@ -76,6 +76,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // Distributeurs
     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
     Route::get("/syncDistributors", [Distributors::class, "getAllDistributors"])->name('sync.distributors');
+    // CRUD Imprimantes
+    Route::get("/printers", [Admin::class, "printers"])->name('printers');
+    Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
+    Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
+    Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 
 });
 

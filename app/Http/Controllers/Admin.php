@@ -7,6 +7,7 @@ use App\Http\Service\Api\Api;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\History\HistoryRepository;
+use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Categorie\CategoriesRepository;
@@ -26,6 +27,7 @@ class Admin extends BaseController
     private $history;
     private $products;
     private $distributors;
+    private $printer;
 
     public function __construct(
         Api $api, 
@@ -34,7 +36,8 @@ class Admin extends BaseController
         RoleRepository $role,
         HistoryRepository $history,
         ProductRepository $products,
-        DistributorRepository $distributors
+        DistributorRepository $distributors,
+        PrinterRepository $printer
     ){
         $this->api = $api;
         $this->category = $category;
@@ -43,6 +46,7 @@ class Admin extends BaseController
         $this->history = $history;
         $this->products = $products;
         $this->distributors = $distributors;
+        $this->printer = $printer;
     }
 
     public function syncCategories(){
@@ -359,5 +363,58 @@ class Admin extends BaseController
 
     public function emailPreview(){
         return view('email.email-preview');
+    }
+
+    public function printers(){
+        $preparateurs = $this->user->getUsersByRole([2]);
+        $printers = $this->printer->getPrinters();
+        return view('admin.printers', ['printers' => $printers, 'preparateurs' => $preparateurs]);
+    }
+
+    public function addPrinter(Request $request){
+        $name = $request->post('name');
+        $address_ip  = $request->post('address_ip');
+        $user_id = $request->post('user_id');
+
+        $data = [
+            'name' => $name,
+            'address_ip' => $address_ip,
+            'user_id' => $user_id
+        ];
+
+        if($this->printer->addPrinter($data)){
+            return redirect()->route('printers')->with('success', 'Imprimante ajoutée avec succès !');
+        } else {
+            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être ajoutée');
+        }
+    }
+
+    public function updatePrinter(Request $request){
+        $update_name = $request->post('update_name');
+        $update_address_ip  = $request->post('update_address_ip');
+        $update_user_id = $request->post('update_user_id');
+        $printer_id = $request->post('printer_id');
+
+        $data = [
+            'name' => $update_name,
+            'address_ip' => $update_address_ip,
+            'user_id' => $update_user_id
+        ];
+
+        if($this->printer->updatePrinter($data, $printer_id)){
+            return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+        } else {
+            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+        }
+    }
+
+    public function deletePrinter(Request $request){
+        $printer_id = $request->post('printer_id');
+
+        if($this->printer->deletePrinter($printer_id)){
+            return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+        } else {
+            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+        }
     }
 }
