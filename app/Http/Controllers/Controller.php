@@ -129,7 +129,7 @@ class Controller extends BaseController
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
             'number_orders_validate' =>  count($orders_validate),
-            'printer' => $printer
+            'printer' => $printer[0]
         ]);
     }
 
@@ -160,7 +160,7 @@ class Controller extends BaseController
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
             'number_orders_validate' =>  count($orders_validate),
-            'printer' => $printer
+            'printer' => $printer[0]
         ]);
     }
 

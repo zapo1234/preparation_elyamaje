@@ -133,10 +133,10 @@
 													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
 														<span>Imprimer</span>
 
-														@foreach($printer as $print)
-															<input type="hidden" class="printer_id" value="{{ $print->address_ip }}">
-														@endforeach
-														
+														<!-- Détails imprimante -->
+														<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip }}">
+														<input type="hidden" class="printer_port" value="{{ $printer->port }}">
+
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>
 												</div>

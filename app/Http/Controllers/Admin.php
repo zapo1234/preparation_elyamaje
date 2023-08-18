@@ -374,11 +374,13 @@ class Admin extends BaseController
     public function addPrinter(Request $request){
         $name = $request->post('name');
         $address_ip  = $request->post('address_ip');
+        $port  = $request->post('port');
         $user_id = $request->post('user_id');
 
         $data = [
             'name' => $name,
             'address_ip' => $address_ip,
+            'port' => $port,
             'user_id' => $user_id
         ];
 
@@ -392,12 +394,14 @@ class Admin extends BaseController
     public function updatePrinter(Request $request){
         $update_name = $request->post('update_name');
         $update_address_ip  = $request->post('update_address_ip');
+        $update_port  = $request->post('update_port');
         $update_user_id = $request->post('update_user_id');
         $printer_id = $request->post('printer_id');
 
         $data = [
             'name' => $update_name,
             'address_ip' => $update_address_ip,
+            'port' => $update_port,
             'user_id' => $update_user_id
         ];
 

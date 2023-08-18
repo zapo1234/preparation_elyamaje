@@ -61,7 +61,7 @@ var reconnect = 1;
 
 function imprimerPages() {
     // IP à mettre dynamiquement
-    var printer_ip = $(".printer_id").val() ?? false
+    var printer_ip = $(".printer_ip").val() ?? false
     
     if (!printer_ip) {
         window.print()
@@ -71,7 +71,7 @@ function imprimerPages() {
 }
 
 function cbConnect(data, ePos) {
-    var printer_ip = $(".printer_id").val() ?? false
+    var printer_ip = $(".printer_ip").val() ?? false
 
     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
         var deviceID = "local_printer";

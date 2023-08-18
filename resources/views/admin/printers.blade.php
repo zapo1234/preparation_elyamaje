@@ -48,6 +48,7 @@
 										<tr>
 											<th>Nom</th>
 											<th>Adresse IP</th>
+											<th>Port</th>
 											<th>Préparateur</th>
 											<th>Action</th>
 										</tr>
@@ -57,6 +58,7 @@
 											<tr>
 												<td data-label="Nom">{{  $printer->name }}</td>
 												<td data-label="Adresse IP">{{  $printer->address_ip }}</td>
+												<td data-label="Port">{{  $printer->port }}</td>
 												<td data-label="Préparateur">{{  $printer->userName }}</td>
 												<td class="d-flex justify-content-between" data-label="Action" >
 													<div class="d-flex">
@@ -94,6 +96,10 @@
 																		<div class="col-md-12">
 																			<label for="update_address_ip" class="form-label">Adresse IP*</label>
 																			<input value="{{ $printer->address_ip }}" required name="update_address_ip" type="text" class="form-control" id="update_address_ip">
+																		</div>
+																		<div class="col-md-12">
+																			<label for="update_port" class="form-label">Port</label>
+																			<input value="{{ $printer->port }}" name="update_port" type="text" class="form-control" id="update_port">
 																		</div>
 																		<div class="col-md-12">
 																			<label for="update_user_id" class="form-label">Préparateur*</label>
@@ -149,7 +155,11 @@
 										</div>
 										<div class="col-md-12">
 											<label for="address_ip" class="form-label">Adresse IP*</label>
-											<input required name="address_ip" type="text" class="form-control" id="address_ip">
+											<input placeholder="192.168.0.0" required name="address_ip" type="text" class="form-control" id="address_ip">
+										</div>
+										<div class="col-md-12">
+											<label for="port" class="form-label">Port</label>
+											<input placeholder="9100" name="port" type="text" class="form-control" id="port">
 										</div>
 										<div class="col-md-12">
 											<label for="user_id" class="form-label">Préparateur*</label>
