@@ -90,7 +90,7 @@
 																	<hr>
 																	<div class="row g-3">
 																		<div class="col-md-12">
-																			<label for="update_name" class="form-label">Nom</label>
+																			<label for="update_name" class="form-label">Nom*</label>
 																			<input value="{{ $printer->name }}" required name="update_name" type="text" class="form-control" id="update_name">
 																		</div>
 																		<div class="col-md-12">
@@ -150,7 +150,7 @@
 									<hr>
 									<div class="row g-3">
 										<div class="col-md-12">
-											<label for="name" class="form-label">Nom</label>
+											<label for="name" class="form-label">Nom*</label>
 											<input required name="name" type="text" class="form-control" id="name">
 										</div>
 										<div class="col-md-12">

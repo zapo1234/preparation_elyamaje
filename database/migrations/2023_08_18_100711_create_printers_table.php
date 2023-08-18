@@ -16,7 +16,7 @@ class CreatePrintersTable extends Migration
         Schema::create('printers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullabe();
-            $table->string('address_ip');
+            $table->string('address_ip')->unique();
             $table->unsignedBigInteger('user_id');
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Role\RoleRepository;
@@ -391,11 +392,20 @@ class Admin extends BaseController
             }
         }
 
-        if($this->printer->addPrinter($data)){
-            return redirect()->route('printers')->with('success', 'Imprimante ajoutée avec succès !');
-        } else {
-            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être ajoutée');
+        try{
+            if($this->printer->addPrinter($data)){
+                return redirect()->route('printers')->with('success', 'Imprimante ajoutée avec succès !');
+            } else {
+                return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être ajoutée');
+            }
+        } catch(Exception $e){
+            if(str_contains($e->getMessage(), 'Duplicate ')){
+                return redirect()->route('printers')->with('error', 'L\'adresse IP de l\'imprimante doit être unique !');
+            } else {
+                return redirect()->route('printers')->with('error', $e->getMessage());
+            }
         }
+       
     }
 
     public function updatePrinter(Request $request){
@@ -412,10 +422,18 @@ class Admin extends BaseController
             'user_id' => $update_user_id
         ];
 
-        if($this->printer->updatePrinter($data, $printer_id)){
-            return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
-        } else {
-            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+        try{
+            if($this->printer->updatePrinter($data, $printer_id)){
+                return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+            } else {
+                return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+            }
+        } catch(Exception $e){
+            if(str_contains($e->getMessage(), 'Duplicate ')){
+                return redirect()->route('printers')->with('error', 'L\'adresse IP de l\'imprimante doit être unique !');
+            } else {
+                return redirect()->route('printers')->with('error', $e->getMessage());
+            }
         }
     }
 
