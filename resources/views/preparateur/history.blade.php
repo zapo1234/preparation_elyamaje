@@ -134,8 +134,8 @@
 														<span>Imprimer</span>
 
 														<!-- Détails imprimante -->
-														<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip }}">
-														<input type="hidden" class="printer_port" value="{{ $printer->port }}">
+														<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
+														<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>

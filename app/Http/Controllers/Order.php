@@ -440,7 +440,7 @@ class Order extends BaseController
     public function ordersHistory(){
       $history = $this->order->getHistoryByUser(Auth()->user()->id);
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0]]);
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }
 
     // Fonction à appelé après validation d'une commande
@@ -588,7 +588,7 @@ class Order extends BaseController
       $history = $this->order->getAllHistory();
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
-      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0]]);
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }
 
     public function deleteOrderProducts(Request $request){

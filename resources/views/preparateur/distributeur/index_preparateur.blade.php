@@ -382,8 +382,8 @@
 
 							<div class="d-flex  no-print col">
 								<!-- Détails imprimante -->
-								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip }}">
-								<input type="hidden" class="printer_port" value="{{ $printer->port }}">
+								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
+								<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
 								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
 								<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
