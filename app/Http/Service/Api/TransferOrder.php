@@ -603,8 +603,6 @@ class TransferOrder
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
 
-                  dd($account_name);
-
                   if($account_name==""){
                     $account_name="vir_card";
                   }
@@ -619,7 +617,7 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name=="stripe"){
                       // le mode de reglement !!
-                      $mode_reglement_id=107; // prod.....
+                      $mode_reglement_id= 107; // prod.....
                    }
 
                    if($account_name=="payplug"){
