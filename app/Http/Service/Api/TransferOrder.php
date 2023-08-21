@@ -218,34 +218,32 @@ class TransferOrder
                       
                     
                        foreach($orders as $k => $donnees) {
-                            // créer des tiers pour dolibarr via les datas woocomerce. 
-                            // créer le client via dolibarr à partir de woocomerce...
-                            $ref_client = rand(4,10);
-                            // recupérer id du tiers en fonction de son email...
-                            $fk_tiers = array_search($donnees['billing']['email'],$data_list);
-                            // recupérer id en fonction du customer id
-                            $fk_tier = array_search($donnees['customer_id'],$data_code);
+                             // créer des tiers pour dolibarr via les datas woocomerce. 
+                             // créer le client via dolibarr à partir de woocomerce...
+                             $ref_client = rand(4,10);
+                             // recupérer id du tiers en fonction de son email...
+                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
+                             // recupérer id en fonction du customer id
+                             $fk_tier = array_search($donnees['customer_id'],$data_code);
 
                             // convertir la date en format timesamp de la facture .
-                              $datetime = $donnees['date'];
+                              $datetime = $donnees['date']; // date recu de woocomerce.
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
                               // transformer la date en format date Y-m-d...
-                              $datec = 1688421600;
                               $datex = $date_recu[0];
-                              $new_date = strtotime($datex);// convertir la date au format...
+                              $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
                       
-                           if($fk_tiers!="") {
-                             $socid = $fk_tiers;
-                            }
-                            // construire le tableau
+                             if($fk_tiers!="") {
+                               $socid = $fk_tiers;
+                             }
+                             // construire le tableau
                              if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
 
-                            
-                          if($socid!=""){
+                           if($socid!=""){
                             $data =  $this->tiers->gettiersid($socid);
                             if(count($data)==0){
                               $data_infos_user =[];
@@ -436,12 +434,12 @@ class TransferOrder
 
                            // filtrer les doublons du tableau
                            $id_commande_exist = array_unique($id_commande_existe);
-                         // recupérer le tableau
-                          $this->setDataidcommande($id_commande_exist);
-                          // renvoyer un tableau unique par tiers via le socid.
-                          // données des non distributeurs
-                          $temp = array_unique(array_column($data_lines, 'socid'));
-                          $unique_arr = array_intersect_key($data_lines, $temp);
+                           // recupérer le tableau
+                           $this->setDataidcommande($id_commande_exist);
+                           // renvoyer un tableau unique par tiers via le socid.
+                           // données des non distributeurs
+                           $temp = array_unique(array_column($data_lines, 'socid'));
+                           $unique_arr = array_intersect_key($data_lines, $temp);
 
                            // trier les produits qui ne sont pas en kdo
                           foreach($unique_arr as $r => $val){
@@ -593,14 +591,14 @@ class TransferOrder
                 $id_cl = (int)$tiers_ref;
                 $id_cl = $id_cl+1;
                 $socid ="";
-                  // id  du dernier invoices(facture)
+                // id  du dernier invoices(facture)
                 // valider invoice
                  $newCommandeValider = [
                 "idwarehouse"	=> "6",
                  "notrigger" => "0",
                 ];
                 
-                 // recupérer le mode de paiement
+                  // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
 
                   if($account_name==""){
@@ -616,12 +614,10 @@ class TransferOrder
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
-
-                   elseif($account_name=="oney_x3_with_fees"){
-                      $mode_reglement_id=108; // prod...
+                    elseif($account_name=="oney_x4_with_fees"){
+                      $mode_reglement_id=108; // payplug 4x..
                    }
-
-                   elseif($account_name=="bacs"){
+                    elseif($account_name=="bacs"){
                       $mode_reglement_id=3; // ordre de prelevement....
                    }
 
@@ -634,8 +630,6 @@ class TransferOrder
                    }
 
                   
-                   
-
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
@@ -646,13 +640,12 @@ class TransferOrder
                        $paimentid =4;// PROD
                    }
 
-                 if(in_array($account_name,$array_paiments)){
-                   // defini le paiment comme virement bancaire......
-                     //$mode_reglement_id = 4;
-                      $account_id=6; // PROD
-                      $paimentid =6;// PROD
-                    
-                }
+                   if(in_array($account_name,$array_paiments)){
+                      // defini le paiment comme virement bancaire......
+                       //$mode_reglement_id = 4;
+                       $account_id=6; // PROD
+                       $paimentid =6;// PROD
+                    }
                    // $mode reglement de la facture ....
                    $newCommandepaye = [
                    "paye"	=> 1,
