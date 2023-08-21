@@ -21,14 +21,15 @@ $(document).ready(function () {
                     var order_id = JSON.parse(list_barcode)[k].order_id
                     JSON.parse(list_barcode)[k].products.forEach(function (item, key) {
 
+                        console.log(JSON.parse(list_barcode))
                         $("#order_" + order_id + " .barcode_" + item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
                         if (parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_pick_in').text()) ==
                             parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_to_pick_in').text())) {
                             setTimeout(function () {
                                 $("#order_" + order_id + " .barcode_" + item).addClass('pick')
-                                // if($("#"+order_id).text() != "Reprendre"){
-                                //     $("#"+order_id).text("Reprendre")
-                                // }
+                                if($("#"+order_id).text() != "Reprendre"){
+                                    $("#"+order_id).text("Reprendre")
+                                }
                             }, 0)
                         }
 
