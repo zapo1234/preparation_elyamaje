@@ -26,9 +26,9 @@ $(document).ready(function () {
                             parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_to_pick_in').text())) {
                             setTimeout(function () {
                                 $("#order_" + order_id + " .barcode_" + item).addClass('pick')
-                                if($("#"+order_id).text() != "Reprendre"){
-                                    $("#"+order_id).text("Reprendre")
-                                }
+                                // if($("#"+order_id).text() != "Reprendre"){
+                                //     $("#"+order_id).text("Reprendre")
+                                // }
                             }, 0)
                         }
 
