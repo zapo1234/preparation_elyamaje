@@ -619,7 +619,7 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name =="stripe"){
                       // le mode de reglement !!
-                      $mode_reglement_id=107; // prod.....
+                      $mode_reglement_id = 107; // prod.....
                    }
 
                    if($account_name =="payplug"){
@@ -688,7 +688,7 @@ class TransferOrder
             // lie le  type de paiement par id.
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>$paimentid,
+              "paymentid"=>6,
               "closepaidinvoices"=> "yes",
               "accountid"=> $account_id, // id du compte bancaire.
           ];
