@@ -22,7 +22,7 @@ use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-
+use App\Repository\Printer\PrinterRepository;
 
 class Order extends BaseController
 {
@@ -41,6 +41,7 @@ class Order extends BaseController
     private $notification;
     private $woocommerce;
     private $distributor;
+    private $printer;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -53,7 +54,8 @@ class Order extends BaseController
     ProductOrderRepository $productOrder,
     NotificationRepository $notification,
     WoocommerceService $woocommerce,
-    DistributorRepository $distributor
+    DistributorRepository $distributor,
+    PrinterRepository $printer
     ){
       $this->api = $api;
       $this->user = $user;
@@ -68,6 +70,7 @@ class Order extends BaseController
       $this->notification = $notification;
       $this->woocommerce = $woocommerce;
       $this->distributor = $distributor;
+      $this->printer = $printer;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -436,7 +439,8 @@ class Order extends BaseController
     // Historique commande préparateur
     public function ordersHistory(){
       $history = $this->order->getHistoryByUser(Auth()->user()->id);
-      return view('preparateur.history', ['history' => $history]);
+      $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }
 
     // Fonction à appelé après validation d'une commande
@@ -582,8 +586,9 @@ class Order extends BaseController
 
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
+      $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
-      return view('preparateur.history', ['history' => $history]);
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }
 
     public function deleteOrderProducts(Request $request){

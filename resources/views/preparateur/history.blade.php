@@ -130,10 +130,16 @@
 												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">
-													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">Imprimer</button>
+													
+													<!-- Détails imprimante -->
+													<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
+													<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
+													
+													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+														<span>Imprimer</span>
+														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+													</button>
 												</div>
-
-												
 												<div class="no-print align-items-end flex-column mt-2 d-flex justify-content-end"> 
 													<div class="w-100 d-flex justify-content-between">
 														<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
@@ -142,10 +148,8 @@
 													<div class="w-100 d-flex justify-content-between mb-3">
 														<button data-id="{{ $histo['details']['id'] }}" type="button" class="close_modal btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													</div>
-													
 												</div>
 											</div>
-
 										</div>
 									</div>
 								</div>
@@ -159,5 +163,6 @@
 	
 	@section("script")
 		<script src="{{asset('assets/js/qrcode.js')}}"></script>
+		<script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
 		<script src="{{asset('assets/js/history_preparateur.js')}}"></script>
 	@endsection
