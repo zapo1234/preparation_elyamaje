@@ -123,7 +123,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-                dd($orders);
+            
             
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -225,7 +225,7 @@ class TransferOrder
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
 
-                            // convertir la date en format timesamp de la facture venant de woocomerce .
+                            // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
@@ -233,9 +233,9 @@ class TransferOrder
                               $datec = 1688421600;
                               $datex = $date_recu[0];
                               $new_date = strtotime($datex);// convertir la date au format...
-
-                            if($fk_tiers!="") {
-                               $socid = $fk_tiers;
+                      
+                           if($fk_tiers!="") {
+                             $socid = $fk_tiers;
                             }
                             // construire le tableau
                              if($fk_tier!="" && $fk_tiers==""){
@@ -303,7 +303,6 @@ class TransferOrder
                            
                            
                              foreach($donnees['line_items'] as $key => $values){
-
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
@@ -452,9 +451,8 @@ class TransferOrder
                            }
                       }
                         
-                        // Create le client
-                    
-              
+                      
+                        // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -619,7 +617,7 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name =="stripe"){
                       // le mode de reglement !!
-                      $mode_reglement_id = 107; // prod.....
+                      $mode_reglement_id=107; // prod.....
                    }
 
                    if($account_name =="payplug"){
@@ -630,18 +628,9 @@ class TransferOrder
                    if($account_name == "oney_x3_with_fees"){
                       $mode_reglement_id= 108; // prod...
                    }
-                    
-                   if($account_name == "oney_x4_with_fees"){
-                       $mode_reglement_id= 55; // prod...
-                     }
-
 
                    if($account_name =="bacs"){
-                      $mode_reglement_id= 3; // ordre de prelevement....
-                   }
-
-                   if($account_name =="gift_card"){
-                     $mode_reglement = 57;
+                      $mode_reglement_id=3; // ordre de prelevement....
                    }
 
                  if(in_array($account_name,$array_paiment)){
@@ -649,7 +638,7 @@ class TransferOrder
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
-                      
+                       $mode_reglement_id = 6;// prod poserp.
                  }
 
                  if(in_array($account_name, $array_paiments)){
@@ -657,7 +646,7 @@ class TransferOrder
                      //$mode_reglement_id = 4;
                       $account_id=6; // PROD
                       $paimentid =6;// PROD
-                    
+                      $mode_reglement_id =3;// pour la prod poserp....
                      
                  }
                    // $mode reglement de la facture ....
@@ -667,7 +656,7 @@ class TransferOrder
                    "mode_reglement_id"=>$mode_reglement_id,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
-                  ];
+             ];
         
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
@@ -684,8 +673,7 @@ class TransferOrder
            } else {
                 $date_finale =  $d->getTimestamp(); // conversion de date.
             }
-              
-            // lie le  type de paiement par id.
+      
               $newbank = [
               "datepaye"=>$date_finale,
               "paymentid"=>6,
