@@ -229,14 +229,10 @@ class TransferOrder
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
                              
-                              $date_recu = explode(' ',$datetime);
-
-                              dd($date_recu[0]);
-                              // transformer la date en format date Y-m-d.
-
-                              dd($donnees);
+                              $date_recu = explode(' ',$datetime); // dolibar.
+                              // transformer la date en format date Y-m-d...
                               $datec = 1688421600;
-                              $datex = "2023-08-14";
+                              $datex = $date_recu[0];
                               $new_date = strtotime($datex);// convertir la date au format...
                       
                            if($fk_tiers!="") {
@@ -455,7 +451,9 @@ class TransferOrder
                              }
                            }
                       }
-                      
+                        
+                      dump($data_tiers);
+                      dd($data_lines);
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
