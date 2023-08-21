@@ -629,17 +629,13 @@ class TransferOrder
                    if($account_name == "oney_x3_with_fees"){
                       $mode_reglement_id= 108; // prod...
                    }
-                    
-                   if($account_name == "oney_x4_with_fees"){
-                       $mode_reglement_id= 55; // prod...
-                     }
 
 
                    if($account_name =="bacs"){
                       $mode_reglement_id= 3; // ordre de prelevement....
                    }
 
-                   if($account_name =="gift_card"){
+                   if($account_name=="gift_card"){
                      $mode_reglement = 57;
                    }
 
