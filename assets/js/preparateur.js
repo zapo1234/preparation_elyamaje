@@ -26,6 +26,9 @@ $(document).ready(function () {
                             parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_to_pick_in').text())) {
                             setTimeout(function () {
                                 $("#order_" + order_id + " .barcode_" + item).addClass('pick')
+                                if($("#"+order_id).text() != "Reprendre"){
+                                    $("#"+order_id).text("Reprendre")
+                                }
                             }, 0)
                         }
 
@@ -43,6 +46,37 @@ $(document).ready(function () {
     if (localStorage.getItem('product_quantity_verif')) {
         $(".barcode_" + localStorage.getItem('product_quantity_verif')).removeClass('pick')
     }
+
+    $(".show_order").removeClass("d-none")
+
+    // Progress bar for order
+    $(".modal_order").each(function(){
+        order_id = $(this).attr('data-order')
+        
+        var quantity_to_pick_in_order = [] 
+        var quantity_pick_in_order = [] 
+        var progress = []
+
+        $("#"+$(this).attr('id')).find('.product_order').each(function(){
+            typeof quantity_to_pick_in_order[order_id] == "undefined" ? quantity_to_pick_in_order[order_id]  = 0 : quantity_to_pick_in_order[order_id];
+            typeof quantity_pick_in_order[order_id] == "undefined" ? quantity_pick_in_order[order_id]  = 0 : quantity_pick_in_order[order_id];
+            quantity_to_pick_in_order[order_id] = quantity_to_pick_in_order[order_id] + parseInt($(this).find('.quantity_to_pick_in').text())
+            quantity_pick_in_order[order_id] = quantity_pick_in_order[order_id] + parseInt($(this).find('.quantity_pick_in').text())
+        })
+
+        progress[order_id] = (quantity_pick_in_order[order_id] * 100) / quantity_to_pick_in_order[order_id]
+
+        if(progress[order_id] < 10){
+            $("#progress_"+order_id).find(".progress-bar").addClass('bg-danger')
+        } else if(progress[order_id] < 50){
+            $("#progress_"+order_id).find(".progress-bar").addClass('bg-warning')
+        } else {
+            $("#progress_"+order_id).find(".progress-bar").addClass('bg-success')
+        }
+
+        $("#progress_"+order_id).find(".progress-bar").css('width', progress[order_id]+'%')
+        $("#progress_"+order_id).find(".progress-bar").attr('aria-valuenow', progress[order_id])
+    })
 })
 
 document.addEventListener("keydown", function (e) {
@@ -60,6 +94,11 @@ document.addEventListener("keydown", function (e) {
                         $("#infoMessageModal").modal('show')
                     } else {
                         $("#order_" + order_id + " .barcode_" + $("#barcode").val()).addClass('pick')
+                        
+                        // Passe de "Préparer" à "Reprendre" si un produit ou plus est bippé
+                        if($("#"+order_id).text() != "Reprendre"){
+                            $("#"+order_id).text("Reprendre")
+                        }
                         var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text())
                         quantity_pick_in = quantity_pick_in + 1
 
@@ -263,9 +302,6 @@ $(".confirmation_reset_order").on('click', function () {
             localStorage.setItem('barcode', JSON.stringify(pick_items));
         }
     }
-
-
-
 
     $.ajax({
         url: "ordersReset",

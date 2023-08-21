@@ -23,10 +23,10 @@
 									</div>
 									<div class="course-info d-flex justify-content-between align-items-center">
 										<div>
-											<h6>{{ \Carbon\Carbon::parse($histo['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
+											<h6>{{ \Carbon\Carbon::parse($histo['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name">{{ $histo['details']['first_name']  }} {{ $histo['details']['last_name']  }}</h2>
-											@if(isset($histo['details']['preparateur']))
-												<span>Préparé par : {{ $histo['details']['preparateur'] }}</span>
+											@if(isset($histo['preparateur']))
+												<span>Préparé par : {{ $histo['preparateur'] }}</span>
 											@endif
 										</div>
 										<div class="d-flex">
