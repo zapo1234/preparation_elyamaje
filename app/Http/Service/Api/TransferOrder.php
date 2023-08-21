@@ -605,17 +605,13 @@ class TransferOrder
                   if($account_name==""){
                     $account_name="vir_card";
                   }
-                 
-                   // Moyens de paiments....id 4............
-
-                   elseif($account_name=="stripe"){
+                    // Moyens de paiments....id 4............
+                    elseif($account_name=="stripe"){
                       // le mode de reglement !!
                       $mode_reglement_id=107; // prod.....
                    }
 
-                   elseif (condition) {
-                    # code...
-                   }if($account_name=="payplug"){
+                   elseif($account_name=="payplug"){
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
