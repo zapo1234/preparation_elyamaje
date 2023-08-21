@@ -303,6 +303,8 @@ class TransferOrder
                            
                            
                              foreach($donnees['line_items'] as $key => $values){
+
+                              dd($donnees['payment_method']);
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
@@ -654,7 +656,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>106,
+                   "mode_reglement_id"=>$monde_reglement_id,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
                   ];
@@ -679,7 +681,7 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> $account_id, // id du compte bancaire.
           ];
            
              
