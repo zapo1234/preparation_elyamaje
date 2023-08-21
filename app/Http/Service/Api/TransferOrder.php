@@ -605,10 +605,6 @@ class TransferOrder
                   if($account_name==""){
                     $account_name="vir_card";
                   }
-
-                  if($account_name!="bacs"){
-                    $account_name="vir_card1";
-                  }
                  
                    // Moyens de paiments....id 4............
 
