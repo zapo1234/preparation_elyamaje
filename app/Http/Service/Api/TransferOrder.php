@@ -124,9 +124,8 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-                dd($orders);
-               
-                 $method = "GET";
+              
+                $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
                  $apiUrl = $this->api->getUrldolibar();
