@@ -614,19 +614,19 @@ class TransferOrder
 
                    if($account_name=="stripe"){
                       // le mode de reglement !!
-                      $mode_reglement_id= 107; // prod.....
+                      $mode_reglement_id=107; // prod.....
                    }
 
                    if($account_name=="payplug"){
                       // le mode de paiment.
-                       $mode_reglement_id = 106;// prod.....
+                       $mode_reglement_id =106;// prod.....
                    }
 
                    if($account_name=="oney_x3_with_fees"){
-                      $mode_reglement_id= 108; // prod...
+                      $mode_reglement_id=108; // prod...
                    }
 
-                   if($account_name =="bacs"){
+                   if($account_name=="bacs"){
                       $mode_reglement_id=3; // ordre de prelevement....
                    }
 
