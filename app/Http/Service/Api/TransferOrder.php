@@ -599,8 +599,7 @@ class TransferOrder
                  "notrigger" => "0",
                 ];
                 
-
-                  // recupérer le mode de paiement
+                 // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
 
                   if($account_name==""){
@@ -613,8 +612,6 @@ class TransferOrder
                  
                    // Moyens de paiments....id 4............
 
-                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
-                   $array_paiments = array('bacs');// virement bancaire id.....
                    if($account_name=="stripe"){
                       // le mode de reglement !!
                       $mode_reglement_id= 107; // prod.....
@@ -632,6 +629,10 @@ class TransferOrder
                    if($account_name =="bacs"){
                       $mode_reglement_id=3; // ordre de prelevement....
                    }
+
+
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiments = array('bacs');// virement bancaire id.....
 
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
