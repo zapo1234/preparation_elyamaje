@@ -6228,6 +6228,7 @@ a{
 		padding: 6px 12px !important;
 		box-shadow: none !important;
 		height: 45px !important;
+		margin-top: 5px;
 	}
 
 	.course .btn2{
@@ -6236,6 +6237,7 @@ a{
 		padding: 6px 12px !important;
 		box-shadow: none !important;
 		height: 45px !important;
+		margin-top: 5px;
 	}
 
 	.course{
@@ -7183,4 +7185,9 @@ textarea:focus{
 
 .total_weight{
 	font-weight: bold;
+}
+
+.course .progress{
+	border-radius: 0 !important;
+	height: 7px !important;
 }

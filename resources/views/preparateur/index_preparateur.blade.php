@@ -68,12 +68,17 @@
 									<h6>Commande</h6>
 									<h2>#{{ $orders['details']['id'] }}</h2>
 								</div>
-								<div class="course-info d-flex justify-content-between align-items-center">
-									<div>
-										<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-										<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+								<div class="w-100">
+									<div class="course-info d-flex justify-content-between align-items-center">
+										<div>
+											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
+											<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+										</div>
+										<button id="{{ $orders['details']['id'] }}" class="d-none show_order btn">Préparer</button>
 									</div>
-									<button id="{{ $orders['details']['id'] }}" class="show_order btn">Préparer</button>
+									<div class="progress" id="progress_{{ $orders['details']['id'] }}">
+										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -172,13 +177,19 @@
 									<h6>Commande</h6>
 									<h2>#{{ $order['details']['id'] }}</h2>
 								</div>
-								<div class="course-info d-flex justify-content-between align-items-center">
-									<div>
-										<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-										<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+								<div class="w-100">
+									<div class="course-info d-flex justify-content-between align-items-center">
+										<div>
+											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
+											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+										</div>
+										<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 									</div>
-									<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
+									<div class="progress" id="progress_{{ $order['details']['id'] }}">
+										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
 								</div>
+								
 							</div>
 						</div>
 
@@ -275,12 +286,17 @@
 									<h6>Commande</h6>
 									<h2>#{{ $order['details']['id'] }}</h2>
 								</div>
-								<div class="course-info d-flex justify-content-between align-items-center">
-									<div>
-										<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH') }}h</h6>
-										<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+								<div class="w-100">
+									<div class="course-info d-flex justify-content-between align-items-center">
+										<div>
+											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
+											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+										</div>
+										<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 									</div>
-									<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
+									<div class="progress" id="progress_{{ $order['details']['id'] }}">
+										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
 								</div>
 							</div>
 						</div>

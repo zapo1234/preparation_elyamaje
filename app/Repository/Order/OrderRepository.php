@@ -376,7 +376,7 @@ class OrderRepository implements OrderInterface
 
    public function orderReset($order_id) {
       try{
-         $update_products = DB::table('products_order')->whereIn('order_id', [$order_id])->update(['pick' => 0]);
+         $update_products = DB::table('products_order')->where('order_id', $order_id)->update(['pick' => 0]);
          return true;
       } catch(Exception $e){
          return false;
@@ -589,8 +589,9 @@ class OrderRepository implements OrderInterface
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->join('users', 'users.id', '=', 'orders.user_id')
          ->whereIn('orders.status', ['prepared-order'])
-         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
@@ -602,6 +603,7 @@ class OrderRepository implements OrderInterface
        $orders = json_decode(json_encode($orders), true);
 
        foreach($orders as $key => $order){
+            $list[$order['order_woocommerce_id']]['preparateur'] =  $order['preparateur'];
             $list[$order['order_woocommerce_id']]['details'] = [
                'id' => $order['order_woocommerce_id'],
                'first_name' => $order['billing_customer_first_name'],
