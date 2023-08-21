@@ -688,7 +688,7 @@ class TransferOrder
             // lie le  type de paiement par id.
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>$paiementid,
+              "paymentid"=>$paimentid,
               "closepaidinvoices"=> "yes",
               "accountid"=> $account_id, // id du compte bancaire.
           ];
