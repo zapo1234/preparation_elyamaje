@@ -10,11 +10,19 @@ $('body').on('click', '.show_order_history_code', function () {
 
     var product = $(this).attr('data-product')
     var customer_name = $(this).attr('data-customer')
+    var preparateur_name = $(this).attr('data-preparateur')
 
-    const href = id + "," + product + "," + customer_name;
+
+    const href = id + "," + product + "," + customer_name + "," + preparateur_name;
     const size = 150;
 
-    // $(".info_order").text("#Commande "+id+" - "+pick_items.length+" Produit(s)"+" - "+customer_name)
+    // Quantity of product
+    var quantity_to_pick_in_order = 0
+    $(".order_"+id).find('.product_order').each(function(){
+        quantity_to_pick_in_order = quantity_to_pick_in_order + parseInt($(this).find('.quantity').text())
+    })
+
+    $(".info_order").text("#Commande "+id+" - "+quantity_to_pick_in_order+" Produit(s)"+" - "+customer_name+" - "+preparateur_name)
     var list_products = ""
     $(".order_" + id + " .product_order").each(function () {
         list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
@@ -114,6 +122,8 @@ function printOrder() {
     printer.addTextDouble(true, true);
     printer.addTextSize(1, 1);
     printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
+    printer.addText("\n"+$(".show .info_order").text());
+
     // $('.show .info_order_product').find('span').each(function () {
     //     printer.addText("\n\n" + $(this).text());
     // });
