@@ -30,7 +30,7 @@
 											@endif
 										</div>
 										<div class="d-flex">
-											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
+											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-preparateur="{{ $histo['preparateur'] ?? Auth()->user()->name }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
 											<button style="margin-left:10px" data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
 
 											<!-- <button id="{{ $histo['details']['id'] }}" class="show_order_history btn">Détail</button> -->
@@ -126,7 +126,7 @@
 											<div class="qrcode_print_{{ $histo['details']['id'] }} detail_product_order_head d-flex flex-column ">
 												<div id="qrcode" class="mt-5 d-flex w-100 justify-content-center body_qr_code_{{ $histo['details']['id'] }}"></div>
 												
-	
+												<span class="d-flex w-100 justify-content-center info_order"></span>
 												<div class="info_order_product d-flex flex-column align-items-center mt-3"></div>
 
 												<div class="no-print col justify-content-center d-flex align-items-center flex-column">

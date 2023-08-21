@@ -219,8 +219,8 @@ $(".validate_pick_in").on('click', function () {
                 $(".success_prepared_command").removeClass('d-none')
                 const href = order_id + "," + pick_items.length + "," + customer_name + "," + user_name;
                 const size = 150;
-                $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name)
 
+                $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
                 var list_products = ""
                 $("#order_" + order_id + " .product_order").each(function () {
                     list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
@@ -488,7 +488,7 @@ function printOrder() {
     printer.addTextDouble(true, true);
     printer.addTextSize(1, 1);
     printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
-    // printer.addText("\n"+$(".info_order").text());
+    printer.addText("\n"+$(".show .info_order").text());
     // $('.show .info_order_product').find('span').each(function () {
     //     printer.addText("\n\n" + $(this).text());
     // });
