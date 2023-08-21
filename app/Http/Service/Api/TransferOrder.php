@@ -304,7 +304,6 @@ class TransferOrder
                            
                              foreach($donnees['line_items'] as $key => $values){
 
-                              dd($donnees['payment_method']);
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
