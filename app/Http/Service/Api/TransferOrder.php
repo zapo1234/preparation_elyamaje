@@ -228,6 +228,11 @@ class TransferOrder
 
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
+                             
+                              $date_recu = explode(' ',$datetime);
+
+                              dd($date_recu[0]);
+                              // transformer la date en format date Y-m-d.
 
                               dd($donnees);
                               $datec = 1688421600;
