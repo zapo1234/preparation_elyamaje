@@ -608,22 +608,32 @@ class TransferOrder
                  
                    // Moyens de paiments....id 4............
 
-                   if($account_name=="stripe"){
+                   elseif($account_name=="stripe"){
                       // le mode de reglement !!
                       $mode_reglement_id=107; // prod.....
                    }
 
-                   if($account_name=="payplug"){
+                   elseif (condition) {
+                    # code...
+                   }if($account_name=="payplug"){
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
 
-                   if($account_name=="oney_x3_with_fees"){
+                   elseif($account_name=="oney_x3_with_fees"){
                       $mode_reglement_id=108; // prod...
                    }
 
-                   if($account_name=="bacs"){
+                   elseif($account_name=="bacs"){
                       $mode_reglement_id=3; // ordre de prelevement....
+                   }
+
+                   elseif($account_name=="gift_card"){
+                       $mode_reglement_id = 57;
+                   }
+
+                   else{
+                       $mode_reglement_id="";
                    }
                    
 
