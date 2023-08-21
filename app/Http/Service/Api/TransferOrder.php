@@ -684,10 +684,10 @@ class TransferOrder
                 $date_finale =  $d->getTimestamp(); // conversion de date.
             }
               
-            // lien tyoe de paiement par id.
+            // lie le  type de paiement par id.
               $newbank = [
               "datepaye"=>$date_finale,
-              "paymentid"=>6,
+              "paymentid"=>$paiement_id,
               "closepaidinvoices"=> "yes",
               "accountid"=> $account_id, // id du compte bancaire.
           ];
