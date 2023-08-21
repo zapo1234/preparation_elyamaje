@@ -123,7 +123,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-              
+                dd($orders);
             
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
