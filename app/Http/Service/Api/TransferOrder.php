@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-              
+              dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
@@ -228,7 +228,7 @@ class TransferOrder
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
                              
-                              $date_recu = explode(' ',$datetime); // dolibar.
+                              $date_recu = explode(' ',$datetime); // dolibar...
                               // transformer la date en format date Y-m-d...
                               $datec = 1688421600;
                               $datex = $date_recu[0];
