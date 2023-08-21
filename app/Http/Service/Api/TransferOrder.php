@@ -348,8 +348,7 @@ class TransferOrder
                                      }
 
                                      
-               
-                                     if($fk_product=="") {
+                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
