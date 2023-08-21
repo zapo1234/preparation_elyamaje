@@ -225,7 +225,7 @@ class TransferOrder
                             // recupérer id en fonction du customer id
                             $fk_tier = array_search($donnees['customer_id'],$data_code);
 
-                            // convertir la date en format timesamp de la facture .
+                            // convertir la date en format timesamp de la facture venant de woocomerce .
                               $datetime = $donnees['date'];
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
@@ -234,10 +234,8 @@ class TransferOrder
                               $datex = $date_recu[0];
                               $new_date = strtotime($datex);// convertir la date au format...
 
-                              dd($datex);
-                      
-                           if($fk_tiers!="") {
-                             $socid = $fk_tiers;
+                            if($fk_tiers!="") {
+                               $socid = $fk_tiers;
                             }
                             // construire le tableau
                              if($fk_tier!="" && $fk_tiers==""){
@@ -453,8 +451,6 @@ class TransferOrder
                            }
                       }
                         
-                      dump($data_tiers);
-                      dd($data_lines);
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
