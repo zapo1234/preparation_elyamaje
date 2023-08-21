@@ -632,6 +632,8 @@ class TransferOrder
                    else{
                        $mode_reglement_id="";
                    }
+
+                   dd($mode_reglement_id);
                    
 
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
