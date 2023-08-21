@@ -21,7 +21,8 @@ $(document).ready(function () {
                     var order_id = JSON.parse(list_barcode)[k].order_id
                     JSON.parse(list_barcode)[k].products.forEach(function (item, key) {
 
-                        console.log(JSON.parse(list_barcode))
+                      
+                        console.log(JSON.parse(list_barcode)[k].quantity[key])
                         $("#order_" + order_id + " .barcode_" + item).find('.quantity_pick_in').text(JSON.parse(list_barcode)[k].quantity[key])
                         if (parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_pick_in').text()) ==
                             parseInt($("#order_" + order_id + " .barcode_" + item).find('.quantity_to_pick_in').text())) {
