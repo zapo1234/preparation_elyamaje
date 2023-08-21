@@ -629,7 +629,9 @@ class TransferOrder
                    if($account_name=="bacs"){
                       $mode_reglement_id=3; // ordre de prelevement....
                    }
+                   
 
+                   dd($mode_reglement_id);
 
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
