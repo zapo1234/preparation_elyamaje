@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-              dd($orders);
+            
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
@@ -233,6 +233,8 @@ class TransferOrder
                               $datec = 1688421600;
                               $datex = $date_recu[0];
                               $new_date = strtotime($datex);// convertir la date au format...
+
+                              dd($datex);
                       
                            if($fk_tiers!="") {
                              $socid = $fk_tiers;
