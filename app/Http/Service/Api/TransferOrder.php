@@ -654,7 +654,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>$monde_reglement_id,
+                   "mode_reglement_id"=>$mode_reglement_id,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
                   ];
