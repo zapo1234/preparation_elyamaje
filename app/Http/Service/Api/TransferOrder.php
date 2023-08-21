@@ -678,7 +678,7 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=> $account_id, // id du compte bancaire.
+              "accountid"=>6, // id du compte bancaire.
           ];
            
              
