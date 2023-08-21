@@ -454,7 +454,7 @@ class TransferOrder
                         
                         // Create le client
                         dump($data_tiers);
-                        dump($data_kdo);
+                        dump($data_options_kdo);
                         dd($data_lines);
               
                         foreach($data_tiers as $data) {
