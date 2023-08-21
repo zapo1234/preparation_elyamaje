@@ -629,9 +629,18 @@ class TransferOrder
                    if($account_name == "oney_x3_with_fees"){
                       $mode_reglement_id= 108; // prod...
                    }
+                    
+                   if($account_name == "oney_x4_with_fees"){
+                       $mode_reglement_id= 55; // prod...
+                     }
+
 
                    if($account_name =="bacs"){
                       $mode_reglement_id= 3; // ordre de prelevement....
+                   }
+
+                   if($account_name =="gift_card"){
+                     $mode_reglement = 57;
                    }
 
                  if(in_array($account_name,$array_paiment)){
@@ -639,7 +648,7 @@ class TransferOrder
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
-                       $mode_reglement_id = 6;// prod poserp.
+                      
                  }
 
                  if(in_array($account_name, $array_paiments)){
@@ -647,7 +656,7 @@ class TransferOrder
                      //$mode_reglement_id = 4;
                       $account_id=6; // PROD
                       $paimentid =6;// PROD
-                      $mode_reglement_id =3;// pour la prod poserp....
+                    
                      
                  }
                    // $mode reglement de la facture ....
@@ -674,7 +683,8 @@ class TransferOrder
            } else {
                 $date_finale =  $d->getTimestamp(); // conversion de date.
             }
-      
+              
+            // lien tyoe de paiement par id.
               $newbank = [
               "datepaye"=>$date_finale,
               "paymentid"=>6,
