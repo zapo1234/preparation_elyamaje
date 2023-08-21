@@ -451,7 +451,7 @@ class TransferOrder
                            }
                       }
                         
-                        
+                      
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
@@ -638,7 +638,7 @@ class TransferOrder
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
-                       
+                       $mode_reglement_id = 6;// prod poserp.
                  }
 
                  if(in_array($account_name, $array_paiments)){
@@ -646,14 +646,14 @@ class TransferOrder
                      //$mode_reglement_id = 4;
                       $account_id=6; // PROD
                       $paimentid =6;// PROD
-                  
+                      $mode_reglement_id =3;// pour la prod poserp....
                      
                  }
                    // $mode reglement de la facture ....
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>$mode_reglement_id,
+                   "mode_reglement_id"=>106,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -678,7 +678,7 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=>6, // id du compte bancaire.
+              "accountid"=> 6, // id du compte bancaire.
           ];
            
              
