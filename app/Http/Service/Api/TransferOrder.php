@@ -451,8 +451,7 @@ class TransferOrder
                            }
                       }
                         
-                      dump($data_tiers);
-                      dd($data_lines);
+                      
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
@@ -631,7 +630,7 @@ class TransferOrder
                    }
 
                    if($account_name =="bacs"){
-                      $mode_reglement_id= 3; // ordre de prelevement....
+                      $mode_reglement_id=3; // ordre de prelevement....
                    }
 
                  if(in_array($account_name,$array_paiment)){
@@ -654,7 +653,7 @@ class TransferOrder
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>106,
+                   "mode_reglement_id"=>$mode_reglement_id,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
@@ -679,7 +678,7 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> $account_id, // id du compte bancaire.
           ];
            
              
