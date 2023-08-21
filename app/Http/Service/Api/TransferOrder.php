@@ -123,7 +123,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+                dd($orders);
             
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -655,7 +655,7 @@ class TransferOrder
                    "mode_reglement_id"=>106,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
-             ];
+                  ];
         
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
