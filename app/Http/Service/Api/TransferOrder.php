@@ -615,17 +615,17 @@ class TransferOrder
 
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
-                   if($account_name =="stripe"){
+                   if($account_name=="stripe"){
                       // le mode de reglement !!
                       $mode_reglement_id=107; // prod.....
                    }
 
-                   if($account_name =="payplug"){
+                   if($account_name=="payplug"){
                       // le mode de paiment.
                        $mode_reglement_id = 106;// prod.....
                    }
 
-                   if($account_name == "oney_x3_with_fees"){
+                   if($account_name=="oney_x3_with_fees"){
                       $mode_reglement_id= 108; // prod...
                    }
 
@@ -638,7 +638,7 @@ class TransferOrder
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
-                       $mode_reglement_id = 6;// prod poserp.
+                      
                  }
 
                  if(in_array($account_name, $array_paiments)){
@@ -646,14 +646,14 @@ class TransferOrder
                      //$mode_reglement_id = 4;
                       $account_id=6; // PROD
                       $paimentid =6;// PROD
-                      $mode_reglement_id =3;// pour la prod poserp....
+                    
                      
                  }
                    // $mode reglement de la facture ....
                    $newCommandepaye = [
                    "paye"	=> 1,
                    "statut"	=> 2,
-                   "mode_reglement_id"=>107,
+                   "mode_reglement_id"=>$mode_reglement_id,
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
