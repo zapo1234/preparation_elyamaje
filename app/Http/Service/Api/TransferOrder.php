@@ -228,6 +228,8 @@ class TransferOrder
 
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date'];
+
+                              dd($donnees);
                               $datec = 1688421600;
                               $datex = "2023-08-14";
                               $new_date = strtotime($datex);// convertir la date au format...
