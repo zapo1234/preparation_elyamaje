@@ -43,7 +43,7 @@ $(".validate_order").on("click", function(){
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
-        data : {order_id: 80384/*$("#order_id").val()*/}
+        data : {order_id: $("#order_id").val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
             
@@ -86,7 +86,7 @@ $(".validate_order").on("click", function(){
                 </div>
             `)
 
-            
+
             $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text($("#preparateur").val())
