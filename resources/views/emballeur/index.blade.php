@@ -33,7 +33,7 @@
                         <div class="title mx-auto"> Scanner le QR Code </div>
                         <div class="detail_shipping_billing"></div>
                         <div class="main"> 
-                        <hr>
+                        <hr class="main_hr">
                         <div class="w-100 d-none loading_detail_order">
                             <div class="spinner-grow text-dark" role="status"> 
                                 <span class="visually-hidden">Loading...</span>

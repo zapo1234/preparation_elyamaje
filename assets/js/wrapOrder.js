@@ -127,8 +127,8 @@ $(".validate_order").on("click", function(){
                     </div>`
             })
 
-            console.log("dd")
-            $("#sub-title").after(listProduct).fadeIn('slow')
+            console.log("a")
+            $(".main_hr").after(listProduct).fadeIn('slow')
             $(".loading_detail_order").addClass('d-none')
 
             if(is_distributor){
@@ -300,12 +300,14 @@ document.addEventListener("keydown", function(e) {
         var array = $("#detail_order").val().split(',')
 
         if(array.length == 4){
+            console.log("aaaaaaaa")
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
             $(".validate_order").click()
+            return;
         }
 
 
