@@ -42,7 +42,7 @@ $(".validate_order").on("click", function(){
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
-        data : {order_id: $("#order_id").val()}
+        data : {order_id: 79741 /*$("#order_id").val()*/}
     }).done(function(data) {
         if(JSON.parse(data).success){
             
@@ -113,7 +113,7 @@ $(".validate_order").on("click", function(){
                 listProduct += `
                     <div class="row row-main">
                         <div class="col-3"> 
-                            <img class="img-fluid" src="${value.image}"> </div>
+                            <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
                             <div class="col-6">
                                 <div class="row d-flex">
                                     <p><b>${value.name} (x${value.quantity})</b></p>

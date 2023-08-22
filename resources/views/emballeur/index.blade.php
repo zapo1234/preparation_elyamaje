@@ -47,7 +47,7 @@
                                 <div class="amount_total_order col d-flex justify-content-end"> <b></b> </div>
                             </div> 
                             <hr>
-                            <button disabled type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
+                            <button type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
                         </div>
                     </div>
 				</div>

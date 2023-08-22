@@ -718,7 +718,7 @@ a {
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
-		max-height: 43vh;
+		max-height: 41vh;
 	}
 
 	.dataTables_scrollBody{
