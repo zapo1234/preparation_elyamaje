@@ -293,6 +293,7 @@ function validWrapOrder(label){
 document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
+        console.log($("#detail_order").val())
         var array = $("#detail_order").val().split(',')
         if(array.length == 4){
             $("#order_id").val(array[0])
