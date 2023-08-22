@@ -93,7 +93,6 @@ $(".validate_order").on("click", function(){
             $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text($("#preparateur").val())
-            $("#sub-title").text($("#customer").val()+' '+$("#product_count").val())
             $(".total_order").text('Total :')
             $(".amount_total_order").text(order[0].total_order+'€')
             $(".validate_order").remove()
@@ -128,6 +127,7 @@ $(".validate_order").on("click", function(){
                     </div>`
             })
 
+            console.log("dd")
             $("#sub-title").after(listProduct).fadeIn('slow')
             $(".loading_detail_order").addClass('d-none')
 

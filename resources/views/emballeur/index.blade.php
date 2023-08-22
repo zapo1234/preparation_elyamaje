@@ -34,7 +34,6 @@
                         <div class="detail_shipping_billing"></div>
                         <div class="main"> 
                         <hr>
-                        <span id="sub-title"><p><b></b></p></span>
                         <div class="w-100 d-none loading_detail_order">
                             <div class="spinner-grow text-dark" role="status"> 
                                 <span class="visually-hidden">Loading...</span>
