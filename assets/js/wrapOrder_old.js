@@ -38,15 +38,12 @@ $(".confirmation_reset_order").on('click', function(){
 
 
 $(".validate_order").on("click", function(){
-    $(".loading_detail_order").removeClass('d-none')
-
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
-        data : {order_id: 80384/*$("#order_id").val()*/}
+        data : {order_id: $("#order_id").val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
-            
             order = JSON.parse(data).order
             is_distributor = JSON.parse(data).is_distributor
             
@@ -54,79 +51,21 @@ $(".validate_order").on("click", function(){
             if(is_distributor){
                 $(".distributor").text('Distributrice')
             }
+            $(".status_order").text(JSON.parse(data).status)
+            $(".status_order").addClass('bg-default bg-light-'+order[0]['status'])
+            $(".customer_name").text(order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name)
+            $(".customer_email").text(order[0].billing_customer_email)
+            $(".customer_billing_adresss1").text(order[0].billing_customer_address_1 ?? '')
+            $(".customer_billing_adresss2").text(order[0].billing_customer_address_2 ?? '')
 
-            $(".title").remove()
-            $(".detail_shipping_billing").append(`
-                <h4 class="order_number"></h4>  
-                <div class="d-flex w-100 justify-content-around mb-3">
-                    <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
-                    <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
-                </div>
-
-                <div class="d-flex w-100 justify-content-center">
-                    <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
-                </div>
-
-                <div class="d-flex flex-wrap justify-content-around">
-                    <div class="mb-3 d-flex flex-column">
-                        <strong>Facturation :</strong>
-                        <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
-                        <span class="customer_email">${order[0].billing_customer_email}</span>
-                        <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
-                        <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
-                    </div>
-                    <div class="d-flex flex-column">
-                        <strong>Expédition :</strong>
-                        <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
-                        <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
-                        <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
-                        <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
-                        <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
-                    </div>
-                </div>
-            `)
-
-            
+            $(".shipping_method").text(order[0].shipping_method_detail ?? '')
+            $(".customer_shipping_company").text(order[0].shipping_customer_company ?? '')
+            $(".customer_shipping_name").text(order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name)
+            $(".customer_shipping_adresss1").text(order[0].shipping_customer_address_1)
+            $(".customer_shipping_adresss2").text(order[0].shipping_customer_address_2)
+            $(".customer_shipping_country").text(order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode)
             $(".total_order").text('Total: '+order[0].total_order)
-            $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
-            $("#prepared").text($("#preparateur").val())
-            $("#sub-title").text($("#customer").val()+' '+$("#product_count").val())
-            $(".total_order").text('Total :')
-            $(".amount_total_order").text(order[0].total_order+'€')
-            $(".validate_order").remove()
-
-            $(".total_order_details").append(`
-                <div class="action_button d-flex w-100 justify-content-center flex-wrap">
-                    <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
-                    <button type="button"  onclick=validWrapOrder(false) class="btn btn-primary d-flex mx-auto"> Valider </button>
-                </div>
-            `)
             
-            // Afficher les produits de la commande
-            var listProduct = ""
-            $(".row-main").remove()
-            Object.entries(order).forEach(([key, value]) => {
-                listProduct += `
-                    <div class="row row-main">
-                        <div class="col-3"> 
-                            <img class="img-fluid" src="${value.image}"> </div>
-                            <div class="col-6">
-                                <div class="row d-flex">
-                                    <p><b>${value.name} (x${value.quantity})</b></p>
-                                </div>
-                                <div class="row d-flex">
-                                    <p class="text-muted">${parseFloat(value.cost).toFixed(2)}€</p>
-                                </div>
-                            </div>
-                        <div class="col-3 d-flex justify-content-end">
-                            <p><b>${(parseFloat(value.cost) * value.quantity).toFixed(2)}€</b></p>
-                        </div>
-                    </div>`
-            })
-
-            $("#sub-title").after(listProduct).fadeIn('slow')
-            $(".loading_detail_order").addClass('d-none')
-
             if(is_distributor){
                 $(".valid_order_and_generate_label").hide()
                 $(".product_order").remove()
@@ -178,16 +117,17 @@ $(".validate_order").on("click", function(){
                     $(".barcode_"+localStorage.getItem('product_quantity_verif')).removeClass('pick')
                 }
                 /* ----------------------------------------------------------------------------- */
-                $('.modal_order').modal({
-                    backdrop: 'static',
-                    keyboard: false
-                })
-            
-                $(".modal_order").modal('show')
+
 
             } else {
                 $(".verif_order").hide()
             }
+            
+            $('#exampleModalCenter').modal({
+                backdrop: 'static',
+                keyboard: false
+            })
+            $("#exampleModalCenter").modal('show')
 
         } else {
             $(".show_messages").prepend(`
@@ -203,17 +143,6 @@ $(".validate_order").on("click", function(){
 $(".verif_order_product").on('click', function(){
     $(".modal_order").modal('show')
 })
-
-
-$('body').on('click', '.details_order', function () {
-    $('#exampleModalCenter').modal({
-        backdrop: 'static',
-        keyboard: false
-    })
-
-    $("#exampleModalCenter").modal('show')
-})
-
 
 $(".validate_pick_in").on('click', function(){
     var order_id = $("#order_id").val()
@@ -291,6 +220,7 @@ function validWrapOrder(label){
 }
 
 document.addEventListener("keydown", function(e) {
+    
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
@@ -300,7 +230,6 @@ document.addEventListener("keydown", function(e) {
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
-            $(".validate_order").click()
         }
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()

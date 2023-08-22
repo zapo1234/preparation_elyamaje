@@ -110,7 +110,6 @@ class Admin extends BaseController
         }  
 
         foreach($products as $product){
-
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
@@ -150,6 +149,7 @@ class Admin extends BaseController
                     'is_variable' => 1,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                 ];
 
                 foreach($option as $key => $op){
@@ -168,6 +168,7 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
+                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                         ];
                     }
                 }
@@ -186,6 +187,7 @@ class Admin extends BaseController
                     'is_variable' => 0,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                 ];
             }
         }
@@ -375,7 +377,7 @@ class Admin extends BaseController
     public function addPrinter(Request $request){
         $name = $request->post('name');
         $address_ip  = $request->post('address_ip');
-        $port  = $request->post('port');
+        $port  = $request->post('port') ?? 9100;
         $user_id = $request->post('user_id');
 
         $data = [
@@ -411,7 +413,7 @@ class Admin extends BaseController
     public function updatePrinter(Request $request){
         $update_name = $request->post('update_name');
         $update_address_ip  = $request->post('update_address_ip');
-        $update_port  = $request->post('update_port');
+        $update_port  = $request->post('update_port') ?? 9100;
         $update_user_id = $request->post('update_user_id');
         $printer_id = $request->post('printer_id');
 

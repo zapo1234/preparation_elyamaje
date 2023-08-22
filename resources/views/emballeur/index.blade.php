@@ -11,116 +11,46 @@
 						<div class="breadcrumb-title pe-3 mb-2"></div>
                         <input id="barcode" type="hidden" value="">
 						<input id="barcode_verif" type="hidden" value="">
+
+						<input id="order_id" type="hidden" value="">
+						<input id="product_count" type="hidden" value="">
+						<input id="customer" type="hidden" value="">
+						<input id="preparateur" type="hidden" value="">
                         @csrf
 					</div>
 
-
-                    <div class="d-flex">
-                        <div class="col-xl-12">
-                            <div class="card border-top border-0 border-4 border-dark">
-                                <div class="card-body p-4">
-                                    <div class="card-title d-flex align-items-center">
-                                        <div><i class="bx bxs-box me-1 font-22 text-dark"></i>
-                                        </div>
-                                        <h5 class="mb-0 text-dark">Commandes</h5>
-                                        <input type="hidden" value="" id="detail_order">
-                                    </div>
-                                    <hr>
-
-                                    <div class="show_messages"></div>
-
-                                    <div class="form_valid_wrap_order row g-3">
-                                        <div class="col-md-3">
-                                            <label for="order_id" class="form-label">N° Commande</label>
-                                            <input required type="text" name="order_id" class="order_input form-control" id="order_id">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="product_count" class="form-label">Nombre de produit(s)</label>
-                                            <input required type="number" name="product_count" class="order_input form-control" id="product_count">
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <label for="customer" class="form-label">Client</label>
-                                            <input required type="text" name="customer" class="order_input form-control" id="customer">
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <label for="preparateur" class="form-label">Préparateur</label>
-                                            <input required type="text" name="preparateur" class="order_input form-control" id="preparateur">
-                                        </div>
-                                        
-                                        <div class="col-12">
-                                            <button disabled type="button" class="validate_order btn btn-primary px-5">Valider</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="p-3 col-12">
-                                    <span>(Scanner le QR Code ou renseigner le numéro de commande manuellement)</span>
-                                </div>
+                    <div class="detail_order_to_wrap card mt-50 mb-50">
+                        <div class="col d-flex justify-content-between align-items-baseline">
+                            <span class="text-muted" id="orderno"></span>
+                            <span class="text-muted" id="prepared"></span>
+                        </div>
+                        <div class="gap">
+                            <div class="qrcode_background col-2 d-flex mx-auto"> 
+                                <i class="bx bx-box"></i>
                             </div>
+                        </div>
+                        <div class="title mx-auto"> Scanner le QR Code </div>
+                        <div class="detail_shipping_billing"></div>
+                        <div class="main"> 
+                        <hr>
+                        <span id="sub-title"><p><b></b></p></span>
+                        <div class="w-100 d-none loading_detail_order">
+                            <div class="spinner-grow text-dark" role="status"> 
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="total_order_details">
+                            <div class="row">
+                                <div class="total_order col"> <b></b> </div>
+                                <div class="amount_total_order col d-flex justify-content-end"> <b></b> </div>
+                            </div> 
+                            <hr>
+                            <button type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
                         </div>
                     </div>
 				</div>
 			</div>
-
-
-
-            <!-- Modal création étiquette -->
-            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-body d-flex flex-column">
-                            <h4 class="order_number"></h4>  
-                            <div class="d-flex w-100 justify-content-between mb-3">
-                                <span style="width: fit-content" class="badge bg-primary shipping_method"></span>
-                                <span class="badge bg-dark distributor"></span>
-                            </div>
-
-                            <span style="width: fit-content" class="mb-3 badge status_order"></span>
-
-                            <div class="mb-3 d-flex flex-column">
-                                <strong>Facturation :</strong>
-                                <span class="customer_name"></span>
-                                <span class="customer_email"></span>
-                                <span class="customer_billing_adresss1"></span>
-                                <span class="customer_billing_adresss2"></span>
-                            </div>
-
-                            <div class="d-flex flex-column">
-                                <strong>Expédition :</strong>
-                                <span class="customer_shipping_name"></span>
-                                <span class="customer_shipping_company"></span>
-                                <span class="customer_shipping_adresss1"></span>
-                                <span class="customer_shipping_adresss2"></span>
-                                <span class="customer_shipping_country"></span>
-                            </div>
-
-                            <div class="d-flex w-100 justify-content-end">
-                                <span class="font-bold"><span class="total_order"></span>{{ config('app.currency_symbol') }}</span>
-                            </div>
-                        
-                        </div>
-                        <div class="modal-footer">
-                            <div class="loading_div d-none d-flex w-100 justify-content-center">
-                                <div class="spinner-border text-dark" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-
-                            <div class="valid_order_and_generate_label button_modal_form">
-                                <button type="button" data-bs-dismiss="modal" type="button" class="btn btn-secondary">Annuler</button>
-                                <button type="button" onclick=validWrapOrder(true) class="btn btn-primary">Générer l'étiquette</button>
-                                <button type="button"  onclick=validWrapOrder(false) type="button" class="btn btn-primary">Continuer</button>
-                            </div>
-                            <div class="verif_order button_modal_form">
-                                <button type="button" class="verif_order_product btn btn-primary">Vérifier la commande</button>
-                            </div>
-                         
-                        </div>
-                    </div>
-                </div>
-            </div>
-
 
 
             <!-- Modal reset commande -->
@@ -163,7 +93,7 @@
                                     </div>
                                     <div class="w-100 d-flex justify-content-between">
                                         <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
-                                        <button type="button" class="reset_order btn btn-dark px-5" ><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>
+                                        <!-- <button type="button" class="reset_order btn btn-dark px-5" ><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button> -->
                                         <button type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
                                     </div>
                                     
