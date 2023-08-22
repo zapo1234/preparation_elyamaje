@@ -299,15 +299,13 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
 
-        if(array.length == 4){
-            console.log("aaaaaaaa")
+        if(array.length == 4 && $("#order_id").val() == ""){
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
             $(".validate_order").click()
-            return;
         }
 
 
