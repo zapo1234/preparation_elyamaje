@@ -298,8 +298,6 @@ document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
-        console.log($("#detail_order").val())
-        console.log(array)
 
         if(array.length == 4){
             $("#order_id").val(array[0])
@@ -307,9 +305,8 @@ document.addEventListener("keydown", function(e) {
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
-           
+            $(".validate_order").click()
         }
-       
 
 
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
