@@ -33,6 +33,7 @@ class OrderRepository implements OrderInterface
     
          // Construire un tableau des données d'insertion pour l'utilisateur actuel
          foreach ($userOrders as $orderData) {
+
             
             // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
             $coupons = [];
@@ -119,12 +120,14 @@ class OrderRepository implements OrderInterface
                }
             }
          }
+
     
          // Insérer les données dans la base de données par lot
          try{
             $this->model->insert($ordersToInsert);
             DB::table('products_order')->insert($productsToInsert);
          } catch(Exception $e){ 
+            dd($e->getMessage());
             continue;
          }
 

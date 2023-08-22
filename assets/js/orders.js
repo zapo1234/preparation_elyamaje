@@ -294,7 +294,8 @@ $(document).ready(function() {
             $('#example').DataTable().rows().eq(0).each( function ( index ) {
                 var row = $('#example').DataTable().row( index );
                 var data = row.data();
-                data.name != "Non attribuée" ? attribution = attribution + 1 : attribution = attribution
+
+                data.name != "Non attribuée" && typeof data.name != "undefined" ? attribution = attribution + 1 : attribution = attribution
                 data.status == "processing" || data.status == "waiting_validate" ? order_progress = order_progress + 1 : order_progress = order_progress 
             } );
             

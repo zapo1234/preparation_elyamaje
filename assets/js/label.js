@@ -66,7 +66,7 @@ $(".generate_label_button").on('click', function(){
                             </span>
                             <span class="w-50">${value.name}</span>
                             <span class="w-25">${value.cost}</span>
-                            <span class="w-25" ><input ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
+                            <span class="w-25" ><input class="quantity_product_label" ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
                             <span class="weight w-25">${value.weight}</span>
                         </div>`
                 });
@@ -103,24 +103,24 @@ $('body').on('click', '.check_all', function() {
         $("#order_"+$(this).attr('data-id')+' .checkbox_label').prop('checked', false)
     }
 
-    var total_weight = 0;
-    $(".line_items_label").each(function( index ) {
-        if($(this).find('.checkbox_label').prop('checked')){
-            total_weight = parseFloat(total_weight) + parseFloat($( this ).find('.weight').text())
-        }
-    }); 
-
-    $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
+    total_weight()
 })
 
 $('body').on('click', '.checkbox_label', function() {
+    total_weight()
+})
 
+$('body').on('change', '.quantity_product_label', function() {
+    total_weight()
+})
+
+
+function total_weight(){
     var total_weight = 0;
     $(".line_items_label").each(function( index ) {
         if($(this).find('.checkbox_label').prop('checked')){
-            total_weight = parseFloat(total_weight) + parseFloat($( this ).find('.weight').text())
+            total_weight = parseFloat(total_weight) + (parseFloat($( this ).find('.weight').text()) * $(this).find('.quantity_product_label').val())
         }
     }); 
-
     $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
-})
+}
