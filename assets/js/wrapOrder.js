@@ -304,9 +304,10 @@ document.addEventListener("keydown", function(e) {
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
+            console.log("ed")
         }
+        console.log($("#order_id").val())
 
-        $(".validate_order").click()
 
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()
