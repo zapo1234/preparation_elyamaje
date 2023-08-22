@@ -56,32 +56,36 @@ $(".validate_order").on("click", function(){
             }
 
             $(".title").remove()
+            $(".detail_shipping_billing_div").remove()
+            
             $(".detail_shipping_billing").append(`
-                <h4 class="order_number"></h4>  
-                <div class="d-flex w-100 justify-content-around mb-3">
-                    <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
-                    <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
-                </div>
-
-                <div class="d-flex w-100 justify-content-center">
-                    <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
-                </div>
-
-                <div class="d-flex flex-wrap justify-content-around">
-                    <div class="mb-3 d-flex flex-column">
-                        <strong>Facturation :</strong>
-                        <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
-                        <span class="customer_email">${order[0].billing_customer_email}</span>
-                        <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
-                        <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
+                <div class="detail_shipping_billing_div">
+                    <h4 class="order_number"></h4>  
+                    <div class="d-flex w-100 justify-content-around mb-3">
+                        <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
+                        <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
                     </div>
-                    <div class="d-flex flex-column">
-                        <strong>Expédition :</strong>
-                        <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
-                        <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
-                        <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
-                        <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
-                        <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
+
+                    <div class="d-flex w-100 justify-content-center">
+                        <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-around">
+                        <div class="mb-3 d-flex flex-column">
+                            <strong>Facturation :</strong>
+                            <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
+                            <span class="customer_email">${order[0].billing_customer_email}</span>
+                            <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
+                            <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <strong>Expédition :</strong>
+                            <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
+                            <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
+                            <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
+                            <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
+                            <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
+                        </div>
                     </div>
                 </div>
             `)
@@ -293,7 +297,6 @@ function validWrapOrder(label){
 document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
-        console.log($("#detail_order").val())
         var array = $("#detail_order").val().split(',')
         if(array.length == 4){
             $("#order_id").val(array[0])
