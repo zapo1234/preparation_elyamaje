@@ -39,7 +39,6 @@ $(".confirmation_reset_order").on('click', function(){
 
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
-
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
@@ -57,7 +56,7 @@ $(".validate_order").on("click", function(){
 
             $(".title").remove()
             $(".detail_shipping_billing_div").remove()
-            
+
             $(".detail_shipping_billing").append(`
                 <div class="detail_shipping_billing_div">
                     <h4 class="order_number"></h4>  
@@ -98,6 +97,7 @@ $(".validate_order").on("click", function(){
             $(".total_order").text('Total :')
             $(".amount_total_order").text(order[0].total_order+'€')
             $(".validate_order").remove()
+            $(".action_button").remove()
 
             $(".total_order_details").append(`
                 <div class="action_button d-flex w-100 justify-content-center flex-wrap">
@@ -304,6 +304,7 @@ document.addEventListener("keydown", function(e) {
             $("#customer").val(array[2])
             $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
+            console.log("dddd")
             $(".validate_order").click()
         }
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
