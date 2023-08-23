@@ -5778,6 +5778,10 @@ input::placeholder {
 		display: none;
 	}
 
+	.detail_order_to_wrap .btn{
+		padding: 0.5em !important;
+	}
+
 	.qrcode_background{
 		margin-top: -1rem !important;
 	}
