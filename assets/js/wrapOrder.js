@@ -1,64 +1,36 @@
-$(".reset_order").on('click', function(){
-    $("#modalReset").modal("show")
-})
-
 $(".order_input").on('input', function(){
     if($(".order_input").val() != ""){
         $(".validate_order").attr('disabled', false)
     }
 })
 
-$(".confirmation_reset_order").on('click', function(){
-    var order_id = $("#order_id").val()
 
-    $("#order_"+order_id+" .product_order").removeClass("pick")
-    $("#barcode").val("")
-    $("#barcode_verif").val("")
-
-    var pick_items = localStorage.getItem('barcode_verif')
-    if(pick_items){
-        var pick_items = JSON.parse(pick_items)
-        Object.keys(pick_items).forEach(function(k, v){
-            if(pick_items[k]){
-                if(order_id == pick_items[k].order_id){
-                    pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
-                }
-            }
-        })
-    }
-
-    if(pick_items.length == 0){
-        localStorage.removeItem('barcode');
-    } else {
-        localStorage.setItem('barcode', JSON.stringify(pick_items));
-    }
-
-    location.reload()
+$(".order_id_input").on('input', function(){
+    $("#order_id").val($(".order_id_input").val())
+    $(".validate_order").attr('disabled', false)
 })
-
 
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
-        data : {order_id: 79741 /*$("#order_id").val()*/}
+        data : {order_id: $("#order_id").val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
-            
             order = JSON.parse(data).order
             is_distributor = JSON.parse(data).is_distributor
-            
+
             $(".order_number").text('Détails Commande n°'+order[0].order_woocommerce_id)
             if(is_distributor){
                 $(".distributor").text('Distributrice')
             }
 
-            $(".title").remove()
-            $(".detail_shipping_billing_div").remove()
+            $(".to_hide").remove()
+            $("hr").removeClass("d-none")
 
             $(".detail_shipping_billing").append(`
-                <div class="detail_shipping_billing_div">
+                <div class="to_hide detail_shipping_billing_div">
                     <h4 class="order_number"></h4>  
                     <div class="d-flex w-100 justify-content-around mb-3">
                         <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
@@ -69,37 +41,39 @@ $(".validate_order").on("click", function(){
                         <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
                     </div>
 
-                    <div class="d-flex flex-wrap justify-content-around">
-                        <div class="mb-3 d-flex flex-column">
+                    <div class="d-flex flex-wrap justify-content-around mb-2">
+                        <div class="d-flex flex-column justify-content-between">
                             <strong>Facturation :</strong>
-                            <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
-                            <span class="customer_email">${order[0].billing_customer_email}</span>
-                            <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
-                            <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
+                            <div class="d-flex flex-column">
+                                <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
+                                <span class="customer_email">${order[0].billing_customer_email}</span>
+                                <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
+                                <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column">
+                        <div class="d-flex flex-column justify-content-between">
                             <strong>Expédition :</strong>
-                            <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
-                            <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
-                            <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
-                            <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
-                            <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
+                            <div class="d-flex flex-column">
+                                <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
+                                <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
+                                <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
+                                <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
+                                <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             `)
 
-
             $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text($("#preparateur").val())
-            $(".total_order").text('Total :')
+            $(".total_order").text('Total (TTC):')
             $(".amount_total_order").text(order[0].total_order+'€')
             $(".validate_order").remove()
-            $(".action_button").remove()
 
             $(".total_order_details").append(`
-                <div class="action_button d-flex w-100 justify-content-center flex-wrap">
+                <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
                     <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
                     <button type="button"  onclick=validWrapOrder(false) class="btn btn-primary d-flex mx-auto"> Valider </button>
                 </div>
@@ -107,10 +81,9 @@ $(".validate_order").on("click", function(){
             
             // Afficher les produits de la commande
             var listProduct = ""
-            $(".row-main").remove()
             Object.entries(order).forEach(([key, value]) => {
                 listProduct += `
-                    <div class="row row-main">
+                    <div class="row row-main to_hide">
                         <div class="col-3"> 
                             <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
                             <div class="col-6">
@@ -127,8 +100,8 @@ $(".validate_order").on("click", function(){
                     </div>`
             })
 
-            console.log("a")
-            $(".main_hr").after(listProduct).fadeIn('slow')
+       
+            $(".main").prepend(listProduct).fadeIn('slow')
             $(".loading_detail_order").addClass('d-none')
 
             if(is_distributor){
@@ -152,8 +125,8 @@ $(".validate_order").on("click", function(){
 
 
                 /* ------Récupère le localstorage pour mettre les produits "pick" qui le sont déjà ----- */
-                if(localStorage.getItem('barcode_verif')){
-                    var list_barcode = localStorage.getItem('barcode_verif')
+                if(localStorage.getItem('barcode_verif_wrapper')){
+                    var list_barcode = localStorage.getItem('barcode_verif_wrapper')
                     if(list_barcode){
                         Object.keys(JSON.parse(list_barcode)).forEach(function(k, v){
                             if(JSON.parse(list_barcode)[k]){
@@ -178,8 +151,8 @@ $(".validate_order").on("click", function(){
                     }
                 } 
 
-                if(localStorage.getItem('product_quantity_verif')){
-                    $(".barcode_"+localStorage.getItem('product_quantity_verif')).removeClass('pick')
+                if(localStorage.getItem('product_quantity_verif_wrapper')){
+                    $(".barcode_"+localStorage.getItem('product_quantity_verif_wrapper')).removeClass('pick')
                 }
                 /* ----------------------------------------------------------------------------- */
                 $('.modal_order').modal({
@@ -221,8 +194,8 @@ $('body').on('click', '.details_order', function () {
 
 $(".validate_pick_in").on('click', function(){
     var order_id = $("#order_id").val()
-    if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode_verif')
-        && !localStorage.getItem('product_quantity_verif')){
+    if($("#order_"+order_id+" .pick").length == $("#order_"+order_id+" .product_order").length && localStorage.getItem('barcode_verif_wrapper')
+        && !localStorage.getItem('product_quantity_verif_wrapper')){
         $(".verif_order").hide()
         $(".valid_order_and_generate_label").show()
         $(".modal_order").modal('hide')
@@ -237,8 +210,8 @@ function validWrapOrder(label){
     $(".loading_div").removeClass('d-none')
     var order_id = $("#order_id").val()
 
-    if(localStorage.getItem('barcode_verif')){
-        var pick_items = JSON.parse(localStorage.getItem('barcode_verif'))
+    if(localStorage.getItem('barcode_verif_wrapper')){
+        var pick_items = JSON.parse(localStorage.getItem('barcode_verif_wrapper'))
 
         // Récupère les produits de cette commande
         const order_object = pick_items.find(
@@ -280,7 +253,7 @@ function validWrapOrder(label){
                 $(this).val('');
             });
 
-             localStorage.removeItem('barcode_verif');
+             localStorage.removeItem('barcode_verif_wrapper');
             $(".valid_order_and_generate_label").show()
         } else {
             $(".show_messages").prepend(`
@@ -365,13 +338,13 @@ document.addEventListener("keydown", function(e) {
         }
     } else if($(".modal_verif_order").hasClass('show')){
         var order_id = $(".modal_verif_order").attr('data-order')
-        localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
+        localStorage.setItem('product_quantity_verif_wrapper', $("#product_to_verif").val());
         if (!isNaN(parseInt(e.key))) {
             console.log($("#barcode_verif").val())
             $("#barcode_verif").val($("#barcode_verif").val()+e.key)
            
             if($("#barcode_verif").val().length == 13){
-                if($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif')){
+                if($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif_wrapper')){
                     $("#quantity_product_to_verif").text(parseInt($("#quantity_product_to_verif").text()) - 1)
                     
                     // Update pick quantity
@@ -381,7 +354,7 @@ document.addEventListener("keydown", function(e) {
 
                     if(parseInt($("#quantity_product_to_verif").text()) == 0){
                         $("#modalverification").modal('hide')
-                        localStorage.removeItem('product_quantity_verif');
+                        localStorage.removeItem('product_quantity_verif_wrapper');
                     }
                     $("#barcode_verif").val('')
                 } else {
@@ -401,8 +374,8 @@ function saveItem(order_id, mutiple_quantity){
         var quantity_pick_in = parseInt($("#order_"+order_id+" .barcode_"+$("#barcode").val()).find('.quantity_pick_in').text())
     }
 
-    if(localStorage.getItem('barcode_verif')){
-        var list_barcode = JSON.parse( localStorage.getItem('barcode_verif')) 
+    if(localStorage.getItem('barcode_verif_wrapper')){
+        var list_barcode = JSON.parse( localStorage.getItem('barcode_verif_wrapper')) 
         const order_object = list_barcode.find(
             element => element.order_id == order_id
         )
@@ -413,16 +386,16 @@ function saveItem(order_id, mutiple_quantity){
                 var index = order_object.products.indexOf($("#barcode_verif").val())
                 if(index != -1){
                     order_object.quantity[index] = quantity_pick_in
-                    localStorage.setItem('barcode_verif', JSON.stringify(list_barcode))
+                    localStorage.setItem('barcode_verif_wrapper', JSON.stringify(list_barcode))
                 } else {
                     order_object.products.push($("#barcode_verif").val())
                     order_object.quantity.push(1)
-                    localStorage.setItem('barcode_verif', JSON.stringify(list_barcode))
+                    localStorage.setItem('barcode_verif_wrapper', JSON.stringify(list_barcode))
                 }
             } else {
                 order_object.products.push($("#barcode").val())
                 order_object.quantity.push(1)
-                localStorage.setItem('barcode_verif', JSON.stringify(list_barcode))
+                localStorage.setItem('barcode_verif_wrapper', JSON.stringify(list_barcode))
             }
         } else {
             const data = {
@@ -434,7 +407,7 @@ function saveItem(order_id, mutiple_quantity){
             }
 
             list_barcode.push(data)
-            localStorage.setItem('barcode_verif', JSON.stringify(list_barcode))
+            localStorage.setItem('barcode_verif_wrapper', JSON.stringify(list_barcode))
         }
 
     } else {
@@ -445,7 +418,7 @@ function saveItem(order_id, mutiple_quantity){
             ],
             quantity: [quantity_pick_in]
         }]
-        localStorage.setItem('barcode_verif', JSON.stringify(data));
+        localStorage.setItem('barcode_verif_wrapper', JSON.stringify(data));
     }	
     $("#barcode_verif").val('')
 }

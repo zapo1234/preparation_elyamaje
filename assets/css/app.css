@@ -560,6 +560,21 @@ a {
 
 @media screen and (min-width: 1025px) {
 
+	.detail_order_to_wrap {
+		margin: auto;
+		width: 75%;
+		min-width: 320px;
+		border-radius: 20px
+	}
+
+	.detail_order_to_wrap .col-3:has(>.img-fluid){
+		max-width: 100px;
+	}
+
+	.detail_order_to_wrap .row-main{
+		justify-content: space-between;
+	}
+	
 	.wrapper.toggled:not(.sidebar-hovered) .logo-icon{
 		display: none;
 	}
@@ -718,7 +733,7 @@ a {
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
-		max-height: 41vh;
+		max-height: 48vh;
 	}
 
 	.dataTables_scrollBody{
@@ -762,7 +777,7 @@ a {
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
-		max-height: 36vh;
+		max-height: 38vh;
 	}
 	.generate_label_modal .modal-dialog{
 		max-width: 75% !important;
@@ -5262,7 +5277,22 @@ input::placeholder {
 
 @media screen and (max-width: 1024px) {
 
+	.detail_order_to_wrap {
+		margin: auto;
+		width: 90%;
+		min-width: 320px;
+		max-width: 750px;
+		border-radius: 20px
+	}
 
+	.detail_order_to_wrap .col-3:has(>.img-fluid){
+		max-width: 100px;
+	}
+
+	.detail_order_to_wrap .row-main{
+		justify-content: space-between;
+	}
+	
 	.topbar {
 
 
@@ -7211,9 +7241,16 @@ textarea:focus{
 	height: 7px !important;
 }
 
+.input_order_id input{
+	width: 275px;
+	border-radius: 5px;
+	border: 1px solid rgb(214, 214, 214);
+	padding: 5px;
+}
 
-
-
+.input_order_id input::placeholder {
+	font-weight: bold;
+}
 
 .row-main{
 -webkit-animation-name: fadeIn;
@@ -7225,28 +7262,16 @@ textarea:focus{
 
 .loading_detail_order{
 	position: absolute;
-    left: 46%;
-    margin-top: 15px;
+    top: 50%;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    padding-right: 50px;
 }
 
-.detail_order_to_wrap {
-    margin: auto;
-	width: 75%;
-    min-width: 320px;
-    max-width: 600px;
-    border-radius: 20px
-}
-
-@media(max-width:767px) {
-    .detail_order_to_wrap {
-        width: 80%
-    }
-}
-
-@media(height:1366px) {
-    .detail_order_to_wrap {
-        width: 75%
-    }
+.loading_detail_order .spinner-grow{
+    width: 5rem;
+    height: 5rem;
 }
 
 #orderno {
@@ -7281,7 +7306,7 @@ textarea:focus{
     text-align: center;
     font-size: 2rem;
     font-weight: bold;
-    padding: 12%
+    padding: 7% 7% 0px 7%
 }
 
 .total_order_details .row{
@@ -7315,7 +7340,7 @@ textarea:focus{
 }
 
 .detail_order_to_wrap hr {
-    margin: 1rem -1vh;
+    /* margin: 1rem -1vh; */
     border-top: 1px solid rgb(214, 214, 214)
 }
 
@@ -7346,6 +7371,10 @@ textarea:focus{
     justify-content: center
 }
 
+.total_order_details .btn{
+	margin: 3vh 0;
+}
+
 
 .action_button .btn {
     width: 165px;
@@ -7363,4 +7392,70 @@ textarea:focus{
 
 .detail_order_to_wrap .btn:hover {
     color: white
+}
+
+
+button:disabled,
+button[disabled]{
+  background-color: rgba(89,89,89, 1) !important;
+  border: 1px solid rgba(89,89,89, 1) !important;;
+}
+
+
+.card_empty_product{
+	padding: 15px;
+}
+
+.card_empty {
+	/* margin: 10px; */
+	width: 35%;
+	/* background: #fff; */
+	border-radius: 5px;
+	/* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
+}
+.card_empty .image img {
+	max-width: 100px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+.card_empty .content {
+	/* padding: 20px 30px; */
+}
+.card_empty.is-loading .image, .card_empty.is-loading h2, .card_empty.is-loading p {
+	background: #aaa;
+	background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+	border-radius: 5px;
+	background-size: 200% 100%;
+	animation: 1.5s shine linear infinite;
+}
+.card_empty.is-loading p{
+	margin-bottom: 0px;
+}
+
+.card_empty.is-loading h3{
+	background: #aaa;
+	background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+	border-radius: 5px;
+	background-size: 200% 100%;
+	animation: 1.5s shine linear infinite;
+	height: 30px;
+	width: 75px;
+}
+
+.card_empty.is-loading .image {
+	height: 124px;
+	width: 124px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.card_empty.is-loading h2 {
+	height: 30px;
+}
+.card_empty.is-loading p {
+	height: 70px;
+}
+@keyframes shine {
+	to {
+		background-position-x: -200%;
+   }
 }

@@ -30,10 +30,57 @@
                                 <i class="bx bx-box"></i>
                             </div>
                         </div>
-                        <div class="title mx-auto"> Scanner le QR Code </div>
+                        <div class="title mx-auto to_hide"> Scanner le QR Code </div>
+                        <span class="mb-2 text-center to_hide">OU</span>
+                        <div class="to_hide mb-3 d-flex justify-content-center input_order_id">
+                            <input class="order_id_input" type="text" placeholder="Renseigner le numéro de commande">
+                        </div>
+
+
+                        <div class="empty_order mt-3 to_hide">
+                            <div class="empty_order d-flex justify-content-around">
+                                <div class="card_empty is-loading">
+                                    <div class="content">
+                                        <h2></h2>
+                                        <p></p>
+                                    </div>
+                                </div>
+                                <div class="card_empty is-loading">
+                                    <div class="content">
+                                        <h2></h2>
+                                        <p></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div>
+                                <div class="card_empty card_empty_product is-loading d-flex w-100 justify-content-around align-items-center">
+                                    <div class="image"></div>
+                                    <div class="content w-25">
+                                        <h2></h2>
+                                        <p></p>
+                                    </div>
+                                    <div class="content  d-flex justify-content-end">
+                                        <h3></h3>
+                                    </div>
+                                </div>
+                                <div class="card_empty card_empty_product is-loading d-flex w-100 justify-content-around align-items-center">
+                                    <div class="image"></div>
+                                    <div class="content w-25">
+                                        <h2></h2>
+                                        <p></p>
+                                    </div>
+                                    <div class="content  d-flex justify-content-end">
+                                        <h3></h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
                         <div class="detail_shipping_billing"></div>
+                        <hr class="d-none main_hr">
                         <div class="main"> 
-                        <hr class="main_hr">
                         <div class="w-100 d-none loading_detail_order">
                             <div class="spinner-grow text-dark" role="status"> 
                                 <span class="visually-hidden">Loading...</span>
@@ -45,8 +92,8 @@
                                 <div class="total_order col"> <b></b> </div>
                                 <div class="amount_total_order col d-flex justify-content-end"> <b></b> </div>
                             </div> 
-                            <hr>
-                            <button type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
+                            <hr class="d-none">
+                            <button disabled type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
                         </div>
                     </div>
 				</div>
