@@ -401,6 +401,11 @@ class Order extends BaseController
 
       if($order){
 
+        if($order[0]['status'] == "finished"){
+          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+          return;
+        }
+
         $is_distributor = $order[0]['is_distributor'] != null ? true : false;
         
         if($is_distributor){
@@ -409,10 +414,11 @@ class Order extends BaseController
           $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
 
           if(!$check_if_order_done){
-            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
+            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !", "verif" => true]);
             return;
           }
         }
+        
         
         $orders = $this->woocommerce->transformArrayOrder($order);
         $orders[0]['emballeur'] = Auth()->user()->name;

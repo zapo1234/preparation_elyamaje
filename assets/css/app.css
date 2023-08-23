@@ -777,7 +777,7 @@ a {
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
-		max-height: 38vh;
+		max-height: 36vh;
 	}
 	.generate_label_modal .modal-dialog{
 		max-width: 75% !important;
@@ -7243,7 +7243,7 @@ textarea:focus{
 	width: 275px;
 	border-radius: 5px;
 	border: 1px solid rgb(214, 214, 214);
-	padding: 5px;
+	padding: 8px;
 }
 
 .input_order_id input::placeholder {
@@ -7304,7 +7304,7 @@ textarea:focus{
     text-align: center;
     font-size: 2rem;
     font-weight: bold;
-    padding: 7% 7% 0px 7%
+    /* padding: 7% 7% 0px 7% */
 }
 
 .total_order_details .row{
@@ -7332,9 +7332,21 @@ textarea:focus{
     font-size: 1rem
 }
 
+.detail_shipping_billing_div, .total_order_details{
+	font-size: 1.1em;
+}
+
+.detail_shipping_billing_div span{
+	font-size: 1em !important;
+}
+
 .detail_order_to_wrap .row-main {
     padding: 1.5vh 0;
     align-items: center
+}
+
+.detail_order_to_wrap .row-main p{
+font-size: 1.1em;
 }
 
 .detail_order_to_wrap hr {

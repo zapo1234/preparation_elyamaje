@@ -18,14 +18,18 @@ $(".validate_order").on("click", function(){
         data : {order_id: $("#order_id").val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
-            order = JSON.parse(data).order
-            is_distributor = JSON.parse(data).is_distributor
+            var order = JSON.parse(data).order;
+            var is_distributor = JSON.parse(data).is_distributor;
 
             if(is_distributor){
                 $(".distributor").text('Distributrice')
             }
 
-            $(".to_hide").remove()
+            $(".empty_order").addClass('d-none')
+            $(".detail_shipping_billing_div").remove()
+            $(".action_button").remove()
+
+
             $("hr").removeClass("d-none")
 
             $(".detail_shipping_billing").append(`
@@ -68,7 +72,7 @@ $(".validate_order").on("click", function(){
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total (TTC):')
             $(".amount_total_order").text(order[0].total_order+'€')
-            $(".validate_order").remove()
+            // $(".validate_order").hide()
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
@@ -168,7 +172,7 @@ $(".validate_order").on("click", function(){
             $(".loading_detail_order").addClass('d-none')
             $(".alert-danger").remove()
             $(".show_messages").prepend(`
-                <div style="position:absolute; width:100%" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                <div style="position:absolute; width:100%;top:42px" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class=" text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -199,15 +203,16 @@ $(".validate_pick_in").on('click', function(){
         $(".verif_order").hide()
         $(".valid_order_and_generate_label").show()
         $(".modal_order").modal('hide')
-    } else {
-        alert('Veuillez vérifier tous les produits !')
     }
 })
 
 
 function validWrapOrder(label){
-    $(".button_modal_form").addClass('d-none')
-    $(".loading_div").removeClass('d-none')
+    $(".action_button button").attr('disabled', true)
+    $(".row-main").css('opacity', 0.5)
+    $(".detail_shipping_billing_div").css('opacity', 0.5)
+    $(".loading_detail_order").removeClass('d-none')
+
     var order_id = $("#order_id").val()
 
     if(localStorage.getItem('barcode_verif_wrapper')){
@@ -236,14 +241,16 @@ function validWrapOrder(label){
         data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, pick_items_quantity: pick_items_quantity},
         dataType: 'html' 
     }).done(function(data) {
-        $(".button_modal_form").removeClass('d-none')
-        $(".loading_div").addClass('d-none')
-        $("#exampleModalCenter").modal('hide')
+
+        $(".action_button button").attr('disabled', false)
+        $(".row-main").css('opacity', 1)
+        $(".detail_shipping_billing_div").css('opacity', 1)
+        $(".loading_detail_order").addClass('d-none')
 
         if(JSON.parse(data).success){
 
             $(".show_messages").prepend(`
-                <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
+                <div style="position:absolute; width:100%;top:42px" class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
                     <div class="text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -255,14 +262,22 @@ function validWrapOrder(label){
 
              localStorage.removeItem('barcode_verif_wrapper');
             $(".valid_order_and_generate_label").show()
+
+            show_empty_order()
         } else {
             $(".show_messages").prepend(`
-                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                <div style="position:absolute; width:100%;top:42px" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class=" text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `)
-            $(".verif_order").show()
+
+            if(JSON.parse(data).verif){
+                $(".verif_order").show()
+                $(".modal_order").modal('show')
+            } else {
+                show_empty_order()
+            }
         }
     })
 }
@@ -420,4 +435,18 @@ function saveItem(order_id, mutiple_quantity){
         localStorage.setItem('barcode_verif_wrapper', JSON.stringify(data));
     }	
     $("#barcode_verif").val('')
+}
+
+
+function show_empty_order(){
+    $(".detail_shipping_billing_div").remove()
+    $(".action_button").remove()
+    $(".row-main").remove()
+    $(".total_order").text("")
+    $(".amount_total_order").text("")
+    $("#orderno").text("")
+    $("#prepared").text("")
+    $(".main_hr").addClass('d-none')
+    $(".total_order_details hr").addClass('d-none')
+    $(".empty_order").removeClass('d-none')
 }

@@ -29,16 +29,27 @@
                                 <i class="bx bx-box"></i>
                             </div>
                         </div>
+
+                        <div class="empty_order to_hide card_empty card_empty_product is-loading d-flex w-100 justify-content-between ">
+                            <div class="content">
+                                <h3></h3>
+                            </div>
+                                <div class="content">
+                                <h3></h3>
+                            </div>
+                        </div>
+
+                                
                         <div class="mt-2 show_messages"></div>
-                        <div class="title mx-auto to_hide"> Scanner le QR Code </div>
-                        <span class="mb-2 text-center to_hide">OU</span>
-                        <div class="to_hide mb-3 d-flex justify-content-center input_order_id">
-                            <input class="order_id_input" type="text" placeholder="Renseigner le numéro de commande">
+                        <div class="empty_order title mx-auto to_hide"> Scanner le QR Code </div>
+                        <span class="empty_order mb-2 text-center to_hide">OU</span>
+                        <div class="empty_order to_hide mb-3 d-flex justify-content-center input_order_id">
+                            <input class="empty_order order_id_input" type="text" placeholder="Renseigner le numéro de commande">
                         </div>
 
 
                         <div class="empty_order mt-3 to_hide">
-                            <div class="empty_order d-flex justify-content-around">
+                            <div class="d-flex justify-content-around">
                                 <div class="card_empty is-loading">
                                     <div class="content">
                                         <h2></h2>
@@ -93,7 +104,7 @@
                                 <div class="amount_total_order col d-flex justify-content-end"> <b></b> </div>
                             </div> 
                             <hr class="d-none">
-                            <button disabled type="button" class="validate_order btn btn-primary d-flex mx-auto"> Valider </button>
+                            <button disabled type="button" class="empty_order validate_order btn btn-primary d-flex mx-auto"> Valider </button>
                         </div>
                     </div>
 				</div>
