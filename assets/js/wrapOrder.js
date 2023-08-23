@@ -65,7 +65,7 @@ $(".validate_order").on("click", function(){
 
             $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
-            $("#prepared").text($("#preparateur").val())
+            $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total (TTC):')
             $(".amount_total_order").text(order[0].total_order+'€')
             $(".validate_order").remove()
@@ -272,13 +272,10 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
        
-        if(array.length == 4 && $("#order_id").val() == "" && array[3] != ""){
-            console.log(array)
-
+        if(array.length == 4 && $("#order_id").val() == ""){
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
-            $("#preparateur").val(array[3])
             $(".validate_order").attr('disabled', false)
             $(".validate_order").click()
         }

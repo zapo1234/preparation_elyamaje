@@ -15,7 +15,6 @@
 						<input id="order_id" type="hidden" value="">
 						<input id="product_count" type="hidden" value="">
 						<input id="customer" type="hidden" value="">
-						<input id="preparateur" type="hidden" value="">
                         <input type="hidden" value="" id="detail_order">
                         @csrf
 					</div>
