@@ -272,8 +272,9 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
 
+        console.log(array)
+
         if(array.length == 4 && $("#order_id").val() == ""){
-            console.log(array[3])
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
