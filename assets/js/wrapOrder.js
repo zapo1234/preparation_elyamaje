@@ -21,15 +21,9 @@ $(".validate_order").on("click", function(){
             var order = JSON.parse(data).order;
             var is_distributor = JSON.parse(data).is_distributor;
 
-            if(is_distributor){
-                $(".distributor").text('Distributrice')
-            }
-
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
             $(".action_button").remove()
-
-
             $("hr").removeClass("d-none")
 
             $(".detail_shipping_billing").append(`
@@ -72,7 +66,6 @@ $(".validate_order").on("click", function(){
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total (TTC):')
             $(".amount_total_order").text(order[0].total_order+'€')
-            // $(".validate_order").hide()
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">

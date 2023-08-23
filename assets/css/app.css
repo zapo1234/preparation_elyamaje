@@ -7345,6 +7345,10 @@ textarea:focus{
     align-items: center
 }
 
+.main .row-main{
+	border-bottom: 1px solid rgb(214, 214, 214, 33%);
+}
+
 .detail_order_to_wrap .row-main p{
 font-size: 1.1em;
 }
