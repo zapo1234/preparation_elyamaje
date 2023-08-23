@@ -21,7 +21,6 @@ $(".validate_order").on("click", function(){
             order = JSON.parse(data).order
             is_distributor = JSON.parse(data).is_distributor
 
-            $(".order_number").text('Détails Commande n°'+order[0].order_woocommerce_id)
             if(is_distributor){
                 $(".distributor").text('Distributrice')
             }
@@ -31,7 +30,7 @@ $(".validate_order").on("click", function(){
 
             $(".detail_shipping_billing").append(`
                 <div class="to_hide detail_shipping_billing_div">
-                    <h4 class="order_number"></h4>  
+                    <h4 class="order_number">Détails Commande n° ${order[0].order_woocommerce_id}</h4>  
                     <div class="d-flex w-100 justify-content-around mb-3">
                         <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
                         <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
@@ -275,6 +274,7 @@ document.addEventListener("keydown", function(e) {
         var array = $("#detail_order").val().split(',')
 
         if(array.length == 4 && $("#order_id").val() == ""){
+            alert(array[3])
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
