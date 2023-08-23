@@ -440,6 +440,5 @@ function show_empty_order(){
     $("#orderno").text("")
     $("#prepared").text("")
     $(".main_hr").addClass('d-none')
-    $(".total_order_details hr").addClass('d-none')
     $(".empty_order").removeClass('d-none')
 }
