@@ -4,12 +4,13 @@ $(".order_input").on('input', function(){
     }
 })
 
-
+// Action orsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
     $("#order_id").val($(".order_id_input").val())
     $(".validate_order").attr('disabled', false)
 })
 
+// Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
     $.ajax({
@@ -21,11 +22,14 @@ $(".validate_order").on("click", function(){
             var order = JSON.parse(data).order;
             var is_distributor = JSON.parse(data).is_distributor;
 
+            // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
             $(".action_button").remove()
             $("hr").removeClass("d-none")
+            $(".alert").remove()
 
+            // Afficher les informations de facturation et expédition
             $(".detail_shipping_billing").append(`
                 <div class="to_hide detail_shipping_billing_div">
                     <div class="d-flex w-100 justify-content-around mb-3">
@@ -37,8 +41,8 @@ $(".validate_order").on("click", function(){
                         <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
                     </div>
 
-                    <div class="d-flex flex-wrap justify-content-around mb-2">
-                        <div class="d-flex flex-column justify-content-between">
+                    <div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
+                        <div class="d-flex flex-column justify-content-between billing_block">
                             <strong>Facturation :</strong>
                             <div class="d-flex flex-column">
                                 <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
@@ -47,7 +51,7 @@ $(".validate_order").on("click", function(){
                                 <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
                             </div>
                         </div>
-                        <div class="d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column justify-content-between shipping_block">
                             <strong>Expédition :</strong>
                             <div class="d-flex flex-column">
                                 <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
@@ -61,6 +65,7 @@ $(".validate_order").on("click", function(){
                 </div>
             `)
 
+            // Afficher les informations de la commande, total, numéro et préparateur
             $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
@@ -74,14 +79,14 @@ $(".validate_order").on("click", function(){
                 </div>
             `)
             
-            // Afficher les produits de la commande
+            // Afficher les produits de la commande avec les détails
             var listProduct = ""
             Object.entries(order).forEach(([key, value]) => {
                 listProduct += `
                     <div class="row row-main to_hide">
-                        <div class="col-3"> 
+                        <div class="col-2"> 
                             <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
-                            <div class="col-6">
+                            <div class="col-8">
                                 <div class="row d-flex">
                                     <p><b>${value.name} (x${value.quantity})</b></p>
                                 </div>
@@ -89,7 +94,7 @@ $(".validate_order").on("click", function(){
                                     <p class="text-muted">${parseFloat(value.cost).toFixed(2)}€</p>
                                 </div>
                             </div>
-                        <div class="col-3 d-flex justify-content-end">
+                        <div class="col-2 d-flex justify-content-end">
                             <p><b>${(parseFloat(value.cost) * value.quantity).toFixed(2)}€</b></p>
                         </div>
                     </div>`
@@ -99,6 +104,7 @@ $(".validate_order").on("click", function(){
             $(".main").prepend(listProduct).fadeIn('slow')
             $(".loading_detail_order").addClass('d-none')
 
+            // Si c'est un distributeur, re bipper les produits
             if(is_distributor){
                 $(".valid_order_and_generate_label").hide()
                 $(".product_order").remove()
@@ -165,7 +171,7 @@ $(".validate_order").on("click", function(){
             $(".loading_detail_order").addClass('d-none')
             $(".alert-danger").remove()
             $(".show_messages").prepend(`
-                <div style="position:absolute; width:100%;top:42px" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class=" text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -243,7 +249,7 @@ function validWrapOrder(label){
         if(JSON.parse(data).success){
 
             $(".show_messages").prepend(`
-                <div style="position:absolute; width:100%;top:42px" class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
+                <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
                     <div class="text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -259,7 +265,7 @@ function validWrapOrder(label){
             show_empty_order()
         } else {
             $(".show_messages").prepend(`
-                <div style="position:absolute; width:100%;top:42px" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class=" text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
