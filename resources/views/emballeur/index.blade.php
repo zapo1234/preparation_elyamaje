@@ -26,7 +26,7 @@
             </div>
             <div class="gap">
                 <div class="qrcode_background col-2 d-flex mx-auto">
-                    <i class="bx bx-box"></i>
+
                 </div>
             </div>
 

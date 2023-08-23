@@ -672,7 +672,7 @@ a {
 @media (max-width: 650px) { 
 	
 	.page-content:has(> .detail_order_to_wrap ){
-		margin-bottom: 50px;
+		padding-bottom: 50px !important;
 	}
 	.shipping_detail{
 		flex-direction: column;
@@ -5778,15 +5778,6 @@ input::placeholder {
 		display: none;
 	}
 
-	.detail_order_to_wrap .btn{
-		padding: 0.5em !important;
-	}
-
-	.qrcode_background{
-		margin-top: -1rem !important;
-	}
-
-
 	.topbar .navbar .dropdown {
 
 
@@ -7299,21 +7290,21 @@ textarea:focus{
     font-size: smaller
 }
 
-.gap .col-2 {
-    background-color: white;
+.qrcode_background{
+	background-color: #f8f9fe;
     width: 1.8rem;
     height: 1.8rem;
     padding: 1.8rem;
     margin-top: -2.5rem;
     border-radius: 50%;
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}	
+	box-shadow: 0 4px 2px -2px rgb(218 218 253 / 54%);
+}
 
-.qrcode_background i{
-	font-size: 25px;
+.detail_order_to_wrap:has(.action_button) .qrcode_background{
+	margin-top: -3.6rem !important
 }
 	
 .detail_order_to_wrap > div > span:last-child{
@@ -7326,7 +7317,6 @@ textarea:focus{
     text-align: center;
     font-size: 2rem;
     font-weight: bold;
-    /* padding: 7% 7% 0px 7% */
 }
 
 .total_order_details .row{
@@ -7376,7 +7366,6 @@ font-size: 1.1em;
 }
 
 .detail_order_to_wrap hr {
-    /* margin: 1rem -1vh; */
     border-top: 1px solid rgb(214, 214, 214)
 }
 
@@ -7416,11 +7405,9 @@ font-size: 1.1em;
 	margin: 3vh 0;
 }
 
-
 .action_button .btn {
     width: 165px;
 }
-
 .detail_order_to_wrap .btn:focus {
     box-shadow: none;
     outline: none;
@@ -7435,7 +7422,6 @@ font-size: 1.1em;
     color: white
 }
 
-
 button:disabled,
 button[disabled]{
   background-color: rgba(89,89,89, 1) !important;
@@ -7448,19 +7434,13 @@ button[disabled]{
 }
 
 .card_empty {
-	/* margin: 10px; */
 	width: 35%;
-	/* background: #fff; */
 	border-radius: 5px;
-	/* box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); */
 }
 .card_empty .image img {
 	max-width: 100px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
-}
-.card_empty .content {
-	/* padding: 20px 30px; */
 }
 .card_empty.is-loading .image, .card_empty.is-loading h2, .card_empty.is-loading p {
 	background: #aaa;
