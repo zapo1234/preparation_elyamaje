@@ -30,6 +30,7 @@
                                 <i class="bx bx-box"></i>
                             </div>
                         </div>
+                        <div class="mt-2 show_messages"></div>
                         <div class="title mx-auto to_hide"> Scanner le QR Code </div>
                         <span class="mb-2 text-center to_hide">OU</span>
                         <div class="to_hide mb-3 d-flex justify-content-center input_order_id">

@@ -167,8 +167,10 @@ $(".validate_order").on("click", function(){
             }
 
         } else {
+            $(".loading_detail_order").addClass('d-none')
+            $(".alert-danger").remove()
             $(".show_messages").prepend(`
-                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                <div style="position:absolute; width:100%" class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class=" text-white">`+JSON.parse(data).message+`</div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>

@@ -5752,16 +5752,16 @@ input::placeholder {
 
 }
 
+@media screen and (max-width: 550px) {
+	.detail_order_to_wrap{
+		margin-top: 30px;
+		padding-bottom: 50px;
+	}
+}
 
 @media screen and (max-width: 620px) {
-
-
 	.topbar .navbar .dropdown-menu::after {
-
-
 		display: none;
-
-
 	}
 
 
@@ -5769,8 +5769,6 @@ input::placeholder {
 
 
 		position: static !important;
-
-
 	}
 
 
@@ -7443,8 +7441,8 @@ button[disabled]{
 }
 
 .card_empty.is-loading .image {
-	height: 124px;
-	width: 124px;
+	height: 100px;
+	width: 100px;
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 }
