@@ -271,12 +271,9 @@ document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
-        console.log(array)
-        console.log($("#detail_order").val())
-
-
-
-        if(array.length == 4 && $("#order_id").val() == ""){
+       
+        if(array.length == 4 && $("#order_id").val() == "" && e.key != ""){
+            console.log(array)
 
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
