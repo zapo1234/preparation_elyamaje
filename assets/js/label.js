@@ -58,7 +58,13 @@ $(".generate_label_button").on('click', function(){
 
                 Object.entries(product_order).forEach(([key, value]) => {
                     product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1;
-                    total_weight = parseFloat(total_weight) + parseFloat(value.weight);
+
+                    if(value.quantity - value.total_quantity == 0){
+                        total_weight = parseFloat(total_weight)
+                    } else {
+                        total_weight = parseFloat(total_weight) + (parseFloat(value.weight) * value.quantity);
+                    }
+
                     innerHtml +=
                         `<div class="${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
                             <span style="width: 50px">
@@ -110,14 +116,24 @@ $('body').on('click', '.checkbox_label', function() {
     total_weight()
 })
 
-$('body').on('change', '.quantity_product_label', function() {
+$('body').on('change', '.quantity_product_label', function(e) {
     total_weight()
 })
 
 
+// Calcul du poids total de la commande
 function total_weight(){
     var total_weight = 0;
     $(".line_items_label").each(function( index ) {
+
+        // Si la valeur renseignée est supérieure à la quantité de produit, alors on force la quantité max du produit
+        var value = $(this).find('.quantity_product_label').val()
+        var max_value = $(this).find('.quantity_product_label').attr('max')
+
+        if(parseInt(value) > parseInt(max_value)){
+            $(this).find('.quantity_product_label').val(max_value)
+        }
+        
         if($(this).find('.checkbox_label').prop('checked')){
             total_weight = parseFloat(total_weight) + (parseFloat($( this ).find('.weight').text()) * $(this).find('.quantity_product_label').val())
         }

@@ -662,6 +662,16 @@ class OrderRepository implements OrderInterface
          ->where('orders.order_woocommerce_id', $order_id)
          ->get();
    }
+
+   public function unassignOrders(){
+      try{
+         $this->model->truncate();
+         DB::table('products_order')->truncate();
+         echo json_encode(['success' => true]);
+      } catch(Exception $e){
+         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+      }
+   }
 }
 
 

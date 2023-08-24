@@ -16,7 +16,7 @@
 							<div class="pe-3 number_order_pending"></div>
 						</div>
 						@csrf
-						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Attribuer les commandes</button>
+						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Gérer les commandes</button>
 					</div>
 
 					<div class="dashboard_leader row row-cols-1 row-cols-lg-2">
@@ -157,18 +157,23 @@
 									</div>
 								</div>
 
-								<!-- Modal pour lancer l'attribution des commandes -->
+								<<!-- Modal pour lancer l'attribution des commandes -->
 								<div class="modal fade" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
+											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
+												<i style="z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+											</div>	
 											<div class="modal-body">
-												<h2 class="text-center allocationOrdersTitle">Attribuer les commandes entre les préparateurs ?</h2>
+												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
 												<div class="w-100 d-flex justify-content-center">
 													<div class="d-none spinner-border loading_allocation" role="status"> 
 														<span class="visually-hidden">Loading...</span>
 													</div>
-													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Lancer</button>
+													<!-- <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button> -->
+													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
+													<button style="margin-left:15px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
+
 													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>
 											</div>

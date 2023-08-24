@@ -353,6 +353,7 @@ $(".allocation_of_orders").on("click", function(){
     $("#allocationOrders").modal('show')
 })
 
+// Attribuer les commandes
 $(".allocationOrdersConfirm").on("click", function(){
     
     $("#allocationOrders button").addClass('d-none')
@@ -367,6 +368,30 @@ $(".allocationOrdersConfirm").on("click", function(){
             $(".lni-checkmark-circle").removeClass('d-none')
             $(".allocationOrdersTitle").text("Commandes réparties avec succès !")
             setTimeout(function(){ location.reload(); }, 2500);
+        } else {
+            alert(JSON.parse(data).message ?? 'Erreur !')
+            $("#allocationOrders button").removeClass('d-none')
+            $(".loading_allocation").addClass("d-none")
+            $("#allocationOrders").modal('hide')
+        }
+    });
+})
+
+// Désatribuer les commandes
+$(".unassignOrdersConfirm").on("click", function(){
+    
+    $("#allocationOrders button").addClass('d-none')
+    $(".loading_allocation").removeClass("d-none")
+
+    $.ajax({
+        url: "unassignOrders",
+        method: 'GET',
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            $(".loading_allocation").addClass("d-none")
+            $(".lni-checkmark-circle").removeClass('d-none')
+            $(".allocationOrdersTitle").text("Commandes désattribuées avec succès !")
+            setTimeout(function(){ location.reload(); }, 1000);
         } else {
             alert(JSON.parse(data).message ?? 'Erreur !')
             $("#allocationOrders button").removeClass('d-none')

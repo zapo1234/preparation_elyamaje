@@ -251,6 +251,11 @@ class Order extends BaseController
       }
     }
 
+    // Désattribue toutes les commandes
+    public function unassignOrders(){
+      $this->order->unassignOrders();
+    }
+
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
       $products_quantity = $request->post('pick_items_quantity');

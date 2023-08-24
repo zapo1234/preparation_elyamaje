@@ -7436,8 +7436,8 @@ button[disabled]{
 	border-top-right-radius: 5px;
 }
 .card_empty.is-loading .image, .card_empty.is-loading h2, .card_empty.is-loading p {
-	background: #aaa;
-	background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+	background: #ececec;
+	/* background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); */
 	border-radius: 5px;
 	background-size: 200% 100%;
 	animation: 1.5s shine linear infinite;
@@ -7447,11 +7447,11 @@ button[disabled]{
 }
 
 .card_empty.is-loading h3{
-	background: #aaa;
-	background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+	background: #ececec;
+	/* background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); */
 	border-radius: 5px;
 	background-size: 200% 100%;
-	animation: 1.5s shine linear infinite;
+	/* animation: 1.5s shine linear infinite; */
 	height: 30px;
 	width: 75px;
 }
@@ -7475,11 +7475,11 @@ button[disabled]{
 	height: 30px;
 }
 
-@keyframes shine {
+/* @keyframes shine {
 	to {
 		background-position-x: -200%;
    }
-}
+} */
 
 .detail_order_to_wrap .alert{
 	margin: 0px !important;
