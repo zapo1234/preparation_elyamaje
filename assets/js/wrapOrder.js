@@ -179,12 +179,7 @@ $(".validate_order").on("click", function(){
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `)
-
-            $("#order_id").val("")
-            $("#product_count").val("")
-            $("#customer").val("")
-            $(".validate_order").attr('disabled', true)
-            $("#detail_order").val("")
+            clean_scan()
         }
     });
 })
@@ -458,4 +453,13 @@ function show_empty_order(){
     $("#prepared").text("")
     $(".main_hr").addClass('d-none')
     $(".empty_order").removeClass('d-none')
+}
+
+
+function clean_scan(){
+    $("#order_id").val("")
+    $("#product_count").val("")
+    $("#customer").val("")
+    $(".validate_order").attr('disabled', true)
+    $("#detail_order").val("")
 }
