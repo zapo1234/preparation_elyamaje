@@ -6877,6 +6877,11 @@ select:focus, input:focus{
 	height: 80vh;
 }
 
+.generate_label_modal .modal-body{
+	background: white;
+    border-radius: 5px;
+}
+
 .generate_label_modal .body_line_items_label{
 	overflow-y: auto !important;
 	max-height: 68vh;
