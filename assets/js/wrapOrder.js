@@ -66,11 +66,10 @@ $(".validate_order").on("click", function(){
             `)
 
             // Afficher les informations de la commande, total, numéro et préparateur
-            $(".total_order").text('Total: '+order[0].total_order)
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
-            $(".total_order").text('Total (TTC):')
-            $(".amount_total_order").text(order[0].total_order+'€')
+            $(".total_order").text('Total :')
+            $(".amount_total_order").text(order[0].total_order+'€ (TTC)')
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
@@ -80,9 +79,11 @@ $(".validate_order").on("click", function(){
             `)
             
             // Afficher les produits de la commande avec les détails
-            var listProduct = ""
+            var listProduct = "";
+            var total_product_order = 0;
             Object.entries(order).forEach(([key, value]) => {
                 var gift = parseFloat(value.cost) == 0.00 ? true : false;
+                total_product_order = total_product_order + value.quantity
                 listProduct += `
                     <div class="row row-main to_hide">
                         <div class="col-2"> 
@@ -103,7 +104,7 @@ $(".validate_order").on("click", function(){
                     </div>`
             })
 
-       
+            $(".total_product_order").text(total_product_order+' produits')
             $(".main").prepend(listProduct).fadeIn('slow')
             $(".loading_detail_order").addClass('d-none')
 
@@ -289,7 +290,6 @@ document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
-        console.log(array)
         if(array.length == 4 && $("#order_id").val() == ""){
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
@@ -297,8 +297,6 @@ document.addEventListener("keydown", function(e) {
             $(".validate_order").attr('disabled', false)
             $(".validate_order").click()
         }
-
-
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()
         if (!isNaN(parseInt(e.key))) {

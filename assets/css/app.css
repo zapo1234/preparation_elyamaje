@@ -7317,8 +7317,13 @@ textarea:focus{
 	margin-top: 5px;
 }
 
-.total_order, .amount_total_order{
+.total_order, .amount_total_order,
+.total_product_order{
 	font-weight: bold;
+}
+
+.total_product_order{
+	font-size: 1.2em;
 }
 
 .detail_order_to_wrap .main img {
