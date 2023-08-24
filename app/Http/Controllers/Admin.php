@@ -431,7 +431,7 @@ class Admin extends BaseController
                 return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
             }
         } catch(Exception $e){
-            if(str_contains($e->getMessage(), 'Duplicate ')){
+            if(str_contains($e->getMessage(), 'Duplicate')){
                 return redirect()->route('printers')->with('error', 'L\'adresse IP de l\'imprimante doit être unique !');
             } else {
                 return redirect()->route('printers')->with('error', $e->getMessage());
@@ -443,9 +443,9 @@ class Admin extends BaseController
         $printer_id = $request->post('printer_id');
 
         if($this->printer->deletePrinter($printer_id)){
-            return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+            return redirect()->route('printers')->with('success', 'Imprimante supprimée avec succès !');
         } else {
-            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être supprimée');
         }
     }
 }

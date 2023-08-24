@@ -567,10 +567,6 @@ a {
 		border-radius: 20px
 	}
 
-	.detail_order_to_wrap .col-3:has(>.img-fluid){
-		max-width: 100px;
-	}
-
 	.detail_order_to_wrap .row-main{
 		justify-content: space-between;
 	}
@@ -5305,10 +5301,6 @@ input::placeholder {
 		border-radius: 20px
 	}
 
-	.detail_order_to_wrap .col-3:has(>.img-fluid){
-		max-width: 100px;
-	}
-
 	.detail_order_to_wrap .row-main{
 		justify-content: space-between;
 	}
@@ -7349,7 +7341,8 @@ textarea:focus{
 }
 
 .detail_shipping_billing_div span{
-	font-size: 1em !important;
+	font-size: 0.9em !important;
+	white-space: inherit;
 }
 
 .detail_order_to_wrap .row-main {
@@ -7362,7 +7355,7 @@ textarea:focus{
 }
 
 .detail_order_to_wrap .row-main p{
-font-size: 1.1em;
+	font-size: 1.1em;
 }
 
 .detail_order_to_wrap hr {
@@ -7493,4 +7486,10 @@ button[disabled]{
 	position: absolute;
     width: 100%;
     top: 34px;
+}
+
+.detail_order_to_wrap .img-fluid{
+	max-width: 100px !important;
+	width: 75%;
+	min-width: 40px;
 }

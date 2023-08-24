@@ -42,18 +42,18 @@ $(".validate_order").on("click", function(){
                     </div>
 
                     <div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
-                        <div class="d-flex flex-column justify-content-between billing_block">
+                        <div class="d-flex flex-column justify-content-between billing_block align-items-center">
                             <strong>Facturation :</strong>
-                            <div class="d-flex flex-column">
+                            <div class="d-flex flex-column align-items-center">
                                 <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
                                 <span class="customer_email">${order[0].billing_customer_email}</span>
                                 <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
                                 <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
                             </div>
                         </div>
-                        <div class="d-flex flex-column justify-content-between shipping_block">
+                        <div class="d-flex flex-column justify-content-between shipping_block align-items-center">
                             <strong>Expédition :</strong>
-                            <div class="d-flex flex-column">
+                            <div class="d-flex flex-column align-items-center">
                                 <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
                                 <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
                                 <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
@@ -82,20 +82,23 @@ $(".validate_order").on("click", function(){
             // Afficher les produits de la commande avec les détails
             var listProduct = ""
             Object.entries(order).forEach(([key, value]) => {
+                var gift = parseFloat(value.cost) == 0.00 ? true : false;
                 listProduct += `
                     <div class="row row-main to_hide">
                         <div class="col-2"> 
                             <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
                             <div class="col-8">
                                 <div class="row d-flex">
-                                    <p><b>${value.name} (x${value.quantity})</b></p>
+                                    <p><b>${gift ? '<span class="text-success">(Cadeau)</span>' : ''} ${value.name} (x${value.quantity})</b></p>
                                 </div>
                                 <div class="row d-flex">
-                                    <p class="text-muted">${parseFloat(value.cost).toFixed(2)}€</p>
+                                    <p class="text-muted">${gift ? '<span class="text-success">'+parseFloat(value.cost).toFixed(2)+'€' : parseFloat(value.cost).toFixed(2)}</p>
                                 </div>
                             </div>
                         <div class="col-2 d-flex justify-content-end">
-                            <p><b>${(parseFloat(value.cost) * value.quantity).toFixed(2)}€</b></p>
+                            <p><b>
+                            ${gift ? '<span class="text-success">'+parseFloat(value.cost * value.quantity).toFixed(2)+'€</span>' 
+                            : parseFloat(value.cost * value.quantity).toFixed(2)+'€'}  </b></p>
                         </div>
                     </div>`
             })
