@@ -48,9 +48,14 @@ $(document).ready(function () {
     }
 
     $(".show_order").removeClass("d-none")
+    progress_bar()
+ 
+})
 
-    // Progress bar for order
-    $(".modal_order").each(function(){
+// Affiche la progression de l'avancée de la commande
+function progress_bar(){
+       // Progress bar for order
+       $(".modal_order").each(function(){
         order_id = $(this).attr('data-order')
         
         var quantity_to_pick_in_order = [] 
@@ -77,7 +82,7 @@ $(document).ready(function () {
         $("#progress_"+order_id).find(".progress-bar").css('width', progress[order_id]+'%')
         $("#progress_"+order_id).find(".progress-bar").attr('aria-valuenow', progress[order_id])
     })
-})
+}
 
 document.addEventListener("keydown", function (e) {
 
@@ -101,7 +106,7 @@ document.addEventListener("keydown", function (e) {
                         }
                         var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text())
                         quantity_pick_in = quantity_pick_in + 1
-
+                        
                         if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1 &&
                             (parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0) {
 
@@ -136,6 +141,7 @@ document.addEventListener("keydown", function (e) {
                             $("#order_" + order_id + " .validate_pick_in").css('background-color', '#16e15e')
                             $("#order_" + order_id + " validate_pick_in").css('border', 'none')
                         }
+                        progress_bar()
                     }
                 } else {
                     $("#barcode").val("")
