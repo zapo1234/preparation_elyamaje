@@ -179,6 +179,11 @@ $(".validate_order").on("click", function(){
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `)
+
+            $("#order_id").val("")
+            $("#product_count").val("")
+            $("#customer").val("")
+            $(".validate_order").attr('disabled', true)
         }
     });
 })
@@ -348,7 +353,8 @@ document.addEventListener("keydown", function(e) {
                     $("#barcode").val("")
                 } else {
                     $("#barcode").val("")
-                    alert("Aucun produit ne correspond à ce code barre !")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
             }
         }
@@ -375,7 +381,8 @@ document.addEventListener("keydown", function(e) {
                     $("#barcode_verif").val('')
                 } else {
                     $("#barcode_verif").val('')
-                    alert("Aucun produit ne correspond à ce code barre !")
+                    $(".info_message").text("Aucun produit ne correspond à ce code barre !")
+                    $("#infoMessageModal").modal('show')
                 }
             }
         }
