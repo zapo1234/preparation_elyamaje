@@ -103,7 +103,7 @@
                     <div class="total_order col"> <b></b> </div>
                     <div class="text-center total_product_order col"> <b></b> </div>
 
-                    <div class="amount_total_order col d-flex justify-content-end"> <b></b> </div>
+                    <div class="text-end amount_total_order col d-flex justify-content-end"> <b></b> </div>
                 </div>
                 <button disabled type="button" class="empty_order validate_order btn btn-primary d-flex mx-auto"> Valider </button>
             </div>

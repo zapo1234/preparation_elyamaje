@@ -5811,7 +5811,7 @@ input::placeholder {
 	}
 
 	.generate_label_modal .body_line_items_label{
-		max-height: 66vh !important;
+		max-height: 64vh !important;
 	}
 }
 .owl-thumbs .owl-thumb-item {
