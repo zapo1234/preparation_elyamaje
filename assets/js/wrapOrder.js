@@ -184,6 +184,7 @@ $(".validate_order").on("click", function(){
             $("#product_count").val("")
             $("#customer").val("")
             $(".validate_order").attr('disabled', true)
+            $("#detail_order").val("")
         }
     });
 })
@@ -294,7 +295,6 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
         console.log(array)
-       
         if(array.length == 4 && $("#order_id").val() == ""){
             $("#order_id").val(array[0])
             $("#product_count").val(array[1])
