@@ -40,7 +40,6 @@ $(document).ready(function() {
     };
     var to = 0
 
-
     $('#example').DataTable({
         scrollY: '59vh',
         scrollCollapse: true,
@@ -277,6 +276,8 @@ $(document).ready(function() {
         ],
 
         "initComplete": function(settings, json) {
+            $(".loading_table").remove()
+            $(".loading_table_content").removeClass('loading_table_content')
 
             var info = $('#example').DataTable().page.info();
             var total = 0

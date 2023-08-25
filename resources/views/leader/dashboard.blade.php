@@ -29,7 +29,7 @@
 									</div>
 
 									<!-- Liste des utilisateurs et leur rôle -->
-									<div class="p-3 mb-3 ps ps--active-y">
+									<div class="p-3 mb-3 ps ps--active-y role_list">
 										@foreach($teams as $key => $team)
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
@@ -68,7 +68,7 @@
 									</div>
 
 										<!-- Réatribution des commandes d'un user vers un autre -->
-										<div class="p-3 mb-3 ps ps--active-y">
+										<div class="p-3 mb-3 ps ps--active-y role_list">
 										@if($number_preparateur > 1)
 											@foreach($teams_have_order as $key => $team)
 												<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
@@ -154,7 +154,7 @@
 										</div>
 										<div class="table-responsive">
 
-											<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 												<thead>
 													<tr>
 														<th scope="col">Commande</th>
@@ -165,6 +165,19 @@
 														<th class="col-md-1" scope="col">Détail</th>
 													</tr>
 												</thead>
+												<tbody></tbody>
+												<tbody>
+													@for($i = 0; $i < 8; $i++)
+														<tr class="loading_table">
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+														</tr>
+													@endfor
+												</tbody>
 											</table>
 										</div>
 

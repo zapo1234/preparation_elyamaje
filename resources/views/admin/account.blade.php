@@ -231,6 +231,7 @@
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script>
 
+			
 		function showHidePoste(array){
 			if(array.includes("3")){
 				$(".poste_input").removeClass('d-none')
