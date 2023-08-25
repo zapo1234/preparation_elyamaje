@@ -54,8 +54,8 @@ $(document).ready(function () {
 
 // Affiche la progression de l'avancée de la commande
 function progress_bar(){
-       // Progress bar for order
-       $(".modal_order").each(function(){
+
+    $(".modal_order").each(function(){
         order_id = $(this).attr('data-order')
         
         var quantity_to_pick_in_order = [] 
@@ -72,15 +72,17 @@ function progress_bar(){
         progress[order_id] = (quantity_pick_in_order[order_id] * 100) / quantity_to_pick_in_order[order_id]
 
         if(progress[order_id] < 10){
-            $("#progress_"+order_id).find(".progress-bar").addClass('bg-danger')
+            $("#progress_"+order_id).find(".progress-bar").css('background-color', '#e62e2e')
         } else if(progress[order_id] < 50){
-            $("#progress_"+order_id).find(".progress-bar").addClass('bg-warning')
+            $("#progress_"+order_id).find(".progress-bar").css('background-color', '#ffc107')
         } else {
-            $("#progress_"+order_id).find(".progress-bar").addClass('bg-success')
+            $("#progress_"+order_id).find(".progress-bar").css('background-color', '#29cc39')
         }
 
         $("#progress_"+order_id).find(".progress-bar").css('width', progress[order_id]+'%')
         $("#progress_"+order_id).find(".progress-bar").attr('aria-valuenow', progress[order_id])
+        $(".validate_pick_in").css('background', 'linear-gradient(to right, #29cc39 '+progress[order_id]+'%, #212529 '+progress[order_id]+'% 100%)')
+        $(".validate_pick_in").css('border', 'none')
     })
 }
 
@@ -495,10 +497,15 @@ function printOrder() {
     printer.addTextSize(1, 1);
     printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
     printer.addText("\n"+$(".show .info_order").text());
+
+    
+    /* ----- LISTE DES PRODUITS ----- */
     // $('.show .info_order_product').find('span').each(function () {
     //     printer.addText("\n\n" + $(this).text());
     // });
-    
+    /* ----- LISTE DES PRODUITS ----- */
+
+
     printer.addText("\n\n\n");
     printer.addCut(printer.CUT_FEED);
     printer.send();

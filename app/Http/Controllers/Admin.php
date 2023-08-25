@@ -133,6 +133,7 @@ class Admin extends BaseController
 
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
+                $name_variation = false;
 
                 // Insertion du produit de base sans les variations
                 $insert_products [] = [
@@ -154,12 +155,20 @@ class Admin extends BaseController
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
+
+                        $id_variation = array_column($product['variation_products'], "id");
+                        $clesRecherchees = array_keys($id_variation,  $product['variations'][$key]);
+
+                        if(count($clesRecherchees) > 0){
+                            $name_variation = $product['variation_products'][$clesRecherchees[0]]['attributes_arr'][0]['slug'];
+                        }
+                           
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
                             'category' =>  implode(',', $category_name),
                             'category_id' => implode(',', $category_id),
                             'variation' => 1,
-                            'name' => $product['name'].' - '.$op,
+                            'name' => $product['name'].' - '.$name_variation ?? $op,
                             'price' => $product['variation_prices'][$key],
                             'barcode' => $product['barcodes_list'][$key],
                             'status' => $product['status'],

@@ -182,7 +182,6 @@ class OrderRepository implements OrderInterface
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
-  
 
       foreach($orders as $key => $order){
          if($distributeur_order){
@@ -223,8 +222,6 @@ class OrderRepository implements OrderInterface
             }
          }
       }
-
-
 
       $list = array_values($list);
       return $list;
