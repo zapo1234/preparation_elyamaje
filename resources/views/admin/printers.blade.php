@@ -80,7 +80,7 @@
 														<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.update') }}">
 															@csrf
 															<div class="modal-body">
-																<div class="card-body p-5">
+																<div class="card-body p-3">
 																	<div class="card-title d-flex align-items-center">
 																		<div><i class="bx bx-printer me-1 font-22 text-primary"></i>
 																		</div>
@@ -141,7 +141,7 @@
 						<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.add') }}">
 							@csrf
 							<div class="modal-body">
-								<div class="card-body p-5">
+								<div class="card-body p-3">
 									<div class="card-title d-flex align-items-center">
 										<div><i class="bx bx-printer me-1 font-22 text-primary"></i>
 										</div>
