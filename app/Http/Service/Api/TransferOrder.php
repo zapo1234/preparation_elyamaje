@@ -542,6 +542,7 @@ class TransferOrder
               }
 
               
+              dd($inv);
               // recupérer le premier id de la facture....
              foreach($invoices_asc as $vks){
                $inc = $vks['id'];
