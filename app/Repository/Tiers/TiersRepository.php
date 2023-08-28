@@ -89,7 +89,7 @@ class TiersRepository implements TiersInterface
                
                   $produitParam = array(
                     'apikey' => $apiKey,
-                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-30 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-10 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
                      'limit' => 0,
                     'sortfield' => 'rowid',
                     'sortorder' => 'DESC',
@@ -100,7 +100,8 @@ class TiersRepository implements TiersInterface
     
              $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
              $lists = json_decode($listinvoice,true);
-             $data_ids = array('3087');
+             $data_ids = array('3087','14183','14182');
+             $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
              // recupérer les données essentiel
              $array_tiers = $this-> getallsocid();
 
@@ -132,7 +133,7 @@ class TiersRepository implements TiersInterface
                  
                     }
                 
-                }
+                  }
                 
                }
              
