@@ -538,8 +538,6 @@ class TransferOrder
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
-
-              dd($inv);
               // recupérer le premier id de la facture....
              foreach($invoices_asc as $vks){
                $inc = $vks['id'];
