@@ -105,7 +105,7 @@ class TiersRepository implements TiersInterface
              $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
              // recupérer les données essentiel
-             $array_tiers = $this-> getallsocid();
+             $array_tiers = $this->getallsocid();
 
             foreach($lists as $key=>$values){
                
