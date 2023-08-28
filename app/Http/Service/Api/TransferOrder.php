@@ -600,12 +600,6 @@ class TransferOrder
                 $id_cl = $id_cl+1;
                 $socid ="";
                 // id  du dernier invoices(facture)
-                // valider invoice
-                 $newCommandeValider = [
-                "idwarehouse"	=> "6",
-                 "notrigger" => "0",
-                ];
-                
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
                  
@@ -664,6 +658,13 @@ class TransferOrder
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
+
+                   // valider invoice
+                   $newCommandeValider = [
+                  "idwarehouse"	=> "6",
+                   "notrigger" => "0",
+                  ];
+                  
         
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
@@ -690,7 +691,7 @@ class TransferOrder
            
             
               // valider les facture dans dolibar....
-              //$this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                // Lier les factures dolibar  à un moyen de paiement et bank.
               // $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
               // mettre le statut en payé dans la facture  dolibar
