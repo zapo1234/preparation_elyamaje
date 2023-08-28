@@ -106,6 +106,8 @@ class TiersRepository implements TiersInterface
              // recupérer les données essentiel
              $array_tiers = $this->getallsocid();
 
+             dd($array_tiers);
+
             foreach($lists as $key=>$values){
                
                if($this->testing($array_tiers,$values['id'])==false){
