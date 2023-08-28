@@ -685,7 +685,7 @@ class TransferOrder
           ];
            
 
-             
+             $inv = $inv+1;
               // valider les facture dans dolibar....
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // mettre le statut en payé dans la facture  dolibar
