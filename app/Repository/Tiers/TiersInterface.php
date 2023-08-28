@@ -12,4 +12,6 @@ interface TiersInterface
    public function getalltiers();// recupérer tous les tiers en bdd.
 
    public function gettiersid($id);// recupérer l'utilisateur.
+
+   public function insert($array_tiers);// créer un user direct.
 }

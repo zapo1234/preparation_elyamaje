@@ -144,4 +144,10 @@ class TiersRepository implements TiersInterface
 
       }
 
+      public function insert($array_tiers){
+         // faire un insert...
+         DB::table('tiers')->insert($array_tiers);
+                 
+      }
+
 }
