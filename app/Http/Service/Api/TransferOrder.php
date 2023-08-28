@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-            
+              dd($orders);
             
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -161,16 +161,11 @@ class TransferOrder
                      }
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
-
-                      dd($code_cl);
-                      if(count($code_cl)>1){
-                        $code_cls = $code_cl[1];
+                      if(count($code_cl)>2){
+                        $code_cls = $code_cl[2];
                         $data_code[$val['socid']] = $code_cls;
                       }
                   }
-                
-                  dump($data_list);
-                  dd($data_code);
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
