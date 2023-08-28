@@ -54,8 +54,11 @@ class TiersController extends BaseController
     {
           
          $token ="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk";
-          $this->tiers->insertiers();
-          dd('succes');
+         if($token =="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk"){
+           $this->tiers->insertiers();
+           dd('succes');
+
+         }
 
     }
 
