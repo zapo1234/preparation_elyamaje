@@ -124,8 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-            
-            
+            dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
@@ -167,6 +166,7 @@ class TransferOrder
                       }
                   }
 
+                
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -288,6 +288,7 @@ class TransferOrder
                                    'email' => $donnees['billing']['email'],
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
+                                    'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
                                  
@@ -297,6 +298,9 @@ class TransferOrder
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
+
+
+                                     // recupérer un array pour créer un client....
                               }
                             
                            
@@ -449,8 +453,8 @@ class TransferOrder
                            }
                       }
                         
-                      
-                        // Create le client.
+                        
+                        // Create le client...
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -529,10 +533,14 @@ class TransferOrder
         	), true);
 
               // recupération du dernier id invoices dolibar....
+
+            
               $inv="";
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
+
+              
               // recupérer le premier id de la facture....
              foreach($invoices_asc as $vks){
                $inc = $vks['id'];
@@ -598,7 +606,7 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
-
+                 
                   if($account_name==""){
                     $account_name="vir_card";
                   }
@@ -673,17 +681,18 @@ class TransferOrder
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
-              "accountid"=> 6, // id du compte bancaire.
+              "accountid"=> $account_id, // id du compte bancaire.
           ];
            
-             
+
               // valider les facture dans dolibar....
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               // Lier les factures dolibar  à un moyen de paiement et bank.
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
               // mettre le statut en payé dans la facture  dolibar
               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
-               // Lier les factures dolibar  à un moyen de paiement et bank.
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+              
     }
 
   }
