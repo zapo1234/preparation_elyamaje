@@ -449,6 +449,7 @@ class TransferOrder
                       }
                         
                       
+                      dd($data_lines);
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
@@ -597,8 +598,6 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
-
-                  dd($account_name);
 
                   if($account_name==""){
                     $account_name="vir_card";
