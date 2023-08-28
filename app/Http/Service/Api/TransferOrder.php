@@ -605,6 +605,8 @@ class TransferOrder
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
 
+                  dd($account_name);
+
                   if($account_name==""){
                     $account_name="vir_card";
                   }
@@ -683,7 +685,6 @@ class TransferOrder
           ];
            
 
-          dd($inv);
              
               // valider les facture dans dolibar....
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
