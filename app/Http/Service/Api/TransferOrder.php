@@ -640,6 +640,7 @@ class TransferOrder
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
+
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
@@ -685,16 +686,8 @@ class TransferOrder
               "accountid"=> $account_id, // id du compte bancaire.
           ];
            
-             dd('zapo');
-              // valider les facture dans dolibar....
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-               // Lier les factures dolibar  à un moyen de paiement et bank.
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-              // mettre le statut en payé dans la facture  dolibar
-              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-
-              
-    }
+            
+        }
 
   }
      
