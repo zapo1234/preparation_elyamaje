@@ -161,6 +161,8 @@ class TransferOrder
                      }
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
+
+                      dd($code_cl);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
                         $data_code[$val['socid']] = $code_cls;
