@@ -455,6 +455,7 @@ class TransferOrder
                         
                         
                         // Create le client...
+
                       
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
@@ -687,12 +688,11 @@ class TransferOrder
            
 
               // valider les facture dans dolibar....
-             
+             // $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               // Lier les factures dolibar  à un moyen de paiement et bank.
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
               // mettre le statut en payé dans la facture  dolibar
               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-              // Lier les factures dolibar  à un moyen de paiement et bank.
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
 
               
     }
