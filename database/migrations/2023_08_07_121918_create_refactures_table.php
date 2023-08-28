@@ -16,6 +16,9 @@ class CreateRefacturesTable extends Migration
         Schema::create('refactures', function (Blueprint $table) {
             $table->id();
             $table->integer('ref_facture');
+            $table->integer('invoice_id');
+            $table->string('monde_regement');
+            $table->string('account_id');
             $table->timestamps();
         });
     }
