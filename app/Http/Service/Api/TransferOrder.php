@@ -298,6 +298,9 @@ class TransferOrder
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
+
+
+                                     // recupérer un array pour créer un client....
                               }
                             
                            
@@ -452,6 +455,7 @@ class TransferOrder
                         
                     
                         // Create le client.
+                        dd($data_tiers);
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
