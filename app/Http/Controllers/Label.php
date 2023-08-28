@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+
+use Exception;
+use Labelary\Client;
+use App\Helper\Helper;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
-use App\Http\Service\Woocommerce\WoocommerceService;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Bordereau\BordereauRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Colissimo\ColissimoRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -25,6 +31,7 @@ class Label extends BaseController
     private $order;
     private $woocommerce;
     private $labelProductOrder;
+    private $colissimoConfiguration;
 
     public function __construct(
         LabelRepository $label, 
@@ -32,7 +39,8 @@ class Label extends BaseController
         BordereauRepository $bordereau,
         OrderRepository $order,
         WoocommerceService $woocommerce,
-        LabelProductOrderRepository $labelProductOrder
+        LabelProductOrderRepository $labelProductOrder,
+        ColissimoRepository $colissimoConfiguration
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -40,6 +48,7 @@ class Label extends BaseController
         $this->order = $order;
         $this->woocommerce = $woocommerce;
         $this->labelProductOrder = $labelProductOrder;
+        $this->colissimoConfiguration = $colissimoConfiguration;
     }
 
     public function getlabels(){
@@ -92,15 +101,71 @@ class Label extends BaseController
             ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
     }
 
+    public function convertZplToHtml($zplText) {
+        // Conversion ZPL vers HTML (exemple simplifié)
+        $html = '<div style="font-family: Arial; font-size: 14px;">';
+        // Parse le ZPL et ajoute les éléments HTML appropriés
+        // ...
+    
+        $html .= '</div>';
+        return $html;
+    }
+
     public function labelShow(Request $request){
         $blob = $this->label->getLabelById($request->post('label_id'));
-        $headers = [
-            'Content-Type' => 'application/pdf',
-        ];
 
-        $fileContent = $blob[0]->label;
-    
-        return Response::make($fileContent, 200, $headers);
+        // Traitement selon format étiquette
+        switch ($blob[0]->label_format) {
+            case "PDF":
+                $headers = [
+                    'Content-Type' => 'application/pdf',
+                ];
+        
+                $fileContent = $blob[0]->label;
+                return Response::make($fileContent, 200, $headers);
+                break;
+            case "ZPL":
+
+                // ------- IMPRESSION -------
+                
+                // $barcode = "SLF-". sprintf('%02d', 0);
+                // Helper::printBarcode($barcode);
+
+                // ------- IMPRESSION -------
+
+
+
+
+
+
+                // ------- VISUALISATION -------
+
+                // $zpl = $blob[0]->label;
+                // $curl = curl_init();
+                // curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                // curl_setopt($curl, CURLOPT_POST, TRUE);
+                // curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                // curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                // $result = curl_exec($curl);
+                
+                // if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
+                //     $file = fopen("label.pdf", "w"); // change file name for PNG images
+                //     fwrite($file, $result);
+                //     fclose($file);
+                // } else {
+                //     print_r("Error: $result");
+                // }
+                
+                // curl_close($curl);
+                // $headers = [
+                //     'Content-Type' => 'application/pdf',
+                // ];
+                // return Response::make($result, 200, $headers);
+
+                 // ------- VISUALISATION -------
+                break;
+        }
     }
 
     public function labelDelete(Request $request){
@@ -230,6 +295,7 @@ class Label extends BaseController
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
         $order_by_id = $this->order->getOrderById($order_id);
+        $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
         
 
@@ -246,7 +312,7 @@ class Label extends BaseController
                 } 
 
                 $order[0]['total_order'] = $subtotal;
-                $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
+                $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
                 
                 if(isset($label['success'])){
                   $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');

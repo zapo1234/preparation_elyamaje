@@ -9,6 +9,7 @@ use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
@@ -42,6 +43,7 @@ class Order extends BaseController
     private $woocommerce;
     private $distributor;
     private $printer;
+    private $colissimoConfiguration;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -55,7 +57,8 @@ class Order extends BaseController
     NotificationRepository $notification,
     WoocommerceService $woocommerce,
     DistributorRepository $distributor,
-    PrinterRepository $printer
+    PrinterRepository $printer,
+    ColissimoRepository $colissimoConfiguration
     ){
       $this->api = $api;
       $this->user = $user;
@@ -71,6 +74,7 @@ class Order extends BaseController
       $this->woocommerce = $woocommerce;
       $this->distributor = $distributor;
       $this->printer = $printer;
+      $this->colissimoConfiguration = $colissimoConfiguration;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -424,7 +428,6 @@ class Order extends BaseController
           }
         }
         
-        
         $orders = $this->woocommerce->transformArrayOrder($order);
         $orders[0]['emballeur'] = Auth()->user()->name;
 
@@ -466,6 +469,7 @@ class Order extends BaseController
     // Fonction à appelé après validation d'une commande
     private function generateLabel($order){
      
+      $colissimo = $this->colissimoConfiguration->getConfiguration();
       $product_to_add_label = [];
       $quantity_product = [];
 
@@ -478,7 +482,7 @@ class Order extends BaseController
           $quantity_product[$or['product_id']] = $or['quantity'];
         } 
 
-        $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
+        $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
 
         if(isset($label['success'])){
           $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');

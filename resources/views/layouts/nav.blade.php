@@ -89,6 +89,8 @@
                     </li>
                     <li> <a href="{{ url('printers') }}"><i class="bx bx-right-arrow-alt"></i>Imprimantes</a>
                     </li>
+                    <li> <a href="{{ url('colissimo') }}"><i class="bx bx-right-arrow-alt"></i>Colissimo</a>
+                    </li>
                 </ul>
             </li>
         @endif

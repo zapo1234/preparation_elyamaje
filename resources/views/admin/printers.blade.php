@@ -20,10 +20,7 @@
 							</nav>
 						</div>
 						<div class="ms-auto ms-auto-responsive">
-							<form action="{{ route('sync.distributors') }}" method="GET">
-								@csrf
-								<button id="show_modal_add_printer" type="button" class="btn btn-dark px-5">Ajouter une imprimante</button>
-							</form>
+							<button id="show_modal_add_printer" type="button" class="btn btn-dark px-5">Ajouter une imprimante</button>
 						</div>
 					</div>
 

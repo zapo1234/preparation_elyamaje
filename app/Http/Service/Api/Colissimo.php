@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Http;
 class Colissimo
 {
 
-    public function generateLabel($order, $weight, $order_id){
-        
+    public function generateLabel($order, $weight, $order_id, $colissimo){
+
         $productCode = $this->getProductCode($order);
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
+        $format = $colissimo ? $colissimo->format : "PDF_10x15_300dpi_UL";
       
         if($productCode){
             try {
@@ -22,7 +23,7 @@ class Colissimo
                     'outputFormat' => [
                         'x' => 0,
                         'y' => 0,
-                        'outputPrintingType' => 'PDF_A4_300dpi',
+                        'outputPrintingType' => $format,
                     ],
                     'letter' => [
                         'service' => [
@@ -94,11 +95,12 @@ class Colissimo
 
                 $trackingNumber = isset($content['<jsonInfos>']['labelV2Response']['parcelNumber']) ? $content['<jsonInfos>']['labelV2Response']['parcelNumber'] : null;
 
+               
                 if($trackingNumber){
                     $data = [
                         'order_id' => $order_id,
                         'label' => $label,
-                        'label_format' => 'PDF',
+                        'label_format' => explode('_', $format)[0],
                         'label_created_at' => date('Y-m-d h:i:s'),
                         'tracking_number' => $trackingNumber
                     ];

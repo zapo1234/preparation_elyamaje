@@ -666,6 +666,10 @@ a {
 }
 
 @media (max-width: 650px) { 
+
+	.colissimo_form{
+		width: 95% !important;
+	}
 	
 	.page-content:has(> .detail_order_to_wrap ){
 		padding-bottom: 50px !important;
@@ -7562,4 +7566,8 @@ button[disabled]{
 .role_list{
 	overflow-y: auto !important;
     max-height: 30vh !important;
+}
+
+.colissimo_form{
+	max-width: 600px;
 }

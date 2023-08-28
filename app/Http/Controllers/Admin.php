@@ -11,6 +11,7 @@ use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
@@ -29,6 +30,7 @@ class Admin extends BaseController
     private $products;
     private $distributors;
     private $printer;
+    private $colissimoConfiguration;
 
     public function __construct(
         Api $api, 
@@ -38,7 +40,8 @@ class Admin extends BaseController
         HistoryRepository $history,
         ProductRepository $products,
         DistributorRepository $distributors,
-        PrinterRepository $printer
+        PrinterRepository $printer,
+        ColissimoRepository $colissimoConfiguration
     ){
         $this->api = $api;
         $this->category = $category;
@@ -48,6 +51,7 @@ class Admin extends BaseController
         $this->products = $products;
         $this->distributors = $distributors;
         $this->printer = $printer;
+        $this->colissimoConfiguration = $colissimoConfiguration;
     }
 
     public function syncCategories(){
@@ -456,5 +460,42 @@ class Admin extends BaseController
         } else {
             return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être supprimée');
         }
+    }
+
+
+    public function colissimo(){
+        $colissimo = $this->colissimoConfiguration->getConfiguration();
+        $list_format = [
+            'PDF_A4_300dpi_UL' => 'Impression bureautique en PDF, de dimension A4 et de résolution 300dpi',
+            'PDF_10x15_300dpi_UL' => 'Impression bureautique en PDF, de dimension 10cm par 15cm, et de résolution 300dpi',
+            'ZPL_10x15_203dpi_UL' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi',
+            'ZPL_10x15_300dpi_UL' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 300dpi'
+        ];
+
+        return view('admin.colissimo', ['list_format' => $list_format, 'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);
+    }
+
+    public function updateColissimo(Request $request){
+        $format = $request->post('format');
+        $address_ip = $request->post('address_ip');
+        $port = $request->post('port');
+
+        $data = [
+            'format' => $format,
+            'address_ip' => $address_ip,
+            'port' => $port,
+        ];
+
+        try{
+            if($this->colissimoConfiguration->save($data)){
+                return redirect()->route('colissimo')->with('success', 'Modifications enregistrées !');
+            } else {
+                return redirect()->route('colissimo')->with('error', 'Les modifications n\'ont aps été prise en compte !');
+            }
+        } catch(Exception $e){
+            return redirect()->route('colissimo')->with('error', $e->getMessage());
+        }
+
+
     }
 }
