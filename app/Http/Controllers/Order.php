@@ -429,7 +429,6 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
-        dd($orders);
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
