@@ -641,6 +641,7 @@ class TransferOrder
                    $array_paiments = array('bacs');// virement bancaire id.....
 
 
+
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
@@ -687,7 +688,13 @@ class TransferOrder
           ];
            
             
-          
+              // valider les facture dans dolibar....
+              //$this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               // Lier les factures dolibar  à un moyen de paiement et bank.
+              // $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+              // mettre le statut en payé dans la facture  dolibar
+              //$this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+
               
     }
 
