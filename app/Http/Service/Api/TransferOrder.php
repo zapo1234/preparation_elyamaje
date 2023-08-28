@@ -168,7 +168,9 @@ class TransferOrder
                         $data_code[$val['socid']] = $code_cls;
                       }
                   }
+                
 
+                  dd($data_code);
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
