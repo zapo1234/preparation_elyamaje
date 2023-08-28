@@ -452,8 +452,7 @@ class TransferOrder
                            }
                       }
                         
-                        dump($data_tiers);
-                        dd($data_lines);
+                        
                         // Create le client...
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
