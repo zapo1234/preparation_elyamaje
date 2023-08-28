@@ -33,6 +33,7 @@ class OrderRepository implements OrderInterface
     
          // Construire un tableau des données d'insertion pour l'utilisateur actuel
          foreach ($userOrders as $orderData) {
+
             
             // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
             $coupons = [];
@@ -119,12 +120,14 @@ class OrderRepository implements OrderInterface
                }
             }
          }
+
     
          // Insérer les données dans la base de données par lot
          try{
             $this->model->insert($ordersToInsert);
             DB::table('products_order')->insert($productsToInsert);
          } catch(Exception $e){ 
+            dd($e->getMessage());
             continue;
          }
 
@@ -179,7 +182,6 @@ class OrderRepository implements OrderInterface
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
-  
 
       foreach($orders as $key => $order){
          if($distributeur_order){
@@ -220,8 +222,6 @@ class OrderRepository implements OrderInterface
             }
          }
       }
-
-
 
       $list = array_values($list);
       return $list;
@@ -500,10 +500,11 @@ class OrderRepository implements OrderInterface
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation')
+      'products.variation', 'products.image', 'users.name as preparateur')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+      ->join('users', 'orders.user_id', '=', 'users.id')
       ->get()
       ->toArray();
    }
@@ -657,6 +658,16 @@ class OrderRepository implements OrderInterface
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('orders.order_woocommerce_id', $order_id)
          ->get();
+   }
+
+   public function unassignOrders(){
+      try{
+         $this->model->truncate();
+         DB::table('products_order')->truncate();
+         echo json_encode(['success' => true]);
+      } catch(Exception $e){
+         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+      }
    }
 }
 

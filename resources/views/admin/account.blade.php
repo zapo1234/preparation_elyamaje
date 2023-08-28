@@ -33,7 +33,7 @@
 								<form data-bitwarden-watching="1" method="POST" action="{{ route('account.create') }}">
 									@csrf
 									<div class="modal-body">
-										<div class="card-body p-5">
+										<div class="card-body p-3">
 											<div class="card-title d-flex align-items-center">
 												<div><i class="bx bxs-user me-1 font-22 text-primary"></i>
 												</div>
@@ -147,7 +147,7 @@
 														@csrf
 														<input name="account_user_update" type="hidden" id="account_user_update" value="{{ $user['user_id'] }}">
 														<div class="modal-body">
-															<div class="card-body p-5">
+															<div class="card-body p-3">
 																<div class="card-title d-flex align-items-center">
 																	<div><i class="bx bxs-user me-1 font-22 text-primary"></i>
 																	</div>
@@ -231,6 +231,7 @@
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script>
 
+			
 		function showHidePoste(array){
 			if(array.includes("3")){
 				$(".poste_input").removeClass('d-none')

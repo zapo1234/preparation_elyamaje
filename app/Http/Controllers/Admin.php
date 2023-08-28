@@ -110,7 +110,6 @@ class Admin extends BaseController
         }  
 
         foreach($products as $product){
-
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
@@ -134,6 +133,7 @@ class Admin extends BaseController
 
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
+                $name_variation = false;
 
                 // Insertion du produit de base sans les variations
                 $insert_products [] = [
@@ -150,16 +150,25 @@ class Admin extends BaseController
                     'is_variable' => 1,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                 ];
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
+
+                        $id_variation = array_column($product['variation_products'], "id");
+                        $clesRecherchees = array_keys($id_variation,  $product['variations'][$key]);
+
+                        if(count($clesRecherchees) > 0){
+                            $name_variation = $product['variation_products'][$clesRecherchees[0]]['attributes_arr'][0]['slug'];
+                        }
+                           
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
                             'category' =>  implode(',', $category_name),
                             'category_id' => implode(',', $category_id),
                             'variation' => 1,
-                            'name' => $product['name'].' - '.$op,
+                            'name' => $product['name'].' - '.$name_variation ?? $op,
                             'price' => $product['variation_prices'][$key],
                             'barcode' => $product['barcodes_list'][$key],
                             'status' => $product['status'],
@@ -168,6 +177,7 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
+                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                         ];
                     }
                 }
@@ -186,6 +196,7 @@ class Admin extends BaseController
                     'is_variable' => 0,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
                 ];
             }
         }
@@ -375,7 +386,7 @@ class Admin extends BaseController
     public function addPrinter(Request $request){
         $name = $request->post('name');
         $address_ip  = $request->post('address_ip');
-        $port  = $request->post('port');
+        $port  = $request->post('port') ?? 9100;
         $user_id = $request->post('user_id');
 
         $data = [
@@ -411,7 +422,7 @@ class Admin extends BaseController
     public function updatePrinter(Request $request){
         $update_name = $request->post('update_name');
         $update_address_ip  = $request->post('update_address_ip');
-        $update_port  = $request->post('update_port');
+        $update_port  = $request->post('update_port') ?? 9100;
         $update_user_id = $request->post('update_user_id');
         $printer_id = $request->post('printer_id');
 
@@ -429,7 +440,7 @@ class Admin extends BaseController
                 return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
             }
         } catch(Exception $e){
-            if(str_contains($e->getMessage(), 'Duplicate ')){
+            if(str_contains($e->getMessage(), 'Duplicate')){
                 return redirect()->route('printers')->with('error', 'L\'adresse IP de l\'imprimante doit être unique !');
             } else {
                 return redirect()->route('printers')->with('error', $e->getMessage());
@@ -441,9 +452,9 @@ class Admin extends BaseController
         $printer_id = $request->post('printer_id');
 
         if($this->printer->deletePrinter($printer_id)){
-            return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+            return redirect()->route('printers')->with('success', 'Imprimante supprimée avec succès !');
         } else {
-            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+            return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être supprimée');
         }
     }
 }

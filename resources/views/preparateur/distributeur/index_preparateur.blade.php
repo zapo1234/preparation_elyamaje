@@ -104,7 +104,11 @@
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 														@else
-														<span>{{ $item['name'] }}</span>
+															@if($item['name'])
+																<span>{{ $item['name'] }}</span>
+															@else
+																<span class="text-danger">Produit manquant</span>
+															@endif
 														@endif
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -208,7 +212,11 @@
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 														@else
-														<span>{{ $item['name'] }}</span>
+															@if($item['name'])
+																<span>{{ $item['name'] }}</span>
+															@else
+																<span class="text-danger">Produit manquant</span>
+															@endif
 														@endif
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -312,7 +320,11 @@
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 														@else
-														<span>{{ $item['name'] }}</span>
+															@if($item['name'])
+																<span>{{ $item['name'] }}</span>
+															@else
+																<span class="text-danger">Produit manquant</span>
+															@endif
 														@endif
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>

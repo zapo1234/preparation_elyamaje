@@ -45,6 +45,8 @@ interface OrderInterface
    public function updateTotalOrder($order_id, $data);
 
    public function getProductOrder($order_id);
+
+   public function unassignOrders();
 }
 
 

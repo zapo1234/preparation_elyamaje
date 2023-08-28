@@ -15,7 +15,7 @@
 							<div class="pe-3 number_order_pending"></div>
 						</div>
 						@csrf
-						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Attribuer les commandes</button>
+						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Gérer les commandes</button>
 					</div>
 
 					<div class="dashboard_leader row row-cols-1 row-cols-lg-2">
@@ -29,7 +29,7 @@
 									</div>
 
 									<!-- Liste des utilisateurs et leur rôle -->
-									<div class="p-3 mb-3 ps ps--active-y">
+									<div class="p-3 mb-3 ps ps--active-y role_list">
 										@foreach($teams as $key => $team)
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
@@ -68,7 +68,7 @@
 									</div>
 
 										<!-- Réatribution des commandes d'un user vers un autre -->
-										<div class="p-3 mb-3 ps ps--active-y">
+										<div class="p-3 mb-3 ps ps--active-y role_list">
 										@if($number_preparateur > 1)
 											@foreach($teams_have_order as $key => $team)
 												<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
@@ -154,7 +154,7 @@
 										</div>
 										<div class="table-responsive">
 
-											<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 												<thead>
 													<tr>
 														<th scope="col">Commande</th>
@@ -165,6 +165,19 @@
 														<th class="col-md-1" scope="col">Détail</th>
 													</tr>
 												</thead>
+												<tbody></tbody>
+												<tbody>
+													@for($i = 0; $i < 8; $i++)
+														<tr class="loading_table">
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+															<td class="td-3"><span></span></td>
+														</tr>
+													@endfor
+												</tbody>
 											</table>
 										</div>
 
@@ -175,14 +188,19 @@
 								<div class="modal fade" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
+											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
+												<i style="z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+											</div>	
 											<div class="modal-body">
-												<h2 class="text-center allocationOrdersTitle">Attribuer les commandes entre les préparateurs ?</h2>
+												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
 												<div class="w-100 d-flex justify-content-center">
 													<div class="d-none spinner-border loading_allocation" role="status"> 
 														<span class="visually-hidden">Loading...</span>
 													</div>
-													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Lancer</button>
+													<!-- <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button> -->
+													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
+													<button style="margin-left:15px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
+
 													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>
 											</div>
@@ -248,6 +266,7 @@
 							</div>
 						</div>
 					</div>
+				</div>
 		@endsection
 
 	

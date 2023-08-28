@@ -80,7 +80,7 @@
 														<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.update') }}">
 															@csrf
 															<div class="modal-body">
-																<div class="card-body p-5">
+																<div class="card-body p-3">
 																	<div class="card-title d-flex align-items-center">
 																		<div><i class="bx bx-printer me-1 font-22 text-primary"></i>
 																		</div>
@@ -98,7 +98,7 @@
 																			<input value="{{ $printer->address_ip }}" required name="update_address_ip" type="text" class="form-control" id="update_address_ip">
 																		</div>
 																		<div class="col-md-12">
-																			<label for="update_port" class="form-label">Port</label>
+																			<label for="update_port" class="form-label">Port (9100 par défaut)</label>
 																			<input value="{{ $printer->port }}" name="update_port" type="text" class="form-control" id="update_port">
 																		</div>
 																		<div class="col-md-12">
@@ -141,7 +141,7 @@
 						<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.add') }}">
 							@csrf
 							<div class="modal-body">
-								<div class="card-body p-5">
+								<div class="card-body p-3">
 									<div class="card-title d-flex align-items-center">
 										<div><i class="bx bx-printer me-1 font-22 text-primary"></i>
 										</div>
@@ -158,8 +158,8 @@
 											<input placeholder="192.168.0.0" required name="address_ip" type="text" class="form-control" id="address_ip">
 										</div>
 										<div class="col-md-12">
-											<label for="port" class="form-label">Port</label>
-											<input placeholder="9100" name="port" type="text" class="form-control" id="port">
+											<label for="port" class="form-label">Port (9100 par défaut)</label>
+											<input value="9100" placeholder="9100" name="port" type="text" class="form-control" id="port">
 										</div>
 										<div class="col-md-12">
 											<label for="user_id" class="form-label">Préparateur*</label>

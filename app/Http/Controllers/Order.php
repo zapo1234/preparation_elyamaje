@@ -137,6 +137,8 @@ class Order extends BaseController
               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
                 $list_orders[] = $order;
               }
+            } else {
+              $list_orders[] = $order;
             }
           }
         }
@@ -206,14 +208,6 @@ class Order extends BaseController
         }
       }
 
-      // Supprime du tableau les commandes à ne pas prendre en compte si déjà attribuées
-      foreach($array_user as $key => $array){
-        foreach($array as $key2 => $arr){
-          if(in_array($arr['order_woocommerce_id'], $orders_to_delete)){
-              unset($array_user[$key][$key2]);
-          }
-        }
-      }
 
       // Modifie le status des commandes qui ne sont plus en cours dans woocommerce
       $this->order->updateOrdersById($orders_to_update);
@@ -221,12 +215,12 @@ class Order extends BaseController
       if(count($array_user) > 0){
         // Répartitions des commandes
         foreach($orders as $order){  
+        
           foreach($array_user as $key => $array){
             // Check si commande pas déjà répartie
             if(!in_array($order['id'], $orders_id)){
               $tailles = array_map('count', $array_user);
               $cléMin = array_search(min($tailles), $tailles);
-
               if($key == $cléMin){
                 array_push($array_user[$key], $order);
                 break;
@@ -235,9 +229,31 @@ class Order extends BaseController
           }
         }
 
-        // Insert orders by users
+       
+        
+
+        // Supprime du tableau les commandes à ne pas prendre en compte si déjà attribuées
+        foreach($array_user as $key => $array){
+          foreach($array as $key2 => $arr){
+            if(isset($arr['order_woocommerce_id'])){
+              if(in_array($arr['order_woocommerce_id'], $orders_to_delete)){
+                unset($array_user[$key][$key2]);
+              }
+            } else if(isset($arr['id'])){
+              if(in_array($arr['id'], $orders_to_delete)){
+                unset($array_user[$key][$key2]);
+              }
+            }
+          }
+        }
+
         $this->order->insertOrdersByUsers($array_user);
       }
+    }
+
+    // Désattribue toutes les commandes
+    public function unassignOrders(){
+      $this->order->unassignOrders();
     }
 
     public function ordersPrepared(Request $request){
@@ -325,9 +341,7 @@ class Order extends BaseController
       if($order_id && $user_id){
         $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
         $number_order_attributed = $this->order->getOrdersByUsers();
-
         echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
-      
       } else {
         echo json_encode(["success" => false]);
       }
@@ -392,6 +406,11 @@ class Order extends BaseController
 
       if($order){
 
+        if($order[0]['status'] == "finished"){
+          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+          return;
+        }
+
         $is_distributor = $order[0]['is_distributor'] != null ? true : false;
         
         if($is_distributor){
@@ -400,10 +419,11 @@ class Order extends BaseController
           $check_if_order_done = $this->order->checkIfValidDone($order_id, $barcode_array, $products_quantity);
 
           if(!$check_if_order_done){
-            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !"]);
+            echo json_encode(["success" => false, "message" => "Veuillez vérifier tous les produits !", "verif" => true]);
             return;
           }
         }
+        
         
         $orders = $this->woocommerce->transformArrayOrder($order);
         $orders[0]['emballeur'] = Auth()->user()->name;

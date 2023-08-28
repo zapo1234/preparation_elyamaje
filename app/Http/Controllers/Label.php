@@ -203,7 +203,6 @@ class Label extends BaseController
         $order_id = $request->post('order_id');
 
         $product_order = $this->order->getProductOrder($order_id)->toArray();
-
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
         $column = array_column($label_product_order, "product_id");
 

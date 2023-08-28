@@ -33,7 +33,7 @@
 								<form data-bitwarden-watching="1" method="POST" action="{{ route('role.create') }}">
 									@csrf
 									<div class="modal-body">
-										<div class="card-body p-5">
+										<div class="card-body p-3">
 											<div class="card-title d-flex align-items-center">
 												<div><i class="bx bx-key me-1 font-22 text-primary"></i>
 												</div>
@@ -136,7 +136,7 @@
 														@csrf
 														{{ method_field('PUT') }}
 														<div class="modal-body">
-															<div class="card-body p-5">
+															<div class="card-body p-3">
 																<div class="card-title d-flex align-items-center">
 																	<div><i class="bx bx-key me-1 font-22 text-primary"></i>
 																	</div>
