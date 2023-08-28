@@ -416,8 +416,7 @@ class Order extends BaseController
           return;
         }
 
-        $is_distributor = $order[0]['is_distributor'] != null ? true : false;
-        
+        $is_distributor = false; /* $order[0]['is_distributor'] != null ? true : false; */
         if($is_distributor){
           $barcode_array = $request->post('pick_items');
           $products_quantity = $request->post('pick_items_quantity');
@@ -430,8 +429,7 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
-      dd($orders);
-
+        dd($orders);
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
