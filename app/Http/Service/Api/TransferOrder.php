@@ -456,7 +456,7 @@ class TransferOrder
                         
                         // Create le client...
 
-                        dump($data_tiers);
+                        dd($data_tiers);
                         dd($data_lines);
                       
                         foreach($data_tiers as $data) {
@@ -543,7 +543,8 @@ class TransferOrder
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
-             
+
+              
               // recupérer le premier id de la facture....
              foreach($invoices_asc as $vks){
                $inc = $vks['id'];
@@ -601,6 +602,12 @@ class TransferOrder
                 $id_cl = $id_cl+1;
                 $socid ="";
                 // id  du dernier invoices(facture)
+                // valider invoice
+                 $newCommandeValider = [
+                "idwarehouse"	=> "6",
+                 "notrigger" => "0",
+                ];
+                
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
                  
@@ -636,8 +643,6 @@ class TransferOrder
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
-
-
                  if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
@@ -659,13 +664,6 @@ class TransferOrder
                    "idwarehouse"=>6,
                    "notrigger"=>0,
              ];
-
-                   // valider invoice
-                   $newCommandeValider = [
-                  "idwarehouse"	=> "6",
-                   "notrigger" => "0",
-                  ];
-                  
         
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
@@ -690,8 +688,13 @@ class TransferOrder
               "accountid"=> $account_id, // id du compte bancaire.
           ];
            
-            
-             
+
+              // valider les facture dans dolibar....
+              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               // Lier les factures dolibar  à un moyen de paiement et bank.
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+              // mettre le statut en payé dans la facture  dolibar
+              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
               
     }
