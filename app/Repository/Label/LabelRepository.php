@@ -22,6 +22,7 @@ class LabelRepository implements LabelInterface
          'order_id' => $label['order_id'],
          'label' => $label['label'],
          'tracking_number' => $label['tracking_number'],
+         'label_format' => $label['label_format'],
          'created_at' => date('Y-m-d H:i:s')
      ]);
    }
@@ -33,7 +34,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function getLabelById($label){
-      return $this->model::select('label')->where('id', $label)->get();
+      return $this->model::select('label', 'label_format')->where('id', $label)->get();
    }
 
    public function getParcelNumbersyDate($date){

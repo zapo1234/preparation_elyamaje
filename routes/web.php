@@ -82,6 +82,10 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
     Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 
+    // Colissimo configuration
+    Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
+    Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
+
 });
 
 // PRÉPARATEUR

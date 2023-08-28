@@ -18,7 +18,6 @@ $(document).ready(function() {
                 if(mutation.target.getAttribute('data-progress') != 99){
                     $(".number_order_pending").append('<span class="percent">'+mutation.target.getAttribute('data-progress')+' %</span>')
                 }
-
             }
         }
     };
@@ -276,6 +275,7 @@ $(document).ready(function() {
         ],
 
         "initComplete": function(settings, json) {
+            $(".percent").remove()
             $(".loading_table").remove()
             $(".loading_table_content").removeClass('loading_table_content')
 
