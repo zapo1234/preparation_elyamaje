@@ -276,7 +276,7 @@ class TransferOrder
                                    $woo ="woocommerce";
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce
-                                   $code_client ="WC-$a2$a11-$code";// créer le code client du tiers.
+                                   $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
                                   
                                     $data_tiers[] =[ 
                                    'entity' =>'1',
@@ -686,11 +686,11 @@ class TransferOrder
            
 
               // valider les facture dans dolibar....
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+             // $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                // Lier les factures dolibar  à un moyen de paiement et bank.
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+             //  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
               // mettre le statut en payé dans la facture  dolibar
-              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+             // $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
               
     }
