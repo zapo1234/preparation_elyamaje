@@ -167,7 +167,7 @@ class TransferOrder
                       }
                   }
                 
-
+                  dump($data_list);
                   dd($data_code);
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
