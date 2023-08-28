@@ -57,9 +57,8 @@ class TiersController extends BaseController
          if($token =="iPVP2D4soYuNoYCrRwCtcALoLI9kN6PKrbMyIcTk"){
            $this->tiers->insertiers();
            
-           $message="Des nouveaux clients bien recupérés";
-
-           return $message;
+            $message="L'import des clients à été bien éffectué !";
+            return $message;
 
          }
 
