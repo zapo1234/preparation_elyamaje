@@ -605,8 +605,6 @@ class TransferOrder
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
 
-                  dd($account_name);
-
                   if($account_name==""){
                     $account_name="vir_card";
                   }
