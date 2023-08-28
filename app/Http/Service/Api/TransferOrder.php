@@ -455,18 +455,13 @@ class TransferOrder
                         
                     
                         // Create le client...
-                        dump($data_tiers);
-                        dd($data_lines);
+                        $data_lines =[];
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
                     
-                         foreach($unique_arr as $donnes){
-                         // insérer les details des données de la facture dans dolibarr
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                       }
-                      
+                        
                         // Traiter  Les données des cadeaux .
                         // merger le client et les data coupons.....
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
