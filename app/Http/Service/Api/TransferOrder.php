@@ -223,7 +223,7 @@ class TransferOrder
                              // recupérer id du tiers en fonction de son email...
                              $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                              // recupérer id en fonction du customer id
-                             $fk_tier = array_search($donnees['customer_id'],$data_code);
+                             $fk_tier = array_search($donnees['order_woocommerce_id'],$data_code);
 
                             // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date']; // date recu de woocomerce.
@@ -274,7 +274,7 @@ class TransferOrder
                                    $socid = $id_cl;
                                    $woo ="woocommerce";
                                     $name="";
-                                   $code = $donnees['customer_id'];//customer_id dans woocomerce
+                                   $code = $donnees['order_woocommerce_id'];//customer_id dans woocomerce
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers.
                                   
                                     $data_tiers[] =[ 
@@ -287,6 +287,7 @@ class TransferOrder
                                    'email' => $donnees['billing']['email'],
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
+                                    'code_client'	=> $code_client,
                                     'country_code'=> $donnees['billing']['country']
                                  ];
                                  
@@ -448,7 +449,8 @@ class TransferOrder
                            }
                       }
                         
-                      
+                        dump($data_tiers);
+                        dd($data_lines);
                         // Create le client.
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
