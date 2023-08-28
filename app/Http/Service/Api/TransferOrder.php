@@ -124,7 +124,6 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-            dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
@@ -540,7 +539,7 @@ class TransferOrder
                 $inv = $vk['id'];
               }
 
-              
+              dd($inv);
               // recupérer le premier id de la facture....
              foreach($invoices_asc as $vks){
                $inc = $vks['id'];
