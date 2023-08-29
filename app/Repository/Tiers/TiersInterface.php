@@ -13,5 +13,5 @@ interface TiersInterface
 
    public function gettiersid($id);// recupérer l'utilisateur.
 
-   public function insert($array_tiers);// créer un user direct.
+   public function insert($name,$prenom,$socid,$code_client,$email,$phone,$adresse,$zipcode,$ville,$date_created);// créer un user direct.
 }

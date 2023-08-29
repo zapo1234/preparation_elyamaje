@@ -205,6 +205,7 @@ class TransferOrder
                      $data_options_kdo =[];// données des kdo 
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
+                     $info_tiers_flush = [];// l'array qui va servir a flush dans ma base de données interne le nouveau client.
 
                      // travailler sur le nommenclature de la ref facture
                       $date = date('Y-m-d');
@@ -296,7 +297,20 @@ class TransferOrder
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
-                                   // recupérer un array pour créer un client....
+                                    // recupérer un array pour créer un client via bdd base de données.
+                                  $info_tiers_flush =[
+                                     'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
+                                     'socid'=> $socid,
+                                     'code_client'	=> $code_client,
+                                      'email' => $donnees['billing']['email'],
+                                      'name_alias' => $woo,
+                                      'address' => $donnees['billing']['address_1'],
+                                      'zip' => $donnees['billing']['postcode'],
+                                      'status'=>'1',
+                                      'phone' => $donnees['billing']['phone'],
+                                      'country_code'=> $donnees['billing']['country'],
+                                      'date_created'=> date('Y-m-d H:i:s')
+                                   ];
                               }
                             
                            
@@ -441,6 +455,8 @@ class TransferOrder
                            }
                          }
                         */
+
+                        dd($info_tiers_flush);
                        
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
@@ -464,7 +480,11 @@ class TransferOrder
                           // JOINTRE les produits.
                          }
                      }
-                      
+                         
+                          // Ajouter le client dans la base de données interne 
+                          if(count($info_tiers_flush)!=0){
+                             // 
+                          }
                          // recupérer les cadeaux associé a l'utilisateur......
                           if(count($data_kdo)!=0){
                             $this->dons->inserts($data_kdo);

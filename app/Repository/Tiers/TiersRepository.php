@@ -144,9 +144,20 @@ class TiersRepository implements TiersInterface
 
       }
 
-      public function insert($array_tiers){
+      public function insert($name,$prenom,$socid,$code_client,$email,$phone,$adresse,$zipcode,$ville,$date_created){
          // faire un insert...
-         
+          $tier = new Tier;
+          $tier->nom = $name;
+          $tier->prenom = $prenom;
+          $tier->socid = $socid;
+          $tier->code_client = $code_client;
+          $tier->email = $email;
+          $tier->phone = $phone;
+          $tier->adresse = $adresse;
+          $tier->zip_code = $zipcode;
+          $tier->ville = $ville;
+          $tier->date_created = $date_created;
+          $tier->save();
                  
       }
 
