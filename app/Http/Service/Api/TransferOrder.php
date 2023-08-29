@@ -456,7 +456,7 @@ class TransferOrder
                          }
                         */
 
-                        dd($info_tiers_flush);
+                        dd($data_tiers);
                        
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
