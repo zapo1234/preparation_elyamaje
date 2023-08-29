@@ -432,7 +432,7 @@ class TransferOrder
                            // renvoyer un tableau unique par tiers via le socid...
                           // $temp = array_unique(array_column($data_lines, 'socid'));
                           // $unique_arr = array_intersect_key($data_lines, $temp); dans le cas ou on crée des facture mutiples.
-                          $unique_arr =[];
+                          $unique_arr=[];
                           foreach($data_lines as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
@@ -441,9 +441,9 @@ class TransferOrder
                            }
                       }
                         
-                        // Create le client via Api...
+                    dd($unique_arr);  
                         foreach($data_tiers as $data) {
-                          // insérer les données tiers dans dolibar
+                          // Create le tiers via Api dans dolibarr..
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
                     
