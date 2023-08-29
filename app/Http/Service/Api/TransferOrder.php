@@ -490,12 +490,12 @@ class TransferOrder
              // domp affichage test 
               // recupérer le dernière id des facture 
               // recuperer dans un tableau les ref_client existant id.
-             $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
-	    	    "sortfield" => "t.rowid", 
-	    	    "sortorder" => "DESC", 
-		        "limit" => "1", 
-		        "mode" => "1",
-	       	)
+               $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
+	    	       "sortfield" => "t.rowid", 
+	    	       "sortorder" => "DESC", 
+		           "limit" => "1", 
+		           "mode" => "1",
+	         	)
           	), true);
       	
                // recupérer le premier id de la facture
@@ -508,19 +508,18 @@ class TransferOrder
 	        	)
     	      ), true);
     
-            // recuperer dans un tableau les ref_client existant id.
-            $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
-		        "sortfield" => "t.rowid", 
+             // recuperer dans un tableau les ref_client existant id.
+             $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
+		         "sortfield" => "t.rowid", 
 		         "sortorder" => "DESC", 
 		         "limit" => "1", 
-		        "mode" => "1",
+		          "mode" => "1",
 		      )
         	), true);
 
-              // recupération du dernier id invoices dolibar....
-
-            
-              $inv="";
+              
+               
+               $inv="";
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
               }
@@ -560,28 +559,27 @@ class TransferOrder
                  $dat = date('Y-m-d H:i:s');
          
                  // insert infos dans bdd ...
-                 if($nombre_orders == 0) {
+                 if($nombre_orders= 0) {
                     $label = "Aucune commande transférée";
                  }
-                 elseif($nombre_orders ==1){
-                    $label ="la commande à été transférée dans dolibars le $datetime";
+                  elseif($nombre_orders==1){
+                     $label ="la commande à été transférée dans dolibars le $datetime";
+                  }
+                  else{
+                      $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
                  }
-               else{
-               $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
-              }
-         
-                // insert dans la table 
-                $sucess = new Transfertsucce();
-                $sucess->date = $dat;
-                $sucess->id_commande = $list_id_commande;
-                $sucess->label = $label;
-                $sucess->save();
-                // convertir en entier la valeur.
-                $id_cl = (int)$tiers_ref;
-                $id_cl = $id_cl+1;
-                $socid ="";
-                // id  du dernier invoices(facture)
-                // valider invoice
+                 // insert dans la table 
+                 $sucess = new Transfertsucce();
+                 $sucess->date = $dat;
+                 $sucess->id_commande = $list_id_commande;
+                 $sucess->label = $label;
+                 $sucess->save();
+                 // convertir en entier la valeur.
+                 $id_cl = (int)$tiers_ref;
+                 $id_cl = $id_cl+1;
+                  $socid ="";
+                 // id  du dernier invoices(facture)
+                 // valider invoice
                  $newCommandeValider = [
                 "idwarehouse"	=> "6",
                  "notrigger" => "0",
@@ -622,7 +620,7 @@ class TransferOrder
                    $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
-                 if(in_array($account_name,$array_paiment)){
+                   if(in_array($account_name,$array_paiment)){
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
@@ -635,48 +633,46 @@ class TransferOrder
                        $account_id=6; // PROD
                        $paimentid =6;// PROD
                     }
-                   // $mode reglement de la facture ....
-                   $newCommandepaye = [
-                   "paye"	=> 1,
-                   "statut"	=> 2,
-                   "mode_reglement_id"=>$mode_reglement_id,
-                   "idwarehouse"=>6,
-                   "notrigger"=>0,
-             ];
+                    // $mode reglement de la facture ....
+                    $newCommandepaye = [
+                    "paye"	=> 1,
+                    "statut"	=> 2,
+                    "mode_reglement_id"=>$mode_reglement_id,
+                    "idwarehouse"=>6,
+                    "notrigger"=>0,
+                ];
         
-                 // recupérer la datetime et la convertir timestamp
-                 // liée la facture à un mode de rélgement
-                 // convertir la date en datetime en timestamp...
-                 $datetime = date('d-m-Y H:i:s');
-                 $d = DateTime::createFromFormat(
-                 'd-m-Y H:i:s',
-                  $datetime,
-                 new DateTimeZone('UTC')
-           );
+                  // recupérer la datetime et la convertir timestamp
+                  // liée la facture à un mode de rélgement
+                  // convertir la date en datetime en timestamp...
+                  $datetime = date('d-m-Y H:i:s');
+                  $d = DateTime::createFromFormat(
+                  'd-m-Y H:i:s',
+                   $datetime,
+                   new DateTimeZone('UTC')
+               );
      
-            if ($d === false) {
-              die("Incorrect date string");
-           } else {
+              if($d === false) {
+                     die("Incorrect date string");
+                } else {
                 $date_finale =  $d->getTimestamp(); // conversion de date.
-            }
+               }
       
-              $newbank = [
+               $newbank = [
               "datepaye"=>$date_finale,
               "paymentid"=>6,
               "closepaidinvoices"=> "yes",
               "accountid"=> $account_id, // id du compte bancaire.
-          ];
+               ];
            
-
-              // valider les facture dans dolibar....
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               // valider les facture dans dolibar....
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                // Lier les factures dolibar  à un moyen de paiement et bank.
-              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
               // mettre le statut en payé dans la facture  dolibar
-              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
-              
-    }
+         }
 
   }
      
