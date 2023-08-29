@@ -442,7 +442,8 @@ class TransferOrder
                            }
                       }
 
-                       dump($unique_arr);
+                        
+                       dump($data_tiers);
                        dd($data_lines);
                         
                         // Create le client via Api...
@@ -451,7 +452,7 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
                     
-                         foreach($unique_arr as $donnes){
+                         foreach($data_lines as $donnes){
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
