@@ -8,19 +8,27 @@ $(document).ready(function() {
         "info": false,
         "order": [[6, 'asc']],
         "columnDefs": [
-            { "visible": false, "targets": 6 }
+            { "visible": false, "targets": 6 },
+            { "orderable": false, "targets": 0 }
         ],
         "initComplete": function(settings, json) {
             $(".loading_div").addClass('d-none')
             $("#example").removeClass('d-none')
             $("#example_length select").css('margin-right', '10px')
             $(".category_dropdown").appendTo('.dataTables_length')
+            $(".product_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".category_dropdown").removeClass('d-none')
+            $(".product_dropdown").removeClass('d-none')
             $(".category_dropdown").select2({
                 width: '250px',
             });
+            $(".product_dropdown").select2({
+                width: '100px',
+            });
+
+            $(".select2-container").css('margin-right', '10px')
         }
     })
 })
@@ -28,9 +36,58 @@ $(document).ready(function() {
 $('.category_dropdown').on('change', function(e){
     var category_dropdown = $(this).val();
     $('#example').DataTable()
-    .column(3).search(category_dropdown, true, false)
+    .column(4).search(category_dropdown, true, false)
     .draw();
 })
+
+$('.product_dropdown').on('change', function(e){
+    var category_dropdown = $(this).val();
+    $('#example').DataTable()
+    .column(5).search(category_dropdown, true, false)
+    .draw();
+})
+
+$('body').on('click', '.check_all', function() {
+    if($(this).prop('checked')){
+        $(".update_multiple_products").attr('disabled', false)
+        $('.checkbox_label').each(function( index ) {
+            if($(this).attr('disabled') != "disabled"){
+                $(this).prop('checked', true)
+            }
+        });
+    } else {
+        $(".update_multiple_products").attr('disabled', true)
+        $('.checkbox_label').prop('checked', false)
+    }
+})
+
+$('body').on('click', '.checkbox_label', function() {
+    var checked = 0
+    
+    $('.checkbox_label').each(function( index ) {
+        if($(this).prop('checked')){
+            checked = checked + 1
+        }
+    });
+
+    checked > 0 ? $(".update_multiple_products").attr('disabled', false) : $(".update_multiple_products").attr('disabled', true)
+})
+
+$('body').on('click', '.update_multiple_products', function() {
+
+    var array_products = [];
+
+    $('.checkbox_label').each(function( index ) {
+        if($(this).prop('checked')){
+            array_products.push($(this).attr('data-id'))
+        }
+    })
+
+    $("#products_id").val(array_products.join(','))
+    $("#updateProductsMultiple").modal('show')
+})
+
+
 
 $(".edit_product_location").on('click', function(){
     $(this).hide()

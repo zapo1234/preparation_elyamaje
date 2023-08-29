@@ -13,6 +13,8 @@ interface ProductInterface
 
     public function updateProduct($id_product, $data);
 
+    public function updateMultipleProduct($location, $products_id);
+
     public function getbarcodeproduct();
 }
 

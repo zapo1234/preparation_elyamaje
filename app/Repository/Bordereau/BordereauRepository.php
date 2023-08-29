@@ -17,17 +17,18 @@ class BordereauRepository implements BordereauInterface
    }
 
    public function getBordereaux(){
-      return $this->model::select('bordereau.parcel_number', 'bordereau.bordereau', 'bordereau.created_at as bordereau_created_at', 'labels.*')
+      return $this->model::select('bordereau.parcel_number', 'bordereau.bordereau', 'bordereau.created_at as bordereau_created_at', 'bordereau.label_date', 'labels.*')
       ->join('labels', 'labels.bordereau_id', '=', 'bordereau.parcel_number')
       // ->where('bordereau', '!=', null)
       ->groupBy('labels.order_id')
       ->orderBy('bordereau.created_at', 'DESC')->get();
    }
 
-   public function save($bordereau_id, $bordereau){
+   public function save($bordereau_id, $bordereau, $date){
       return $this->model::insert([
          'parcel_number' => $bordereau_id,
          'bordereau' => $bordereau,
+         'label_date' => $date,
          'created_at' => date('Y-m-d H:i:s')
       ]);
    }

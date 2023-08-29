@@ -74,6 +74,9 @@
 											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
 										</div>
+										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
+											<div class="chronopost_shipping_method_preparateur"></div>
+										@endif
 										<button id="{{ $orders['details']['id'] }}" class="d-none show_order btn">Préparer</button>
 									</div>
 									<div class="progress" id="progress_{{ $orders['details']['id'] }}">
@@ -187,6 +190,9 @@
 											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
 										</div>
+										@if(str_contains($order['details']['shipping_method'], 'chrono'))
+											<div class="chronopost_shipping_method_preparateur"></div>
+										@endif
 										<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 									</div>
 									<div class="progress" id="progress_{{ $order['details']['id'] }}">
@@ -295,11 +301,14 @@
 									<h2>#{{ $order['details']['id'] }}</h2>
 								</div>
 								<div class="w-100">
-									<div class="course-info d-flex justify-content-between align-items-center">
+									<div class="{{ str_contains($order['details']['shipping_method'], 'chrono') ? 'chronopost_shipping_method' : '' }} course-info d-flex justify-content-between align-items-center">
 										<div>
 											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
 										</div>
+										@if(str_contains($order['details']['shipping_method'], 'chrono'))
+											<div class="chronopost_shipping_method_preparateur"></div>
+										@endif
 										<button id="{{ $order['details']['id'] }}" class="show_order btn">Reprendre</button>
 									</div>
 									<div class="progress" id="progress_{{ $order['details']['id'] }}">

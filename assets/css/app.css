@@ -667,6 +667,10 @@ a {
 
 @media (max-width: 650px) { 
 
+	.chronopost_shipping_method_preparateur{
+		margin-bottom: 10px;
+	}
+
 	.colissimo_form{
 		width: 95% !important;
 	}
@@ -6375,7 +6379,8 @@ a{
 	}
 
 	.column3, .column33{
-		width: 10%;
+		width: 15%;
+		min-width: 85px;
 	}	
 }
 
@@ -6915,7 +6920,8 @@ select:focus, input:focus{
 	font-weight: 700 !important;
 }
 
-.generate_label_modal .form-check-input{
+.generate_label_modal .form-check-input,
+.products_table .form-check-input{
 	width: 1.3em !important;
 	height: 1.3em !important;
 	cursor: pointer;
@@ -7577,4 +7583,25 @@ tr:has(.chronopost_shipping){
     background-size: contain;
     height: 25px;
     background-repeat: no-repeat;
+}
+
+.chronopost_shipping_method_preparateur{
+	background-image: url(../images/icons/chronopost.png);
+    width: 125px;
+    background-size: contain;
+    height: 25px;
+    background-repeat: no-repeat;
+}
+
+
+@media (min-width: 460px){
+	.update_multiple_products{
+		margin-right: 15px;
+		margin-bottom: 15px;
+
+	}
+}
+
+.update_multiple_products{
+	margin-bottom: 5px;
 }

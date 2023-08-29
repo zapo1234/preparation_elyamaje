@@ -28,6 +28,7 @@ class ProductRepository implements ProductInterface
    }
 
    public function insertProductsOrUpdate($data){
+
       try{
          // Récupère les produits déjà existants
          try{
@@ -50,6 +51,7 @@ class ProductRepository implements ProductInterface
 
             $difference_local = [];
             $difference_online = [];
+            $product_to_insert = [];
             $product_id_on_local = array_column($data, "product_woocommerce_id");
             $product_id_online = array_column($products_exists, "product_woocommerce_id");
 
@@ -65,34 +67,45 @@ class ProductRepository implements ProductInterface
                }
             }
 
-            // Récupère les données sur wordpress non trouvées en local et les insert
+            // Récupère les produits sur wordpress non trouvées en local pour les insérer
             foreach ($data as $item2) {
                $product_exist_online = array_keys($product_id_online,  $item2['product_woocommerce_id']);
                if(count($product_exist_online) == 0){
-                  $difference_local[] = $item2;
+                  $product_to_insert[] = $item2;
                }
             }
 
+            // INSERT NEW PRODUCTS 
+            foreach ($product_to_insert as $new) {
+               try{
+                  $this->model->insert($new);
+               } catch(Exception $e){
+                  dd($e->getMessage());
+               }
+            }
+
+            // UPDATE PRODUCTS
             if (!empty($difference_local)) {
-               foreach ($difference_local as $diff) {
+               foreach ($difference_local as $diff_local) {
                   try{
-                     $update = $this->model::where('product_woocommerce_id', $diff['product_woocommerce_id'])->update($diff);
+                     $update = $this->model::where('product_woocommerce_id', $diff_local['product_woocommerce_id'])->update($diff_local);
                   } catch(Exception $e){
-                     return $e->getMessage();
+                     dd($e->getMessage());
                   }
          
                   if($update == 0){
-                     $this->model->insert($diff);
+                     $this->model->insert($diff_local);
                   }
                }
             } 
 
+            // DELETE PRODUCTS
             if (!empty($difference_online)) {
-               foreach ($difference_online as $diff) {
+               foreach ($difference_online as $diff_online) {
                   try{
-                     $update = $this->model::where('product_woocommerce_id', $diff['product_woocommerce_id'])->delete();
+                     $update = $this->model::where('product_woocommerce_id', $diff_online['product_woocommerce_id'])->delete();
                   } catch(Exception $e){
-                     return $e->getMessage();
+                     dd($e->getMessage());
                   }
                }
             }
@@ -107,6 +120,10 @@ class ProductRepository implements ProductInterface
 
    public function updateProduct($id_product, $data){
       return $this->model::where('product_woocommerce_id', $id_product)->update($data);
+   }
+
+   public function updateMultipleProduct($location, $products_id){
+      return $this->model::whereIn('product_woocommerce_id', $products_id)->update(['location'=> $location]);
    }
 
    public function getbarcodeproduct(){

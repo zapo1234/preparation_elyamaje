@@ -209,11 +209,13 @@ class Label extends BaseController
         $ids = array_column($bordereaux, "parcel_number");
         foreach($bordereaux as $bordereau){
             $clesRecherchees = array_keys($ids,  $bordereau['parcel_number']);
-            $newDate = date("d/m/Y", strtotime($bordereau['bordereau_created_at']));  
-        
+            $newDate = date("d/m/Y", strtotime($bordereau['bordereau_created_at']));
+            $newDateLabel = date("d/m/Y", strtotime($bordereau['label_date']));  
+            
             $bordereaux_array[$bordereau['parcel_number']] = [
                 'parcel_number' => $bordereau['parcel_number'],
                 'created_at' => $newDate,
+                'label_date' => $newDateLabel,
                 'number_order' => count($clesRecherchees)
             ];
         }
@@ -241,7 +243,7 @@ class Label extends BaseController
                 // Enregistre le bordereau_id dans la table labels liés aux parcelNumber
                 $bordereau_id = $bordereau['<jsonInfos>']['bordereauHeader']['bordereauNumber'];
                 $this->label->saveBordereau($bordereau_id, $parcelNumbers_array);
-                $this->bordereau->save($bordereau_id, $bordereau['<deliveryPaper>']);
+                $this->bordereau->save($bordereau_id, $bordereau['<deliveryPaper>'], $date);
     
                 // $pdf = $bordereau['<deliveryPaper>'];
                 // $headers = [

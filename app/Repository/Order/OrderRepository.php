@@ -199,7 +199,8 @@ class OrderRepository implements OrderInterface
                   'discount' => $order['discount'],
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
-                  'shipping_amount' => $order['shipping_amount']
+                  'shipping_amount' => $order['shipping_amount'],
+                  'shipping_method' => $order['shipping_method']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -218,6 +219,7 @@ class OrderRepository implements OrderInterface
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
                   'shipping_amount' => $order['shipping_amount'],
+                  'shipping_method' => $order['shipping_method']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
