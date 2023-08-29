@@ -457,6 +457,7 @@ class TransferOrder
                          }
                         */
                          
+                        dd($info_tiers_flush);
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -488,10 +489,10 @@ class TransferOrder
                              // 
                              $this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['city'],$info_tiers_flush['date_created']);
                           }
-                         // recupérer les cadeaux associé a l'utilisateur......
+                           // recupérer les cadeaux associé a l'utilisateur......
                           if(count($data_kdo)!=0){
                             $this->dons->inserts($data_kdo);
-                        }
+                         }
 
                          // Activer la facture en payé et attributer un moyen de paiement à la facture.
                         
