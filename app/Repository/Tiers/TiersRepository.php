@@ -101,9 +101,7 @@ class TiersRepository implements TiersInterface
              $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
              $lists = json_decode($listinvoice,true);
 
-             dd($lists);
-
-             $data_ids = array('3087');
+            $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
              // recupérer les données essentiel
              $array_tiers = $this->getallsocid();
@@ -148,7 +146,7 @@ class TiersRepository implements TiersInterface
 
       public function insert($array_tiers){
          // faire un insert...
-         DB::table('tiers')->insert($array_tiers);
+         
                  
       }
 
