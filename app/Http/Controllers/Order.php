@@ -111,7 +111,6 @@ class Order extends BaseController
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){
             $take_order = true;
-
             if(count($order['shipping_lines']) > 0){
               if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
                 $take_order = false;

@@ -7516,15 +7516,6 @@ button[disabled]{
 }
 
 
-
-
-
-
-
-
-
-
-
 @-webkit-keyframes moving-gradient {
 	0% {
 		background-position: -250px 0;
@@ -7570,4 +7561,20 @@ button[disabled]{
 
 .colissimo_form{
 	max-width: 600px;
+}
+
+tr:has(.chronopost_shipping) td{
+	border-left: 1px solid white !important;
+}
+
+tr:has(.chronopost_shipping){
+	--bs-table-accent-bg: rgba(0, 155, 222, 0.3) !important;
+}
+
+.shipping_chrono_logo{
+	background-image: url(../images/icons/chronopost.png);
+    width: 125px;
+    background-size: contain;
+    height: 25px;
+    background-repeat: no-repeat;
 }
