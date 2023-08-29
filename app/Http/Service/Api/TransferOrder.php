@@ -243,10 +243,10 @@ class TransferOrder
                             }
 
                            if($socid!=""){
-                            $data =  $this->tiers->gettiersid($socid);
-                            if(count($data)==0){
+                                 $data =  $this->tiers->gettiersid($socid);
+                              if(count($data)==0){
                               $data_infos_user =[];
-                            }else{
+                              }else{
 
                                    foreach($data as $valu){
                                      $nom =$valu['nom'];
@@ -291,20 +291,16 @@ class TransferOrder
                                     'country_code'=> $donnees['billing']['country']
                                  ];
                                  
-
                                    $data_infos_user = [
                                         'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                         'last_name' =>'',
                                         'email'=>$donnees['billing']['email'],
                                      ];
-
-
-                                     // recupérer un array pour créer un client....
+                                   // recupérer un array pour créer un client....
                               }
                             
                            
-                           
-                             foreach($donnees['line_items'] as $key => $values){
+                               foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
@@ -316,8 +312,7 @@ class TransferOrder
                                       $ref="";
                                      
                                       if($fk_product!=""){
-                                             // details  array article libéllé(product sur la commande) pour dolibarr.
-                                             // recupérer les données du kdo
+                                             // recupérer les données du kdo 
                                             if($values['total'] == 0){
                                                  $data_kdo[] = [
                                                    "order_id" => $donnees['order_id'],
@@ -327,14 +322,11 @@ class TransferOrder
                                                    "real_price"=> $values['real_price'],
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
-                                                  
-                                                   ];
-                                                  // recupérer les produit en kdo avec leur prix initial.
-
-                                                  
-                                                }
+                                                     ];
+                                                      // recupérer les produit en kdo avec leur prix initial.
+                                                 }
                                               
-                                              $tva_product = 20;
+                                               $tva_product = 20;
                                                $data_product[] = [
                                               "multicurrency_subprice"=> floatval($values['subtotal']),
                                               "multicurrency_total_ht" => floatval($values['subtotal']),
@@ -364,8 +356,7 @@ class TransferOrder
                                  }
                            }       
                                   
-                                // verifier si la commande est nouvelle
-                                //lié le client les  produits qui compose son achat .
+                                // verifier si la commande n'est pas encore traité..
                                 if(isset($key_commande[$donnees['order_id']])==false) {
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       $adrien ="adrien";
@@ -378,7 +369,7 @@ class TransferOrder
                                        ];
                                       
                                        
-                                        // pour les factures non distributeurs...
+                                        // liée la facture à l'utilisateur via un socidet le details des produits
                                         $d=1;
                                         $ref="";
                                         $cb ="CB";
@@ -417,8 +408,8 @@ class TransferOrder
 
                                    }
                                     else{
-                                         $data_tiers = [];
-                                         $data_kdo = [];// si le details est deja crée via un order_id.
+                                         $data_tiers=[];
+                                         $data_kdo =[];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
                                          $data_options_kdo =[];
                                          $account="";
@@ -438,13 +429,11 @@ class TransferOrder
                            $id_commande_exist = array_unique($id_commande_existe);
                            // recupérer le tableau
                            $this->setDataidcommande($id_commande_exist);
-                           // renvoyer un tableau unique par tiers via le socid.
-                           // données des non distributeurs
-                           $temp = array_unique(array_column($data_lines, 'socid'));
-                           $unique_arr = array_intersect_key($data_lines, $temp);
-
-                           // trier les produits qui ne sont pas en kdo
-                          foreach($unique_arr as $r => $val){
+                           // renvoyer un tableau unique par tiers via le socid...
+                          // $temp = array_unique(array_column($data_lines, 'socid'));
+                          // $unique_arr = array_intersect_key($data_lines, $temp); dans le cas ou on crée des facture mutiples.
+                          $unique_arr =[];
+                          foreach($data_lines as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
                                 unset($unique_arr[$r]['lines'][$q]); // filtrer le panier produit qui appartient uniquement que au user anec fonction de socid.
@@ -452,7 +441,7 @@ class TransferOrder
                            }
                       }
                         
-                        // Create le client...
+                        // Create le client via Api...
                         foreach($data_tiers as $data) {
                           // insérer les données tiers dans dolibar
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -463,7 +452,6 @@ class TransferOrder
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
                       
-                        // Traiter  Les données des cadeaux .
                         // merger le client et les data coupons.....
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                         $tiers_exist = $this->don->gettiers();
@@ -481,15 +469,11 @@ class TransferOrder
                             $this->dons->inserts($data_kdo);
                         }
 
-                         // activer le statut payé et lié les paiments  sur les factures.
+                         // Activer la facture en payé et attributer un moyen de paiement à la facture.
                          if(count($data_lines)!=0){
                              $this->invoicespay($orders);
                           }
-                          // dd('succes of opération');
-                          // initialiser un array recuperer les ref client.
-                          //return view('apidolibar');
-                   
-                          dd('succès');
+                           dd('succès');
                 
         }
         
