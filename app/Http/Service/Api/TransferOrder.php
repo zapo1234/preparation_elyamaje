@@ -123,7 +123,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+                 dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey =$this->api->getkeydolibar();
@@ -455,8 +455,6 @@ class TransferOrder
                            }
                          }
                         */
-
-                        dd($info_tiers_flush);
                        
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
@@ -484,6 +482,7 @@ class TransferOrder
                           // Ajouter le client dans la base de données interne 
                           if(count($info_tiers_flush)!=0){
                              // 
+                             $this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['date_created']);
                           }
                          // recupérer les cadeaux associé a l'utilisateur......
                           if(count($data_kdo)!=0){
