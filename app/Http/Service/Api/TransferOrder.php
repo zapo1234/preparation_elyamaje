@@ -429,24 +429,23 @@ class TransferOrder
                            $id_commande_exist = array_unique($id_commande_existe);
                            // recupérer le tableau
                            $this->setDataidcommande($id_commande_exist);
-                           // renvoyer un tableau unique par tiers via le socid...
-                           $temp = array_unique(array_column($data_lines, 'socid'));
+                           // renvoyer un tableau unique par tiers via le socid...au cas de creation multiple de facture...
+                         /* $temp = array_unique(array_column($data_lines, 'socid'));
                            $unique_arr = array_intersect_key($data_lines, $temp);
-
-                           // trier les produits qui ne sont pas en kdo
+                          // trier les produits qui ne sont pas en kdo
                           foreach($unique_arr as $r => $val){
                            foreach($val['lines'] as $q => $vak) {
                              if($val['socid']!=$vak['ref_ext']){
                                 unset($unique_arr[$r]['lines'][$q]); // filtrer le panier produit qui appartient uniquement que au user anec fonction de socid.
                              }
                            }
-                      }
-
+                         }
+                        */
                        
-                       // Create le client via Api...
+                         // Create le client via Api...
                         foreach($data_tiers as $data) {
-                          // insérer les données tiers dans dolibar
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                           // insérer les données tiers dans dolibar
+                           $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                        }
                     
                          foreach($data_lines as $donnes){
