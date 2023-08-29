@@ -175,6 +175,7 @@ class OrderRepository implements OrderInterface
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
+         ->orderByRaw("CASE WHEN prepa_orders.shipping_method LIKE '%chrono%' THEN 0 ELSE 1 END")
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
@@ -486,6 +487,7 @@ class OrderRepository implements OrderInterface
 
                $this->model->insert($ordersToInsert);
                DB::table('products_order')->insert($productsToInsert);
+
             } else {
                $update_one_order_attribution =  $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
             }

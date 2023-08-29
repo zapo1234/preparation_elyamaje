@@ -466,10 +466,10 @@ class Admin extends BaseController
     public function colissimo(){
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $list_format = [
-            'PDF_A4_300dpi_UL' => 'Impression bureautique en PDF, de dimension A4 et de résolution 300dpi',
-            'PDF_10x15_300dpi_UL' => 'Impression bureautique en PDF, de dimension 10cm par 15cm, et de résolution 300dpi',
-            'ZPL_10x15_203dpi_UL' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi',
-            'ZPL_10x15_300dpi_UL' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 300dpi'
+            'PDF_A4_300dpi' => 'Impression bureautique en PDF, de dimension A4 et de résolution 300dpi',
+            'PDF_10x15_300dpi' => 'Impression bureautique en PDF, de dimension 10cm par 15cm, et de résolution 300dpi',
+            'ZPL_10x15_203dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi',
+            'ZPL_10x15_300dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 300dpi'
         ];
 
         return view('admin.colissimo', ['list_format' => $list_format, 'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);

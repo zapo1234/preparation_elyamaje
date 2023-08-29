@@ -69,6 +69,7 @@ $(document).ready(function() {
 
                     order['shipping_lines'].forEach(function(sp){
                         shipping_amount = sp['total'];
+                        shipping_method = sp['method_id'];
                     })
 
                     return {
@@ -93,6 +94,7 @@ $(document).ready(function() {
                         users: users,
                         products_pick: products_pick,
                         shipping_amount: shipping_amount,
+                        shipping_method: shipping_method
                     };
                 });
                 return combinedData;
@@ -103,7 +105,7 @@ $(document).ready(function() {
             { 
             data: null, 
                 render: function(data, type, row) {
-                    return "#"+row.id+' '+row.first_name + ' ' + row.last_name;
+                    return `<div> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}</div>`
                 }
             },
             {data: null,
@@ -151,7 +153,7 @@ $(document).ready(function() {
             {data: null,
                 render: function(data, type, row) {
                     return `
-                        <div id="order_total_${row.id}" class="w-100 d-flex flex-column">
+                        <div id="order_total_${row.id}" class="${row.shipping_method.includes("chrono") ? "chronopost_shipping" : ""} w-100 d-flex flex-column">
                             ${row.total != 0.00 ? '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
                             <span>TVA: <strong class="total_tax_order">` +row.total_tax+`</strong></span>
                             <span>Payé: <strong class="total_ttc_order">`+parseFloat(row.total).toFixed(2)+`</strong></span>
@@ -232,7 +234,11 @@ $(document).ready(function() {
                                 <div class="modal-content">
                                 <div class="modal-body">
                                     <div class="mt-2 d-flex flex-column w-100 customer_billing">
-                                        <span class="customer_detail_title badge bg-dark">Facturation</span>
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <span class="customer_detail_title badge bg-dark">Facturation</span>
+                                            ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                                        </div>
+                                        
                                         <span>${row.billing.first_name} ${row.billing.last_name}</span>
                                         <div>
                                             <i class="bx bx-envelope"></i>
@@ -272,9 +278,27 @@ $(document).ready(function() {
                 }
 
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    return row.shipping_method.includes("chrono") ? "chrono" : "classic"
+                }
+            },
         ],
 
+        "columnDefs": [
+            { "visible": false, "targets": 6 }
+        ],
         "initComplete": function(settings, json) {
+            $("#example_length select").css('margin-right', '10px')
+            $(".shipping_dropdown").appendTo('.dataTables_length')
+            $(".dataTables_length").css('display', 'flex')
+            $(".dataTables_length").addClass('select2_custom')
+            $(".shipping_dropdown").removeClass('d-none')
+            $(".shipping_dropdown").select2({
+                width: '250px',
+            });
+
+
             $(".percent").remove()
             $(".loading_table").remove()
             $(".loading_table_content").removeClass('loading_table_content')
@@ -329,6 +353,13 @@ $(document).ready(function() {
             return nRow;
 
         }
+    })
+
+    $('.shipping_dropdown').on('change', function(e){
+        var category_dropdown = $(this).val();
+        $('#example').DataTable()
+        .column(6).search(category_dropdown, true, false)
+        .draw();
     })
 
 })

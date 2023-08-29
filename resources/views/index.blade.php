@@ -140,6 +140,13 @@
 										</div>
 										<div class="table-responsive">
 
+											<!-- chronopost -->
+											<select class="d-none select2_custom shipping_dropdown input_form_type">
+												<option value="">Chronopost</option>
+												<option value="chrono">Oui</option>
+												<option value="classic">Non</option>
+											</select>
+
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 												<thead>
 													<tr>
@@ -149,6 +156,7 @@
 														<th scope="col">État</th>
 														<th scope="col">Total</th>
 														<th class="col-md-1" scope="col">Détail</th>
+														<th class="col-md-1" scope="col">Shipping</th>
 													</tr>
 												</thead>
 												<tbody></tbody>

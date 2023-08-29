@@ -113,6 +113,7 @@ class Label extends BaseController
 
     public function labelShow(Request $request){
         $blob = $this->label->getLabelById($request->post('label_id'));
+        $colissimo = $this->colissimoConfiguration->getConfiguration();
 
         // Traitement selon format étiquette
         switch ($blob[0]->label_format) {
@@ -125,7 +126,9 @@ class Label extends BaseController
                 return Response::make($fileContent, 200, $headers);
                 break;
             case "ZPL":
-
+                $colissimo = count($colissimo) > 0 ? $colissimo[0] : null;
+                // dd($colissimo->address_ip);
+                
                 // ------- IMPRESSION -------
                 
                 // $barcode = "SLF-". sprintf('%02d', 0);
