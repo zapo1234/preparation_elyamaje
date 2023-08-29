@@ -457,7 +457,6 @@ class TransferOrder
                          }
                         */
                          
-                        dd($info_tiers_flush);
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -468,7 +467,11 @@ class TransferOrder
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
-                      
+
+                         // mettre la facture en status en payé et l'attribue un compte bancaire.
+                         if(count($data_lines)!=0){
+                          $this->invoicespay($orders);
+                        }
                         // merger le client et les data coupons.....
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                         $tiers_exist = $this->don->gettiers();
@@ -479,8 +482,7 @@ class TransferOrder
                           $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                           // JOINTRE les produits.
                          }
-                     }
-                         
+                      }
                           // Ajouter le client dans la base de données interne 
                           if(count($info_tiers_flush)!=0){
                              // 
@@ -492,9 +494,7 @@ class TransferOrder
                         }
 
                          // Activer la facture en payé et attributer un moyen de paiement à la facture.
-                         if(count($data_lines)!=0){
-                             $this->invoicespay($orders);
-                          }
+                        
                            dd('succès');
                 
         }
