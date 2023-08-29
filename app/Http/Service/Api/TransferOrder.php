@@ -424,6 +424,7 @@ class TransferOrder
                                    }
                                     else{
                                          $data_tiers=[];
+                                         $info_tiers_flush =[];
                                          $data_kdo =[];// si le details est deja crée via un order_id.
                                          $data_infos_user =[];
                                          $data_options_kdo =[];
