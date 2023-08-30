@@ -665,7 +665,7 @@ class TransferOrder
         
                   // recupérer la datetime et la convertir timestamp
                   // liée la facture à un mode de rélgement
-                  // convertir la date en datetime en timestamp...
+                  // convertir la date en datetime en timestamp.....
                   $datetime = date('d-m-Y H:i:s');
                   $d = DateTime::createFromFormat(
                   'd-m-Y H:i:s',
