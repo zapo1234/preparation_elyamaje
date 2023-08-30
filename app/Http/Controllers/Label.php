@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-
 use Exception;
-use Labelary\Client;
-use App\Helper\Helper;
+use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Bordereau\BordereauRepository;
-use App\Http\Service\Woocommerce\WoocommerceService;
 use App\Repository\Colissimo\ColissimoRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
+
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
@@ -126,19 +127,32 @@ class Label extends BaseController
                 return Response::make($fileContent, 200, $headers);
                 break;
             case "ZPL":
+                exit;
+
                 $colissimo = count($colissimo) > 0 ? $colissimo[0] : null;
-                // dd($colissimo->address_ip);
-                
                 // ------- IMPRESSION -------
+                $zpl = $blob[0]->label;
+             
+                // $usbPort = "USB003"; // Modifiez selon votre port
+                // try {
+                //     $printer = fopen($usbPort, 'w');
+                //     if (!$printer) {
+                //         dd("ddd");
+                //         throw new \Exception("Impossible d'ouvrir le port d'imprimante.");
+                //     }
+                //     fwrite($printer, $zplContent);
+                //     dump($printer);
+                //     fclose($printer)
+                //     die;
+                //     return response()->json(['message' => 'Impression ZPL envoyée avec succès']);
+                // } catch (\Exception $e) {
+                //     dd($e->getMessage());
+                // }
                 
-                // $barcode = "SLF-". sprintf('%02d', 0);
-                // Helper::printBarcode($barcode);
+                #close the connection 
+             
 
                 // ------- IMPRESSION -------
-
-
-
-
 
 
                 // ------- VISUALISATION -------
