@@ -32,8 +32,6 @@
 										<div class="d-flex">
 											<button data-order="{{ $histo['details']['id'] }}" data-product="{{ count($histo['items']) }}" data-preparateur="{{ $histo['preparateur'] ?? Auth()->user()->name }}" data-customer="{{ $histo['details']['first_name'].' '.$histo['details']['last_name'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history_code btn1"><i class="font-20 bx bx-barcode-reader"></i></button>
 											<button style="margin-left:10px" data-order="{{ $histo['details']['id'] }}" id="{{ $histo['details']['id'] }}" class="show_order_history btn2"><i class="font-20 bx bx-detail"></i></button>
-
-											<!-- <button id="{{ $histo['details']['id'] }}" class="show_order_history btn">Détail</button> -->
 										</div>
 									</div>
 								</div>

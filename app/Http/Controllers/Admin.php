@@ -150,7 +150,7 @@ class Admin extends BaseController
                     'barcode' => $barcode,
                     'status' => $product['status'],
                     'manage_stock' => $product['manage_stock'],
-                    'stock' => $product['stock_quantity'],
+                    'stock' => $product['stock_quantity'] ?? 0,
                     'is_variable' => 1,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
@@ -177,7 +177,7 @@ class Admin extends BaseController
                             'barcode' => $product['barcodes_list'][$key],
                             'status' => $product['status'],
                             'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
-                            'stock' => $product['stock_quantity_variation'][$key],
+                            'stock' => $product['stock_quantity_variation'][$key] ?? 0,
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
@@ -196,7 +196,7 @@ class Admin extends BaseController
                     'barcode' => $barcode,
                     'status' => $product['status'],
                     'manage_stock' => $product['manage_stock'],
-                    'stock' => $product['stock_quantity'],
+                    'stock' => $product['stock_quantity'] ?? 0,
                     'is_variable' => 0,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
@@ -223,6 +223,18 @@ class Admin extends BaseController
         ];
 
         echo json_encode(['success' => $this->products->updateProduct($id_product, $data)]);
+    }
+
+    public function updateProductsMultiple(Request $request){
+
+        $location = $request->post('location');
+        $products_id = explode(',', $request->post('products_id'));
+
+        if($this->products->updateMultipleProduct($location, $products_id)){
+            return redirect()->route('admin.products')->with('success', 'Produits modifiés avec succès !');
+        } else {
+            return redirect()->route('admin.products')->with('error', 'Les produits n\'ont pas été modifiés');
+        }
     }
 
     public function updateOrderCategory(Request $request){

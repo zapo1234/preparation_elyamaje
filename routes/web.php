@@ -64,6 +64,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
     Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
     Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
+    Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
 

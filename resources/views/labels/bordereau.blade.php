@@ -69,6 +69,7 @@
                     <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
                         <thead>
                             <tr>
+                                <th>Généré le</th>
                                 <th>Date</th>
                                 <th class="col-md-2">Nombre de commandes</th>
                                 <th class="col-md-3">Bordereau</th>
@@ -78,14 +79,15 @@
 
                             @foreach($bordereaux as $bordereau)
                                 <tr>
-                                    <td data-label="Date">{{ $bordereau['created_at'] }}</td>
+                                    <td data-label="Généré le">{{ $bordereau['created_at'] }}</td>
+                                    <td data-label="Date">{{ $bordereau['label_date'] }}</td>
                                     <td data-label="Nombre de commandes">{{ $bordereau['number_order'] }}</td>
                                     <td data-label="Bordereau">
                                         <div class="d-flex w-100 justify-content-between">
                                             <form method="POST" action="{{ route('bordereau.download') }}">
                                                 @csrf
                                                 <input name="bordereau_id" type="hidden" value="{{ $bordereau['parcel_number'] }}">
-                                                <button type="submit" class="download_bordereau_button"><i class="bx bx-show-alt"></i>Bordereau n°{{ $bordereau['parcel_number'] }} <span class="label_created_at text-secondary">({{ $bordereau['created_at'] }})</span></button>
+                                                <button type="submit" class="download_bordereau_button"><i class="bx bx-show-alt"></i>Bordereau n°{{ $bordereau['parcel_number'] }} <span class="label_created_at text-secondary">({{ $bordereau['label_date'] }})</span></button>
                                             </form>
                                             <div>
                                                 <button title="Supprimer le bordereau" data-id="{{ $bordereau['parcel_number'] }}" type="submit" class="delete_bordereau download_label_button"><i class="bx bx-trash"></i></button>

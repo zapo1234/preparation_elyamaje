@@ -70,7 +70,7 @@ class Api
     $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
-      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products?per_page=".$per_page."&page=".$page."&status=publish");
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products?per_page=".$per_page."&page=".$page);
       return $response->json();
 
     } catch(Exception $e){

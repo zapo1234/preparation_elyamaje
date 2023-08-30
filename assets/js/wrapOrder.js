@@ -33,7 +33,7 @@ $(".validate_order").on("click", function(){
             $(".detail_shipping_billing").append(`
                 <div class="to_hide detail_shipping_billing_div">
                     <div class="d-flex w-100 justify-content-around mb-3">
-                        <span style="width: fit-content" class="badge bg-primary shipping_method">${order[0].shipping_method_detail ?? ''}</span>
+                        ${order[0].shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
                         <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
                     </div>
 
