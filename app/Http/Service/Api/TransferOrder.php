@@ -496,7 +496,6 @@ class TransferOrder
 
                          // Activer la facture en payé et attributer un moyen de paiement à la facture.
                         
-                           dd('succès');
                 
         }
         
@@ -635,7 +634,7 @@ class TransferOrder
                    }
 
                    else{
-                       $mode_reglement_id="";
+                       $mode_reglement_id=3;
                    }
 
                   
