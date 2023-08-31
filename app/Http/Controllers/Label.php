@@ -126,9 +126,8 @@ class Label extends BaseController
             case "ZPL":
 
 
-                $test = fopen("Datamax", "wb");
-                dd($test);
-
+                $url = "http://localhost:8000/imprimerEtiquetteThermique?port=USB003&protocole=DATAMAX&adresseIp=&etiquette=".$blob[0]->label;
+                dd($url);
                 $connector = new WindowsPrintConnector("Datamax");
                 $printer = new Printer($connector);
 
