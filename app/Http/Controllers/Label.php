@@ -132,7 +132,7 @@ class Label extends BaseController
                 fwrite($handle, $zpl);
                 fclose($handle);
                 $file =  "label.zpl";
-                copy($file, "//Datamax"); 
+                copy($file, " \\192.168.0.1\Datamax"); 
                 unlink($file);
                 die;
 
