@@ -115,7 +115,7 @@ class Label extends BaseController
 
      
 
-        $connector = new NetworkPrintConnector("192.168.0.252", 9100);
+        $connector = new NetworkPrintConnector("192.168.0.252", 80);
         // $connector = new WindowsPrintConnector("EPSON TM-T20II Receipt5");
         $printer = new Printer($connector);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
