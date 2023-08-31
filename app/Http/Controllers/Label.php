@@ -15,6 +15,7 @@ use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
@@ -115,6 +116,7 @@ class Label extends BaseController
      
 
         $connector = new NetworkPrintConnector("192.168.0.252", 9100);
+        // $connector = new WindowsPrintConnector("EPSON TM-T20II Receipt5");
         $printer = new Printer($connector);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->qrCode("Adrien", Printer::QR_ECLEVEL_L, 10);
