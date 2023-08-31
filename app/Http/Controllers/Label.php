@@ -126,14 +126,14 @@ class Label extends BaseController
             case "ZPL":
 
 
-                $connector = new WindowsPrintConnector("LPT1");
-                $printer = new Printer($connector);
+                // $connector = new WindowsPrintConnector("LPT1");
+                // $printer = new Printer($connector);
 
-                $printer->textRaw($blob[0]->label);
-                $printer->cut();
-                $printer->close();
+                // $printer->textRaw($blob[0]->label);
+                // $printer->cut();
+                // $printer->close();
 
-                dd($printer);
+                // dd($printer);
                 // ------- VISUALISATION ZPL EN PDF -------
 
                 $zpl = $blob[0]->label;
@@ -142,7 +142,7 @@ class Label extends BaseController
                 fwrite($handle, $zpl);
                 fclose($handle);
                 $file =  "label.zpl";
-                copy($file, "//DESKTOP-TFGT85T/Datamax"); 
+                copy($file, "//109.234.162.138/Datamax"); 
                 
                 unlink($file);
                 die;
