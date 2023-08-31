@@ -125,6 +125,10 @@ class Label extends BaseController
                 break;
             case "ZPL":
 
+
+                $test = fopen("Datamax", "wb");
+                dd($test);
+
                 $connector = new WindowsPrintConnector("Datamax");
                 $printer = new Printer($connector);
 
