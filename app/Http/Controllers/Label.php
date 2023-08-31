@@ -113,20 +113,6 @@ class Label extends BaseController
         $blob = $this->label->getLabelById($request->post('label_id'));
         $colissimo = $this->colissimoConfiguration->getConfiguration();
 
-     
-
-        $connector = new NetworkPrintConnector("192.168.0.252", 80);
-        // $connector = new WindowsPrintConnector("EPSON TM-T20II Receipt5");
-        $printer = new Printer($connector);
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->qrCode("Adrien", Printer::QR_ECLEVEL_L, 10);
-        $printer->text("\nAdrien - 10 produits\n");
-        $printer->feed();
-        $printer->cut();
-        $printer->close();
-
-        dd("dd");
-
         // Traitement selon format étiquette
         switch ($blob[0]->label_format) {
             case "PDF":
