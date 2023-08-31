@@ -305,6 +305,7 @@ class Label extends BaseController
                         return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
 
                         // ----- Print label to printer Datamax -----
+                        if($label['label_format'] == "ZPL"){
                             $zpl = $label['label'];
                             $file =  "label.zpl";
                             $handle = fopen($file, 'w');
@@ -313,6 +314,7 @@ class Label extends BaseController
                             $file =  "label.zpl";
                             copy($file, "//localhost/Datamax"); 
                             unlink($file);
+                        }
                         // ----- Print label to printer Datamax -----
                     } 
                   } else {

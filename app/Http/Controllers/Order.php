@@ -495,14 +495,16 @@ class Order extends BaseController
             echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
 
             // ----- Print label to printer Datamax -----
-            $zpl = $label['label'];
-            $file =  "label.zpl";
-            $handle = fopen($file, 'w');
-            fwrite($handle, $zpl);
-            fclose($handle);
-            $file =  "label.zpl";
-            copy($file, "//localhost/Datamax"); 
-            unlink($file);
+            if($label['label_format'] == "ZPL"){
+              $zpl = $label['label'];
+              $file =  "label.zpl";
+              $handle = fopen($file, 'w');
+              fwrite($handle, $zpl);
+              fclose($handle);
+              $file =  "label.zpl";
+              copy($file, "//localhost/Datamax"); 
+              unlink($file);
+            }
             // ----- Print label to printer Datamax -----
 
           } else {
