@@ -126,7 +126,7 @@ class Label extends BaseController
             case "ZPL":
 
 
-                $connector = new NetworkPrintConnector("Datamax");
+                $connector = new NetworkPrintConnector("192.168.0.9");
                 $printer = new Printer($connector);
 
                 $printer->textRaw($blob[0]->label);
