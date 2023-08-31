@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
@@ -14,11 +13,8 @@ use App\Repository\Bordereau\BordereauRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
-
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
@@ -116,6 +112,19 @@ class Label extends BaseController
         $blob = $this->label->getLabelById($request->post('label_id'));
         $colissimo = $this->colissimoConfiguration->getConfiguration();
 
+     
+
+        $connector = new NetworkPrintConnector("192.168.0.252", 9100);
+        $printer = new Printer($connector);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->qrCode("Adrien", Printer::QR_ECLEVEL_L, 10);
+        $printer->text("\nAdrien - 10 produits\n");
+        $printer->feed();
+        $printer->cut();
+        $printer->close();
+
+        dd("dd");
+
         // Traitement selon format étiquette
         switch ($blob[0]->label_format) {
             case "PDF":
@@ -127,27 +136,22 @@ class Label extends BaseController
                 return Response::make($fileContent, 200, $headers);
                 break;
             case "ZPL":
-                exit;
+       
+                // $colissimo = count($colissimo) > 0 ? $colissimo[0] : null;
+                // // ------- IMPRESSION -------
+                // $zpl = $blob[0]->label;
 
-                $colissimo = count($colissimo) > 0 ? $colissimo[0] : null;
-                // ------- IMPRESSION -------
-                $zpl = $blob[0]->label;
-             
-                // $usbPort = "USB003"; // Modifiez selon votre port
-                // try {
-                //     $printer = fopen($usbPort, 'w');
-                //     if (!$printer) {
-                //         dd("ddd");
-                //         throw new \Exception("Impossible d'ouvrir le port d'imprimante.");
-                //     }
-                //     fwrite($printer, $zplContent);
-                //     dump($printer);
-                //     fclose($printer)
-                //     die;
-                //     return response()->json(['message' => 'Impression ZPL envoyée avec succès']);
-                // } catch (\Exception $e) {
-                //     dd($e->getMessage());
-                // }
+                // $file =  "label.zpl";
+                // $handle = fopen($file, 'w');
+                // fwrite($handle, $zpl);
+                // fclose($handle);
+                // // $file =  "label.zpl";
+                // copy($file, "//localhost/Datamax"); 
+            
+                // die;
+
+    
+               
                 
                 #close the connection 
              
@@ -157,28 +161,28 @@ class Label extends BaseController
 
                 // ------- VISUALISATION -------
 
-                // $zpl = $blob[0]->label;
-                // $curl = curl_init();
-                // curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
-                // curl_setopt($curl, CURLOPT_POST, TRUE);
-                // curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
-                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                // curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
-                // $result = curl_exec($curl);
+                $zpl = $blob[0]->label;
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                curl_setopt($curl, CURLOPT_POST, TRUE);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                $result = curl_exec($curl);
                 
-                // if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
-                //     $file = fopen("label.pdf", "w"); // change file name for PNG images
-                //     fwrite($file, $result);
-                //     fclose($file);
-                // } else {
-                //     print_r("Error: $result");
-                // }
+                if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
+                    $file = fopen("label.pdf", "w"); // change file name for PNG images
+                    fwrite($file, $result);
+                    fclose($file);
+                } else {
+                    print_r("Error: $result");
+                }
                 
-                // curl_close($curl);
-                // $headers = [
-                //     'Content-Type' => 'application/pdf',
-                // ];
-                // return Response::make($result, 200, $headers);
+                curl_close($curl);
+                $headers = [
+                    'Content-Type' => 'application/pdf',
+                ];
+                return Response::make($result, 200, $headers);
 
                  // ------- VISUALISATION -------
                 break;

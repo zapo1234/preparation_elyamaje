@@ -14,7 +14,7 @@ class Colissimo
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
-      
+        
         if($productCode){
             try {
                 $requestParameter = [
@@ -244,6 +244,7 @@ class Colissimo
     }
 
     protected function getProductCode($order){
+
         $productCode_array = [
             'lpc_expert'     => 'DOS',
             'lpc_nosign'     => 'DOM',
@@ -251,7 +252,15 @@ class Colissimo
             'local_pickup'   => false
         ];
 
-        return $order['product_code'] ?? $productCode_array[$order['shipping_method']];
+        if($order['product_code']){
+            return $order['product_code'];
+        } else {
+            if(isset($productCode_array[$order['shipping_method']])){
+                return $productCode_array[$order['shipping_method']];
+            } else {
+                return false;
+            }
+        }
     }
 
     protected function getInsuranceValue($product_code, $order){
