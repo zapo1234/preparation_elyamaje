@@ -124,32 +124,10 @@ class Label extends BaseController
                 return Response::make($fileContent, 200, $headers);
                 break;
             case "ZPL":
-       
-                // $colissimo = count($colissimo) > 0 ? $colissimo[0] : null;
-                // // ------- IMPRESSION -------
-                // $zpl = $blob[0]->label;
 
-                // $file =  "label.zpl";
-                // $handle = fopen($file, 'w');
-                // fwrite($handle, $zpl);
-                // fclose($handle);
-                // // $file =  "label.zpl";
-                // copy($file, "//localhost/Datamax"); 
-            
-                // die;
-
-    
-               
-                
-                #close the connection 
-             
-
-                // ------- IMPRESSION -------
-
-
-                // ------- VISUALISATION -------
-
+                // ------- VISUALISATION ZPL EN PDF -------
                 $zpl = $blob[0]->label;
+
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
                 curl_setopt($curl, CURLOPT_POST, TRUE);
@@ -157,22 +135,13 @@ class Label extends BaseController
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
                 curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
                 $result = curl_exec($curl);
-                
-                if (curl_getinfo($curl, CURLINFO_HTTP_CODE) == 200) {
-                    $file = fopen("label.pdf", "w"); // change file name for PNG images
-                    fwrite($file, $result);
-                    fclose($file);
-                } else {
-                    print_r("Error: $result");
-                }
-                
+
                 curl_close($curl);
                 $headers = [
                     'Content-Type' => 'application/pdf',
                 ];
-                return Response::make($result, 200, $headers);
 
-                 // ------- VISUALISATION -------
+                return Response::make($result, 200, $headers);
                 break;
         }
     }
@@ -333,7 +302,18 @@ class Label extends BaseController
                   if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
                     
                     if($label['label']){
-                      return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                        return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+
+                        // ----- Print label to printer Datamax -----
+                            $zpl = $label['label'];
+                            $file =  "label.zpl";
+                            $handle = fopen($file, 'w');
+                            fwrite($handle, $zpl);
+                            fclose($handle);
+                            $file =  "label.zpl";
+                            copy($file, "//localhost/Datamax"); 
+                            unlink($file);
+                        // ----- Print label to printer Datamax -----
                     } 
                   } else {
                     return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');

@@ -436,7 +436,7 @@ class Order extends BaseController
         // envoi des données pour créer des facture via api dolibar....
         $this->factorder->Transferorder($orders);
 
-        // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+        // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
         $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
         $this->order->updateOrdersById([$order_id], "finished");
         
@@ -493,6 +493,18 @@ class Order extends BaseController
 
           if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
             echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+
+            // ----- Print label to printer Datamax -----
+            $zpl = $label['label'];
+            $file =  "label.zpl";
+            $handle = fopen($file, 'w');
+            fwrite($handle, $zpl);
+            fclose($handle);
+            $file =  "label.zpl";
+            copy($file, "//localhost/Datamax"); 
+            unlink($file);
+            // ----- Print label to printer Datamax -----
+
           } else {
             echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
           }
