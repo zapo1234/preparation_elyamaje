@@ -129,15 +129,14 @@ class Label extends BaseController
                 // $printer = new Printer($connector);
                 // dd($printer);
                 // ------- VISUALISATION ZPL EN PDF -------
+
                 $zpl = $blob[0]->label;
                 $file =  "label.zpl";
                 $handle = fopen($file, 'w');
                 fwrite($handle, $zpl);
                 fclose($handle);
                 $file =  "label.zpl";
-
-                copy($file, '\\\\192.168.0.9\\Datamax\\label.zpl');
-                // copy($file, "//192.168.0.9/Datamax"); 
+                copy($file, "\\\\DESKTOP-TFGT85T\\Datamax"); 
                 
                 unlink($file);
                 die;
