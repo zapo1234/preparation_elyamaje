@@ -136,10 +136,9 @@ class Label extends BaseController
                 fclose($handle);
                 $file =  "label.zpl";
 
-                copy($file, "//192.168.0.9/Datamax"); 
-                ini_set('display_errors', 1);
-                ini_set('display_startup_errors', 1);
-                error_reporting(E_ALL);
+                copy($file, '\\\\192.168.0.9\\Datamax\\label.zpl');
+                // copy($file, "//192.168.0.9/Datamax"); 
+                
                 unlink($file);
                 die;
 
