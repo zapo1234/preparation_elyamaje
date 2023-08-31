@@ -127,7 +127,16 @@ class Label extends BaseController
 
                 $connector = new WindowsPrintConnector("smb://DESKTOP-TFGT85T/Datamax");
                 $printer = new Printer($connector);
-                dd($printer);
+               
+                $printer -> textRaw($blob[0]->label);
+
+                $printer -> feed(2);
+
+                $printer -> cut();
+                /* Close printer */
+                $printer -> close();
+
+                die;
                 // ------- VISUALISATION ZPL EN PDF -------
              
                 $zpl = $blob[0]->label;
