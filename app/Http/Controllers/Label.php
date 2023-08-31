@@ -127,6 +127,15 @@ class Label extends BaseController
 
                 // ------- VISUALISATION ZPL EN PDF -------
                 $zpl = $blob[0]->label;
+                $file =  "label.zpl";
+                $handle = fopen($file, 'w');
+                fwrite($handle, $zpl);
+                fclose($handle);
+                $file =  "label.zpl";
+                copy($file, "//localhost/Datamax"); 
+                unlink($file);
+                die;
+
 
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
