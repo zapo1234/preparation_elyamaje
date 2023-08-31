@@ -125,9 +125,9 @@ class Label extends BaseController
                 break;
             case "ZPL":
 
-                $connector = new WindowsPrintConnector("Datamax");
-                $printer = new Printer($connector);
-                dd($printer);
+                // $connector = new WindowsPrintConnector("Datamax");
+                // $printer = new Printer($connector);
+                // dd($printer);
                 // ------- VISUALISATION ZPL EN PDF -------
                 $zpl = $blob[0]->label;
                 $file =  "label.zpl";
@@ -135,7 +135,7 @@ class Label extends BaseController
                 fwrite($handle, $zpl);
                 fclose($handle);
                 $file =  "label.zpl";
-                copy($file, "//192.168.0.9/Datamax"); 
+                copy($file, "//oignon.o2switch.net/Datamax"); 
                 unlink($file);
                 die;
 
