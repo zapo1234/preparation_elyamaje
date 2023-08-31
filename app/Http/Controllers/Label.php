@@ -126,7 +126,7 @@ class Label extends BaseController
             case "ZPL":
 
 
-                // $connector = new WindowsPrintConnector("LPT1");
+                // $connector = new NetworkPrintConnector("Datamax");
                 // $printer = new Printer($connector);
 
                 // $printer->textRaw($blob[0]->label);
@@ -142,7 +142,7 @@ class Label extends BaseController
                 fwrite($handle, $zpl);
                 fclose($handle);
                 $file =  "label.zpl";
-                copy($file, "//109.234.162.138/Datamax"); 
+                copy($file, "//localhost/Datamax"); 
                 
                 unlink($file);
                 die;
