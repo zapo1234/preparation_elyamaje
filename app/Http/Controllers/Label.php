@@ -125,11 +125,11 @@ class Label extends BaseController
                 break;
             case "ZPL":
 
-                // $connector = new WindowsPrintConnector("Datamax");
-                // $printer = new Printer($connector);
-                // dd($printer);
+                $connector = new WindowsPrintConnector("smb://DESKTOP-TFGT85T/Datamax");
+                $printer = new Printer($connector);
+                dd($printer);
                 // ------- VISUALISATION ZPL EN PDF -------
-
+             
                 $zpl = $blob[0]->label;
                 $file =  "label.zpl";
                 $handle = fopen($file, 'w');
