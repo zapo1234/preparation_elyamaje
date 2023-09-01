@@ -251,6 +251,7 @@ function validWrapOrder(label){
         $(".loading_detail_order").addClass('d-none')
         $('.modal_no_label').modal('hide')
 
+        console.log(data)
         try {
             if(JSON.parse(data).success){
                 // Generate label colissimo

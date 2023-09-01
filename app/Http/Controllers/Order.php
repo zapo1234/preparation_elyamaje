@@ -496,7 +496,6 @@ class Order extends BaseController
 
             // ----- Print label to printer Datamax -----
 
-            dd($label['label_format']);
 
             if($label['label_format'] == "ZPL"){
               // Generate label colissimo
