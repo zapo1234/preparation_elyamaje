@@ -495,15 +495,15 @@ class Order extends BaseController
 
             // ----- Print label to printer Datamax -----
             if($label['label_format'] == "ZPL"){
-              
-              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-
               // Generate label colissimo
               try{
                 Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($label['label']));
               } catch(Exception $e){
-                  return redirect()->route('wrapOrder')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
+                  echo json_encode(['success' => false, 'message'=> $e->getMessage()]);
               }
+
+              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+
             } else if($label['label_format'] == "PDF"){
               return base64_encode($label['label']);
             } else {
