@@ -120,6 +120,28 @@ $('body').on('change', '.quantity_product_label', function(e) {
     total_weight()
 })
 
+// Print ZPL file
+$('body').on('click', '.print_zpl_file', function(e) {
+    var label_id = $(this).attr('data-label')
+    $.ajax({
+        url: "labelPrintZPL",
+        method: 'POST',
+        data : {_token: $('input[name=_token]').val(), label_id: label_id}
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            $.ajax({
+                url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
+                metho: 'GET',
+            }).done(function(data) {
+                
+            }) 
+        }
+    })
+})
+
+
+
+
 
 // Calcul du poids total de la commande
 function total_weight(){

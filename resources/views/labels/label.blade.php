@@ -103,14 +103,19 @@
 																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
 																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }} <span class="label_created_at text-secondary">({{ date("d/m/Y", strtotime($label['label_created_at'])) }})</span></button>
 																</form>
-																<form class="d-flex" method="POST" action="{{ route('label.download') }}">
-																	@csrf
-																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
-																	<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																	<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
 
-																	<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
-																</form>
+																@if( $label['label_format'] == "PDF")
+																	<form class="d-flex" method="POST" action="{{ route('label.download') }}">
+																		@csrf
+																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
+																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
+																		<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
+
+																		<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
+																	</form>
+																@elseif($label['label_format'] == "ZPL")
+																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="bx bx-printer"></i>{{ $label['tracking_number'] }}</button>
+																@endif
 															</div>
 															<div>
 																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>

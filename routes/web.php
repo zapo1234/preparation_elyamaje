@@ -136,6 +136,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labelDownload", [Label::class, "labelDownload"])->name('label.download');
+    Route::post("/labelPrintZPL", [Label::class, "labelPrintZPL"])->name('label.printZpl');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
     Route::post("/generateLabel", [Label::class, "generateLabel"])->name('label.generate');
     Route::post("/labelDelete", [Label::class, "labelDelete"])->name('label.delete');

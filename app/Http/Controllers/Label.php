@@ -103,15 +103,29 @@ class Label extends BaseController
         
             return Response::make($fileContent, 200, $headers)
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
-        } else if($label_format == "ZPL"){
+        } 
         
-            // Generate label colissimo
-            try{
-                return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
-            } catch(Exception $e){
-                dd($e->getMessage());
-                return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
-            }
+        // else if($label_format == "ZPL"){
+        
+        //     // Generate label colissimo
+        //     try{
+        //         return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
+        //     } catch(Exception $e){
+        //         dd($e->getMessage());
+        //         return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
+        //     }
+        // }
+    }
+
+    public function labelPrintZPL(Request $request){
+        $label_id = $request->post('label_id');
+        $blob = $this->label->getLabelById( $label_id);
+
+        if(isset($blob[0]->label)){
+            echo json_encode(['success' => true, 'file' => base64_encode($blob[0]->label)]);
+
+        } else {
+            echo json_encode(['success' => false]);
         }
     }
 
