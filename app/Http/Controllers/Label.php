@@ -97,20 +97,19 @@ class Label extends BaseController
 
         if($label_format == "PDF"){
             $fileName = 'label_'.$order_id.'.pdf';
-        
-        
             $headers = [
                 'Content-Type' => 'application/pdf',
             ];
         
             return Response::make($fileContent, 200, $headers)
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
-        } else {
+        } else if($label_format == "ZPL"){
         
             // Generate label colissimo
             try{
-                Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
+                return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
             } catch(Exception $e){
+                dd($e->getMessage());
                 return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
             }
         }
