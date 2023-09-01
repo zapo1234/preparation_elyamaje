@@ -170,6 +170,41 @@
     </div>
 </div>
 
+
+<!-- Modal validation génération sans étiquette -->
+<div class="modal fade modal_no_label" id="infoMessageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3 class="text-center info_message">Confirmer la validation de commande sans étiquette ?</h3>
+                <span class="text-center d-flex w-100 justify-content-center">Il sera possible de la générer par la suite dans l'onglet Colissimo -> Étiquettes</span> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button onclick="validWrapOrder(false)" type="button" class="btn btn-primary">Valider</button> 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal pdf étiquette -->
+<div class="modal fade modal_pdf_viewer" id="infoMessageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <embed class="embed_pdf" src="" type="application/pdf" width="100%" height="100%" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @endsection
 
 

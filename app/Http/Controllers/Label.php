@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
@@ -125,44 +127,28 @@ class Label extends BaseController
                 break;
             case "ZPL":
 
-
-                // $connector = new WindowsPrintConnector("Datamax");
-                // $printer = new Printer($connector);
-
-                // $printer->textRaw($blob[0]->label);
-                // $printer->cut();
-                // $printer->close();
-
-                // dd($printer);
-                // ------- VISUALISATION ZPL EN PDF -------
-
-                $zpl = $blob[0]->label;
-                $file =  "label.zpl";
-                $handle = fopen($file, 'w');
-                fwrite($handle, $zpl);
-                fclose($handle);
-                $file =  "label.zpl";
-                copy($file, "https://DESKTOP-TFGT85T/Datamax"); 
-                
-                unlink($file);
-                die;
+             
+            //   http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette='.$blob[0]->label
 
 
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
-                curl_setopt($curl, CURLOPT_POST, TRUE);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
-                $result = curl_exec($curl);
+              
+         
+                // $zpl = $blob[0]->label;
+                // $curl = curl_init();
+                // curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                // curl_setopt($curl, CURLOPT_POST, TRUE);
+                // curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                // curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                // $result = curl_exec($curl);
 
-                curl_close($curl);
-                $headers = [
-                    'Content-Type' => 'application/pdf',
-                ];
+                // curl_close($curl);
+                // $headers = [
+                //     'Content-Type' => 'application/pdf',
+                // ];
 
-                return Response::make($result, 200, $headers);
-                break;
+                // return Response::make($result, 200, $headers);
+                // break;
         }
     }
 
@@ -323,19 +309,6 @@ class Label extends BaseController
                     
                     if($label['label']){
                         return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
-
-                        // ----- Print label to printer Datamax -----
-                        if($label['label_format'] == "ZPL"){
-                            $zpl = $label['label'];
-                            $file =  "label.zpl";
-                            $handle = fopen($file, 'w');
-                            fwrite($handle, $zpl);
-                            fclose($handle);
-                            $file =  "label.zpl";
-                            copy($file, "//localhost/Datamax"); 
-                            unlink($file);
-                        }
-                        // ----- Print label to printer Datamax -----
                     } 
                   } else {
                     return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');

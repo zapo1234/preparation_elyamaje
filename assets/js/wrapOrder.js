@@ -74,7 +74,7 @@ $(".validate_order").on("click", function(){
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
                     <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
-                    <button type="button"  onclick=validWrapOrder(false) class="btn btn-primary d-flex mx-auto"> Valider </button>
+                    <button type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
                 </div>
             `)
             
@@ -245,43 +245,61 @@ function validWrapOrder(label){
         data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, pick_items_quantity: pick_items_quantity},
         dataType: 'html' 
     }).done(function(data) {
-
         $(".action_button button").attr('disabled', false)
         $(".row-main").css('opacity', 1)
         $(".detail_shipping_billing_div").css('opacity', 1)
         $(".loading_detail_order").addClass('d-none')
+        $('.modal_no_label').modal('hide')
 
-        if(JSON.parse(data).success){
+    
+        try {
+            if(JSON.parse(data).success){
 
-            $(".show_messages").prepend(`
-                <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
-                    <div class="text-white">`+JSON.parse(data).message+`</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `)
 
-            $('.order_input').each(function(){
-                $(this).val('');
-            });
+                console.log(JSON.parse(data).file)
 
-             localStorage.removeItem('barcode_verif_wrapper');
-            $(".valid_order_and_generate_label").show()
+                $.ajax({
+                    url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
+                    metho: 'GET',
+                }).done(function(data) {
+                    console.log(data)
+                })
+             
+                return
 
-            show_empty_order()
-        } else {
-            $(".show_messages").prepend(`
-                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
-                    <div class=" text-white">`+JSON.parse(data).message+`</div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `)
+                $(".show_messages").prepend(`
+                    <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
+                        <div class="text-white">`+JSON.parse(data).message+`</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `)
 
-            if(JSON.parse(data).verif){
-                $(".verif_order").show()
-                $(".modal_order").modal('show')
-            } else {
+                $('.order_input').each(function(){
+                    $(this).val('');
+                });
+
+                localStorage.removeItem('barcode_verif_wrapper');
+                $(".valid_order_and_generate_label").show()
+
                 show_empty_order()
+            } else {
+                $(".show_messages").prepend(`
+                    <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                        <div class=" text-white">`+JSON.parse(data).message+`</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `)
+
+                if(JSON.parse(data).verif){
+                    $(".verif_order").show()
+                    $(".modal_order").modal('show')
+                } else {
+                    show_empty_order()
+                }
             }
+        } catch (e) {
+            $(".embed_pdf").attr('src', "data:application/pdf;base64,"+data)
+            $(".modal_pdf_viewer").modal('show')
         }
     })
 }

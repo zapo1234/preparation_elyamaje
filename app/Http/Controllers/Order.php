@@ -403,7 +403,6 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-
       $order_id = $request->post('order_id');
       // $order_id = 80283; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
@@ -434,21 +433,21 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
-        $this->factorder->Transferorder($orders);
+        // $this->factorder->Transferorder($orders);
 
-        // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-        $this->order->updateOrdersById([$order_id], "finished");
+        // // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+        // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        // $this->order->updateOrdersById([$order_id], "finished");
         
-        // Insert la commande dans histories
-        $data = [
-          'order_id' => $order_id,
-          'user_id' => Auth()->user()->id,
-          'status' => 'finished',
-          'poste' => Auth()->user()->poste,
-          'created_at' => date('Y-m-d H:i:s')
-        ];
-        $this->history->save($data);
+        // // Insert la commande dans histories
+        // $data = [
+        //   'order_id' => $order_id,
+        //   'user_id' => Auth()->user()->id,
+        //   'status' => 'finished',
+        //   'poste' => Auth()->user()->poste,
+        //   'created_at' => date('Y-m-d H:i:s')
+        // ];
+        // $this->history->save($data);
 
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
@@ -470,7 +469,11 @@ class Order extends BaseController
 
     // Fonction à appelé après validation d'une commande
     private function generateLabel($order){
-     
+
+      $file = file_get_contents('label.zpl');
+      echo json_encode(['success' => true, 'file' => base64_encode($file)]);
+      return ;
+
       $colissimo = $this->colissimoConfiguration->getConfiguration();
       $product_to_add_label = [];
       $quantity_product = [];
@@ -492,10 +495,11 @@ class Order extends BaseController
           $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
 
           if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
-            echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
 
             // ----- Print label to printer Datamax -----
             if($label['label_format'] == "ZPL"){
+              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+
               $zpl = $label['label'];
               $file =  "label.zpl";
               $handle = fopen($file, 'w');
@@ -504,6 +508,10 @@ class Order extends BaseController
               $file =  "label.zpl";
               copy($file, "//localhost/Datamax"); 
               unlink($file);
+            } else if($label['label_format'] == "PDF"){
+              return base64_encode($label['label']);
+            } else {
+              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
             }
             // ----- Print label to printer Datamax -----
 
