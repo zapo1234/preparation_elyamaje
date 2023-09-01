@@ -65,7 +65,7 @@ $('body').on('click', '.impression_code', function () {
 
 var printer = null;
 var ePosDev = new epson.ePOSDevice();
-var reconnect = 1;
+var reconnect = 0;
 
 function imprimerPages() {
     
@@ -76,14 +76,14 @@ function imprimerPages() {
     if (!printer_ip) {
         window.print()
     } else {
-        ePosDev.connect(printer_ip, "9100", cbConnect, { "eposprint": true });
+        ePosDev.connect(printer_ip, "9100", cbConnect, { "eposprint": true }, 30000);
     }
 }
 
 function cbConnect(data, ePos) {
     var printer_ip = $(".printer_ip").val() ?? false
     
-
+    console.log(data)
     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
         var deviceID = "local_printer";
         ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
