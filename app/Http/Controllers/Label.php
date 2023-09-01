@@ -106,12 +106,20 @@ class Label extends BaseController
         } else if($label_format == "ZPL"){
         
             // Generate label colissimo
-            try{
-                return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
-            } catch(Exception $e){
-                dd($e->getMessage());
-                return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
-            }
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
+            curl_setopt($curl, CURLOPT_POST, TRUE);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+            $result = curl_exec($curl);
+            curl_close($curl);
+
+
+            // try{
+            //     return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
+            // } catch(Exception $e){
+            //     dd($e->getMessage());
+            //     return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
+            // }
         }
     }
 
