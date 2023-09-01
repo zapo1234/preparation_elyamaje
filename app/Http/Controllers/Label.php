@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
@@ -16,8 +13,6 @@ use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
@@ -104,17 +99,6 @@ class Label extends BaseController
             return Response::make($fileContent, 200, $headers)
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
         } 
-        
-        // else if($label_format == "ZPL"){
-        
-        //     // Generate label colissimo
-        //     try{
-        //         return Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
-        //     } catch(Exception $e){
-        //         dd($e->getMessage());
-        //         return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
-        //     }
-        // }
     }
 
     public function labelPrintZPL(Request $request){
@@ -127,16 +111,6 @@ class Label extends BaseController
         } else {
             echo json_encode(['success' => false]);
         }
-    }
-
-    public function convertZplToHtml($zplText) {
-        // Conversion ZPL vers HTML (exemple simplifié)
-        $html = '<div style="font-family: Arial; font-size: 14px;">';
-        // Parse le ZPL et ajoute les éléments HTML appropriés
-        // ...
-    
-        $html .= '</div>';
-        return $html;
     }
 
     public function labelShow(Request $request){

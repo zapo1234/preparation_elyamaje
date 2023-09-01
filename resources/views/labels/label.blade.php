@@ -111,10 +111,12 @@
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
 																		<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
 
-																		<button type="submit" class="download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
+																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
 																	</form>
 																@elseif($label['label_format'] == "ZPL")
+																<div class="d-flex">
 																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="bx bx-printer"></i>{{ $label['tracking_number'] }}</button>
+																</div>
 																@endif
 															</div>
 															<div>

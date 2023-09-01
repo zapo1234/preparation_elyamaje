@@ -1,18 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-use Exception;
+
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
-use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
@@ -433,21 +431,21 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
-        // $this->factorder->Transferorder($orders);
+        $this->factorder->Transferorder($orders);
 
-        // // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-        // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-        // $this->order->updateOrdersById([$order_id], "finished");
+        // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        $this->order->updateOrdersById([$order_id], "finished");
         
-        // // Insert la commande dans histories
-        // $data = [
-        //   'order_id' => $order_id,
-        //   'user_id' => Auth()->user()->id,
-        //   'status' => 'finished',
-        //   'poste' => Auth()->user()->poste,
-        //   'created_at' => date('Y-m-d H:i:s')
-        // ];
-        // $this->history->save($data);
+        // Insert la commande dans histories
+        $data = [
+          'order_id' => $order_id,
+          'user_id' => Auth()->user()->id,
+          'status' => 'finished',
+          'poste' => Auth()->user()->poste,
+          'created_at' => date('Y-m-d H:i:s')
+        ];
+        $this->history->save($data);
 
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
