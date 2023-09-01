@@ -475,6 +475,8 @@ class Order extends BaseController
       $product_to_add_label = [];
       $quantity_product = [];
 
+      dd("ddd");
+
       if($order){
         $weight = 0; // Kg
 
