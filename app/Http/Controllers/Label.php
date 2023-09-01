@@ -111,6 +111,7 @@ class Label extends BaseController
             curl_setopt($curl, CURLOPT_POST, TRUE);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
             $result = curl_exec($curl);
+            dd($result);
             curl_close($curl);
 
 
