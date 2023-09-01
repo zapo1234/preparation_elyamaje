@@ -58,6 +58,7 @@ class Label extends BaseController
         $array_order = [];
 
         foreach($orders as $order){
+
             if(!isset($array_order[$order['order_woocommerce_id']])){
                 $array_order[$order['order_woocommerce_id']][] = $order;
             }
@@ -69,36 +70,50 @@ class Label extends BaseController
                 $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]= [
                     'label_id' => $order['label_id'],
                     'tracking_number' => $order['tracking_number'],
-                    'label_created_at' => $order['label_created_at']
+                    'label_created_at' => $order['label_created_at'],
+                    'label_format' => $order['label_format'],
                 ];
             } else if(count($clesRecherchees) > 0){
                 $array_order[$order['order_woocommerce_id']]['labels'][$labels[$clesRecherchees[0]]['id']]= [
                     'label_id' => $labels[$clesRecherchees[0]]['id'],
                     'tracking_number' => $labels[$clesRecherchees[0]]['tracking_number'],
-                    'label_created_at' => $labels[$clesRecherchees[0]]['created_at']
+                    'label_created_at' => $labels[$clesRecherchees[0]]['created_at'], 
+                    'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                 ];
             }
         }
 
         // Liste des status commandes
         $status_list = __('status_order');
-
         return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list]);
     }
 
-    public function labelPDF(Request $request){
-      
+    public function labelDownload(Request $request){
+
+        $label_format = $request->post('label_format');
         $order_id = $request->post('order_id');
         $blob = $this->label->getLabelById($request->post('label_id'));
         $fileContent = $blob[0]->label;
-        $fileName = 'label_'.$order_id.'.pdf';
-    
-        $headers = [
-            'Content-Type' => 'application/pdf',
-        ];
-    
-        return Response::make($fileContent, 200, $headers)
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+
+        if($label_format == "PDF"){
+            $fileName = 'label_'.$order_id.'.pdf';
+        
+        
+            $headers = [
+                'Content-Type' => 'application/pdf',
+            ];
+        
+            return Response::make($fileContent, 200, $headers)
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        } else {
+        
+            // Generate label colissimo
+            try{
+                Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($fileContent));
+            } catch(Exception $e){
+                return redirect()->route('labels')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
+            }
+        }
     }
 
     public function convertZplToHtml($zplText) {
@@ -126,29 +141,22 @@ class Label extends BaseController
                 return Response::make($fileContent, 200, $headers);
                 break;
             case "ZPL":
+                $zpl = $blob[0]->label;
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                curl_setopt($curl, CURLOPT_POST, TRUE);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                $result = curl_exec($curl);
 
-             
-            //   http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette='.$blob[0]->label
+                curl_close($curl);
+                $headers = [
+                    'Content-Type' => 'application/pdf',
+                ];
 
-
-              
-         
-                // $zpl = $blob[0]->label;
-                // $curl = curl_init();
-                // curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
-                // curl_setopt($curl, CURLOPT_POST, TRUE);
-                // curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
-                // curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                // curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
-                // $result = curl_exec($curl);
-
-                // curl_close($curl);
-                // $headers = [
-                //     'Content-Type' => 'application/pdf',
-                // ];
-
-                // return Response::make($result, 200, $headers);
-                // break;
+                return Response::make($result, 200, $headers);
+                break;
         }
     }
 

@@ -6,24 +6,25 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
-use App\Http\Service\Woocommerce\WoocommerceService;
-use App\Repository\Colissimo\ColissimoRepository;
-use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
+use App\Repository\Printer\PrinterRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\Colissimo\ColissimoRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-use App\Repository\Printer\PrinterRepository;
 
 class Order extends BaseController
 {
@@ -469,11 +470,7 @@ class Order extends BaseController
 
     // Fonction à appelé après validation d'une commande
     private function generateLabel($order){
-
-      $file = file_get_contents('label.zpl');
-      echo json_encode(['success' => true, 'file' => base64_encode($file)]);
-      return ;
-
+    
       $colissimo = $this->colissimoConfiguration->getConfiguration();
       $product_to_add_label = [];
       $quantity_product = [];
@@ -498,16 +495,15 @@ class Order extends BaseController
 
             // ----- Print label to printer Datamax -----
             if($label['label_format'] == "ZPL"){
+              
               echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
 
-              $zpl = $label['label'];
-              $file =  "label.zpl";
-              $handle = fopen($file, 'w');
-              fwrite($handle, $zpl);
-              fclose($handle);
-              $file =  "label.zpl";
-              copy($file, "//localhost/Datamax"); 
-              unlink($file);
+              // Generate label colissimo
+              try{
+                Http::get("http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette=".base64_encode($label['label']));
+              } catch(Exception $e){
+                  return redirect()->route('wrapOrder')->with('error', 'Erreur impression étiquette :'.$e->getMessage());
+              }
             } else if($label['label_format'] == "PDF"){
               return base64_encode($label['label']);
             } else {

@@ -251,22 +251,17 @@ function validWrapOrder(label){
         $(".loading_detail_order").addClass('d-none')
         $('.modal_no_label').modal('hide')
 
-    
         try {
             if(JSON.parse(data).success){
-
-
-                console.log(JSON.parse(data).file)
-
-                $.ajax({
-                    url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
-                    metho: 'GET',
-                }).done(function(data) {
-                    console.log(data)
-                }) 
-             
-                return
-
+                // Generate label colissimo
+                // if(JSON.parse(data).file){
+                //     $.ajax({
+                //         url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
+                //         metho: 'GET',
+                //     }).done(function(data) {
+                //     }) 
+                // }
+              
                 $(".show_messages").prepend(`
                     <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
                         <div class="text-white">`+JSON.parse(data).message+`</div>
