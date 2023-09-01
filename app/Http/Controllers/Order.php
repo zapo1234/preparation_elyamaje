@@ -475,7 +475,6 @@ class Order extends BaseController
       $product_to_add_label = [];
       $quantity_product = [];
 
-      dd("ddd");
 
       if($order){
         $weight = 0; // Kg
@@ -496,6 +495,9 @@ class Order extends BaseController
           if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
 
             // ----- Print label to printer Datamax -----
+
+            dd($label['label_format']);
+
             if($label['label_format'] == "ZPL"){
               // Generate label colissimo
               try{
