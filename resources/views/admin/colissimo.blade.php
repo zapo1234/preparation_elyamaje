@@ -74,11 +74,11 @@
 										
 										<div class="col-md-12 mt-3">
 											<label for="address_ip" class="form-label">Adresse IP</label>
-											<input value="{{ $colissimo ? $colissimo->address_ip : '' }}" name="address_ip" type="text" class="form-control" id="address_ip">
+											<input disabled value="{{ $colissimo ? $colissimo->address_ip : '' }}" name="address_ip" type="text" class="form-control" id="address_ip">
 										</div>
 										<div class="col-md-12 mt-3">
 											<label for="port" class="form-label">Port</label>
-											<input value="{{ $colissimo ? $colissimo->port : '' }}" name="port" type="text" class="form-control" id="port">
+											<input disabled value="{{ $colissimo ? $colissimo->port : '' }}" name="port" type="text" class="form-control" id="port">
 										</div>
 										
 										<div class="col-12 mt-3">
