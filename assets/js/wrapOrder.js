@@ -263,7 +263,7 @@ function validWrapOrder(label){
                     metho: 'GET',
                 }).done(function(data) {
                     console.log(data)
-                })
+                }) 
              
                 return
 
