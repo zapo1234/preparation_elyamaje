@@ -251,17 +251,17 @@ function validWrapOrder(label){
         $(".loading_detail_order").addClass('d-none')
         $('.modal_no_label').modal('hide')
 
-        console.log(data)
         try {
             if(JSON.parse(data).success){
                 // Generate label colissimo
-                // if(JSON.parse(data).file){
-                //     $.ajax({
-                //         url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
-                //         metho: 'GET',
-                //     }).done(function(data) {
-                //     }) 
-                // }
+                if(JSON.parse(data).file){
+                    $.ajax({
+                        url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
+                        metho: 'GET',
+                    }).done(function(data) {
+                        
+                    }) 
+                }
               
                 $(".show_messages").prepend(`
                     <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
