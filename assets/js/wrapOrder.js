@@ -19,6 +19,11 @@ $(".validate_order").on("click", function(){
         data : {order_id: $("#order_id").val()}
     }).done(function(data) {
         if(JSON.parse(data).success){
+
+            // Tooltip details
+            $(".details_information").text(`Les détails de la commande sont affichés, 
+            vous pouvez générer une étiquette ou valider simplement sans étiquettes (vous pourrez en générer une plus tard)`);
+
             var order = JSON.parse(data).order;
             var is_distributor = JSON.parse(data).is_distributor;
 
@@ -259,7 +264,7 @@ function validWrapOrder(label){
                         url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
                         metho: 'GET',
                     }).done(function(data) {
-                        
+
                     }) 
                 }
               

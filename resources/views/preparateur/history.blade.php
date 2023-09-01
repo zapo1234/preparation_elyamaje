@@ -12,6 +12,20 @@
 						<input id="order_selected" type="hidden" value="">
 					</div>
 
+					<div class="switcher-wrapper">
+					<div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+						<div class="switcher-body">
+							<div class="d-flex align-items-center">
+								<h5 class="mb-0 text-uppercase">Informations</h5>
+								<button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
+							</div>
+							<hr>
+							<div class="d-flex align-items-center justify-content-between">
+								Ici, vous pouvez retrouver les commandes que vous avez préparées, vous pouvez retrouver les QR code générés et les ré-imprimer si nécéssaire.
+							</div>
+						</div>
+					</div>
+
 
 					@if(count($history) > 0)
 						@foreach($history as $histo)

@@ -5160,7 +5160,7 @@ input::placeholder {
 	font-size: 24px;
 
 
-	background: #8833ff;
+	background: #000000;
 
 
 	box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, .13);
@@ -7605,3 +7605,4 @@ tr:has(.chronopost_shipping){
 .update_multiple_products{
 	margin-bottom: 5px;
 }
+

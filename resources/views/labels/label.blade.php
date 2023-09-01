@@ -19,8 +19,23 @@
 								</ol>
 							</nav>
 						</div>
-						<div class="ms-auto ms-auto-responsive">
+						<div  class="ms-auto ms-auto-responsive d-flex">
 							<button id="show_modal_bordereau" type="button" class="btn btn-dark px-5">Générer bordereau</button>
+						</div>
+					</div>
+					
+					<div class="switcher-wrapper">
+						<div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+						<div class="switcher-body">
+							<div class="d-flex align-items-center">
+								<h5 class="mb-0 text-uppercase">Informations</h5>
+								<button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
+							</div>
+							<hr>
+							<div class="d-flex align-items-center justify-content-between">
+								Ici, vous pouvez retrouver la liste des commandes avec leurs étiquettes colissimo. Vous pouvez également 
+								générer une étiquette depuis cette interface et l'imprimer
+							</div>
 						</div>
 					</div>
 

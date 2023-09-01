@@ -18,6 +18,39 @@
 		</div>
 
 
+		<div class="switcher-wrapper">
+			<div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+			<div class="switcher-body">
+				<div class="d-flex align-items-center">
+					<h5 class="mb-0 text-uppercase">Informations</h5>
+					<button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
+				</div>
+				<hr>
+				<div class="d-flex align-items-center justify-content-between">
+					<span>Ici apparrait les commandes <span class="font-bold">distributeurs</span> qui vous sont attribués, cliquez sur le bouton "Préparer" afin de commencer la préparation.</span>
+				</div>
+				<hr>
+				<h6 class="font-bold mb-0">Commandes à préparer</h6>
+				<hr>
+				<div class="d-flex align-items-center justify-content-between">
+					Ce sont les commandes en cours à préparer.
+				</div>
+				<hr>
+				<h6 class="font-bold mb-0">Commandes en attente de validation</h6>
+				<hr>
+				<div class="d-flex align-items-center justify-content-between">
+					Ce sont les commandes que vous avez validées partiellement par causes de produits manquants ou autres et qui nécéssitent une intervention du chef d'équipe.
+					(Il sera prévenu automatiquement).
+				</div>
+				<hr>
+				<h6 class="font-bold mb-0">Commands en attente validée</h6>
+				<hr>
+				<div class="d-flex align-items-center justify-content-between">
+					Ce sont les commandes que vous avez validées partiellement et qui ont été validées par le chef d'équipe et dont vous pouvez reprendre la préparation.
+				</div>
+			</div>
+		</div>
+
 
 		<div class="card">
 			<div class="card-body">

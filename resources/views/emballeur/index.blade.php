@@ -19,6 +19,22 @@
             @csrf
         </div>
 
+
+        <div class="switcher-wrapper">
+            <div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+            <div class="switcher-body">
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 text-uppercase">Informations</h5>
+                    <button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
+                </div>
+                <hr>
+                <div class="d-flex align-items-center justify-content-between details_information">
+                    Ici, il vous suffit de scanner le QR code imprimé par le préparateur ou<br>
+                    de taper le numéro de commande à emballer dans le champ adéquat
+                </div>
+            </div>
+        </div>
+
         <div class="detail_order_to_wrap card mt-50 mb-50">
             <div class="col d-flex justify-content-between align-items-baseline">
                 <span class="text-muted" id="orderno"></span>

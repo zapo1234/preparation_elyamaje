@@ -25,6 +25,21 @@
             </div>
 
 
+            <div class="switcher-wrapper">
+                <div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+                <div class="switcher-body">
+                    <div class="d-flex align-items-center">
+                        <h5 class="mb-0 text-uppercase">Informations</h5>
+                        <button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
+                    </div>
+                    <hr>
+                    <div class="d-flex align-items-center justify-content-between">
+                        Ici, vous pouvez retrouver la liste des bordereaux et vous pouvez également en générer un avec le bouton en haut à droite
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Modal Génération Bordereau par date -->
             <div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
