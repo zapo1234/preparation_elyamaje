@@ -135,11 +135,11 @@ class Order extends BaseController
         } else {
           foreach($orders as $key => $order){
             if(count($order['shipping_lines']) > 0){
-              if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
                 $list_orders[] = $order;
-              }
+               }
             } else {
-              $list_orders[] = $order;
+               $list_orders[] = $order;
             }
           }
         }

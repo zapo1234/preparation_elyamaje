@@ -159,20 +159,22 @@ class Admin extends BaseController
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
+    
+                        if(isset($product['variation_attributes'])){
+                            if(count($product['variation_attributes']) > 0){
+                                $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
+                                $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
+                            } 
+                        } 
 
-                        $id_variation = array_column($product['variation_products'], "id");
-                        $clesRecherchees = array_keys($id_variation,  $product['variations'][$key]);
-
-                        if(count($clesRecherchees) > 0){
-                            $name_variation = $product['variation_products'][$clesRecherchees[0]]['attributes_arr'][0]['slug'];
-                        }
-                           
+                        $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
+                        
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
                             'category' =>  implode(',', $category_name),
                             'category_id' => implode(',', $category_id),
                             'variation' => 1,
-                            'name' => $product['name'].' - '.$name_variation ?? $op,
+                            'name' => $name,
                             'price' => $product['variation_prices'][$key],
                             'barcode' => $product['barcodes_list'][$key],
                             'status' => $product['status'],

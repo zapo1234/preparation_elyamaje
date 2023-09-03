@@ -439,7 +439,7 @@ function saveItem(order_id, mutiple_quantity) {
 
 var printer = null;
 var ePosDev = new epson.ePOSDevice();
-var reconnect = 1;
+var reconnect = 0;
 
 function imprimerPages() {
     // IP à mettre dynamiquement
@@ -449,7 +449,7 @@ function imprimerPages() {
     if (!printer_ip) {
         window.print()
     } else {
-        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true });
+        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
     }
 }
 
@@ -462,7 +462,7 @@ function cbConnect(data, ePos) {
         ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
     } else if (reconnect < 3 && printer_ip != false) {
         reconnect = reconnect + 1
-        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true });
+        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
     } else {
         console.log('Erreur 1:' + data)
         $(".impression_code span").removeClass('d-none')

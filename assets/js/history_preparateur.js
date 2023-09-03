@@ -71,25 +71,26 @@ function imprimerPages() {
     
     // IP à mettre dynamiquement
     var printer_ip = $(".printer_ip").val() ?? false
+    var printer_port = $(".printer_port").val() ?? false
     
     
     if (!printer_ip) {
         window.print()
     } else {
-        ePosDev.connect(printer_ip, "9100", cbConnect, { "eposprint": true }, 30000);
+        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
     }
 }
 
 function cbConnect(data, ePos) {
     var printer_ip = $(".printer_ip").val() ?? false
-    
-    console.log(data)
+    var printer_port = $(".printer_port").val() ?? false
+   
     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
         var deviceID = "local_printer";
         ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
     } else if (reconnect < 3 && printer_ip != false){
         reconnect = reconnect + 1
-        ePosDev.connect(printer_ip, "9100", cbConnect, { "eposprint": true });
+        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
     } else {
         console.log('Erreur 1:' + data)
         $(".impression_code span").removeClass('d-none')

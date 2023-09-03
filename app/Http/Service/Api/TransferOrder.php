@@ -126,8 +126,8 @@ class TransferOrder
                 
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey =$this->api->getkeydolibar();
-                 $apiUrl = $this->api->getUrldolibar();
+                 $apiKey =$this->api->getkeydolibarprod();
+                 $apiUrl = $this->api->getUrldolibarprod();
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -376,11 +376,13 @@ class TransferOrder
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       $adrien ="adrien";
                                       $martial = "martial";
+                                      $ext = 1;// pour la prise en compte dans fidelité
                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$donnees['coupons'],
                                        "options_prepa" => $donnees['preparateur'],
                                        "options_emba" => $donnees['emballeur'],
+                                       
                                        ];
                                       
                                        
@@ -504,8 +506,8 @@ class TransferOrder
            
               $method = "GET";
             
-              $apiKey =$this->api->getkeydolibar();
-              $apiUrl = $this->api->getUrldolibar();
+              $apiKey =$this->api->getkeydolibarprod();
+              $apiUrl = $this->api->getUrldolibarprod();
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 

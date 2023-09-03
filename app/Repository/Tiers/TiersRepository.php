@@ -84,8 +84,8 @@ class TiersRepository implements TiersInterface
              
                $method = "GET";
                // key et url api
-               $apiKey =$this->api->getkeydolibar();
-               $apiUrl = $this->api->getUrldolibar();
+                 $apiKey =$this->api->getkeydolibarprod();
+                 $apiUrl = $this->api->getUrldolibarprod();
                
                   $produitParam = array(
                     'apikey' => $apiKey,

@@ -162,8 +162,8 @@ class OrderRepository implements OrderInterface
       $list = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
-      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50ml%' THEN prepa_categories.order_display+1 ";
       $queryOrder .= "ELSE prepa_categories.order_display END";
 
       $orders = 
@@ -539,8 +539,8 @@ class OrderRepository implements OrderInterface
       $list = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
-      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50ml%' THEN prepa_categories.order_display+1 ";
       $queryOrder .= "ELSE prepa_categories.order_display END";
 
       $orders = 
@@ -586,8 +586,8 @@ class OrderRepository implements OrderInterface
       $list = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
-      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20 ml' THEN prepa_categories.order_display ";
-      $queryOrder .= "WHEN prepa_products.name LIKE '%50 ml' THEN prepa_categories.order_display+1 ";
+      $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
+      $queryOrder .= "WHEN prepa_products.name LIKE '%50ml%' THEN prepa_categories.order_display+1 ";
       $queryOrder .= "ELSE prepa_categories.order_display END";
 
       $orders = 
