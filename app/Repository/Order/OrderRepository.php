@@ -173,13 +173,14 @@ class OrderRepository implements OrderInterface
          ->where('user_id', $id)
          ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
+         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick',  /* DB::raw('SUM(prepa_products_order.quantity) as quantity')*/ 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderByRaw("CASE WHEN prepa_orders.shipping_method LIKE '%chrono%' THEN 0 ELSE 1 END")
          ->orderBy('orders.date', 'ASC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
+        //  ->groupBy('products.product_woocommerce_id')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -240,22 +241,24 @@ class OrderRepository implements OrderInterface
    }
 
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
-
+       
       $list_product_orders = DB::table('products')
-      ->select('barcode', 'products_order.quantity', 'products_order.id')
+      ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
       ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
       ->where('products_order.order_id', $order_id)
       ->get()
       ->toArray();
+      
 
-    
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
       $product_pick_in = [];
-
+      
       // Construit le tableaux à update 
       $barcode_research = array_column($list_product_orders, "barcode");
+      
       foreach($barcode_array as $key => $barcode){
-         $clesRecherchees = array_keys($barcode_research, $barcode);
+        $clesRecherchees = array_keys($barcode_research, $barcode);
+         
          $product_pick_in[] = [
             'id' => $list_product_orders[$clesRecherchees[0]]['id'],
             'barcode' => $barcode,

@@ -68,7 +68,7 @@ class Colissimo
                                 'city' => $order['shipping']['city'],
                                 'zipCode' => $order['shipping']['postcode'],
                                 'email' => $order['billing']['email'],
-                                'mobileNumber' =>  $order['billing']['phone']
+                                'mobileNumber' =>  str_replace(" ", "", $order['billing']['phone'])
                             ]
                         ]
                     ]

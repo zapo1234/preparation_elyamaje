@@ -13,7 +13,7 @@ $('body').on('click', '.show_order_history_code', function () {
     var preparateur_name = $(this).attr('data-preparateur')
 
 
-    const href = id + "," + product + "," + customer_name + "," + preparateur_name;
+    const href = id + "," + product + "," + accentsTidy(customer_name) + "," + preparateur_name;
     const size = 150;
 
     // Quantity of product
@@ -35,6 +35,7 @@ $('body').on('click', '.show_order_history_code', function () {
 
     $(".body_qr_code_" + id).children('canvas').remove()
     $(".body_qr_code_" + id).children('img').remove()
+    
 
     new QRCode(document.querySelector(".body_qr_code_" + id), {
         text: href,
@@ -44,6 +45,7 @@ $('body').on('click', '.show_order_history_code', function () {
         colorDark: "#000000",
         colorLight: "#ffffff"
     });
+    
 
     $("#code_" + id).modal('show')
 })
@@ -53,6 +55,24 @@ $('body').on('click', '.close_modal', function () {
     $("#code_" + id).hide()
     $(".modal-backdrop").hide()
 })
+
+
+function accentsTidy(r){
+    var r=r;
+    // r = r.replace(new RegExp(/\s/g),"");
+    r = r.replace(new RegExp(/[àáâãäå]/g),"a");
+    r = r.replace(new RegExp(/æ/g),"ae");
+    r = r.replace(new RegExp(/ç/g),"c");
+    r = r.replace(new RegExp(/[èéêë]/g),"e");
+    r = r.replace(new RegExp(/[ìíîï]/g),"i");
+    r = r.replace(new RegExp(/ñ/g),"n");                
+    r = r.replace(new RegExp(/[òóôõö]/g),"o");
+    r = r.replace(new RegExp(/œ/g),"oe");
+    r = r.replace(new RegExp(/[ùúûü]/g),"u");
+    r = r.replace(new RegExp(/[ýÿ]/g),"y");
+    // r = r.replace(new RegExp(/\W/g),"");
+    return r;
+};
 
 $('body').on('click', '.impression_code', function () {
     $(".impression_code span").addClass('d-none')

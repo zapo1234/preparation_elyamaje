@@ -25,11 +25,16 @@ class Api
 
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
+    
+    // Écrit le résultat dans le fichier
+    // file_put_contents("orders_update.txt", config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id);
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
         'status' => $status,
       ]);
+      
+    //   file_put_contents("orders_update_response.txt", $status);
       return $response->json() ? true : false;
     } catch(Exception $e){
       return $e->getMessage();

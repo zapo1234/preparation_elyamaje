@@ -126,8 +126,8 @@ class TransferOrder
                 
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey =$this->api->getkeydolibarprod();
-                 $apiUrl = $this->api->getUrldolibarprod();
+                 $apiKey ='d14JnYWpp5H24tiZ5Zu6nN3eE1oGQr4A';
+                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -460,6 +460,7 @@ class TransferOrder
                          }
                         */
                          
+                         
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -506,8 +507,8 @@ class TransferOrder
            
               $method = "GET";
             
-              $apiKey =$this->api->getkeydolibarprod();
-              $apiUrl = $this->api->getUrldolibarprod();
+                $apiKey ='d14JnYWpp5H24tiZ5Zu6nN3eE1oGQr4A';
+                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 

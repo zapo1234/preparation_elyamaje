@@ -84,8 +84,8 @@ class TiersRepository implements TiersInterface
              
                $method = "GET";
                // key et url api
-                 $apiKey =$this->api->getkeydolibarprod();
-                 $apiUrl = $this->api->getUrldolibarprod();
+                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
                
                   $produitParam = array(
                     'apikey' => $apiKey,

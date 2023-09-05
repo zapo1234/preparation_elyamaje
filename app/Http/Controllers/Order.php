@@ -262,11 +262,20 @@ class Order extends BaseController
       $products_quantity = $request->post('pick_items_quantity');
       $order_id = $request->post('order_id');
       $partial = $request->post('partial');
-      $note_partial_order = $request->post('note_partial_order');
-
-      if($barcode_array != "false" && $order_id && $products_quantity != "false"){
-        $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
+      $note_partial_order = $request->post('note_partial_order') ?? null;
+      
        
+       
+    
+      if($barcode_array != "false" && $order_id && $products_quantity != "false"){
+          
+        if($barcode_array != null){
+            $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
+        } else if($partial == "1" && $barcode_array == null){
+           $check_if_order_done = true;
+        }
+        
+
         if($check_if_order_done && $partial == "1"){
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
@@ -286,12 +295,12 @@ class Order extends BaseController
 
                 $this->notification->insert($data);
 
-                //Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                // Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
-                //     $message->to($email);
-                //     $message->from('no-reply@elyamaje.com');
-                //     $message->subject('Commande incomplète');
-                // });
+                // Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
+                Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Commande incomplète');
+                });
             }
         }
         echo json_encode(["success" => $check_if_order_done]);

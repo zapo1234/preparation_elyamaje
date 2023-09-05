@@ -81,8 +81,8 @@ function progress_bar(){
 
         $("#progress_"+order_id).find(".progress-bar").css('width', progress[order_id]+'%')
         $("#progress_"+order_id).find(".progress-bar").attr('aria-valuenow', progress[order_id])
-        $(".validate_pick_in").css('background', 'linear-gradient(to right, #29cc39 '+progress[order_id]+'%, #212529 '+progress[order_id]+'% 100%)')
-        $(".validate_pick_in").css('border', 'none')
+        // $(".validate_pick_in").css('background', 'linear-gradient(to right, #29cc39 '+progress[order_id]+'%, #212529 '+progress[order_id]+'% 100%)')
+        // $(".validate_pick_in").css('border', 'none')
     })
 }
 
@@ -188,6 +188,8 @@ document.addEventListener("keydown", function (e) {
 
 $(".validate_pick_in").on('click', function () {
     var order_id = $("#order_in_progress").val()
+    
+    
 
     if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
         // Ouvre la modal de loading
@@ -202,6 +204,7 @@ $(".validate_pick_in").on('click', function () {
                 element => element.order_id == order_id
             )
         }
+        
 
         if (order_object) {
             pick_items = order_object.products
@@ -221,11 +224,12 @@ $(".validate_pick_in").on('click', function () {
             method: 'POST',
             data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0 }
         }).done(function (data) {
+            
             $(".loading_prepared_command").addClass('d-none')
 
             if (JSON.parse(data).success) {
                 $(".success_prepared_command").removeClass('d-none')
-                const href = order_id + "," + pick_items.length + "," + customer_name + "," + user_name;
+                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + user_name;
                 const size = 150;
 
                 $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
@@ -272,7 +276,7 @@ $(".validate_pick_in").on('click', function () {
         });
     } else {
         // Récupère les produits de cette commande
-        if ($("#order_" + order_id + " .pick").length >= 1) {
+        if ($("#order_" + order_id + " .pick").length >= 0) {
             $('#modalPartial').modal({
                 backdrop: 'static',
                 keyboard: false
@@ -281,6 +285,24 @@ $(".validate_pick_in").on('click', function () {
         }
     }
 })
+
+
+function accentsTidy(r){
+    var r=r;
+    // r = r.replace(new RegExp(/\s/g),"");
+    r = r.replace(new RegExp(/[àáâãäå]/g),"a");
+    r = r.replace(new RegExp(/æ/g),"ae");
+    r = r.replace(new RegExp(/ç/g),"c");
+    r = r.replace(new RegExp(/[èéêë]/g),"e");
+    r = r.replace(new RegExp(/[ìíîï]/g),"i");
+    r = r.replace(new RegExp(/ñ/g),"n");                
+    r = r.replace(new RegExp(/[òóôõö]/g),"o");
+    r = r.replace(new RegExp(/œ/g),"oe");
+    r = r.replace(new RegExp(/[ùúûü]/g),"u");
+    r = r.replace(new RegExp(/[ýÿ]/g),"y");
+    // r = r.replace(new RegExp(/\W/g),"");
+    return r;
+};
 
 $(".reset_order").on('click', function () {
     $("#modalReset").modal("show")
@@ -337,12 +359,13 @@ $('body').on('click', '.close_modal_order', function () {
 
 $('body').on('click', '.valid_partial_order', function () {
 
-    var pick_items = JSON.parse(localStorage.getItem('barcode'))
+    var pick_items = JSON.parse(localStorage.getItem('barcode')) ?? [];
     var order_id = $("#order_in_progress").val()
     var note_partial_order = $("#note_partial_order").val()
     // Récupère les produits de cette commande
 
-    if (pick_items) {
+
+    if (pick_items.length > 0) {
         const order_object = pick_items.find(
             element => element.order_id == order_id
         )
@@ -354,10 +377,14 @@ $('body').on('click', '.valid_partial_order', function () {
             alert('Erreur !')
             return
         }
+    } else {
+        pick_items = [];
+        pick_items_quantity = [];
+    }
 
         var customer_name = $(".customer_name").text()
         var user_name = $('#userinfo').val()
-
+    
         $.ajax({
             url: "ordersPrepared",
             method: 'POST',
@@ -369,7 +396,7 @@ $('body').on('click', '.valid_partial_order', function () {
                 alert("Erreur !")
             }
         })
-    }
+    // }
 })
 
 
