@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
@@ -279,19 +280,32 @@ class Label extends BaseController
         $order_by_id = $this->order->getOrderById($order_id);
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> d8109465a8713e982e1ce3a7694803539e166773
        
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             $weight = 0; // Kg
             $subtotal = 0;
+<<<<<<< HEAD
 
            
+=======
+           
+
+>>>>>>> d8109465a8713e982e1ce3a7694803539e166773
                 foreach($order[0]['line_items'] as $or){
                   $quantity = $quantity_product[$or['product_id']];
                   $subtotal = $subtotal + $or['subtotal'] * $quantity;
-                  $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+
+                  if(is_numeric($or['weight'])){
+                    $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+                  }
+                  
                 } 
 
                 $order[0]['total_order'] = $subtotal;
@@ -305,6 +319,34 @@ class Label extends BaseController
                   if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
                     
                     if($label['label']){
+                        // switch ($label['label_format']) {
+                        //     case "PDF":
+                        //         $headers = [
+                        //             'Content-Type' => 'application/pdf',
+                        //         ];
+                        
+                        //         $fileContent = $label['label'];
+                        //         return Response::make($fileContent, 200, $headers);
+                        //         break;
+                        //     case "ZPL":
+                        //         $zpl = $label['label'];
+                        //         $curl = curl_init();
+                        //         curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                        //         curl_setopt($curl, CURLOPT_POST, TRUE);
+                        //         curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                        //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                        //         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                        //         $result = curl_exec($curl);
+                
+                        //         curl_close($curl);
+                        //         $headers = [
+                        //             'Content-Type' => 'application/pdf',
+                        //         ];
+                
+                        //         return Response::make($result, 200, $headers);
+                        //         break;
+                        // }
+        
                         return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                     } 
                   } else {

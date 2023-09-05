@@ -229,30 +229,30 @@ class OrderRepository implements OrderInterface
       }
 
 
-      // Cas de produits double si par exemple 1 en cadeau et 1 normal
-      $product_double = [];
+    // Cas de produits double si par exemple 1 en cadeau et 1 normal
+    //   $product_double = [];
 
-      foreach($list as $key1 => $li){
-         foreach($li['items'] as $key2 => $item){
+    //   foreach($list as $key1 => $li){
+    //      foreach($li['items'] as $key2 => $item){
 
-            $ids = array_column($product_double, "id");
-            $clesRecherchees = array_keys($ids,  $item['product_woocommerce_id']);
+    //         $ids = array_column($product_double, "id");
+    //         $clesRecherchees = array_keys($ids,  $item['product_woocommerce_id']);
 
-            if(count($clesRecherchees) > 0){
-               $detail_doublon = $product_double[$clesRecherchees[0]];
-               unset($list[$key1]['items'][$key2]);
-               $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] + $detail_doublon['quantity'];
+    //         if(count($clesRecherchees) > 0){
+    //           $detail_doublon = $product_double[$clesRecherchees[0]];
+    //           unset($list[$key1]['items'][$key2]);
+    //           $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] + $detail_doublon['quantity'];
 
-            } else {
-               $product_double[] = [
-                  'id' => $item['product_woocommerce_id'],
-                  'quantity' => $item['quantity'], 
-                  'key1' => $key1,
-                  'key2' => $key2,
-               ];
-            }
-         }
-      }
+    //         } else {
+    //           $product_double[] = [
+    //               'id' => $item['product_woocommerce_id'],
+    //               'quantity' => $item['quantity'], 
+    //               'key1' => $key1,
+    //               'key2' => $key2,
+    //           ];
+    //         }
+    //      }
+    //   }
 
       $list = array_values($list);
       return $list;

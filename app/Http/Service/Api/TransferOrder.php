@@ -126,7 +126,7 @@ class TransferOrder
                 
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey ='d14JnYWpp5H24tiZ5Zu6nN3eE1oGQr4A';
+                 $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
@@ -507,7 +507,7 @@ class TransferOrder
            
               $method = "GET";
             
-                $apiKey ='d14JnYWpp5H24tiZ5Zu6nN3eE1oGQr4A';
+                $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);

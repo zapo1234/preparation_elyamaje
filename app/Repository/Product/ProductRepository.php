@@ -24,7 +24,7 @@ class ProductRepository implements ProductInterface
    }
 
    public function getAllProductsPublished(){
-      return $this->model::select('*')->where('status', 'publish')->where('stock','>', 10)->where('is_variable', 0)->get();
+      return $this->model::select('*')->where('status', 'publish')->where('stock','>', 0)->where('is_variable', 0)->get();
    }
 
    public function insertProductsOrUpdate($data){

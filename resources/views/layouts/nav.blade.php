@@ -64,6 +64,18 @@
                 </a>
             </li>
             <li>
+                
+            <li>
+                <a href="{{ url('orderfacturer') }}">
+                    <div class="parent-icon"><i class='bx bx-box'></i>
+                    </div>
+                    <div class="menu-title">Commandes facturés</div>
+                </a>
+            </li>
+            <li>
+                
+                
+                
                 <a href="{{ url('refreshtiers') }}">
                     <div class="parent-icon"><i class="bx bx-lock-open"></i>
                     </div>
