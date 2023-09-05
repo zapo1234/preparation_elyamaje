@@ -14,7 +14,8 @@ class Colissimo
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
-        
+        $mobilePhone = $this->getMobilePhone(str_replace(" ", "", $order['billing']['phone']), $order['shipping']['country']);
+
         if($productCode){
             try {
                 $requestParameter = [
@@ -64,11 +65,11 @@ class Colissimo
                                 'lastName' => $order['shipping']['last_name'],
                                 'firstName' => $order['shipping']['first_name'],
                                 'line2' => $order['shipping']['address_1'],
-                                'countryCode' =>$order['shipping']['country'],
+                                'countryCode' => $order['shipping']['country'],
                                 'city' => $order['shipping']['city'],
                                 'zipCode' => $order['shipping']['postcode'],
                                 'email' => $order['billing']['email'],
-                                'mobileNumber' =>  str_replace(" ", "", $order['billing']['phone'])
+                                'mobileNumber' =>  $mobilePhone
                             ]
                         ]
                     ]
@@ -283,6 +284,22 @@ class Colissimo
     protected function isMachinable($product_code){
         $nonMachinable = ["BPR", "A2P", "BDP", "CMT"];
         return in_array($product_code, $nonMachinable) ? false : true;
+    }
+
+    protected function getMobilePhone($mobile, $country){
+        if($mobile != "" && $mobile != null){
+            if($country == "FR"){
+                $mobile = $mobile;
+            } else if($country == "BE"){
+                $mobile = "+32".substr($mobile, 1);
+            } else {
+                $mobile = $mobile;
+            }
+
+            return $mobile;
+        } else {
+            return "";
+        }
     }
  
 }

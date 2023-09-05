@@ -273,20 +273,22 @@ class Label extends BaseController
     }
 
     public function generateLabel(Request $request){
+       
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
         $order_by_id = $this->order->getOrderById($order_id);
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
-        
+
+       
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             $weight = 0; // Kg
             $subtotal = 0;
-            
+
+           
                 foreach($order[0]['line_items'] as $or){
-                    
                   $quantity = $quantity_product[$or['product_id']];
                   $subtotal = $subtotal + $or['subtotal'] * $quantity;
                   $weight = $weight + number_format(($or['weight'] * $quantity), 2);
