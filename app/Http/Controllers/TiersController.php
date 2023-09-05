@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Repository\Tiers\TiersRepository;
 use App\Http\Service\Api\TransferOrder;
+use App\Models\History;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -104,16 +105,21 @@ class TiersController extends BaseController
     
     public function getidscommande(Request $request){
         
-        $id = $request->get('id');
+         $id = $request->get('id');
           // créeer des intervalle de date pour recupérer le nombre de commande prepare.
          $mm = "00:00:00";
          $mm1 = "23:59:59";
          $date1 = $id.' '.$mm;
          $date2  = $id.' '.$mm1;
-         
-        // recupérer les commande 
-        dump($date1);
-        dd($date2);
+         $status ="prepared";
+         // recupérer les ids de produits dans ce intervale.
+          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
+           $name_list = json_encode($posts);
+            $name_lists = json_decode($posts,true);
+
+            dd($name_lists);
+            dump($date1);
+            dd($date2);
         
         dd($id);
         
