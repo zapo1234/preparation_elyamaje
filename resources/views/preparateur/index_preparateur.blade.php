@@ -140,6 +140,7 @@
 													<div class="column11 d-flex align-items-center detail_product_name_order">
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
+														<!-- <br> -->
 														@else
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>

@@ -173,7 +173,7 @@ class OrderRepository implements OrderInterface
          ->where('user_id', $id)
          ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick',  /* DB::raw('SUM(prepa_products_order.quantity) as quantity')*/ 'products_order.quantity',
+         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderByRaw("CASE WHEN prepa_orders.shipping_method LIKE '%chrono%' THEN 0 ELSE 1 END")
          ->orderBy('orders.date', 'ASC')
@@ -186,6 +186,7 @@ class OrderRepository implements OrderInterface
       $orders = json_decode(json_encode($orders), true);
 
       foreach($orders as $key => $order){
+
          if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id) || $order['status'] == "order-new-distrib"){
                $list[$order['order_woocommerce_id']]['details'] = [
@@ -223,6 +224,32 @@ class OrderRepository implements OrderInterface
                   'shipping_method' => $order['shipping_method']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
+            }
+         }
+      }
+
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+
+      foreach($list as $key1 => $li){
+         foreach($li['items'] as $key2 => $item){
+
+            $ids = array_column($product_double, "id");
+            $clesRecherchees = array_keys($ids,  $item['product_woocommerce_id']);
+
+            if(count($clesRecherchees) > 0){
+               $detail_doublon = $product_double[$clesRecherchees[0]];
+               unset($list[$key1]['items'][$key2]);
+               $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] + $detail_doublon['quantity'];
+
+            } else {
+               $product_double[] = [
+                  'id' => $item['product_woocommerce_id'],
+                  'quantity' => $item['quantity'], 
+                  'key1' => $key1,
+                  'key2' => $key2,
+               ];
             }
          }
       }
