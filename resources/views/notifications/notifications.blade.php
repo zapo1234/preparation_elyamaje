@@ -32,7 +32,7 @@
 											<th scope="col">Auteur</th>
 											<th scope="col">Message</th>
 											<th scope="col">Date</th>
-											<th scope="col">Commandes</th>
+											<th scope="col">Commande</th>
 											<th scope="col">ID</th> <!-- Pour le tri -->
 										</tr>
 									</thead>
@@ -42,7 +42,7 @@
 												<td data-label="Auteur">{{ $notification->name }}</td>
 												<td data-label="Message"><span>{{ $notification->detail }}</span></td>
 												<td data-label="Date">{{ $notification->date }}</td>
-												<td data-label="Date">{{ $notification->order_id }}</td>
+												<td data-label="Commande">{{ $notification->order_id }}</td>
 												<td data-label="ID">{{ $notification->id }}</td> <!-- Pour le tri -->
 											</tr>
 										@endforeach
