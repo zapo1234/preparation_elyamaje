@@ -280,24 +280,14 @@ class Label extends BaseController
         $order_by_id = $this->order->getOrderById($order_id);
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> d8109465a8713e982e1ce3a7694803539e166773
        
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             $weight = 0; // Kg
             $subtotal = 0;
-<<<<<<< HEAD
 
            
-=======
-           
-
->>>>>>> d8109465a8713e982e1ce3a7694803539e166773
                 foreach($order[0]['line_items'] as $or){
                   $quantity = $quantity_product[$or['product_id']];
                   $subtotal = $subtotal + $or['subtotal'] * $quantity;
