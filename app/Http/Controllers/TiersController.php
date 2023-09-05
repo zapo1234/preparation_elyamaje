@@ -104,7 +104,12 @@ class TiersController extends BaseController
     
     public function getidscommande(Request $request){
         
-        dd('zapo');
+        $id = $request->get('id');
+        
+        // créeer des intervalle de date pour recupérer le nombre de commande prepare.
+        
+        
+        dd($id);
         
     }
 

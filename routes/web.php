@@ -61,7 +61,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // orders facturé via dolibarr
      Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
      //traitement ajax des commande facture 
-       Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('getidscommande');
+       Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
      
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');

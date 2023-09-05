@@ -69,7 +69,7 @@
                var id = $(this).data('id1');
                
                $.ajax({
-	         	url: "getidscommande",
+	         	url: "{{ route('tiers.getidscommande') }}",
 	        	method: 'GET',
 	      	  data: {id:id},
 	    	}).done(function(data) {
