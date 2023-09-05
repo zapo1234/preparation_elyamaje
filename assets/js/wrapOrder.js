@@ -78,10 +78,12 @@ $(".validate_order").on("click", function(){
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                    <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
+                   
                     <button type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
                 </div>
             `)
+            
+            //  <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
             
             // Afficher les produits de la commande avec les détails
             var listProduct = "";
@@ -221,7 +223,7 @@ function validWrapOrder(label){
     $(".row-main").css('opacity', 0.5)
     $(".detail_shipping_billing_div").css('opacity', 0.5)
     $(".loading_detail_order").removeClass('d-none')
-
+    
     var order_id = $("#order_id").val()
 
     if(localStorage.getItem('barcode_verif_wrapper')){

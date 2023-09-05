@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class TiersController extends BaseController
 {
@@ -62,6 +63,49 @@ class TiersController extends BaseController
 
          }
 
+    }
+    
+    public function getorderfact()
+    {
+          $data =  DB::table('commandeids')->select('date')->get();
+        // transformer les retour objets en tableau
+         $list = json_encode($data);
+         $lists = json_decode($data,true);
+          // compter le nombre de ligne par date.
+           $orders_line = DB::table('commandeids')
+               ->select('date',DB::raw('COUNT(date) as total'))
+                ->groupBy('date')
+               ->get();
+         
+           $details_facture = json_encode($orders_line);
+           $details_factures = json_decode($orders_line,true);
+           $list_result =[];
+           
+           foreach($details_factures as $values){
+               
+               $date = explode('-',$values['date']);
+               $line_date = $date[2].'/'.$date['1'].'/'.$date[0];
+             
+                $list_result[] = [
+                    
+                    'date' => $line_date,
+                    'nombre'=>$values['total'],
+                    'dat'=>$values['date'],
+                   
+                   ];
+           }
+           
+           
+          
+
+        return view('Tiers.orderfacturer',['list_result'=>$list_result]);
+    }
+    
+    
+    public function getidscommande(Request $request){
+        
+        dd('zapo');
+        
     }
 
     

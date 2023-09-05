@@ -390,6 +390,7 @@ $('body').on('click', '.valid_partial_order', function () {
             method: 'POST',
             data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order }
         }).done(function (data) {
+            console.log(data)
             if (JSON.parse(data).success) {
                 location.reload()
             } else {

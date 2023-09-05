@@ -22,6 +22,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 use App\Repository\Printer\PrinterRepository;
+use Illuminate\Support\Facades\Mail;
 
 class Order extends BaseController
 {
@@ -269,20 +270,26 @@ class Order extends BaseController
     
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
           
+        
         if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
         } else if($partial == "1" && $barcode_array == null){
            $check_if_order_done = true;
         }
         
+      
 
         if($check_if_order_done && $partial == "1"){
+         
             // Récupère les chefs d'équipes
             $leader = $this->user->getUsersByRole([4]);
             $from_user = Auth()->user()->id;
             foreach($leader as $lead){
                 $email = $lead['email'];
                 $name = $lead['name'];
+                
+                
+                   
 
                 // Insert dans notification
                 $data = [
@@ -301,7 +308,11 @@ class Order extends BaseController
                     $message->from('no-reply@elyamaje.com');
                     $message->subject('Commande incomplète');
                 });
+               
+                
             }
+            
+    
         }
         echo json_encode(["success" => $check_if_order_done]);
       } else {
@@ -400,7 +411,7 @@ class Order extends BaseController
       $order = $this->order->getOrderById($order_id);
       if($order){
         // Check si commande distributeur, si oui rebipper les produits
-        $is_distributor = $this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
+        $is_distributor = false; //$this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
         echo json_encode(['success' => true, 'order' => $order, 'is_distributor' => $is_distributor, 'status' =>  __('status.'.$order[0]['status'])]);
       } else {
         echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
@@ -423,7 +434,7 @@ class Order extends BaseController
 
         // Données de test
         // $is_distributor = false;
-        $is_distributor = $order[0]['is_distributor'] != null ? true : false;
+        $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         
         if($is_distributor){
           $barcode_array = $request->post('pick_items');

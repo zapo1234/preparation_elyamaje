@@ -486,7 +486,7 @@
 						</div>
 
 
-						<div class="mt-5 no-print d-none justify-content-center close_modal_validation mt-3 w-100 d-flex">
+						<div class="mt-5 no-print justify-content-center close_modal_validation mt-3 w-100 d-flex">
 							<button type="button" class="close_modal_order btn btn-dark px-5">Fermer</button>
 						</div>
 

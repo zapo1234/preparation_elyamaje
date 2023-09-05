@@ -58,7 +58,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
     // mise a jours des tiers via dolibar.
     Route::post("/refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
-
+    // orders facturé via dolibarr
+     Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
+     //traitement ajax des commande facture 
+       Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('getidscommande');
+     
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
