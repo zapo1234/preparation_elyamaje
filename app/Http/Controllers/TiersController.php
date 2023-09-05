@@ -105,11 +105,15 @@ class TiersController extends BaseController
     public function getidscommande(Request $request){
         
         $id = $request->get('id');
-        
-        // créeer des intervalle de date pour recupérer le nombre de commande prepare.
-        $mm = "00:00:00";
-        $mm1 = "23:59:59";
-        $date1 = $id.''.
+          // créeer des intervalle de date pour recupérer le nombre de commande prepare.
+         $mm = "00:00:00";
+         $mm1 = "23:59:59";
+         $date1 = $id.''.$mm;
+         $date2  = $id.''.$mm1;
+         
+        // recupérer les commande 
+        dump($date1);
+        dd($date2);
         
         dd($id);
         
