@@ -299,6 +299,8 @@ class Colissimo
             }
 
             return $mobile;
+        } else if(str_contains($mobile, '+')){
+            return $mobile;
         } else {
             return "";
         }
