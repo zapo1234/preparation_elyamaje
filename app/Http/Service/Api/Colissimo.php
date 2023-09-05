@@ -15,7 +15,7 @@ class Colissimo
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
         $mobilePhone = $this->getMobilePhone(str_replace(" ", "", $order['billing']['phone']), $order['shipping']['country']);
-
+        
         if($productCode){
             try {
                 $requestParameter = [
@@ -287,11 +287,13 @@ class Colissimo
     }
 
     protected function getMobilePhone($mobile, $country){
-        if($mobile != "" && $mobile != null){
+        if($mobile != "" && $mobile != null && !str_contains($mobile, '+')){
             if($country == "FR"){
                 $mobile = $mobile;
             } else if($country == "BE"){
                 $mobile = "+32".substr($mobile, 1);
+            } else if($country == "CH"){
+                $mobile = "+41".substr($mobile, 1);
             } else {
                 $mobile = $mobile;
             }
