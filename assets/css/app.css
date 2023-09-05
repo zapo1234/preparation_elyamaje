@@ -5873,6 +5873,7 @@ input::placeholder {
 	width: 350px;
 	word-break: break-word;
 	white-space: break-spaces;
+	align-items: flex-start !important;
 }
 
 .detail_product_name_order span{

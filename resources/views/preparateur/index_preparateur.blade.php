@@ -137,10 +137,9 @@
 											<div class="body_detail_product_order">
 												@foreach($orders['items'] as $item)
 												<div class="barcode_{{ $item['barcode'] ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-													<div class="column11 d-flex align-items-center detail_product_name_order">
+													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
-														<!-- <br> -->
 														@else
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>
@@ -148,6 +147,7 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
+														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
@@ -255,7 +255,7 @@
 											<div class="body_detail_product_order">
 												@foreach($order['items'] as $item)
 												<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-													<div class="column11 d-flex align-items-center detail_product_name_order">
+													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
 														@else
@@ -265,6 +265,7 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
+														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
@@ -370,9 +371,11 @@
 											<div class="body_detail_product_order">
 												@foreach($order['items'] as $item)
 												<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-													<div class="column11 d-flex align-items-center detail_product_name_order">
+													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 														@if($item['cost'] == 0)
 														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
+														<br>
+														<span>{{ $item['barcode'] }}</span>
 														@else
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>
@@ -380,6 +383,7 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
+														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>

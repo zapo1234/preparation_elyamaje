@@ -265,12 +265,7 @@ class Order extends BaseController
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order') ?? null;
       
-       
-       
-    
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
-          
-        
         if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
         } else if($partial == "1" && $barcode_array == null){
