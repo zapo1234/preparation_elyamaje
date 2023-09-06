@@ -119,19 +119,28 @@ class TiersController extends BaseController
            // nombre de commande prepared
             $nombre_commande = count($name_lists);
 
+            $list_ids_prepared =[];
+            foreach($name_lists as $val){
+               $list_ids_prepared[] = $val['order_id'];
+            }
+
             // recupérer les facture facturés 
             // recupérer 
             $data =  DB::table('commandeids')->select('id_commande','date')->where('date','=',$date)->get();
             // transformer les retour objets en tableau
             $list = json_encode($data);
             $lists = json_decode($data,true);
-            dd($lists);
+            $nombre_facture = count($lists);
+           
+             $list_ids_commande =[];
+             foreach($lists as $values){
+                 $list_ids_commande[] = $values['id_commande'];
+             }
+    
 
-            dd($name_lists);
-            dump($date1);
-            dd($date2);
-        
-        dd($id);
+            dump($nombre_commande);
+            dump($nombre_facture);
+            dd($list_ids_commande);
         
     }
 
