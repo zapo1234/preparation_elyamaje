@@ -117,7 +117,7 @@ class TiersController extends BaseController
            $name_list = json_encode($posts);
             $name_lists = json_decode($posts,true);
            // nombre de commande prepared
-            $nombre_commande = count($name_list);
+            $nombre_commande = count($name_lists);
 
             // recupérer les facture facturés 
             // recupérer 
