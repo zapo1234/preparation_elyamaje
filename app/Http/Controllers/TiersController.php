@@ -147,12 +147,14 @@ class TiersController extends BaseController
 
              dump($diff_array);
              $list_commande = implode(',',$diff_array);// la liste des ids commande non facturés.
+             dump($list_commande);
              if(count($diff_array)==0){
                 $alert ="les commandes sont exates";
              }
 
              else{
-                 $alert="Attention nous avons $diff commandes non facturés $list_commande";
+                 $nombre = count($diff_array);
+                 $alert="Attention nous avons $nombre commandes non facturés $list_commande";
              }
 
             dump($nombre_commande);
