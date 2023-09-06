@@ -145,8 +145,8 @@ class TiersController extends BaseController
             // chercher les diff entre les deux tableau. 
              $diff_array = array_diff($list_ids_commande,$list_ids_prepared);
 
-             dd($diff_array);
-             $list_commande = implode(',',$diff);// la liste des ids commande non facturés.
+             dump($diff_array);
+             $list_commande = implode(',',$diff_array);// la liste des ids commande non facturés.
              if(count($diff_array)==0){
                 $alert ="les commandes sont exates";
              }
