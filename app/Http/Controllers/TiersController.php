@@ -106,6 +106,10 @@ class TiersController extends BaseController
     public function getidscommande(Request $request){
         
             $date = $request->get('id');
+            // date au format francais.
+            $dates = explode('-',$date);
+            $date_frs = $dates[2].'/'.$dates['1'].'/'.$dates[0];
+
            // créeer des intervalle de date pour recupérer le nombre de commande prepare.
              $mm = "09:00:00";
              $mm1 = "23:59:59";
@@ -154,7 +158,7 @@ class TiersController extends BaseController
             dump($alert);
             dd($list_ids_commande);
 
-            echo json_encode(['date' => $date,'alert'=>$alert]);
+            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert]);
         
     }
 
