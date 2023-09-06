@@ -111,7 +111,7 @@ class TiersController extends BaseController
          $mm1 = "23:59:59";
          $date1 = $id.'T'.$mm;
          $date2  = $id.'T'.$mm1;
-         $status ="prepared";
+         $status ="finished";
           // recupérer les ids de produits dans ce intervale.
           $posts = History::where('status','=',$status)->whereBetween('created_at', [$id, $date2])->get();
            $name_list = json_encode($posts);
