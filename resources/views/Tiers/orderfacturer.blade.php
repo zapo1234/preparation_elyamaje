@@ -51,7 +51,7 @@
 
 				
                   <!-- Modal -->
-		<div class="modal fade" id="details_facture" style="margin-top:-100px;height:200px;" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal fade" id="details_facture" style="margin-top:-10px;height:250px;" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content p-3">
 			 <h3 style="font-size:17px;text-align:center;text-transform:uppercase">Point Commande facturées<span id="nommer"></span> </h3>
