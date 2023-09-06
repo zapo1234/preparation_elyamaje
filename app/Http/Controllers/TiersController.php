@@ -156,7 +156,7 @@ class TiersController extends BaseController
              }
               
              dump($alert);
-             dd('requete bien executée');
+             dd('Demande bien excutée');
 
             echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture,'list_commande'=>$list_commande]);
         
