@@ -82,6 +82,7 @@ class Order extends BaseController
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         return $orders_user;
       } else {
+
         $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
         $per_page = 100;
         $page = 1;
@@ -106,6 +107,7 @@ class Order extends BaseController
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
         $ids = array_column($orders_distributed, "order_woocommerce_id");
         $list_orders = [];
+
        
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){

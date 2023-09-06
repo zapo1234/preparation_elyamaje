@@ -11,6 +11,10 @@ class Colissimo
     public function generateLabel($order, $weight, $order_id, $colissimo){
 
         $productCode = $this->getProductCode($order);
+        // $isCN22 = $this->isCn22($order['total_order'], $weight);
+        // $isCN23 = $this->isCN23($order['total_order'], $weight);
+        $customsArticle = $this->customsArticle($order);
+
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
@@ -32,7 +36,8 @@ class Colissimo
                             'depositDate' => date('Y-m-d'), // Date du dépôt du colis
                             'orderNumber ' => $order_id,
                             'commercialName' => $order['shipping']['last_name'].' '.$order['shipping']['first_name'],
-                            'returnTypeChoice' => 3 // Ne pas retourner
+                            'returnTypeChoice' => 3, // Ne pas retourner
+                            'totalAmount' => $insuranceValue
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
@@ -52,10 +57,16 @@ class Colissimo
                         ],
                         'customsDeclarations' => [
                             'includeCustomsDeclarations' => 1,
-                            'invoiceNumber'              => $order_id,
+                            'contents'                   => [
+                                'article'  => $customsArticle,
+                                'category' => [
+                                    'value' => 3,
+                                ],
+                            ],
+                            'invoiceNumber'             => $order_id,
                             'original' => [
                                 'originalInvoiceNumber' => $order_id,
-                                'originalInvoiceDate' => $order['date']
+                                'originalInvoiceDate'   => $order['date']
                             ],
                         ],
                         'addressee' => [
@@ -69,7 +80,7 @@ class Colissimo
                                 'city' => $order['shipping']['city'],
                                 'zipCode' => $order['shipping']['postcode'],
                                 'email' => $order['billing']['email'],
-                                'mobileNumber' =>  $mobilePhone
+                                'mobileNumber' =>  $mobilePhone,
                             ]
                         ]
                     ]
@@ -77,10 +88,11 @@ class Colissimo
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
-
+                
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
+
         
                 preg_match('/--(.*)\b/', $response, $boundary);
         
@@ -304,6 +316,42 @@ class Colissimo
         } else {
             return "";
         }
+    }
+
+    // protected function isCn22($total, $weight){
+    //     if($total <= 425 && $weight <= 2 ){
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    // protected function isCn23($total, $weight){
+    //     if($total >= 425 && ($weight >= 2 && $weight <= 20)){
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    protected function customsArticle($order){
+   
+        $customsArticle = [];
+        foreach($order['line_items'] as $key => $item){
+            $customsArticle[] = [
+                'description'   => $item['name'],
+                'quantity'      => $item['quantity'],
+                'value'         => $item['total'],
+                'currency'      => config('app.currency'),
+                'artref'        => $item['ref'] ?? '',
+                'originalIdent' => 'A',
+                'originCountry' => 'FR',
+                'hsCode'        => '33049900', // code pour produits esthétique, beauté
+                'weight'        => $item['quantity'] * floatval($item['weight'])
+            ];
+        }
+
+        return $customsArticle;
     }
  
 }
