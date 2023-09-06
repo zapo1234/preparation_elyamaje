@@ -149,16 +149,15 @@ class TiersController extends BaseController
              $list_commande = implode(',',$diff_array);// la liste des ids commande non facturés.
              dump($list_commande);
              if(count($diff_array)==0){
-                $alert ="les commandes sont exates";
+                $alert = "Toutes les commandes ont étés facturées";
              }
 
              else{
                  $nombre = count($diff_array);
-                 $alert="Attention nous avons $nombre commandes non facturés $list_commande";
+                 $alert="Attention nous avons $nombre commandes non facturés voir les N° $list_commande";
              }
               
-             dump($alert);
-             dd('succes');
+
 
             echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture,'list_commande'=>$list_commande]);
         
