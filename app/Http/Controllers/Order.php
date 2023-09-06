@@ -264,16 +264,16 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order') ?? null;
-      
+
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
+
         if($barcode_array != null){
-            $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
+          $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
         } else if($partial == "1" && $barcode_array == null){
-           $check_if_order_done = true;
+          $this->order->updateOrdersById([$order_id], "waiting_to_validate");
+          $check_if_order_done = true;
         }
         
-      
-
         if($check_if_order_done && $partial == "1"){
          
             // Récupère les chefs d'équipes
@@ -282,9 +282,6 @@ class Order extends BaseController
             foreach($leader as $lead){
                 $email = $lead['email'];
                 $name = $lead['name'];
-                
-                
-                   
 
                 // Insert dans notification
                 $data = [
@@ -302,12 +299,8 @@ class Order extends BaseController
                     $message->to($email);
                     $message->from('no-reply@elyamaje.com');
                     $message->subject('Commande incomplète');
-                });
-               
-                
+                }); 
             }
-            
-    
         }
         echo json_encode(["success" => $check_if_order_done]);
       } else {

@@ -189,8 +189,6 @@ document.addEventListener("keydown", function (e) {
 $(".validate_pick_in").on('click', function () {
     var order_id = $("#order_in_progress").val()
     
-    
-
     if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
         // Ouvre la modal de loading
         $(".loading_prepared_command").removeClass('d-none')
@@ -364,7 +362,6 @@ $('body').on('click', '.valid_partial_order', function () {
     var note_partial_order = $("#note_partial_order").val()
     // Récupère les produits de cette commande
 
-
     if (pick_items.length > 0) {
         const order_object = pick_items.find(
             element => element.order_id == order_id
@@ -374,8 +371,8 @@ $('body').on('click', '.valid_partial_order', function () {
             pick_items = order_object.products
             pick_items_quantity = order_object.quantity
         } else {
-            alert('Erreur !')
-            return
+            pick_items = [];
+            pick_items_quantity = [];
         }
     } else {
         pick_items = [];
