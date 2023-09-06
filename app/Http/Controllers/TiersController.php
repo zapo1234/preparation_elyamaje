@@ -143,7 +143,7 @@ class TiersController extends BaseController
 
              dump($list_ids_prepared);
 
-             dump($list_ids_prepared);
+             dump($list_ids_commande);
 
              dd('zapo');
 
