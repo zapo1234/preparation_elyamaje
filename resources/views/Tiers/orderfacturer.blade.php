@@ -89,7 +89,7 @@
 
 		<script>
           
-          $('.btn-info').click(function(){
+          $('.verificode').click(function(){
               
                var id = $(this).data('id1');
                
