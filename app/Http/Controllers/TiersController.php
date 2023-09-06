@@ -143,8 +143,9 @@ class TiersController extends BaseController
              }
 
             // chercher les diff entre les deux tableau. 
-             $diff = array_diff($list_ids_prepared,$list_ids_commande);
-
+             $diff = array_diff($list_ids_commande,$list_ids_prepared);
+             dump($list_ids_commande);
+             dump($list_ids_prepared);
              dd($diff);
              $list_commande = implode(',',$diff);// la liste des ids commande non facturés.
              if(count($diff)==0){
