@@ -49,21 +49,16 @@
 					</div>
 				</div>
 
-				<div id="zapo"></div>
+				
                   <!-- Modal -->
-		<div class="modal fade" id="details_facture" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal fade" id="details_facture" style="margin-top:-100px;height:200px;" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content p-3">
-			<form method="post" id="form_verifcodes" action="/utilisateur/prgramme/fidelite">
-				<input type="hidden" name="_token" value="G6bCRwa4c4v3pZVsQQvEgnCzphw78u68UGU6fqGn">
-				<h3 style="font-size:17px;text-align:center;text-transform:uppercase">Vérifier le code fidélité <span id="nommer"></span> </h3>
-
-				<div id="error_codelive"></div>
-
-				<div>
-
-				<input type="text" size="45" class="form-control" placeholder="code(NB tapez le code en miniscule)" name="codefemverify" required  required aria-describedby="basic-addon1">
-
+			 <h3 style="font-size:17px;text-align:center;text-transform:uppercase">Point Commande facturées<span id="nommer"></span> </h3>
+               <div>
+                 
+			   <div id="zapo"></div>
+				
 				</div>
 
 				<div class="w-100 mt-2 d-flex justify-content-center">
@@ -72,7 +67,7 @@
 					<button type="submit" class="validateadds" style="background-color:#00FF00;color:black;border:2px solid #00FF00;margin-left:15px;border-radius:15px;font-weight:bold">Vérifier</button> <br/> 
 
 				</div>
-			</form>
+			
 			</div>
 		</div>
 		</div>
