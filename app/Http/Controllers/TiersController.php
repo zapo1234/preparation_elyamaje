@@ -105,23 +105,62 @@ class TiersController extends BaseController
     
     public function getidscommande(Request $request){
         
-         $id = $request->get('id');
-          // créeer des intervalle de date pour recupérer le nombre de commande prepare.
-         $mm = "00:00:00";
-         $mm1 = "23:59:59";
-         $date1 = $id.'T'.$mm;
-         $date2  = $id.'T'.$mm1;
-         $status ="prepared";
-         // recupérer les ids de produits dans ce intervale.
-          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
+            $date = $request->get('id');
+            // date au format francais.
+            $dates = explode('-',$date);
+            $date_frs = $dates[2].'/'.$dates['1'].'/'.$dates[0];
+
+           // créeer des intervalle de date pour recupérer le nombre de commande prepare.
+             $mm = "09:00:00";
+             $mm1 = "23:59:59";
+             $date1 = $date.'T'.$mm;
+            $date2  = $date.'T'.$mm1;
+             $status ="finished";
+          // recupérer les ids de produits dans ce intervale.
+           $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
            $name_list = json_encode($posts);
             $name_lists = json_decode($posts,true);
+           // nombre de commande prepared
+            $nombre_commande = count($name_lists);
 
-            dd($name_lists);
-            dump($date1);
-            dd($date2);
-        
-        dd($id);
+            $list_ids_prepared =[];
+            foreach($name_lists as $val){
+              
+               $list_ids_prepared[] = $val['order_id'];
+            }
+
+            // recupérer les facture facturés 
+            // recupérer 
+            $data =  DB::table('commandeids')->select('id_commande','date')->where('date','=',$date)->get();
+            // transformer les retour objets en tableau
+            $list = json_encode($data);
+            $lists = json_decode($data,true);
+            $nombre_facture = count($lists);
+           
+             $list_ids_commande =[];
+             foreach($lists as $values){
+                 $list_ids_commande[] = (int)$values['id_commande'];
+             }
+
+            // chercher les diff entre les deux tableau. 
+             $diff_array = array_diff($list_ids_commande,$list_ids_prepared);
+
+             $list_commande = implode(',',$diff_array);// la liste des ids commande non facturés.
+             if(count($diff_array)==0){
+                $alert = "Toutes les commandes ont étés facturées le $date_frs";
+             }
+             elseif(count($diff_array)==1){
+              $alert = "Attention nous avons une commande non prise en compte dans les statistiques  le $date_frs voir le N° $list_commande";
+            }
+            else{
+                 $nombre = count($diff_array);
+                 $alert="Attention nous avons $nombre commandes non prise en compte dans les statistiques le $date_frs voir les N°  suivant $list_commande";
+             }
+              
+             dump($alert);
+             dd('Demande bien excutée');
+
+            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture,'list_commande'=>$list_commande]);
         
     }
 

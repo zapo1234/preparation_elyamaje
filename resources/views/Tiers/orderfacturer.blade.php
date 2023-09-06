@@ -37,7 +37,7 @@
 						                     	<tr>
 												<td data-label="Nom">{{ $val['date'] }}</td>
 												<td class="prepare_column" data-label="Commandes Préparées">{{ $val['nombre'] }}</td>
-												<td class="finished_column" data-label="Commandes Emballées"><button type="button"  data-id1 ="{{ $val['dat'] }}" class="btn btn-info">Voir détails</button></td>
+												<td class="finished_column" data-label="Commandes Emballées"> <button type="button" class="p-2 px-3 verificode" data-id1="{{ $val['dat'] }}" style="background-color:black;color:white;width:auto;border-radius:5px;border:2px solid black">Voir détails</button></td>
 												<td data-label="Produits bippés"></td>
 												<td data-label="Date"></td>
 											</tr>
@@ -49,9 +49,21 @@
 					</div>
 				</div>
 
-				<div id="zapo"></div>
-
+				
+                  <!-- Modal -->
+		<div class="modal fade" id="details_facture" style="margin-top:30px;height:400px;overflow-y:scroll" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content p-3">
+			 <h3 style="font-size:17px;text-align:center;text-transform:uppercase">Point Commande facturées<span id="journee_date"></span> </h3>
+               <div>
+                 <div id="zapo"></div>
+				
+				</div>
+			
 			</div>
+		</div>
+		</div>
+        </div>
 		</div>
 	@endsection
 
@@ -64,7 +76,7 @@
 
 		<script>
           
-          $('.btn-info').click(function(){
+          $('.verificode').click(function(){
               
                var id = $(this).data('id1');
                
@@ -74,10 +86,15 @@
 	      	  data: {id:id},
 	    	}).done(function(data) {
               
-               $('#zapo').html(data);
+                 $('#zapo').html(data);
 		    });
               
           });
+
+		  $(".verificode").on('click', function(){
+			    $("#details_facture").modal('show')
+		       });
+
           
           
          </script>
