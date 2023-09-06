@@ -156,14 +156,11 @@ class TiersController extends BaseController
                  $nombre = count($diff_array);
                  $alert="Attention nous avons $nombre commandes non facturés $list_commande";
              }
+              
+             dump($alert);
+             dd('succes');
 
-            dump($nombre_commande);
-            dump($nombre_facture);
-            dump($list_commande);
-            dump($alert);
-            dd($list_ids_commande);
-
-            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture]);
+            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture,'list_commande'=>$list_commande]);
         
     }
 
