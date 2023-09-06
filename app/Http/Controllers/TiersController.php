@@ -150,11 +150,11 @@ class TiersController extends BaseController
                 $alert = "Toutes les commandes ont étés facturées le $date_frs";
              }
              elseif(count($diff_array)==1){
-              $alert = "Attention nous avons une commande non facturée le $date_frs";
+              $alert = "Attention nous avons une commande non prise en compte dans les statistiques  le $date_frs voir le N° $list_commande";
             }
             else{
                  $nombre = count($diff_array);
-                 $alert="Attention nous avons $nombre commandes non facturés le $date_frs voir les N°  suivant $list_commande";
+                 $alert="Attention nous avons $nombre commandes non prise en compte dans les statistiques le $date_frs voir les N°  suivant $list_commande";
              }
               
              dump($alert);
