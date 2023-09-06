@@ -59,13 +59,6 @@
                  <div id="zapo"></div>
 				
 				</div>
-
-				<div class="w-100 mt-2 d-flex justify-content-center">
-
-					<button type="button" data-bs-dismiss="modal" class="annuler" style="background-color:#eee;color:black;border:2px solid #eee;border-radius:15px;">Annuler</button>  
-					<button type="submit" class="validateadds" style="background-color:#00FF00;color:black;border:2px solid #00FF00;margin-left:15px;border-radius:15px;font-weight:bold">Vérifier</button> <br/> 
-
-				</div>
 			
 			</div>
 		</div>
