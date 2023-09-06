@@ -136,6 +136,19 @@ class TiersController extends BaseController
              foreach($lists as $values){
                  $list_ids_commande[] = $values['id_commande'];
              }
+
+             // regrouper les differences 
+             $diff = array_diff($list_ids_prepared,$list_ids_commande);
+             $list_commande = implode(',',$diff);
+             if(count($diff)==0){
+                $alert ="les commandes sont exates";
+             }
+
+             else{
+                 $alert="Attention nous avons $diff commandes non facturés $list_commande";
+             }
+
+             
     
 
             dump($nombre_commande);
