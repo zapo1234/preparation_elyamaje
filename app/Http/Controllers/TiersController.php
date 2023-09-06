@@ -105,17 +105,27 @@ class TiersController extends BaseController
     
     public function getidscommande(Request $request){
         
-         $id = $request->get('id');
-          // créeer des intervalle de date pour recupérer le nombre de commande prepare.
-         $mm = "09:00:00";
-         $mm1 = "23:59:59";
-         $date1 = $id.'T'.$mm;
-         $date2  = $id.'T'.$mm1;
-         $status ="finished";
+            $date = $request->get('id');
+           // créeer des intervalle de date pour recupérer le nombre de commande prepare.
+             $mm = "09:00:00";
+             $mm1 = "23:59:59";
+             $date1 = $date.'T'.$mm;
+            $date2  = $date.'T'.$mm1;
+             $status ="finished";
           // recupérer les ids de produits dans ce intervale.
-          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
+           $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
            $name_list = json_encode($posts);
             $name_lists = json_decode($posts,true);
+           // nombre de commande prepared
+            $nombre_commande = count($name_list);
+
+            // recupérer les facture facturés 
+            // recupérer 
+            $data =  DB::table('commandeids')->select('id_commande','date')->where('date','=',$date)->get();
+            // transformer les retour objets en tableau
+            $list = json_encode($data);
+            $lists = json_decode($data,true);
+            dd($lists);
 
             dd($name_lists);
             dump($date1);
