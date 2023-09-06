@@ -107,13 +107,13 @@ class TiersController extends BaseController
         
          $id = $request->get('id');
           // créeer des intervalle de date pour recupérer le nombre de commande prepare.
-         $mm = "00:00:00";
+         $mm = "09:00:00";
          $mm1 = "23:59:59";
          $date1 = $id.'T'.$mm;
          $date2  = $id.'T'.$mm1;
          $status ="prepared";
-         // recupérer les ids de produits dans ce intervale.
-          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
+          // recupérer les ids de produits dans ce intervale.
+          $posts = History::where('status','=',$status)->whereBetween('created_at', [$id, $date2])->get();
            $name_list = json_encode($posts);
             $name_lists = json_decode($posts,true);
 
