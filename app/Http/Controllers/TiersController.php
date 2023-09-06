@@ -141,6 +141,12 @@ class TiersController extends BaseController
                  $list_ids_commande[] = $values['id_commande'];
              }
 
+             dump($list_ids_prepared);
+
+             dump($list_ids_prepared);
+
+             dd('zapo');
+
              // chercher les diff entre les deux tableau. 
              $diff = array_diff($list_ids_prepared,$list_ids_commande);
              $list_commande = implode(',',$diff);// la liste des ids commande non facturés.
@@ -158,7 +164,7 @@ class TiersController extends BaseController
             dump($alert);
             dd($list_ids_commande);
 
-            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert]);
+            echo json_encode(['date_frs' => $date_frs,'alert'=>$alert,'nombre_commande'=>$nombre_commande,'nombre_facture'=>$nombre_facture]);
         
     }
 
