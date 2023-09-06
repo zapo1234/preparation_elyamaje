@@ -86,9 +86,7 @@
 	      	  data: {id:id},
 	    	}).done(function(data) {
               
-				 var date =  JSON.parse(data).date_frs
-			     var nombre_commande = JSON.parse(data).nombre_commande
-                 $('#journee_date').text(date);
+				
                  $('#zapo').html(data);
 		    });
               
