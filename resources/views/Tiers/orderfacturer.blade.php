@@ -37,7 +37,7 @@
 						                     	<tr>
 												<td data-label="Nom">{{ $val['date'] }}</td>
 												<td class="prepare_column" data-label="Commandes Préparées">{{ $val['nombre'] }}</td>
-												<td class="finished_column" data-label="Commandes Emballées"><button type="button"  data-id1 ="{{ $val['dat'] }}" class="btn btn-info">Voir détails</button></td>
+												<td class="finished_column" data-label="Commandes Emballées"> <button type="button" class="p-2 px-3 verificode" data-id1="{{ $val['dat'] }}" style="background-color:black;color:white;width:auto;">Voir détails</button></td>
 												<td data-label="Produits bippés"></td>
 												<td data-label="Date"></td>
 											</tr>
