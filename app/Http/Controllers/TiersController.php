@@ -125,6 +125,7 @@ class TiersController extends BaseController
 
             $list_ids_prepared =[];
             foreach($name_lists as $val){
+              
                $list_ids_prepared[] = $val['order_id'];
             }
 
@@ -138,7 +139,7 @@ class TiersController extends BaseController
            
              $list_ids_commande =[];
              foreach($lists as $values){
-                 $list_ids_commande[] = $values['id_commande'];
+                 $list_ids_commande[] = (int)$values['id_commande'];
              }
 
              dump($list_ids_prepared);
