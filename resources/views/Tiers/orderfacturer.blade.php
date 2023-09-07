@@ -124,7 +124,7 @@
 
 
 
-		  $(".verificode").on('click', function(){
+		       $(".verificode").on('click', function(){
 			    $("#details_facture").modal('show')
 		       });
 
