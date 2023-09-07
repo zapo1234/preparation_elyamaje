@@ -130,12 +130,27 @@ $('body').on('click', '.print_zpl_file', function(e) {
         data : {_token: $('input[name=_token]').val(), label_id: label_id}
     }).done(function(data) {
         if(JSON.parse(data).success){
+            var label = JSON.parse(data).file
             $.ajax({
-                url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
+                url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+label,
                 metho: 'GET',
-            }).done(function(data) {
-                
-            }) 
+                async: false,
+                success : function(data){
+                    
+                },
+                error : function(xhr){
+                  if(xhr.status == 404){
+                    $.ajax({
+                        url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label,
+                        metho: 'GET',
+                        async: false,
+                        success : function(data){
+                           
+                        },
+                    })
+                  }
+                }
+            })
         }
     })
 })
