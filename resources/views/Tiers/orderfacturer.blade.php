@@ -30,7 +30,6 @@
 										<th>Détails(journée de préparation)</th>
 										<th>Controle sur les commandes facturés</th>
 										<th></th>
-										<th></th>
 									</tr>
 								</thead>
 								<tbody>
