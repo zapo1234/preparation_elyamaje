@@ -206,7 +206,7 @@
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
-												<i style="z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+												<i style="z-index:10;cursor:pointer;font-size:28px;" data-bs-dismiss="modal" class="lni lni-close"></i>
 											</div>	
 											<div class="modal-body">
 												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
@@ -215,8 +215,8 @@
 														<span class="visually-hidden">Loading...</span>
 													</div>
 													<!-- <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button> -->
-													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
-													<button style="margin-left:15px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
+													<button style="margin-left:15px" type="button" class="mt-3 allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
+													<button style="margin-left:15px" type="button" class="mt-3 unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
 
 													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>

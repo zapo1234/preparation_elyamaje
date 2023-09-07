@@ -22,6 +22,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 use App\Repository\Printer\PrinterRepository;
+use App\Repository\Product\ProductRepository;
 use Illuminate\Support\Facades\Mail;
 
 class Order extends BaseController
@@ -43,6 +44,7 @@ class Order extends BaseController
     private $distributor;
     private $printer;
     private $colissimoConfiguration;
+    private $product;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -57,7 +59,8 @@ class Order extends BaseController
     WoocommerceService $woocommerce,
     DistributorRepository $distributor,
     PrinterRepository $printer,
-    ColissimoRepository $colissimoConfiguration
+    ColissimoRepository $colissimoConfiguration,
+    ProductRepository $product
     ){
       $this->api = $api;
       $this->user = $user;
@@ -74,6 +77,7 @@ class Order extends BaseController
       $this->distributor = $distributor;
       $this->printer = $printer;
       $this->colissimoConfiguration = $colissimoConfiguration;
+      $this->product = $product;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -673,6 +677,19 @@ class Order extends BaseController
         echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
       } else {
         echo json_encode(['success' => false]); 
+      }
+    }
+
+
+    public function checkProductBarcode(Request $request){
+      $product_id = $request->post('product_id');
+      $barcode = $request->post('barcode');
+      $barcode_valid = $this->product->checkProductBarcode($product_id, $barcode);
+      
+      if($barcode_valid == 1){
+        echo json_encode(['success' => true]);
+      } else {
+        echo json_encode(['success' => false]);
       }
     }
 }
