@@ -260,16 +260,7 @@ function validWrapOrder(label){
 
         try {
             if(JSON.parse(data).success){
-                // Generate label colissimo
-                if(JSON.parse(data).file){
-                    $.ajax({
-                        url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+JSON.parse(data).file,
-                        metho: 'GET',
-                    }).done(function(data) {
 
-                    }) 
-                }
-              
                 $(".show_messages").prepend(`
                     <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
                         <div class="text-white">`+JSON.parse(data).message+`</div>
@@ -285,6 +276,31 @@ function validWrapOrder(label){
                 $(".valid_order_and_generate_label").show()
 
                 show_empty_order()
+                
+                // Generate label colissimo
+                if(JSON.parse(data).file){
+                    var label_to_print = JSON.parse(data).file
+                    $.ajax({
+                        url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+label_to_print,
+                        metho: 'GET',
+                        async: false,
+                        success : function(data){
+                            
+                        },
+                        error : function(xhr){
+                          if(xhr.status == 404){
+                            $.ajax({
+                                url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label_to_print,
+                                metho: 'GET',
+                                async: false,
+                                success : function(data){
+                                   
+                                },
+                            })
+                          }
+                        }
+                    })
+                }
             } else {
                 $(".show_messages").prepend(`
                     <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
