@@ -51,8 +51,8 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('/');
 });
 
-// ADMIN
-Route::group(['middleware' => ['auth', 'role:1']], function () {
+// ADMI
+    Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
     // traiter les routes pour des tiers
     Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
@@ -61,7 +61,10 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // orders facturé via dolibarr
      Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
      //traitement ajax des commande facture 
-       Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
+     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
+     // ajax verification des commandes api dolibar factures.
+     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
+
      
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
