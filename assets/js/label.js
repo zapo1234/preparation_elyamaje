@@ -140,9 +140,9 @@ $('body').on('click', '.print_zpl_file', function(e) {
     })
 })
 
-$('body').on('click', '.button_validate_modal_label', function(e) {
-    total_weight()
-})
+// $('body').on('click', '.button_validate_modal_label', function(e) {
+//     total_weight()
+// })
 
 
 
