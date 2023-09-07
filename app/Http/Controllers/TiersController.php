@@ -169,7 +169,7 @@ class TiersController extends BaseController
          $datet = $request->get('id');
          $data = $this->tiers->getinvoices();
          $list_result =[];
-        
+        //
          $ids_commande = [];
 
          foreach($data as $values){
