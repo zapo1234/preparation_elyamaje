@@ -180,8 +180,6 @@ class TiersRepository implements TiersInterface
           // recuperer les données api dolibar copie projet tranfer x.
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
            $lists = json_decode($listinvoice,true);
-
-           dd($lists);
            return $lists;
 
       }
