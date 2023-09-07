@@ -166,7 +166,7 @@ class TiersController extends BaseController
 
     public function getinvoices(Request $request)
     {
-         $datet = $resquest->get('id');
+         $datet = $request->get('id');
          $data = $this->tiers->getinvoices();
          $list_result =[];
          $date = date('Y-m-d', $values['datem']);
