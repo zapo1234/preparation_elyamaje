@@ -63,7 +63,7 @@
 			</div>
 		</div>
 		</div>
-
+       </div>
 		<div class="modal fade" id="details_factures" style="margin-top:30px;height:400px;overflow-y:scroll" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content p-3">
@@ -110,8 +110,6 @@
           $('.verificodes').click(function(){
               
 			  var id = $(this).data('id2');
-
-			  alert(id);
 			  
 			  $.ajax({
 				url: "{{ route('tiers.getinvoices') }}",
