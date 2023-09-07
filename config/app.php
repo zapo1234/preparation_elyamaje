@@ -120,6 +120,8 @@ return [
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),
     'currency_symbol' => '€',
+    'currency' => 'EUR',
+
 
 
     /*

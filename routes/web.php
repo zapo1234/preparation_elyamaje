@@ -100,6 +100,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
+    Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
 });
 
 // EMBALLEUR

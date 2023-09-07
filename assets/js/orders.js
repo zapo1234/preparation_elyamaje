@@ -283,20 +283,35 @@ $(document).ready(function() {
                     return row.shipping_method.includes("chrono") ? "chrono" : "classic"
                 }
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    return row.status
+                }
+            },
         ],
 
         "columnDefs": [
-            { "visible": false, "targets": 6 }
+            { "visible": false, "targets": 6 },
+            { "visible": false, "targets": 7 }
         ],
         "initComplete": function(settings, json) {
-            $("#example_length select").css('margin-right', '10px')
+            // $("#example_length select").css('margin-right', '10px')
             $(".shipping_dropdown").appendTo('.dataTables_length')
+            $(".status_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").removeClass('d-none')
+            $(".status_dropdown").removeClass('d-none')
+           
             $(".shipping_dropdown").select2({
-                width: '250px',
+                width: '130px',
             });
+
+            $(".status_dropdown").select2({
+                width: '150px',
+            });
+
+            $(".select2-container").css('margin-left', '10px')
 
 
             $(".percent").remove()
@@ -359,6 +374,13 @@ $(document).ready(function() {
         var category_dropdown = $(this).val();
         $('#example').DataTable()
         .column(6).search(category_dropdown, true, false)
+        .draw();
+    })
+
+    $('.status_dropdown').on('change', function(e){
+        var status_dropdown = $(this).val();
+        $('#example').DataTable()
+        .column(7).search(status_dropdown, true, false)
         .draw();
     })
 

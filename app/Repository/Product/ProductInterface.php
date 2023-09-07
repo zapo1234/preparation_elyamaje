@@ -16,6 +16,8 @@ interface ProductInterface
     public function updateMultipleProduct($location, $products_id);
 
     public function getbarcodeproduct();
+
+    public function checkProductBarcode($product_id, $barcode);
 }
 
 

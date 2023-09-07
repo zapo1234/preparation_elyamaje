@@ -89,7 +89,9 @@ function progress_bar(){
 document.addEventListener("keydown", function (e) {
 
     // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
-    if ($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') && !$("#infoMessageModal").hasClass('show')) {
+    if ($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') 
+    && !$("#infoMessageModal").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show')
+    && !$(".info_message").hasClass('show')) {
         var order_id = $("#order_in_progress").val()
 
         if (!isNaN(parseInt(e.key))) {
@@ -154,10 +156,10 @@ document.addEventListener("keydown", function (e) {
                 $("#barcode").val("")
             }
         }
-    } else if ($(".modal_verif_order").hasClass('show')) {
+    } else if ($(".modal_verif_order").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show') 
+    && !$(".info_message").hasClass('show')) {
         var order_id = $(".modal_verif_order").attr('data-order')
         localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
-        console.log($("#barcode_verif").val())
         if (!isNaN(parseInt(e.key))) {
             $("#barcode_verif").val($("#barcode_verif").val() + e.key)
             if ($("#barcode_verif").val().length == 13) {
@@ -406,11 +408,16 @@ $('body').on('click', '.impression_code', function () {
     $(".close_modal_validation").removeClass("d-none")
 })
 
-function saveItem(order_id, mutiple_quantity) {
-    if (mutiple_quantity) {
-        var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode_verif").val()).find('.quantity_pick_in').text())
+function saveItem(order_id, mutiple_quantity, manually = false) {
+
+    if(manually){
+        var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
     } else {
-        var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text() + 1)
+        if (mutiple_quantity) {
+            var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode_verif").val()).find('.quantity_pick_in').text())
+        } else {
+            var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text() + 1)
+        }
     }
 
 
@@ -523,14 +530,6 @@ function printOrder() {
     printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
     printer.addText("\n"+$(".show .info_order").text());
 
-    
-    /* ----- LISTE DES PRODUITS ----- */
-    // $('.show .info_order_product').find('span').each(function () {
-    //     printer.addText("\n\n" + $(this).text());
-    // });
-    /* ----- LISTE DES PRODUITS ----- */
-
-
     printer.addText("\n\n\n");
     printer.addCut(printer.CUT_FEED);
     printer.send();
@@ -544,3 +543,47 @@ window.addEventListener("afterprint", (event) => {
     $(".impression_code div").addClass('d-none')
     $(".impression_code").attr('disabled', false)
 });
+
+
+function enter_manually_barcode(product_id, order_id){
+    $("#barcode_manually").css('border', '1px solid #ced4da')
+    $('#barcode_manually').attr('placeholder','');
+    $("#product_id_barcode").val(product_id)
+    $("#product_id_barcode_order_id").val(order_id)
+    $('#modalManuallyBarcode').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#modalManuallyBarcode").modal('show')
+}
+
+$(".valid_manually_barcode").on('click', function(){
+
+    var product_id = $("#product_id_barcode").val()
+    var barcode = $("#barcode_manually").val()
+    var order_id = $("#product_id_barcode_order_id").val()
+  
+    // Update en base de données
+    $.ajax({
+        url: "checkProductBarcode",
+        method: 'POST',
+        data: { _token: $('input[name=_token]').val(), product_id: product_id, barcode: barcode}
+    }).done(function (data) {
+        if (JSON.parse(data).success) {
+            if(!$(".barcode_"+barcode).hasClass('pick')){
+                $(".barcode_"+barcode).addClass('pick')
+                $(".barcode_"+barcode).find('.quantity_pick_in').text($(".barcode_"+barcode).find('.quantity_to_pick_in').text())
+                $("#modalManuallyBarcode").modal('hide')
+                $("#barcode").val(barcode)
+                saveItem(order_id, false, true)
+            } else {
+                $("#modalManuallyBarcode").modal('hide')
+            }
+        } else {
+           $("#barcode_manually").css('border', '1px solid red')
+           $('#barcode_manually').attr('placeholder','Code barre invalide !');
+        }
+        $("#barcode_manually").val("")
+        $("#barcode").val("")
+    })
+})

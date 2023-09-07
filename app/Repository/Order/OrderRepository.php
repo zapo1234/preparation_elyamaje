@@ -229,32 +229,45 @@ class OrderRepository implements OrderInterface
       }
 
 
-    // Cas de produits double si par exemple 1 en cadeau et 1 normal
-      // $product_double = [];
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($list as $key1 => $li){
+         foreach($li['items'] as $key2 => $item){
+            if(isset($product_double[$key1])){
 
-      // foreach($list as $key1 => $li){
-      //    foreach($li['items'] as $key2 => $item){
+               $id_product = array_column($product_double[$key1], "id");
+               $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
 
-      //       $ids = array_column($product_double, "id");
-      //       $clesRecherchees = array_keys($ids,  $item['product_woocommerce_id']);
+               if(count($clesRecherchees) > 0){
+                  $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
+                  unset($list[$key1]['items'][$key2]);
 
-      //       if(count($clesRecherchees) > 0){
-      //         $detail_doublon = $product_double[$clesRecherchees[0]];
-      //         unset($list[$key1]['items'][$key2]);
-      //         $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] + $detail_doublon['quantity'];
-
-      //       } else {
-      //         $product_double[] = [
-      //             'id' => $item['product_woocommerce_id'],
-      //             'quantity' => $item['quantity'], 
-      //             'key1' => $key1,
-      //             'key2' => $key2,
-      //         ];
-      //       }
-      //    }
-      // }
-
-
+                  // Merge quantity
+                  $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $item['quantity'] + $detail_doublon['quantity'];
+               
+                  // Merge pick product
+                  $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
+               } else {
+                  $product_double[$key1][] = [
+                     'id' => $item['product_woocommerce_id'],
+                     'quantity' => $item['quantity'], 
+                     'key1' => $key1,
+                     'key2' => $key2,
+                     'pick' => $item['pick']
+                 ];
+               }
+            } else {
+              $product_double[$key1][] = [
+                  'id' => $item['product_woocommerce_id'],
+                  'quantity' => $item['quantity'], 
+                  'key1' => $key1,
+                  'key2' => $key2,
+                  'pick' => $item['pick']
+              ];
+            }
+         }
+      }
+      
       $list = array_values($list);
       return $list;
    }
@@ -269,37 +282,72 @@ class OrderRepository implements OrderInterface
    }
 
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
-       
+
       $list_product_orders = DB::table('products')
       ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
       ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
       ->where('products_order.order_id', $order_id)
       ->get()
       ->toArray();
-      
 
-      $list_product_orders = json_decode(json_encode($list_product_orders), true);
-      $product_pick_in = [];
+
       
+      $list_product_orders = json_decode(json_encode($list_product_orders), true);
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($list_product_orders as $key_barcode => $list){
+
+         if(isset($product_double[$list["barcode"]])){
+            if(isset($product_double[$list["barcode"]][0])){
+
+               $quantity = $product_double[$list["barcode"]][0]['quantity'];
+               $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+
+               unset($list_product_orders[$key_barcode_to_remove]);
+               $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
+            }
+         } else {
+            $product_double[$list["barcode"]][] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key_barcode
+            ];
+         }
+      }
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      $list_products = [];
+      foreach($list_product_orders as $list){
+         $list_products[] = [
+            "barcode" => $list['barcode'],
+            "quantity" =>  $list['quantity'],
+            "id" =>  $list['id'],
+         ];
+      }
+
+
+      $product_pick_in = [];
       // Construit le tableaux à update 
-      $barcode_research = array_column($list_product_orders, "barcode");
+      $barcode_research = array_column($list_products, "barcode");
       
       foreach($barcode_array as $key => $barcode){
         $clesRecherchees = array_keys($barcode_research, $barcode);
          
          $product_pick_in[] = [
-            'id' => $list_product_orders[$clesRecherchees[0]]['id'],
+            'id' => $list_products[$clesRecherchees[0]]['id'],
             'barcode' => $barcode,
             'quantity' => intval($products_quantity[$key])
          ];
       }
+
+
 
       // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
       $barcode = array_column($product_pick_in, "barcode");
       $diff_quantity = false;
       $diff_barcode = false;
 
-      foreach($list_product_orders as $list){
+      foreach($list_products as $list){
          $clesRecherchees = array_keys($barcode, $list['barcode']);
          if(count($clesRecherchees) != 0){
             if($product_pick_in[$clesRecherchees[0]]['quantity'] != $list['quantity']){
@@ -362,14 +410,46 @@ class OrderRepository implements OrderInterface
       ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($list_product_orders as $key_barcode => $list){
+
+         if(isset($product_double[$list["barcode"]])){
+            if(isset($product_double[$list["barcode"]][0])){
+
+               $quantity = $product_double[$list["barcode"]][0]['quantity'];
+               $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+
+               unset($list_product_orders[$key_barcode_to_remove]);
+               $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
+            }
+         } else {
+            $product_double[$list["barcode"]][] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key_barcode
+            ];
+         }
+      }
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      $list_products = [];
+      foreach($list_product_orders as $list){
+         $list_products[] = [
+            "barcode" => $list['barcode'],
+            "quantity" =>  $list['quantity'],
+            "id" =>  $list['id'],
+         ];
+      }
+
       $product_pick_in = [];
 
       // Construit le tableaux à update 
-      $barcode_research = array_column($list_product_orders, "barcode");
+      $barcode_research = array_column($list_products, "barcode");
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
          $product_pick_in[] = [
-            'id' => $list_product_orders[$clesRecherchees[0]]['id'],
+            'id' => $list_products[$clesRecherchees[0]]['id'],
             'barcode' => $barcode,
             'quantity' => intval($products_quantity[$key])
          ];
@@ -380,7 +460,7 @@ class OrderRepository implements OrderInterface
       $diff_quantity = false;
       $diff_barcode = false;
 
-      foreach($list_product_orders as $list){
+      foreach($list_products as $list){
          $clesRecherchees = array_keys($barcode, $list['barcode']);
          if(count($clesRecherchees) != 0){
             if($product_pick_in[$clesRecherchees[0]]['quantity'] != $list['quantity']){
@@ -535,7 +615,7 @@ class OrderRepository implements OrderInterface
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation', 'products.image', 'users.name as preparateur')
+      'products.variation', 'products.image', 'products.ref', 'users.name as preparateur')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
@@ -548,7 +628,7 @@ class OrderRepository implements OrderInterface
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation', 'distributors.customer_id as is_distributor', 'users.name as preparateur')
+      'products.variation', 'products.ref', 'distributors.customer_id as is_distributor', 'users.name as preparateur')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')

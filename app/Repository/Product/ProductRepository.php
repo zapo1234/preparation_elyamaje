@@ -33,7 +33,7 @@ class ProductRepository implements ProductInterface
          // Récupère les produits déjà existants
          try{
             $products_exists = $this->model::select('product_woocommerce_id', 'category', 'category_id', 'variation', 
-            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight', 'menu_order')->get()->toArray();
+            'name', 'price', 'barcode', 'status', 'manage_stock', 'stock', 'is_variable', 'weight', 'menu_order', 'image', 'ref')->get()->toArray();
          } catch(Exception $e){
             return $e->getMessage();
          }
@@ -141,6 +141,10 @@ class ProductRepository implements ProductInterface
       
       // renvoyer un tableau associatif avec key id_product et value barcode.
       return $array_result;
+   }
+
+   public function checkProductBarcode($product_id, $barcode){
+      return $this->model::where('product_woocommerce_id', $product_id)->where('barcode', $barcode)->count();
    }
 }
 

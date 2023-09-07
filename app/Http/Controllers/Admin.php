@@ -154,7 +154,8 @@ class Admin extends BaseController
                     'is_variable' => 1,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
-                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                    'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
 
                 foreach($option as $key => $op){
@@ -183,7 +184,8 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
-                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
+                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                            'ref' => isset($product['sku']) ? $product['sku'] : null,
                         ];
                     }
                 }
@@ -202,7 +204,8 @@ class Admin extends BaseController
                     'is_variable' => 0,
                     'weight' =>  $product['weight'],
                     'menu_order' => $product['menu_order'],
-                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null
+                    'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                    'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
             }
         }

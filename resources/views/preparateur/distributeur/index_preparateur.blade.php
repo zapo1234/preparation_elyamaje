@@ -146,7 +146,10 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+														<div class="mt-1 d-flex align-items-center">
+															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
@@ -258,7 +261,10 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+														<div class="mt-1 d-flex align-items-center">
+															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
@@ -370,7 +376,10 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+														<div class="mt-1 d-flex align-items-center">
+															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
+															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
@@ -492,7 +501,7 @@
 
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
 						<h2 class="text-center">Recommencer la commande ?</h2>
-						<div class="w-100 d-flex justify-content-center">
+						<div class="mt-3 w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
 							<button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
 						</div>
@@ -544,6 +553,25 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Modal entrée manuelle de code barre -->
+		<div class="modal fade modal_reset_order" id="modalManuallyBarcode" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+						<h2 class="text-center">Code barre</h2>
+						<input class="mt-2 mb-2 custom_input" type="text" id="barcode_manually" name="barcode_manually" value="">
+						<input type="hidden" id="product_id_barcode" value="">
+						<input type="hidden" id="product_id_barcode_order_id" value="">
+						<div class="mt-3 w-100 d-flex justify-content-center">
+							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+							<button style="margin-left:10px;" type="button" class="valid_manually_barcode btn btn-dark px-5">Valider</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 	</div>
 </div>

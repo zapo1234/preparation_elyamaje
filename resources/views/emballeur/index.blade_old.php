@@ -132,7 +132,7 @@
                 
                         <div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
                             <h2 class="text-center">Recommencer la commande ?</h2>
-                            <div class="w-100 d-flex justify-content-center">
+                            <div class="mt-3 w-100 d-flex justify-content-center">
                                 <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
                                 <button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>
                             </div>
