@@ -187,7 +187,9 @@ class TiersRepository implements TiersInterface
                  $list[] =$valu['array_options']['options_idw'];
             }
          }
-           dd($list);
+           
+           $data = array_unique($list);
+           dd($data);
            return $lists;
      }
 
