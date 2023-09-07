@@ -181,15 +181,6 @@ class TiersRepository implements TiersInterface
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
            $lists = json_decode($listinvoice,true);
             
-           foreach($lists as $valu){
-            foreach($valu['array_options'] as $val)
-                if($val!=""){
-                 $list[] =$valu['array_options']['options_idw'];
-            }
-         }
-           
-           $data = array_unique($list);
-           dd($data);
            return $lists;
      }
 
