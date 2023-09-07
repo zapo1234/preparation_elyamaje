@@ -177,10 +177,11 @@ class TiersRepository implements TiersInterface
             $list =[];
     
             foreach($listproduct as $valu){
-                 if($valu['array_options']!=""){
-                     $lists[] = $valu['array_options'];
+                 foreach($valu['array_options'] as $val)
+                     if($val!=""){
+                      $list[] =$val;
                  }
-            }
+              }
 
             dd($lists);
 
