@@ -777,8 +777,12 @@ class OrderRepository implements OrderInterface
 
    public function unassignOrders(){
       try{
-         $this->model->truncate();
-         DB::table('products_order')->truncate();
+         $this->model
+         ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+         ->where('orders.status', 'processing')
+         ->whereIn('orders.status', ['processing', 'order-new-distrib'])
+         ->delete();
+         
          echo json_encode(['success' => true]);
       } catch(Exception $e){
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
