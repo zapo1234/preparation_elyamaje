@@ -768,7 +768,7 @@ class OrderRepository implements OrderInterface
 
    public function getProductOrder($order_id){
       return $this->model::select('products.name', 'products.weight', 
-         'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost')
+         'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost', 'orders.status')
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('orders.order_woocommerce_id', $order_id)
@@ -782,7 +782,7 @@ class OrderRepository implements OrderInterface
          ->where('orders.status', 'processing')
          ->whereIn('orders.status', ['processing', 'order-new-distrib'])
          ->delete();
-         
+
          echo json_encode(['success' => true]);
       } catch(Exception $e){
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
