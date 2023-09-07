@@ -91,6 +91,9 @@
               
           });
 
+
+		  
+
 		  $(".verificode").on('click', function(){
 			    $("#details_facture").modal('show')
 		       });
