@@ -82,7 +82,7 @@ class TiersRepository implements TiersInterface
            // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
            //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
              
-               $method = "GET";
+                $method = "GET";
                // key et url api
                   $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
@@ -159,6 +159,30 @@ class TiersRepository implements TiersInterface
           $tier->date_created = $date_created;
           $tier->save();
                  
+      }
+
+
+      public function getinvoices()
+      {
+           $method = "GET";
+           // key et url api
+           $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+           $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+        
+           $produitParam = array(
+             'apikey' => $apiKey,
+             'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+              'limit' => 0,
+             'sortfield' => 'rowid',
+             'sortorder' => 'DESC',
+         );
+
+          // recuperer les données api dolibar copie projet tranfer x.
+           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
+           $lists = json_decode($listinvoice,true);
+
+           dd($lists);
+
       }
 
 }

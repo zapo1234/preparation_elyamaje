@@ -164,6 +164,14 @@ class TiersController extends BaseController
         
     }
 
+    public function getinvoices()
+    {
+        dd('zapo');
+
+        dd($this->tiers->getinvoices());
+
+    }
+
     
   }
 
