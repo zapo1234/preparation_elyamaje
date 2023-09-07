@@ -164,10 +164,10 @@ class TiersRepository implements TiersInterface
 
       public function getinvoices()
       {
-        $method = "GET";
-        // key et url api
+           $method = "GET";
+           // key et url api
            $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-          $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+           $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
         
            $produitParam = array(
              'apikey' => $apiKey,
@@ -177,11 +177,11 @@ class TiersRepository implements TiersInterface
              'sortorder' => 'DESC',
          );
 
-         // recuperer les données api dolibar copie projet tranfer x.
-          $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
-          $lists = json_decode($listinvoice,true);
+          // recuperer les données api dolibar copie projet tranfer x.
+           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
+           $lists = json_decode($listinvoice,true);
 
-          dd($lists);
+           dd($lists);
 
       }
 
