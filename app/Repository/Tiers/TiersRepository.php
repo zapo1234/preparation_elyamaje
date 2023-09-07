@@ -169,18 +169,12 @@ class TiersRepository implements TiersInterface
            $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
            $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
         
-           $produitParam = array(
-             'apikey' => $apiKey,
-             'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-1 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
-              'limit' => 0,
-             'sortfield' => 'rowid',
-             'sortorder' => 'DESC',
-         );
+           $produitParam = ["limit" => 9, "sortfield" => "rowid"];
+            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
+             // reference ref_client dans dolibar
+            $listproduct = json_decode($listproduct, true);// la li
 
-          // recuperer les données api dolibar copie projet tranfer x.
-           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
-           $lists = json_decode($listinvoice,true);
-           return $lists;
+            dd($list_product);
 
       }
 
