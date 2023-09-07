@@ -202,7 +202,7 @@
 										</div>
 										<div class="button_validate_modal_label d-flex justify-content-center mt-3 w-100">
 											<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-											<button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Générer</button>
+											<button  onclick="this.disabled=true;this.form.submit();" style="margin-left:15px" type="submit" class="valid_generate_label btn btn-dark px-5">Générer</button>
 										</div>
 									</div>
 								</form>

@@ -140,11 +140,6 @@ $('body').on('click', '.print_zpl_file', function(e) {
     })
 })
 
-$('body').on('click', '.button_validate_modal_label', function(e) {
-    total_weight()
-})
-
-
 
 // Calcul du poids total de la commande
 function total_weight(){
