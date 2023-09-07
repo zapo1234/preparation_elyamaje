@@ -181,7 +181,20 @@ class TiersController extends BaseController
                }
              }
            }
-            dd($ids_commande);
+
+           foreach($data as $valu){
+            $date = date('Y-m-d', $values['datem']);
+            foreach($valu['array_options'] as $val)
+            if($date == $datet){
+                if($val!=""){
+                 $list[] =$valu['array_options']['options_idw'];
+            }
+          }
+         }
+           
+            $data = array_unique($list);
+            dd($data);
+           
        }
 
     }
