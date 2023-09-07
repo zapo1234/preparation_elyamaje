@@ -175,12 +175,11 @@ class TiersController extends BaseController
          foreach($data as $values){
           $date = date('Y-m-d', $values['datem']);
            if($values['array_options']!=""){
-             dd($values['array_options']);
-             foreach($values['array_options'] as $valu){
-                   if($date==$datet){
-                     $ids_commande[] = $valu['options_idw'];
-                  }
-               }
+                  if($date==$datet){
+                    if($values['array_options']['options_idw']!=""){
+                         $ids_commande[] = $values['array_options']['options_idw'];
+                    }
+                 }
              }
            }
             dd($ids_commande);
