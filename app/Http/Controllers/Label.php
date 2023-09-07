@@ -281,7 +281,6 @@ class Label extends BaseController
     }
 
     public function generateLabel(Request $request){
-       
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
         $order_by_id = $this->order->getOrderById($order_id);
