@@ -1,10 +1,5 @@
 $(document).ready(function() {
 
-    
-   
-
-
-
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
         "initComplete": function(settings, json) {
