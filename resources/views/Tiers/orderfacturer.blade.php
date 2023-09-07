@@ -63,6 +63,21 @@
 			</div>
 		</div>
 		</div>
+
+		<div class="modal fade" id="details_factures" style="margin-top:30px;height:400px;overflow-y:scroll" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content p-3">
+			 <h3 style="font-size:17px;text-align:center;text-transform:uppercase">Point Commande facturées<span id="journee_date"></span> </h3>
+               <div>
+                 <div id="zapos"></div>
+				
+				</div>
+			
+			</div>
+		</div>
+		</div>
+
+
         </div>
 		</div>
 	@endsection
@@ -91,8 +106,23 @@
               
           });
 
+          
+          $('.verificodes').click(function(){
+              
+			  var id = $(this).data('id2');
+			  
+			  $.ajax({
+				url: "{{ route('tiers.getinvoices') }}",
+			   method: 'GET',
+			   data: {id:id},
+		   }).done(function(data) {
+			 
+				$('#zapos').html(data);
+		   });
+			 
+		 });
 
-		  
+
 
 		  $(".verificode").on('click', function(){
 			    $("#details_facture").modal('show')
