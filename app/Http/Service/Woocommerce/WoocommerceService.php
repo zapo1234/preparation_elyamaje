@@ -97,7 +97,6 @@ class WoocommerceService
           }
 
         }
-        dd($products);
 
         $order_new_array =  $order[0];
         $order_new_array['line_items'] = $products['line_items'];
