@@ -110,6 +110,8 @@
           $('.verificodes').click(function(){
               
 			  var id = $(this).data('id2');
+
+			  alert(id);
 			  
 			  $.ajax({
 				url: "{{ route('tiers.getinvoices') }}",
@@ -128,7 +130,9 @@
 			    $("#details_facture").modal('show')
 		       });
 
-          
+			   $(".verificodes").on('click', function(){
+			    $("#details_factures").modal('show')
+		       });
           
          </script>
 	@endsection
