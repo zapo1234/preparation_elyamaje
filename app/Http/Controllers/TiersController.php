@@ -169,16 +169,16 @@ class TiersController extends BaseController
          $datet = $request->get('id');
          $data = $this->tiers->getinvoices();
          $list_result =[];
-        
+        //
          $ids_commande = [];
 
          foreach($data as $values){
           $date = date('Y-m-d', $values['datem']);
-         
-             if($values['array_options']!=""){
-                   if($date==$datet){
-                     $ids_commande[] = $values['array_options']['options_idw'];
-                  }
+          
+          if($date==$datet){
+           if($values['array_options']!=""){
+                  $ids_commande[] = $values['array_options']['options_idw'];
+               }
              }
            }
             dd($ids_commande);
