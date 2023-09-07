@@ -170,12 +170,17 @@ class TiersRepository implements TiersInterface
            $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
         
          
-            $produitParam = ["limit" => 9, "sortfield" => "rowid", "sortorder" => "DESC"];
+            $produitParam = ["limit" => 100, "sortfield" => "rowid", "sortorder" => "DESC"];
             $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
              // reference ref_client dans dolibar
             $listproduct = json_decode($listproduct, true);// la li
+            $list =[];
+    
+            foreach($listproduct as $valu){
+                 $lists[] = $valu['array_options'];
+            }
 
-            dd($listproduct);
+            dd($lists);
 
       }
 
