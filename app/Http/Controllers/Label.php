@@ -248,8 +248,15 @@ class Label extends BaseController
 
     public function getProductOrderLabel(Request $request){
         $order_id = $request->post('order_id');
-
         $product_order = $this->order->getProductOrder($order_id)->toArray();
+
+        if(isset($product_order[0])){
+            if($product_order[0]['status'] != "finished"){
+                echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
+                return;
+            }
+        }
+     
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
         $column = array_column($label_product_order, "product_id");
 
@@ -280,7 +287,7 @@ class Label extends BaseController
         $order_by_id = $this->order->getOrderById($order_id);
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
-       
+
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);

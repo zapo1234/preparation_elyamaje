@@ -88,6 +88,7 @@ $(".generate_label_button").on('click', function(){
                 $(".body_line_items_label").append(innerHtml)
                 $(".generate_label_modal").modal('show')
             } else {
+                $(".alert").remove()
                 $(".show_messages").prepend(`
                     <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                         <div class=" text-white">`+JSON.parse(data).message+`</div>
@@ -139,7 +140,9 @@ $('body').on('click', '.print_zpl_file', function(e) {
     })
 })
 
-
+$('body').on('click', '.button_validate_modal_label', function(e) {
+    total_weight()
+})
 
 
 
