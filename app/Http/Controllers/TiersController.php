@@ -177,7 +177,7 @@ class TiersController extends BaseController
           
           if($date==$datet){
            if($values['array_options']!=""){
-                  $ids_commande[] = $values['array_options'][1];
+                  $ids_commande[] = $values['array_options']['options_idw'];
                }
              }
            }
