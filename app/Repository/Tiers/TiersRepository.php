@@ -179,7 +179,7 @@ class TiersRepository implements TiersInterface
             foreach($listproduct as $valu){
                  foreach($valu['array_options'] as $val)
                      if($val!=""){
-                      $lists[] =$val['options_idw'];
+                      $lists[] =$val;
                  }
               }
 
