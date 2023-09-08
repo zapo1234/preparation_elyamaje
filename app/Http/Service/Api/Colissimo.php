@@ -75,7 +75,7 @@ class Colissimo
                             'address' => [
                                 'lastName' => $order['shipping']['last_name'],
                                 'firstName' => $order['shipping']['first_name'],
-                                'line2' => $order['shipping']['address_1'],
+                                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
                                 'countryCode' => $order['shipping']['country'],
                                 'city' => $order['shipping']['city'],
                                 'zipCode' => $order['shipping']['postcode'],
