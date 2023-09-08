@@ -226,7 +226,6 @@ class Colissimo
                 ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/colissimo/trackingStatusLabel", [
                     'data' => $tracking_number
                 ]); 
-                dd($response->json());
             return $response->json();
         } catch(Exception $e) {
             return $e->getMessage();
