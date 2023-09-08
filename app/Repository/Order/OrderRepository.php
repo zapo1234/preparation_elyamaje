@@ -121,16 +121,18 @@ class OrderRepository implements OrderInterface
             }
          }
 
-    
-         // Insérer les données dans la base de données par lot
-         try{
-            $this->model->insert($ordersToInsert);
-            DB::table('products_order')->insert($productsToInsert);
+        
+        // Insérer les données dans la base de données par lot
+        try{
+            DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
+               DB::table('orders')->insertOrIgnore($ordersToInsert);
+               DB::table('products_order')->insertOrIgnore($productsToInsert);
+            });
          } catch(Exception $e){ 
-            dd($e->getMessage());
-            continue;
+            echo json_encode(['success' => false]);
+            // dd($e->getMessage());
+            // continue;
          }
-
       }
       echo json_encode(['success' => true]);
    }
@@ -235,10 +237,10 @@ class OrderRepository implements OrderInterface
          foreach($li['items'] as $key2 => $item){
             if(isset($product_double[$key1])){
 
-               $id_product = array_column($product_double[$key1], "id");
-               $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
+              $id_product = array_column($product_double[$key1], "id");
+              $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
 
-               if(count($clesRecherchees) > 0){
+              if(count($clesRecherchees) > 0){
                   $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
                   unset($list[$key1]['items'][$key2]);
 
@@ -247,7 +249,7 @@ class OrderRepository implements OrderInterface
                
                   // Merge pick product
                   $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
-               } else {
+              } else {
                   $product_double[$key1][] = [
                      'id' => $item['product_woocommerce_id'],
                      'quantity' => $item['quantity'], 
@@ -255,7 +257,7 @@ class OrderRepository implements OrderInterface
                      'key2' => $key2,
                      'pick' => $item['pick']
                  ];
-               }
+              }
             } else {
               $product_double[$key1][] = [
                   'id' => $item['product_woocommerce_id'],
@@ -267,6 +269,9 @@ class OrderRepository implements OrderInterface
             }
          }
       }
+      
+
+      
       
       $list = array_values($list);
       return $list;
@@ -301,16 +306,16 @@ class OrderRepository implements OrderInterface
          if(isset($product_double[$list["barcode"]])){
             if(isset($product_double[$list["barcode"]][0])){
 
-               $quantity = $product_double[$list["barcode"]][0]['quantity'];
-               $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+              $quantity = $product_double[$list["barcode"]][0]['quantity'];
+              $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
 
-               unset($list_product_orders[$key_barcode_to_remove]);
-               $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
+              unset($list_product_orders[$key_barcode_to_remove]);
+              $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
             }
          } else {
             $product_double[$list["barcode"]][] = [
-               'quantity' => $list['quantity'],
-               'key_barcode_to_remove' => $key_barcode
+              'quantity' => $list['quantity'],
+              'key_barcode_to_remove' => $key_barcode
             ];
          }
       }
