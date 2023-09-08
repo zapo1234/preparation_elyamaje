@@ -2,13 +2,9 @@
 
 namespace App\Repository\Order;
 
-use Hash;
 use Exception;
-use Carbon\Carbon;
 use App\Models\Order;
-use App\Models\Product;
 use App\Http\Service\Api\Api;
-use App\Models\ProductsOrder;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderInterface
@@ -121,11 +117,9 @@ class OrderRepository implements OrderInterface
             }
          }
 
-    
-            // Insérer les données dans la base de données par lot
-           
-
-         try{
+        
+        // Insérer les données dans la base de données par lot
+        try{
             DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
                DB::table('orders')->insertOrIgnore($ordersToInsert);
                DB::table('products_order')->insertOrIgnore($productsToInsert);
@@ -184,7 +178,6 @@ class OrderRepository implements OrderInterface
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
-        //  ->groupBy('products.product_woocommerce_id')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -231,17 +224,16 @@ class OrderRepository implements OrderInterface
          }
       }
 
-
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
       foreach($list as $key1 => $li){
          foreach($li['items'] as $key2 => $item){
             if(isset($product_double[$key1])){
 
-               $id_product = array_column($product_double[$key1], "id");
-               $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
+              $id_product = array_column($product_double[$key1], "id");
+              $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
 
-               if(count($clesRecherchees) > 0){
+              if(count($clesRecherchees) > 0){
                   $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
                   unset($list[$key1]['items'][$key2]);
 
@@ -250,15 +242,15 @@ class OrderRepository implements OrderInterface
                
                   // Merge pick product
                   $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
-               } else {
+              } else {
                   $product_double[$key1][] = [
                      'id' => $item['product_woocommerce_id'],
                      'quantity' => $item['quantity'], 
                      'key1' => $key1,
                      'key2' => $key2,
                      'pick' => $item['pick']
-                  ];
-               }
+                 ];
+              }
             } else {
                $product_double[$key1][] = [
                   'id' => $item['product_woocommerce_id'],
@@ -270,7 +262,7 @@ class OrderRepository implements OrderInterface
             }
          }
       }
-
+      
       $list = array_values($list);
       return $list;
    }
