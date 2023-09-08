@@ -8,7 +8,9 @@ use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
+use App\Http\Service\Api\ColissimoTracking;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\Bordereau\BordereauRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
@@ -28,6 +30,9 @@ class Label extends BaseController
     private $woocommerce;
     private $labelProductOrder;
     private $colissimoConfiguration;
+    private $chronopost;
+    private $colissimoTracking;
+    private $api;
 
     public function __construct(
         LabelRepository $label, 
@@ -36,7 +41,9 @@ class Label extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         LabelProductOrderRepository $labelProductOrder,
-        ColissimoRepository $colissimoConfiguration
+        ColissimoRepository $colissimoConfiguration,
+        Chronopost $chronopost,
+        ColissimoTracking $colissimoTracking
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -45,6 +52,8 @@ class Label extends BaseController
         $this->woocommerce = $woocommerce;
         $this->labelProductOrder = $labelProductOrder;
         $this->colissimoConfiguration = $colissimoConfiguration;
+        $this->chronopost = $chronopost;
+        $this->colissimoTracking = $colissimoTracking;
     }
 
     public function getlabels(){
@@ -288,7 +297,6 @@ class Label extends BaseController
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
 
-
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             $weight = 0; // Kg
@@ -381,5 +389,20 @@ class Label extends BaseController
         //     }
         // }
 
+    }
+
+    public function getTrackingLabelStatus(){
+        // Get all orders labels -10 jours
+        $rangeDate = 10;
+        $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+        
+        // Récupère les status de chaque commande
+        $trackingLabel = $this->colissimoTracking->getStatus($labels);
+
+        // Update en local
+        $this->label->updateLabelStatus($trackingLabel);
+
+        // Update status sur Wordpress pour les colis livré
+        $this->colissimo->trackingStatusLabel($trackingLabel);
     }
 }

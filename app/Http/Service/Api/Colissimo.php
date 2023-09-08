@@ -35,7 +35,7 @@ class Colissimo
                             'productCode' =>  $productCode,
                             'depositDate' => date('Y-m-d'), // Date du dépôt du colis
                             'orderNumber ' => $order_id,
-                            'commercialName' => $order['shipping']['last_name'].' '.$order['shipping']['first_name'],
+                            'commercialName' => config('app.companyName') /*$order['shipping']['last_name'].' '.$order['shipping']['first_name']*/,
                             'returnTypeChoice' => 3, // Ne pas retourner
                             'totalAmount' => $insuranceValue
                         ],
@@ -49,10 +49,13 @@ class Colissimo
                             'senderParcelRef' => $order_id,
                             'address' => [
                                 'companyName' => config('app.companyName'),
+                                "firstName" => "",
+                                "lastName" => "",
                                 'line2' => config('app.line2'),
                                 'countryCode' => config('app.countryCode'),
                                 'city' => config('app.city'),
                                 'zipCode' => config('app.zipCode'),
+                                "email" => ""
                             ]
                         ],
                         'customsDeclarations' => [
@@ -73,6 +76,7 @@ class Colissimo
                             'addresseeParcelRef' => $order_id,
                             'codeBarForReference' => false,
                             'address' => [
+                                'companyName' => "",
                                 'lastName' => $order['shipping']['last_name'],
                                 'firstName' => $order['shipping']['first_name'],
                                 'line2' => $order['shipping']['address_1'],
@@ -205,6 +209,24 @@ class Colissimo
                 ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/colissimo/delete", [
                     'data' => $tracking_number
                 ]); 
+            return $response->json();
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+    public function trackingStatusLabel($tracking_number){
+
+        $customer_key = config('app.woocommerce_customer_key');
+        $customer_secret = config('app.woocommerce_customer_secret');
+    
+        try {
+            $response = Http::withBasicAuth($customer_key, $customer_secret) 
+                ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/colissimo/trackingStatusLabel", [
+                    'data' => $tracking_number
+                ]); 
+                dd($response->json());
             return $response->json();
         } catch(Exception $e) {
             return $e->getMessage();

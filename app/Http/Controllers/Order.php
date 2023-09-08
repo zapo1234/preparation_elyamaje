@@ -301,11 +301,11 @@ class Order extends BaseController
                 $this->notification->insert($data);
 
                 // Envoie d'un email au préparateur pour informer qu'une command en'a pas pu être traitée
-                Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
-                    $message->to($email);
-                    $message->from('no-reply@elyamaje.com');
-                    $message->subject('Commande incomplète');
-                }); 
+                // Mail::send('email.orderwaiting', ['note_partial_order' =>  $note_partial_order, 'name' => $name, 'order_id' => $order_id], function($message) use($email){
+                //     $message->to($email);
+                //     $message->from('no-reply@elyamaje.com');
+                //     $message->subject('Commande incomplète');
+                // }); 
             }
         }
         echo json_encode(["success" => $check_if_order_done]);

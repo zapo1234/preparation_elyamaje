@@ -23,7 +23,8 @@ class LabelRepository implements LabelInterface
          'label' => $label['label'],
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
-         'created_at' => date('Y-m-d H:i:s')
+         'created_at' => date('Y-m-d H:i:s'),
+         'tracking_status' => 0
      ]);
    }
 
@@ -55,6 +56,23 @@ class LabelRepository implements LabelInterface
 
    public function getAllLabels(){
       return $this->model::all();
+   }
+
+   public function getAllLabelsByStatusAndDate($rangeDate){
+      $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
+      return $this->model::where('created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
+   }
+
+   public function updateLabelStatus($labels){
+      $updateQuery = "UPDATE prepa_labels SET tracking_status = CASE order_id";
+
+      foreach ($labels as  $value) {
+         $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
+      }
+
+      $updateQuery.= " END";
+      $response = DB::update($updateQuery);
+
    }
 }
 
