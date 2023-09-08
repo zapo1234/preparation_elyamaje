@@ -403,8 +403,8 @@ class Label extends BaseController
         $this->label->updateLabelStatus($trackingLabel);
 
         // Update status sur Wordpress pour les colis livré
-        // $update = $this->colissimo->trackingStatusLabel($trackingLabel);
-        // dd($update);
+        $update = $this->colissimo->trackingStatusLabel($trackingLabel);
+        dd($update);
 
     }
 }
