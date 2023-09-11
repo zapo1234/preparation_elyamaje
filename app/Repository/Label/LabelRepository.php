@@ -64,6 +64,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function updateLabelStatus($labels){
+
       $updateQuery = "UPDATE prepa_labels SET tracking_status = CASE order_id";
 
       foreach ($labels as  $value) {

@@ -23,7 +23,8 @@ class ColissimoTracking
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
-    
+
+
             } catch(Exception $e){
                 dd($e->getMessage());
             }
