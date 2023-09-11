@@ -193,8 +193,8 @@ class UserRepository implements UserInterface
          }
 
          if($delete_order){
-            DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status", "!=", "finished")->delete();
-            DB::table('orders')->where('user_id', $user_id)->where('status', '!=', 'finished')->delete();
+            DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status", "processing")->delete();
+            DB::table('orders')->where('user_id', $user_id)->where('status', 'processing')->delete();
          } 
 
          DB::table('user_roles')->insert($roles);
