@@ -179,7 +179,9 @@
 														<th scope="col">État</th>
 														<th scope="col">Total</th>
 														<th class="col-md-1" scope="col">Détail</th>
-														<th class="col-md-1" scope="col">Shipping</th>
+														<th class="d-none col-md-1" scope="col">Shipping</th>
+														<th class="d-none col-md-1" scope="col">Status</th>
+														<th class="d-none col-md-1" scope="col">Préparateur</th>
 													</tr>
 												</thead>
 												<tbody></tbody>

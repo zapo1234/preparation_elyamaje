@@ -288,11 +288,24 @@ $(document).ready(function() {
                     return row.status
                 }
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    var user = ""
+                    Object.entries(row.users).forEach(([key, value]) => {
+                        if(value.user_id == row.user_id){
+                            user = value.name
+                        } 
+                    })
+
+                    return `<div>`+user+`</div>`;
+                }
+            },
         ],
 
         "columnDefs": [
             { "visible": false, "targets": 6 },
-            { "visible": false, "targets": 7 }
+            { "visible": false, "targets": 7 },
+            { "visible": false, "targets": 8 }
         ],
         "initComplete": function(settings, json) {
             // $("#example_length select").css('margin-right', '10px')
