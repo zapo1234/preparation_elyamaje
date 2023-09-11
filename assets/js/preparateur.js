@@ -429,21 +429,34 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
 
         // Un objet pour cette commande existe déjà, alors on rajoute dans cet objet
         if (order_object) {
-            if (mutiple_quantity) {
-                var index = order_object.products.indexOf($("#barcode_verif").val())
+            if(manually){
+                var index = order_object.products.indexOf($("#barcode").val())
                 if (index != -1) {
                     order_object.quantity[index] = quantity_pick_in
                     localStorage.setItem('barcode', JSON.stringify(list_barcode))
                 } else {
-                    order_object.products.push($("#barcode_verif").val())
-                    order_object.quantity.push(1)
+                    order_object.products.push($("#barcode").val())
+                    order_object.quantity.push(quantity_pick_in)
                     localStorage.setItem('barcode', JSON.stringify(list_barcode))
                 }
             } else {
-                order_object.products.push($("#barcode").val())
-                order_object.quantity.push(1)
-                localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                if (mutiple_quantity) {
+                    var index = order_object.products.indexOf($("#barcode_verif").val())
+                    if (index != -1) {
+                        order_object.quantity[index] = quantity_pick_in
+                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    } else {
+                        order_object.products.push($("#barcode_verif").val())
+                        order_object.quantity.push(1)
+                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    }
+                } else {
+                    order_object.products.push($("#barcode").val())
+                    order_object.quantity.push(1)
+                    localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                }
             }
+           
         } else {
             const data = {
                 order_id: order_id,
