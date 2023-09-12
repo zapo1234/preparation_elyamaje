@@ -6797,8 +6797,8 @@ select:focus, input:focus{
 }
 
 .order-new-distrib{
-	border: 1px solid #d7f0ac ;
-    color: #d7f0ac ;
+	border: 1px solid #0dcaf0;
+    color: #0dcaf0;
 }
 
 .bg-light-waiting_to_validate,
