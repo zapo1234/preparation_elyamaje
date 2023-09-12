@@ -211,7 +211,7 @@ class Label extends BaseController
     public function generateBordereau(Request $request){
 
         $date = $request->post('date');
-        // Récupère l'ensemnle des commandes en fonction de la date et qui n'ont pas de bordereau généré
+        // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
         $parcelNumbers = $this->label->getParcelNumbersyDate($date);
         $parcelNumbers_array = [];
 
@@ -324,7 +324,7 @@ class Label extends BaseController
                     } else {
                         return redirect()->route('labels')->with('error', $labelChrono);
                     }
-                    
+
                     return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                 } else { 
                     // Étiquette Colissimo

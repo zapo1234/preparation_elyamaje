@@ -21,6 +21,7 @@ class LabelRepository implements LabelInterface
       return $this->model::insertGetId([
          'order_id' => $label['order_id'],
          'label' => $label['label'],
+         'origin' => $label['origin'],
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
          'created_at' => date('Y-m-d H:i:s'),
@@ -39,7 +40,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function getParcelNumbersyDate($date){
-      return $this->model::select('tracking_number')->where('bordereau_id', null)->where('created_at', 'LIKE', '%'.$date.'%')->get();
+      return $this->model::select('tracking_number')->where('bordereau_id', null)->where('origin', '!=', 'chronopost')->where('created_at', 'LIKE', '%'.$date.'%')->get();
    }
 
    public function saveBordereau($bordereau_id, $parcelNumbers_array){

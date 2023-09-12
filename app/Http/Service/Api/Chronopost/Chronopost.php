@@ -118,6 +118,7 @@ class Chronopost
                     'success' => true,
                     'order_id' => $order_id,
                     'label' => $soap->shippingV3($shipping_params)->return->skybill,
+                    'origin' => 'chronopost',
                     'label_format' => explode('_', $format)[0],
                     'label_created_at' => date('Y-m-d h:i:s'),
                     'tracking_number' => $soap->shippingV3($shipping_params)->return->skybillNumber
