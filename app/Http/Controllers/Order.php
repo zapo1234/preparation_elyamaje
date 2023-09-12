@@ -6,24 +6,25 @@ use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
-use App\Http\Service\Woocommerce\WoocommerceService;
-use App\Repository\Colissimo\ColissimoRepository;
-use App\Repository\Distributor\DistributorRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
+use App\Repository\Printer\PrinterRepository;
+use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Service\Api\Chronopost\Chronopost;
+use App\Repository\Colissimo\ColissimoRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-use App\Repository\Printer\PrinterRepository;
-use App\Repository\Product\ProductRepository;
-use Illuminate\Support\Facades\Mail;
 
 class Order extends BaseController
 {
@@ -45,6 +46,7 @@ class Order extends BaseController
     private $printer;
     private $colissimoConfiguration;
     private $product;
+    private $chronopost;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -60,7 +62,8 @@ class Order extends BaseController
     DistributorRepository $distributor,
     PrinterRepository $printer,
     ColissimoRepository $colissimoConfiguration,
-    ProductRepository $product
+    ProductRepository $product,
+    Chronopost $chronopost
     ){
       $this->api = $api;
       $this->user = $user;
@@ -78,6 +81,7 @@ class Order extends BaseController
       $this->printer = $printer;
       $this->colissimoConfiguration = $colissimoConfiguration;
       $this->product = $product;
+      $this->chronopost = $chronopost;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -495,31 +499,44 @@ class Order extends BaseController
           $quantity_product[$or['product_id']] = $or['quantity'];
         } 
 
-        $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
 
-        if(isset($label['success'])){
-          $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-          $insert_label = $this->label->save($label);
-          $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
-
-          if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
-
-            // ----- Print label to printer Datamax -----
-            if($label['label_format'] == "ZPL"){
-              echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-            } else if($label['label_format'] == "PDF"){
-              return base64_encode($label['label']);
-            } else {
-              echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-            }
-            // ----- Print label to printer Datamax -----
-
+        if(str_contains($order[0]['shipping_method'], 'chrono')){
+          $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+          if(isset($labelChrono['success'])){
+              $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+              $insert_label = $this->label->save($labelChrono);
+              $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
           } else {
-            echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
+              return redirect()->route('labels')->with('error', $labelChrono);
           }
         } else {
-          echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
+          $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+
+          if(isset($label['success'])){
+            $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+            $insert_label = $this->label->save($label);
+            $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+  
+            if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+  
+              // ----- Print label to printer Datamax -----
+              if($label['label_format'] == "ZPL"){
+                echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+              } else if($label['label_format'] == "PDF"){
+                return base64_encode($label['label']);
+              } else {
+                echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+              }
+              // ----- Print label to printer Datamax -----
+  
+            } else {
+              echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
+            }
+          } else {
+            echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
+          }
         }
+  
       }
     }
 

@@ -61,9 +61,12 @@ return [
     'companyName' => 'Elya Maje',
     'line2' => '18 Rue Melchior Guinot',
     'countryCode' => 'FR',
+    'countryName' => 'FRANCE',
     'city' => 'Marseille',
     'zipCode' => '13003',
-
+    'email'  => 'expedition@elyamaje.com',
+    'companyPhone'  => '0491847750',
+    'companyMobilePhone'  => '0764089045',
     /*
     |--------------------------------------------------------------------------
     | Application Name
