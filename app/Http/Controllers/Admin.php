@@ -142,6 +142,7 @@ class Admin extends BaseController
                 // Insertion du produit de base sans les variations
                 $insert_products [] = [
                     'product_woocommerce_id' => $product['id'],
+                    'parent_id' => 0,
                     'category' =>  implode(',', $category_name),
                     'category_id' => implode(',', $category_id),
                     'variation' => 0,
@@ -169,9 +170,9 @@ class Admin extends BaseController
                         } 
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
-                        
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
+                            'parent_id' => $product['id'],
                             'category' =>  implode(',', $category_name),
                             'category_id' => implode(',', $category_id),
                             'variation' => 1,
@@ -192,6 +193,7 @@ class Admin extends BaseController
             } else {
                 $insert_products [] = [
                     'product_woocommerce_id' => $product['id'],
+                    'parent_id' => 0,
                     'category' =>  implode(',', $category_name),
                     'category_id' => implode(',', $category_id),
                     'variation' => 0,
