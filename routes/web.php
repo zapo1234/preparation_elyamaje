@@ -184,10 +184,11 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
-Route::get("/trackingLabelStatus", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
+Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 // Email preview
 Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+
