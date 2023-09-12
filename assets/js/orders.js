@@ -60,7 +60,7 @@ $(document).ready(function() {
                 var coupons = false;
                 var coupons_amount = false;
                 var shipping_amount = 0
-                var shipping_method = false;
+                var shipping_method = '';
 
 
                     order['coupon_lines'].forEach(function(cp){
