@@ -175,7 +175,7 @@
 												<option value="prepared-order">Commande préparée</option>
 												<option value="waiting_to_validate">En attente de validation</option>
 												<option value="waiting_validate">En attente validée</option>
-												<option value="order_new_distrib">Commande futur distributeur</option>
+												<option value="order-new-distrib">Commande futur distributeur</option>
 											</select>
 
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
