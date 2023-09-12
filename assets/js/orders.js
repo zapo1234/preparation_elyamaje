@@ -60,6 +60,7 @@ $(document).ready(function() {
                 var coupons = false;
                 var coupons_amount = false;
                 var shipping_amount = 0
+                var shipping_method = false;
 
 
                     order['coupon_lines'].forEach(function(cp){
@@ -94,7 +95,7 @@ $(document).ready(function() {
                         users: users,
                         products_pick: products_pick,
                         shipping_amount: shipping_amount,
-                        shipping_method: shipping_method ?? false
+                        shipping_method: shipping_method
                     };
                 });
                 return combinedData;
