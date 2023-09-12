@@ -94,7 +94,7 @@ $(document).ready(function() {
                         users: users,
                         products_pick: products_pick,
                         shipping_amount: shipping_amount,
-                        shipping_method: shipping_method
+                        shipping_method: shipping_method ?? false
                     };
                 });
                 return combinedData;
