@@ -166,7 +166,7 @@ class Order extends BaseController
 
     public function getAllOrders(){
       // Préparateur
-      $users =  $this->user->getUsersByRole([2]);
+      $users =  $this->user->getUsersAndRoles();
       $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
       $status_list = __('status_order');
       echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick, 'status_list' => $status_list]);
@@ -176,7 +176,6 @@ class Order extends BaseController
     public function getOrderDistributeur(){
       return $this->orders(Auth()->user()->id, true);
     }
-
 
     // Répartis les commandes woocommerce
     public function distributionOrders(){
