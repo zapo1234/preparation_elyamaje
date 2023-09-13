@@ -58,7 +58,7 @@ return [
     |
     */
 
-    'companyName' => 'Elya Maje',
+    'companyName' => 'ELYA MAJE',
     'line2' => '18 Rue Melchior Guinot',
     'countryCode' => 'FR',
     'countryName' => 'FRANCE',

@@ -40,14 +40,14 @@ class Chronopost
                 "shipperEmail"              => config('app.email'),
                 "shipperPhone"              => config('app.companyPhone'),  
                 "shipperMobilePhone"        => config('app.companyMobilePhone'),
-                "shipperPreAlert"           => 0,
+                "shipperPreAlert"           => '',
             ],
-            // Customer / Client
-            'customerValue' => [
+               // Customer / Client
+               'customerValue' => [
                 "customerCivility"          => ' ',
                 "customerName"              => $this->getFilledValue($order['shipping']['company'] ?? ''),
                 "customerName2"             => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']),      
-                "customerContactName"       => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']),
+                "customerContactName"       => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
                 "customerAdress1"           => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
                 "customerAdress2"           => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
                 "customerCity"              => $this->getFilledValue($order['shipping']['city']),
@@ -63,7 +63,7 @@ class Chronopost
             'recipientValue' => [
                 "recipientCivility"         => ' ',
                 "recipientName"             => $this->getFilledValue($order['shipping']['company'] ?? ''),
-                "recipientName2"            => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']), 
+                "recipientName2"            => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']), 
                 "recipientContactName"      => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
                 "recipientAdress1"          => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
                 "recipientAdress2"          => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
@@ -79,9 +79,15 @@ class Chronopost
             // Sky Bill / Etiquette de livraison / Caractéristique du colis
             'skybillValue' => [
                 "codCurrency"               => config('app.currency'),
+                'codValue'                  => '',
+                'content1'                  => '',
+                'content2'                  => '',
+                'content3'                  => '',
+                'content4'                  => '',
+                'content5'                  => '',
                 "customsCurrency"           => config('app.currency'),
                 "evtCode"                   => 'DC', 
-                "insuredCurrency"          => config('app.currency'),
+                "insuredCurrency"           => config('app.currency'),
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
                 "service"                   => $SaturdayShipping,          
@@ -98,8 +104,8 @@ class Chronopost
             'refValue' => [
                 "shipperRef"                => $order['order_id'],            
                 "recipientRef"              => $order['customer_id'],      
-                // "customerSkybillNumber"     => '',
-                // "PCardTransactionNumber"    => '',
+                "customerSkybillNumber"     => '',
+                "PCardTransactionNumber"    => '',
             ],
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
@@ -113,15 +119,18 @@ class Chronopost
             $soap = new \SoapClient($url, ['trace' => 1]);
     
             $result = $soap->shippingV3($shipping_params);
+
+            // file_put_contents('test.pdf', $result->return->skybill);
             if(isset($result->return->skybillNumber) && isset($result->return->skybill)){
+
                 $data = [
                     'success' => true,
                     'order_id' => $order_id,
-                    'label' => $soap->shippingV3($shipping_params)->return->skybill,
+                    'label' => $result->return->skybill,
                     'origin' => 'chronopost',
                     'label_format' => explode('_', $format)[0],
                     'label_created_at' => date('Y-m-d h:i:s'),
-                    'tracking_number' => $soap->shippingV3($shipping_params)->return->skybillNumber
+                    'tracking_number' => $result->return->skybillNumber
                 ];
 
                 return $data;
@@ -132,36 +141,14 @@ class Chronopost
         } catch (Exception $e){
             return $e->getMessage();
         }
-       
-
     }
-
-    // public function postOutwardLabelWordPress($data){
-
-    //     $customer_key = config('app.woocommerce_customer_key');
-    //     $customer_secret = config('app.woocommerce_customer_secret');
-      
-    //     try {
-    //         $response = Http::withBasicAuth($customer_key, $customer_secret) 
-    //             ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/chronopost/", [
-    //                 'data' => $data
-    //             ]); 
-
-    //         if($response){
-    //             $data['success'] = true;
-    //         }
-
-    //         return $data;
-    //     } catch(Exception $e) {
-    //         return $e->getMessage();
-    //     }
-    // }
 
     protected function getProductCode(){
         return "01";
         // If return from abroad (not France) : 3T
         // If return from France : 4T
     }
+
 
     protected function parseMultiPartBody($body, $boundary) {
         $messages = array_filter(
@@ -334,6 +321,7 @@ class Chronopost
 
     protected function getFilledValue($value)
 	{
+        
 		if ($value) {
 			return $this->removeaccents(trim($value));
 		}

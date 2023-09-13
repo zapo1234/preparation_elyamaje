@@ -318,7 +318,10 @@ class Label extends BaseController
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
                     $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
                     if(isset($labelChrono['success'])){
-                        $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+                        // Pas besoin pour étiquette PDF
+                        if($labelChrono['label_format'] != "PDF"){
+                            $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+                        }
                         $insert_label = $this->label->save($labelChrono);
                         $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
                     } else {
