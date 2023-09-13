@@ -1,6 +1,12 @@
 $(document).ready(function() {
     $('#example').DataTable({
         "order": [[0, 'desc']],
+        "columnDefs" : [       
+            { 
+                'searchable'    : false, 
+                'targets'       : [1,2,3] 
+            },
+        ],
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
@@ -12,8 +18,7 @@ $(document).ready(function() {
             $(".status_dropdown").select2({
             	width: '150px',
             });
-
-        }
+        },
     })
 })
 
