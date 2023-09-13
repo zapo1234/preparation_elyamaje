@@ -147,6 +147,15 @@ $('body').on('click', '.print_zpl_file', function(e) {
                         success : function(data){
                            
                         },
+                        error : function(xhr){
+                            $(".alert").remove()
+                            $(".show_messages").prepend(`
+                                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                                    <div class=" text-white">Aucune imprimante n'a été trouvée</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            `)
+                        }
                     })
                   }
                 }

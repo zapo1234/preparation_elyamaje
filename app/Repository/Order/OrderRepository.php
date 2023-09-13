@@ -126,8 +126,6 @@ class OrderRepository implements OrderInterface
             });
          } catch(Exception $e){ 
             echo json_encode(['success' => false]);
-            // dd($e->getMessage());
-            // continue;
          }
       }
       echo json_encode(['success' => true]);
@@ -322,12 +320,14 @@ class OrderRepository implements OrderInterface
 
 
       $product_pick_in = [];
+      $lits_id = [];
       // Construit le tableaux à update 
       $barcode_research = array_column($list_products, "barcode");
       
       foreach($barcode_array as $key => $barcode){
-        $clesRecherchees = array_keys($barcode_research, $barcode);
-         
+         $clesRecherchees = array_keys($barcode_research, $barcode);
+         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+
          $product_pick_in[] = [
             'id' => $list_products[$clesRecherchees[0]]['id'],
             'barcode' => $barcode,
@@ -358,7 +358,8 @@ class OrderRepository implements OrderInterface
          return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
       })->implode(' ');
 
-      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END)";
+
+      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
       DB::statement($query);
 
       if(!$partial){
