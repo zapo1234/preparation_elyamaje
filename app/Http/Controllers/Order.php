@@ -188,9 +188,11 @@ class Order extends BaseController
       $orders_id = [];
       $orders_to_delete = [];
       $orders_to_update = [];
+      $list_preparateur = [];
 
       foreach($users as $user){
         $array_user[$user['user_id']] = [];
+        $list_preparateur[] = $user['user_id'];
       }
 
       if(count($array_user) == 0){
@@ -202,9 +204,12 @@ class Order extends BaseController
       $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
 
       foreach($orders_user as $order){
-        $array_user[$order['user_id']][] =  $order;
-        $orders_id [] = $order['order_woocommerce_id'];
+        if(in_array($order['user_id'], $list_preparateur)){
+          $array_user[$order['user_id']][] =  $order;
+          $orders_id [] = $order['order_woocommerce_id'];
+        }
       }
+
 
       // Liste des commandes Woocommerce
       $orders = $this->orders();
@@ -239,9 +244,6 @@ class Order extends BaseController
             }
           }
         }
-
-       
-        
 
         // Supprime du tableau les commandes à ne pas prendre en compte si déjà attribuées
         foreach($array_user as $key => $array){
