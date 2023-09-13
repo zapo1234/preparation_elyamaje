@@ -134,7 +134,8 @@
         @endif
 
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0 || 
-        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
+        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0 || 
+        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class="lni lni-delivery"></i>
