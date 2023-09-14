@@ -5274,6 +5274,15 @@ input::placeholder {
 		padding: .75rem .5rem !important;
 	}
 
+
+	.col-md-6:has(.dataTables_length){
+		width: 70%;
+	}
+
+	.col-md-6:has(.dataTables_filter){
+		width: 30%;
+	}
+
 	#example_length, #example_length label, 
 	#example_length label select, 
 	.select2_custom .selection,
@@ -5789,6 +5798,14 @@ input::placeholder {
 @media screen and (max-width: 620px) {
 	.topbar .navbar .dropdown-menu::after {
 		display: none;
+	}
+
+	.col-md-6:has(.dataTables_filter){
+		width: 100% !important;
+	}
+
+	.col-md-6:has(.dataTables_length ){
+		width: 100% !important;
 	}
 
 	.topbar .navbar .dropdown {
@@ -6777,6 +6794,11 @@ select:focus, input:focus{
 .bg-light-order-new-distrib{
 	color: #0dcaf0 !important;
 	background-color: rgb(13 202 240 / 18%) !important;
+}
+
+.order-new-distrib{
+	border: 1px solid #0dcaf0;
+    color: #0dcaf0;
 }
 
 .bg-light-waiting_to_validate,

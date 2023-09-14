@@ -171,7 +171,7 @@ class UserRepository implements UserInterface
 
    public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste){
       try{
-         $delete_order = false;
+         $delete_order = true;
          $this->model->where('id', $user_id)->update([
             'name'=> $user_name_last_name,
             'email'=> $email,
@@ -187,14 +187,14 @@ class UserRepository implements UserInterface
                'role_id' => $r,
             ];
 
-            if($r != 2){
-               $delete_order = true;
+            if($r == 2){
+               $delete_order = false;
             }
          }
 
          if($delete_order){
-            DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status", "!=", "finished")->delete();
-            DB::table('orders')->where('user_id', $user_id)->where('status', '!=', 'finished')->delete();
+            DB::table('products_order')->join('orders', 'orders.order_woocommerce_id', '=', 'products_order.order_id')->where('orders.user_id', $user_id)->where("orders.status", "processing")->delete();
+            DB::table('orders')->where('user_id', $user_id)->where('status', 'processing')->delete();
          } 
 
          DB::table('user_roles')->insert($roles);

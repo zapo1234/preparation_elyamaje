@@ -8,7 +8,9 @@ use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
+use App\Http\Service\Api\ColissimoTracking;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\Bordereau\BordereauRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
@@ -28,6 +30,9 @@ class Label extends BaseController
     private $woocommerce;
     private $labelProductOrder;
     private $colissimoConfiguration;
+    private $chronopost;
+    private $colissimoTracking;
+    private $api;
 
     public function __construct(
         LabelRepository $label, 
@@ -36,7 +41,9 @@ class Label extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         LabelProductOrderRepository $labelProductOrder,
-        ColissimoRepository $colissimoConfiguration
+        ColissimoRepository $colissimoConfiguration,
+        Chronopost $chronopost,
+        ColissimoTracking $colissimoTracking
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -45,6 +52,8 @@ class Label extends BaseController
         $this->woocommerce = $woocommerce;
         $this->labelProductOrder = $labelProductOrder;
         $this->colissimoConfiguration = $colissimoConfiguration;
+        $this->chronopost = $chronopost;
+        $this->colissimoTracking = $colissimoTracking;
     }
 
     public function getlabels(){
@@ -202,7 +211,7 @@ class Label extends BaseController
     public function generateBordereau(Request $request){
 
         $date = $request->post('date');
-        // Récupère l'ensemnle des commandes en fonction de la date et qui n'ont pas de bordereau généré
+        // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
         $parcelNumbers = $this->label->getParcelNumbersyDate($date);
         $parcelNumbers_array = [];
 
@@ -288,7 +297,6 @@ class Label extends BaseController
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
 
-
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             $weight = 0; // Kg
@@ -306,52 +314,72 @@ class Label extends BaseController
                 } 
 
                 $order[0]['total_order'] = $subtotal;
-                $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+                // Étiquette Chronopost
+                if(str_contains($order[0]['shipping_method'], 'chrono')){
+                    $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+                    if(isset($labelChrono['success'])){
+                        // Pas besoin pour étiquette PDF
+                        if($labelChrono['label_format'] != "PDF"){
+                            $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+                        }
+                        $insert_label = $this->label->save($labelChrono);
+                        $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
+                    } else {
+                        return redirect()->route('labels')->with('error', $labelChrono);
+                    }
+
+                    return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                } else { 
+                    // Étiquette Colissimo
+                    $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
                 
-                if(isset($label['success'])){
-                  $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-                  $insert_label = $this->label->save($label);
-                  $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
- 
-                  if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
-                    
-                    if($label['label']){
-                        // switch ($label['label_format']) {
-                        //     case "PDF":
-                        //         $headers = [
-                        //             'Content-Type' => 'application/pdf',
-                        //         ];
+                    if(isset($label['success'])){
+                      $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+                      $insert_label = $this->label->save($label);
+                      $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
+     
+                      if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
                         
-                        //         $fileContent = $label['label'];
-                        //         return Response::make($fileContent, 200, $headers);
-                        //         break;
-                        //     case "ZPL":
-                        //         $zpl = $label['label'];
-                        //         $curl = curl_init();
-                        //         curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
-                        //         curl_setopt($curl, CURLOPT_POST, TRUE);
-                        //         curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
-                        //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                        //         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
-                        //         $result = curl_exec($curl);
-                
-                        //         curl_close($curl);
-                        //         $headers = [
-                        //             'Content-Type' => 'application/pdf',
-                        //         ];
-                
-                        //         return Response::make($result, 200, $headers);
-                        //         break;
-                        // }
-        
-                        return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
-                    } 
-                  } else {
-                    return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
-                  }
-                } else {
-                    return redirect()->route('labels')->with('error', $label);
+                        if($label['label']){
+                            // switch ($label['label_format']) {
+                            //     case "PDF":
+                            //         $headers = [
+                            //             'Content-Type' => 'application/pdf',
+                            //         ];
+                            
+                            //         $fileContent = $label['label'];
+                            //         return Response::make($fileContent, 200, $headers);
+                            //         break;
+                            //     case "ZPL":
+                            //         $zpl = $label['label'];
+                            //         $curl = curl_init();
+                            //         curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
+                            //         curl_setopt($curl, CURLOPT_POST, TRUE);
+                            //         curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
+                            //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+                            //         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
+                            //         $result = curl_exec($curl);
+                    
+                            //         curl_close($curl);
+                            //         $headers = [
+                            //             'Content-Type' => 'application/pdf',
+                            //         ];
+                    
+                            //         return Response::make($result, 200, $headers);
+                            //         break;
+                            // }
+            
+                            return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                        } 
+                      } else {
+                        return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
+                      }
+                    } else {
+                        return redirect()->route('labels')->with('error', $label);
+                    }
                 }
+               
+             
         } else {
             return redirect()->route('labels')->with('error', "Veuillez séléctionner des produits");
         }
@@ -381,5 +409,27 @@ class Label extends BaseController
         //     }
         // }
 
+    }
+
+    public function getTrackingLabelStatus($token){
+
+        if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
+            // Get all orders labels -10 jours
+            $rangeDate = 10;
+
+            try{
+                $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+                // Récupère les status de chaque commande
+                $trackingLabel = $this->colissimoTracking->getStatus($labels);
+                // Update en local
+                $this->label->updateLabelStatus($trackingLabel);
+                // Update status sur Wordpress pour les colis livré
+                $update = $this->colissimo->trackingStatusLabel($trackingLabel);
+                
+                return $update;
+            } catch(Exception $e){
+                dd($e->getMessage());
+            }
+        }
     }
 }

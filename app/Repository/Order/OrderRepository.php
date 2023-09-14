@@ -2,13 +2,9 @@
 
 namespace App\Repository\Order;
 
-use Hash;
 use Exception;
-use Carbon\Carbon;
 use App\Models\Order;
-use App\Models\Product;
 use App\Http\Service\Api\Api;
-use App\Models\ProductsOrder;
 use Illuminate\Support\Facades\DB;
 
 class OrderRepository implements OrderInterface
@@ -121,16 +117,16 @@ class OrderRepository implements OrderInterface
             }
          }
 
-    
-         // Insérer les données dans la base de données par lot
-         try{
-            $this->model->insert($ordersToInsert);
-            DB::table('products_order')->insert($productsToInsert);
+        
+        // Insérer les données dans la base de données par lot
+        try{
+            DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
+               DB::table('orders')->insertOrIgnore($ordersToInsert);
+               DB::table('products_order')->insertOrIgnore($productsToInsert);
+            });
          } catch(Exception $e){ 
-            dd($e->getMessage());
-            continue;
+            echo json_encode(['success' => false]);
          }
-
       }
       echo json_encode(['success' => true]);
    }
@@ -180,13 +176,11 @@ class OrderRepository implements OrderInterface
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
-        //  ->groupBy('products.product_woocommerce_id')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
 
       foreach($orders as $key => $order){
-
          if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id) || $order['status'] == "order-new-distrib"){
                $list[$order['order_woocommerce_id']]['details'] = [
@@ -228,17 +222,16 @@ class OrderRepository implements OrderInterface
          }
       }
 
-
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
       foreach($list as $key1 => $li){
          foreach($li['items'] as $key2 => $item){
             if(isset($product_double[$key1])){
 
-               $id_product = array_column($product_double[$key1], "id");
-               $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
+              $id_product = array_column($product_double[$key1], "id");
+              $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
 
-               if(count($clesRecherchees) > 0){
+              if(count($clesRecherchees) > 0){
                   $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
                   unset($list[$key1]['items'][$key2]);
 
@@ -247,7 +240,7 @@ class OrderRepository implements OrderInterface
                
                   // Merge pick product
                   $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
-               } else {
+              } else {
                   $product_double[$key1][] = [
                      'id' => $item['product_woocommerce_id'],
                      'quantity' => $item['quantity'], 
@@ -255,15 +248,15 @@ class OrderRepository implements OrderInterface
                      'key2' => $key2,
                      'pick' => $item['pick']
                  ];
-               }
+              }
             } else {
-              $product_double[$key1][] = [
+               $product_double[$key1][] = [
                   'id' => $item['product_woocommerce_id'],
                   'quantity' => $item['quantity'], 
                   'key1' => $key1,
                   'key2' => $key2,
                   'pick' => $item['pick']
-              ];
+               ];
             }
          }
       }
@@ -301,16 +294,16 @@ class OrderRepository implements OrderInterface
          if(isset($product_double[$list["barcode"]])){
             if(isset($product_double[$list["barcode"]][0])){
 
-               $quantity = $product_double[$list["barcode"]][0]['quantity'];
-               $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+              $quantity = $product_double[$list["barcode"]][0]['quantity'];
+              $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
 
-               unset($list_product_orders[$key_barcode_to_remove]);
-               $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
+              unset($list_product_orders[$key_barcode_to_remove]);
+              $list_product_orders[$key_barcode]['quantity'] = $list_product_orders[$key_barcode]['quantity'] + $quantity;
             }
          } else {
             $product_double[$list["barcode"]][] = [
-               'quantity' => $list['quantity'],
-               'key_barcode_to_remove' => $key_barcode
+              'quantity' => $list['quantity'],
+              'key_barcode_to_remove' => $key_barcode
             ];
          }
       }
@@ -327,12 +320,14 @@ class OrderRepository implements OrderInterface
 
 
       $product_pick_in = [];
+      $lits_id = [];
       // Construit le tableaux à update 
       $barcode_research = array_column($list_products, "barcode");
       
       foreach($barcode_array as $key => $barcode){
-        $clesRecherchees = array_keys($barcode_research, $barcode);
-         
+         $clesRecherchees = array_keys($barcode_research, $barcode);
+         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+
          $product_pick_in[] = [
             'id' => $list_products[$clesRecherchees[0]]['id'],
             'barcode' => $barcode,
@@ -363,7 +358,8 @@ class OrderRepository implements OrderInterface
          return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
       })->implode(' ');
 
-      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END)";
+
+      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
       DB::statement($query);
 
       if(!$partial){
@@ -779,7 +775,6 @@ class OrderRepository implements OrderInterface
       try{
          $this->model
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->where('orders.status', 'processing')
          ->whereIn('orders.status', ['processing', 'order-new-distrib'])
          ->delete();
 

@@ -21,9 +21,11 @@ class LabelRepository implements LabelInterface
       return $this->model::insertGetId([
          'order_id' => $label['order_id'],
          'label' => $label['label'],
+         'origin' => $label['origin'],
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
-         'created_at' => date('Y-m-d H:i:s')
+         'created_at' => date('Y-m-d H:i:s'),
+         'tracking_status' => 0
      ]);
    }
 
@@ -38,7 +40,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function getParcelNumbersyDate($date){
-      return $this->model::select('tracking_number')->where('bordereau_id', null)->where('created_at', 'LIKE', '%'.$date.'%')->get();
+      return $this->model::select('tracking_number')->where('bordereau_id', null)->where('origin', '!=', 'chronopost')->where('created_at', 'LIKE', '%'.$date.'%')->get();
    }
 
    public function saveBordereau($bordereau_id, $parcelNumbers_array){
@@ -55,6 +57,24 @@ class LabelRepository implements LabelInterface
 
    public function getAllLabels(){
       return $this->model::all();
+   }
+
+   public function getAllLabelsByStatusAndDate($rangeDate){
+      $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
+      return $this->model::where('created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
+   }
+
+   public function updateLabelStatus($labels){
+
+      $updateQuery = "UPDATE prepa_labels SET tracking_status = CASE order_id";
+
+      foreach ($labels as  $value) {
+         $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
+      }
+
+      $updateQuery.= " END";
+      $response = DB::update($updateQuery);
+
    }
 }
 

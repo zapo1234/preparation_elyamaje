@@ -21,6 +21,10 @@ interface LabelInterface
    public function updateLabelBordereau($parcel_number);
 
    public function getAllLabels();
+
+   public function getAllLabelsByStatusAndDate($rangeDate);
+
+   public function updateLabelStatus($labels);
 }
 
 

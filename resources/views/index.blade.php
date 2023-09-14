@@ -147,13 +147,21 @@
 												<option value="classic">Non</option>
 											</select>
 
+											<!-- users -->
+											<select class="d-none select2_custom preparateur_dropdown input_form_type">
+												<option value="">Préparateur</option>
+												@foreach($teams_have_order as $prepa)
+													<option value="{{ $prepa['id'] }}">{{  $prepa['name']  }}</option>
+												@endforeach
+											</select>
+
 											<select class="d-none select2_custom status_dropdown input_form_type">
 												<option value="">Status</option>
 												<option value="processing">En cours</option>
 												<option value="prepared-order">Commande préparée</option>
 												<option value="waiting_to_validate">En attente de validation</option>
 												<option value="waiting_validate">En attente validée</option>
-												<option value="order_new_distrib">Commande futur distributeur</option>
+												<option value="order-new-distrib">Commande futur distributeur</option>
 											</select>
 
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
@@ -165,8 +173,10 @@
 														<th scope="col">État</th>
 														<th scope="col">Total</th>
 														<th class="col-md-1" scope="col">Détail</th>
-														<th class="col-md-1" scope="col">Shipping</th>
-														<th class="col-md-1" scope="col">Status</th>
+														<th class="d-none col-md-1" scope="col">Shipping</th>
+														<th class="d-none col-md-1" scope="col">Status</th>
+														<th class="d-none col-md-1" scope="col">Préparateur</th>
+
 													</tr>
 												</thead>
 												<tbody></tbody>

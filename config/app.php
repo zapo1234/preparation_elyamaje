@@ -21,6 +21,17 @@ return [
     'colissimo_contractNumber' => '832840',
     'colissimo_password' => '9J5%6udUu9wO',
 
+
+     /*
+    |--------------------------------------------------------------------------
+    | Chronopost Auth Key
+    |--------------------------------------------------------------------------
+    |
+    */
+
+    'chronopost_accountNumber' => '50997503',
+    'chronopost_password' => '894498',
+
     /*
     |--------------------------------------------------------------------------
     | API Woocommerce URL
@@ -47,12 +58,15 @@ return [
     |
     */
 
-    'companyName' => 'Elya Maje',
+    'companyName' => 'ELYA MAJE',
     'line2' => '18 Rue Melchior Guinot',
     'countryCode' => 'FR',
+    'countryName' => 'FRANCE',
     'city' => 'Marseille',
     'zipCode' => '13003',
-
+    'email'  => 'expedition@elyamaje.com',
+    'companyPhone'  => '0491847750',
+    'companyMobilePhone'  => '0764089045',
     /*
     |--------------------------------------------------------------------------
     | Application Name

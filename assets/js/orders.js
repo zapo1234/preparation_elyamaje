@@ -60,6 +60,7 @@ $(document).ready(function() {
                 var coupons = false;
                 var coupons_amount = false;
                 var shipping_amount = 0
+                var shipping_method = '';
 
 
                     order['coupon_lines'].forEach(function(cp){
@@ -288,21 +289,40 @@ $(document).ready(function() {
                     return row.status
                 }
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    var preparateur = ""
+                    Object.entries(row.users).forEach(([key, value]) => {
+                        if(value.user_id == row.user_id){
+                            preparateur = value.user_id;
+                        }
+                    })
+                    return '<span>'+preparateur+'</span>';
+                }
+            },
         ],
 
         "columnDefs": [
             { "visible": false, "targets": 6 },
-            { "visible": false, "targets": 7 }
+            { "visible": false, "targets": 7 },
+            { "visible": false, "targets": 8 }
         ],
         "initComplete": function(settings, json) {
             // $("#example_length select").css('margin-right', '10px')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
+            $(".preparateur_dropdown").appendTo('.dataTables_length')
+
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").removeClass('d-none')
             $(".status_dropdown").removeClass('d-none')
-           
+            $(".preparateur_dropdown").removeClass('d-none')
+
+            $(".preparateur_dropdown").select2({
+                width: '130px',
+            });
+
             $(".shipping_dropdown").select2({
                 width: '130px',
             });
@@ -366,14 +386,13 @@ $(document).ready(function() {
             $('td:nth-child(6)', nRow).attr('data-label', 'Détail');
 
             return nRow;
-
         }
     })
 
     $('.shipping_dropdown').on('change', function(e){
-        var category_dropdown = $(this).val();
+        var shipping_dropdown = $(this).val();
         $('#example').DataTable()
-        .column(6).search(category_dropdown, true, false)
+        .column(6).search(shipping_dropdown, true, false)
         .draw();
     })
 
@@ -381,6 +400,13 @@ $(document).ready(function() {
         var status_dropdown = $(this).val();
         $('#example').DataTable()
         .column(7).search(status_dropdown, true, false)
+        .draw();
+    })
+
+    $('.preparateur_dropdown').on('change', function(e){
+        var preparateur_dropdown = $(this).val();
+        $('#example').DataTable()
+        .column(8).search(preparateur_dropdown, true, false)
         .draw();
     })
 

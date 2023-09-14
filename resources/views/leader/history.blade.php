@@ -40,7 +40,12 @@
 						<div class="card card_table_mobile_responsive radius-10 w-100">
 							<div class="card-body">
 								<div class="table-responsive">
-									<table id="example" class="w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+									<div class="d-flex justify-content-center">
+										<div class="loading spinner-border text-dark" role="status"> 
+											<span class="visually-hidden">Loading...</span>
+										</div>
+									</div>
+									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 										<thead>
 											<tr>
 												<th scope="col-md-1">Commande</th>
@@ -124,7 +129,11 @@
 			
 			$(document).ready(function() {
 				$('#example').DataTable({
-					"ordering": false
+					"ordering": false,
+					"initComplete": function( settings, json ) {
+						$(".loading").addClass('d-none')
+						$('#example').removeClass('d-none');
+					}
 				})
 			})
         </script>
