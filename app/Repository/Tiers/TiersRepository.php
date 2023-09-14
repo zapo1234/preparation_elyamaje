@@ -162,7 +162,7 @@ class TiersRepository implements TiersInterface
       }
 
 
-      public function getinvoices()
+      public function getinvoices($datet)
       {
            $method = "GET";
            // key et url api
@@ -171,7 +171,7 @@ class TiersRepository implements TiersInterface
         
            $produitParam = array(
              'apikey' => $apiKey,
-             'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-1 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+             'sqlfilters' => "t.datec >= '".date($datet, strtotime("-0 days"))." 00:00:00' AND t.datec <= '".date($datet, strtotime("+1 days"))." 23:59:59'",
               'limit' => 0,
              'sortfield' => 'rowid',
              'sortorder' => 'DESC',
@@ -183,5 +183,81 @@ class TiersRepository implements TiersInterface
             
            return $lists;
      }
+
+
+     public function getdatasids(){
+
+         
+        $method = "GET";
+        // key et url api
+           $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+          $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+        
+           $produitParam = array(
+             'apikey' => $apiKey,
+             'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-10 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+              'limit' => 0,
+             'sortfield' => 'rowid',
+             'sortorder' => 'DESC',
+         );
+
+
+          $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
+          $lists = json_decode($listinvoice,true);
+
+          return $lists;
+    
+     }
+
+
+     public function controle(){
+        $x =  $this->tiers->getdatasids();
+        foreach($x as $valu){
+         $date = date('Y-m-d', $valu['datem']);
+         foreach($valu['array_options'] as $val){
+           if($val!=""){
+              $list[] =(int)$valu['array_options']['options_idw'];
+         }
+       }
+      }
+
+       $y = array_unique($list);
+       $z = array_filter($y);
+
+       // recupérer les ids de produits dans ce intervale.
+       $status ="finished";
+       $posts = History::where('status','=',$status)->get();
+       $name_list = json_encode($posts);
+       $name_lists = json_decode($posts,true);
+
+          foreach($name_lists as $value){
+              $datev = explode('T',$value['created_at']);
+              $list_array[] = $value['order_id'];
+              $chaine_date = $datev[0].','.$value['order_id'];
+              $result_csv[$chaine_date] = $value['order_id'];
+           }
+
+
+           $array_diff = array_diff($list_array,$z);
+           
+           $resultat_csv = [];
+           foreach($array_diff as $values){
+                $date_x = array_search($values, $result_csv);
+                $date = explode(',',$date_x);
+
+                $resultat_csv[] = [
+                 'date_creation_preparation' => $date[0],
+                 'id-commande' => $values,
+
+                ];
+
+           }
+            
+           // tirer un csv
+            $this->csvcreate_product($resultat_csv);
+            dd($resultat_csv);
+
+            // tierer le csv
+    }
 
 }
