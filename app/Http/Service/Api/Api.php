@@ -270,6 +270,17 @@ class Api
     curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
 
     $result = curl_exec($curl);
+    
+    if (!curl_errno($curl)) {
+      switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
+        case 200:  # OK
+          break;
+        default:
+        echo json_encode(['success' => false, 'message'=> 'Erreur code : '. $http_code.' "\n" : !']);
+        exit;
+          
+      }
+    }
 
     curl_close($curl);
      
