@@ -246,11 +246,11 @@ class TiersController extends BaseController
                 $alert = "Toutes les commandes ont étés facturées le $datet";
                }
                   elseif(count($diff_array)==1){
-                  $alert = "Attention nous avons une commande non prise en compte dans les statistiques  le $datet voir le N° $list_commande";
+                  $alert = "Attention nous avons une commande n'est pas facturée dans dolibarr  le $datet voir le N° $list_commande";
                }
               else{
                    $nombre = count($diff_array);
-                   $alert="Attention nous avons $nombre commandes non prise en compte dans les statistiques le $datet voir les N°  suivant $list_commande";
+                   $alert="Attention nous avons $nombre  non facturée  dans dolibarr le $datet voir les N°  suivant $list_commande";
              }
 
               dump($alert);
