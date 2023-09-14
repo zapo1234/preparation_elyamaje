@@ -15,5 +15,9 @@ interface TiersInterface
 
    public function insert($name,$prenom,$socid,$code_client,$email,$phone,$adresse,$zipcode,$ville,$date_created);// créer un user direct.
 
-   public function getinvoices();// recupérer les facture dolibar.
+   public function getinvoices($datet);// recupérer les facture dolibar.
+
+   public function getdatasids();
+
+   public function controle();
 }
