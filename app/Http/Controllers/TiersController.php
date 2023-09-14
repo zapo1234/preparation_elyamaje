@@ -174,6 +174,7 @@ class TiersController extends BaseController
 
          foreach($data as $values){
           $date = date('Y-m-d', $values['datem']);
+
           
           if($date==$datet){
            if($values['array_options']!=""){
@@ -192,7 +193,7 @@ class TiersController extends BaseController
           }
          }
            
-            $data = array_unique($list);
+            $data = array_unique($ids_commande);
             dd($data);
            
        }
