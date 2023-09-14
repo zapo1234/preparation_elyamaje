@@ -64,7 +64,19 @@
                 </a>
             </li>
             <li>
-                
+            <li>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class='bx bx-history'></i>
+                    </div>
+                    <div class="menu-title">Historiques</div>
+                </a>
+                <ul>
+                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
+                    </li>
+                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Préparation</a>
+                    </li>
+                </ul>
+            </li>
             <li>
                 <a href="{{ url('orderfacturer') }}">
                     <div class="parent-icon"><i class='bx bx-box'></i>
@@ -73,9 +85,6 @@
                 </a>
             </li>
             <li>
-                
-                
-                
                 <a href="{{ url('refreshtiers') }}">
                     <div class="parent-icon"><i class="bx bx-lock-open"></i>
                     </div>

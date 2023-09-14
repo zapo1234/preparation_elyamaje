@@ -116,9 +116,6 @@ Route::group(['middleware' => ['auth', 'role:3']], function () {
 // CHEF D'ÉQUIPE
 Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
-    Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
-    Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
-    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
 });
 
 // ADMIN ET CHEF D'ÉQUIPE
@@ -138,6 +135,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteOrderProducts", [Order::class, "deleteOrderProducts"])->name('deleteOrderProducts');
     Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
     Route::post("/closeDay", [Order::class, "closeDay"])->name('leader.closeDay');
+    Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
+    Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
+    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
