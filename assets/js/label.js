@@ -1,12 +1,12 @@
 $(document).ready(function() {
     $('#example').DataTable({
         "order": [[0, 'desc']],
-        "columnDefs" : [       
-            { 
-                'searchable'    : false, 
-                'targets'       : [2,3] 
-            },
-        ],
+        // "columnDefs" : [       
+        //     { 
+        //         'searchable'    : false, 
+        //         'targets'       : [2,3] 
+        //     },
+        // ],
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
