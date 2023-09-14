@@ -164,38 +164,98 @@ class TiersController extends BaseController
         
     }
 
+
+    public function csvcreate_product(array $datas)
+    {
+        $filename = "commande_non_facture.csv";
+       $fp = fopen('php://output', 'w');
+     // créer une entete du tableau .
+     $header = array('date_facturation_preparation','id-commande');
+    // gérer les entete du csv 
+      header('Content-type: application/csv');
+     header('Content-Disposition: attachment; filename=' . $filename);
+     fputcsv($fp, $header);
+  
+      foreach ($datas as $row) {
+        fputcsv($fp, $row);
+     }
+      exit();
+   }
+
+
+
     public function getinvoices(Request $request)
     {
-         $datet = $request->get('id');
-         $data = $this->tiers->getinvoices();
+        
+        $datet = $request->get('id');
+         
+         $data = $this->tiers->getinvoices($datet);
+        
          $list_result =[];
         //
          $ids_commande = [];
 
-         foreach($data as $values){
-          $date = date('Y-m-d', $values['datem']);
-
-          dd($date);
-          if($date==$datet){
-           if($values['array_options']!=""){
-                  $ids_commande[] = $values['array_options']['options_idw'];
-               }
-             }
-           }
-
            foreach($data as $valu){
-            $date = date('Y-m-d', $values['datem']);
+            $date = date('Y-m-d', $valu['datem']);
             foreach($valu['array_options'] as $val)
             if($date == $datet){
                 if($val!=""){
-                 $list[] =$valu['array_options']['options_idw'];
+                 $list[] =(int)$valu['array_options']['options_idw'];
             }
           }
          }
-           
-            $data = array_unique($ids_commande);
-            dd($data);
-           
+         
+            $array_result = array_unique($list);
+            $array_finale = array_filter($array_result);
+
+          
+           // table historique de facture
+            $mm = "07:00:00";
+            $mm1 = "23:59:59";
+            // creé des bornes de recupération dans
+            $date1 = $datet.'T'.$mm;
+            $date2  = $datet.'T'.$mm1;
+             $status ="finished";
+            // recupérer les ids de produits dans ce intervale.
+             $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->get();
+            $name_list = json_encode($posts);
+            $name_lists = json_decode($posts,true);
+
+            $list_array =[];
+
+            foreach($name_lists as $value){
+               $list_array[] = $value['order_id'];
+            }
+
+            // resultat la table historique 
+            $resultat_histories = $list_array;
+          
+            $data = array_unique($list);
+
+
+              // chercher les diff entre les deux tableau. 
+              $diff_array = array_diff($resultat_histories,$array_finale);
+              
+               $list_commande="";
+              if(count($diff_array)){
+               $list_commande = implode(',',$diff_array);// la liste des ids commande non facturés.
+
+              }
+
+               if(count($diff_array)==0){
+                $alert = "Toutes les commandes ont étés facturées le $datet";
+               }
+                  elseif(count($diff_array)==1){
+                  $alert = "Attention nous avons une commande non prise en compte dans les statistiques  le $datet voir le N° $list_commande";
+               }
+              else{
+                   $nombre = count($diff_array);
+                   $alert="Attention nous avons $nombre commandes non prise en compte dans les statistiques le $datet voir les N°  suivant $list_commande";
+             }
+
+              dump($alert);
+              dd('Demande bien excutée');
+              
        }
 
     }
