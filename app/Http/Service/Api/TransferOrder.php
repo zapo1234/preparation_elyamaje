@@ -167,7 +167,7 @@ class TransferOrder
                   foreach($list_tier as $val) {
                      $data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
-                       $data_list[$val['socid']] = $val['email'];
+                       $data_list[$val['socid']] =  mb_strtolower($val['email']);
                      }
 
                      if($val['phone']!=""){
