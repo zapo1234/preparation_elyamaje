@@ -124,6 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
+             dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
@@ -181,7 +182,6 @@ class TransferOrder
                   }
 
                 
-              
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -240,6 +240,7 @@ class TransferOrder
                              // recupérer id du tiers en fonction de son email...
                              $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                              // recupérer id en fonction du customer id
+
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
 
                             // convertir la date en format timesamp de la facture .
