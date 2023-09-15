@@ -173,7 +173,7 @@ class TransferOrder
                      if($val['phone']!=""){
                         $data_phone[$val['socid']] = $val['phone'];
                      }
-                      // recuperer id customer du client et créer un tableau associative.
+                      // recuperer id customer du client et créer un tableau associative.;
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
@@ -181,7 +181,7 @@ class TransferOrder
                       }
                   }
 
-              
+                dd($data_list);
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
