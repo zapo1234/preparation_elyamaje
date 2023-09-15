@@ -42,7 +42,6 @@ class TiersRepository implements TiersInterface
        $list = json_encode($data);
        $lists = json_decode($data,true);
 
-       dd($lists);
        
        return $lists;
 
