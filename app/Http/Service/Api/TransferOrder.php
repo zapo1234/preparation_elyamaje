@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-            
+              dd($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
@@ -241,9 +241,11 @@ class TransferOrder
                              // recupérer id du tiers en fonction de son email...
                              $fk_tiers = array_search($email_true,$data_list);
                              // recupérer id en fonction du customer id
-
+                              
+                             $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
                              $fk_tiers_phone = array_search($donnees['billing']['phone'],$data_phone);
                              // recupérer id en fonction du customer id
+                            
 
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
 
