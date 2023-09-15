@@ -123,7 +123,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-                
+              dump($orders);
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
@@ -133,7 +133,9 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
+               
 
+                 dd($listproduct);
                  
                  if(count($listproduct)==0){
                   echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
