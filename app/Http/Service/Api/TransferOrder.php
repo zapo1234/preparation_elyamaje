@@ -182,6 +182,7 @@ class TransferOrder
                   }
 
                 
+                  dd($data_phone);
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
@@ -241,6 +242,9 @@ class TransferOrder
                              $fk_tiers = array_search($donnees['billing']['email'],$data_list);
                              // recupérer id en fonction du customer id
 
+                             $fk_tiers_phone = array_search($donnees['billing']['phone'],$data_phone);
+                             // recupérer id en fonction du customer id
+
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
 
                             // convertir la date en format timesamp de la facture .
@@ -253,6 +257,10 @@ class TransferOrder
                       
                              if($fk_tiers!="") {
                                $socid = $fk_tiers;
+                             }
+
+                             if($fk_tiers_phone!=""){
+                                $socid =$fk_tiers_phone;
                              }
                              // construire le tableau
                              if($fk_tier!="" && $fk_tiers==""){
