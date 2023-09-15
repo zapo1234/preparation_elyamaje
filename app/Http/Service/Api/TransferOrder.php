@@ -181,8 +181,7 @@ class TransferOrder
                       }
                   }
 
-                
-                  dd($data_phone);
+              
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
