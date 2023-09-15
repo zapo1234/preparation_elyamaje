@@ -162,10 +162,15 @@ class TransferOrder
                   $data_email = [];//entre le code_client et email.
                   $data_list = []; //tableau associative de id et email
                   $data_code =[];// tableau associative entre id(socid et le code client )
+                  $data_phone = [];
                   foreach($list_tier as $val) {
                      $data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
                        $data_list[$val['socid']] = $val['email'];
+                     }
+
+                     if($val['phone']!=""){
+                        $data_phone[$val['socid']] = $val['phone'];
                      }
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
@@ -175,7 +180,7 @@ class TransferOrder
                       }
                   }
 
-                dd($data_list);
+                
               
                 
                   // recuperer le dernier id => socid du tiers dans dolibarr.
