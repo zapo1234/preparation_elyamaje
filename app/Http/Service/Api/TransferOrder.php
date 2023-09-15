@@ -251,12 +251,12 @@ class TransferOrder
                              }
 
 
-                             if($fk_socid_phone!="" && $fk_tiers==""){
+                             if($fk_tiers==""){
 
                                  $socid = $fk_socid_phone;
                              }
                              // construire le tableau
-                             if($fk_tier!="" && $fk_tiers=="" && $fk_socid_phone){
+                             if($fk_tier!="" && $fk_tiers==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
@@ -281,7 +281,7 @@ class TransferOrder
                           }
 
         
-                            if($fk_tiers=="" && $fk_tier=="" && $fk_socid_phone=="") {
+                            if($fk_tiers=="" && $fk_tier=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
