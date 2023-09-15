@@ -41,6 +41,8 @@ class TiersRepository implements TiersInterface
        // transformer les retour objets en tableau
        $list = json_encode($data);
        $lists = json_decode($data,true);
+
+       dd($lists);
        
        return $lists;
 
@@ -55,6 +57,7 @@ class TiersRepository implements TiersInterface
        // transformer les retour objets en tableau
        $list = json_encode($data);
        $lists = json_decode($data,true);
+
        
        return $lists;
 
