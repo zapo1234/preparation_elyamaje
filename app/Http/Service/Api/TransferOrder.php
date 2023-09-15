@@ -237,8 +237,9 @@ class TransferOrder
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
+                             $email_true = mb_strtolower($donnees['billing']['email']);
                              // recupérer id du tiers en fonction de son email...
-                             $fk_tiers = array_search($donnees['billing']['email'],$data_list);
+                             $fk_tiers = array_search($email_true,$data_list);
                              // recupérer id en fonction du customer id
 
                              $fk_tiers_phone = array_search($donnees['billing']['phone'],$data_phone);
