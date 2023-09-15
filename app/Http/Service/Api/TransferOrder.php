@@ -135,7 +135,7 @@ class TransferOrder
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
                
 
-                 dd($listproduct);
+              
                  
                  if(count($listproduct)==0){
                   echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
