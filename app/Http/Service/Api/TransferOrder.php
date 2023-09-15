@@ -133,11 +133,18 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
+                 
+                 if(count($listproduct)==0){
+                  echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
+                   exit;
+                 }
+
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
                  $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
+                 dd($list_tier);
                  // recuperer les ids commandes
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
@@ -432,6 +439,9 @@ class TransferOrder
                                          $data_options_kdo =[];
                                          $account="";
                                          $this->setAccountpay($account);
+
+                                         echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
+                                         exit;
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
@@ -460,6 +470,9 @@ class TransferOrder
                          }
                         */
                          
+                        dump($data_tiers);
+
+                        dd($data_lines);
                          
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
