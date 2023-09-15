@@ -163,12 +163,7 @@ class TransferOrder
                   foreach($list_tier as $val) {
                     //$data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
-                       $data_list[$val['socid']] = $val['email'];
-                       
-                     }
-
-                     if($val['phone']!=""){
-                         $data_phone[$val['socid']] = $val['phone'];
+                       $data_list[$val['socid']] = mb_strtolower($val['email']);
                      }
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
@@ -235,12 +230,11 @@ class TransferOrder
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
 
+                            //  $email_true = mb_strtolower($donnees['billing']['email']);
+                             // recupérer id du tiers en fonction de son email...
                              $email_true = mb_strtolower($donnees['billing']['email']);
                              // recupérer id du tiers en fonction de son email...
                              $fk_tiers = array_search($email_true,$data_list);
-
-                             //creer un tableau avec phone et socid
-                             $fk_socid_phone = array($donnees['billing']['phone'],$data_phone);
                              // recupérer id en fonction du customer id
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
 
