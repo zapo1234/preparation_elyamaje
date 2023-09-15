@@ -161,6 +161,8 @@
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
 																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger</button>
 																	</form>
+																@else 
+																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
 																@endif
 															</div>
 														</div>
