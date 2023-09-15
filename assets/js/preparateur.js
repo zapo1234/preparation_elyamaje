@@ -124,7 +124,6 @@ document.addEventListener("keydown", function (e) {
                             (parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0) {
 
                             // Update pick quantity
-                            
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
 
                             $(".quantity_product").text('')

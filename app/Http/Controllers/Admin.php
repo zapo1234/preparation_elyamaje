@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Http\Service\Api\TransferOrder;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
+use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -31,6 +34,9 @@ class Admin extends BaseController
     private $distributors;
     private $printer;
     private $colissimoConfiguration;
+    private $order;
+    private $woocommerce;
+    private $factorder;
 
     public function __construct(
         Api $api, 
@@ -41,7 +47,10 @@ class Admin extends BaseController
         ProductRepository $products,
         DistributorRepository $distributors,
         PrinterRepository $printer,
-        ColissimoRepository $colissimoConfiguration
+        ColissimoRepository $colissimoConfiguration,
+        OrderRepository $order,
+        WoocommerceService $woocommerce,
+        TransferOrder $factorder
     ){
         $this->api = $api;
         $this->category = $category;
@@ -52,6 +61,9 @@ class Admin extends BaseController
         $this->distributors = $distributors;
         $this->printer = $printer;
         $this->colissimoConfiguration = $colissimoConfiguration;
+        $this->order = $order;
+        $this->woocommerce = $woocommerce;
+        $this->factorder = $factorder;
     }
 
     public function syncCategories(){
@@ -514,7 +526,44 @@ class Admin extends BaseController
         } catch(Exception $e){
             return redirect()->route('colissimo')->with('error', $e->getMessage());
         }
+    }
 
+    public function billing(){
+        return view('admin.billing');
+    }
 
+    public function billingOrder(Request $request){
+        $order_id = $request->post('order_id');
+        $order = $this->order->getOrderByIdWithCustomer($order_id);
+
+        if($order){
+            $order = $this->woocommerce->transformArrayOrder($order);
+            $order[0]['emballeur'] = "admin";
+        } else {
+            // Récupère directement sur Woocommerce si pas en local
+            $order = $this->api->getOrdersWoocommerceByOrderId($order_id);
+            
+            if(isset($order['code'])){
+                return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+            } else {
+                foreach($order['line_items'] as $key => $line){
+                    if($line['total'] == 0){
+                        // Get Real price of product
+                        $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
+                        $product = $this->products->getProductById($product_id);
+                        $order['line_items'][$key]['real_price'] = $product[0]->price;
+                    }
+                }
+                $order['preparateur'] = "admin";
+                $order['emballeur'] = "admin";
+            }
+        }
+
+        try {
+            $this->factorder->Transferorder($order);  
+            return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
+        } catch(Exception $e){
+            return redirect()->route('admin.billing')->with('error', $e->getMessage());
+        }
     }
 }

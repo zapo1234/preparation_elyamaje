@@ -60,6 +60,7 @@ class Label extends BaseController
         // Liste des commandes
         $orders = $this->order->getAllOrdersAndLabel()->toArray();
         $labels = $this->label->getAllLabels()->toArray();
+
         $array_order = [];
 
         foreach($orders as $order){
@@ -77,6 +78,8 @@ class Label extends BaseController
                     'tracking_number' => $order['tracking_number'],
                     'label_created_at' => $order['label_created_at'],
                     'label_format' => $order['label_format'],
+                    'cn23' => $order['cn23'],
+
                 ];
             } else if(count($clesRecherchees) > 0){
                 $array_order[$order['order_woocommerce_id']]['labels'][$labels[$clesRecherchees[0]]['id']]= [
@@ -84,6 +87,7 @@ class Label extends BaseController
                     'tracking_number' => $labels[$clesRecherchees[0]]['tracking_number'],
                     'label_created_at' => $labels[$clesRecherchees[0]]['created_at'], 
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
+                    'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
                 ];
             }
         }
@@ -110,6 +114,24 @@ class Label extends BaseController
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
         } 
     }
+
+    public function labelDownloadCn23(Request $request){
+       
+        $order_id = $request->post('order_id');
+        $blob = $this->label->getLabelById($request->post('label_id'));
+        // $fileContent = $blob[0]->cn23;
+
+        $fileContent = mb_convert_encoding($blob[0]->cn23, 'ISO-8859-1');
+
+        $fileName = 'declaration_'.$order_id.'.pdf';
+        $headers = [
+            'Content-Type' => 'application/pdf',
+        ];
+    
+        return Response::make($fileContent, 200, $headers)
+            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+    }
+
 
     public function labelPrintZPL(Request $request){
         $label_id = $request->post('label_id');
@@ -335,6 +357,7 @@ class Label extends BaseController
                 
                     if(isset($label['success'])){
                       $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+                      $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
                       $insert_label = $this->label->save($label);
                       $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
      
@@ -368,7 +391,7 @@ class Label extends BaseController
                             //         return Response::make($result, 200, $headers);
                             //         break;
                             // }
-            
+
                             return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                         } 
                       } else {

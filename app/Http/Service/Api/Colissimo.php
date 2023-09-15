@@ -105,6 +105,7 @@ class Colissimo
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
+                $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
 
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
@@ -120,7 +121,8 @@ class Colissimo
                         'origin' => 'colissimo',
                         'label_format' => explode('_', $format)[0],
                         'label_created_at' => date('Y-m-d h:i:s'),
-                        'tracking_number' => $trackingNumber
+                        'tracking_number' => $trackingNumber,
+                        'cn23' => $cn23
                     ];
 
                     try{

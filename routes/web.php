@@ -51,8 +51,8 @@ Route::group(['middleware' => ['auth']], function () {
     })->name('/');
 });
 
-// ADMI
-    Route::group(['middleware' => ['auth', 'role:1']], function () {
+// ADMIN
+Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
     // traiter les routes pour des tiers
     Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
@@ -94,6 +94,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
     Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
 
+    Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
+    Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
+
 });
 
 // PRÉPARATEUR
@@ -109,7 +112,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
 // EMBALLEUR
 Route::group(['middleware' => ['auth', 'role:3']], function () {
     Route::get("/wrapOrder", [Controller::class, "wrapOrder"])->name('wrapOrder');
-    Route::post("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
+    Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
     Route::get("/checkExpedition", [Order::class, "checkExpedition"])->name('checkExpedition');
 });
 
@@ -148,6 +151,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
     Route::post("/generateLabel", [Label::class, "generateLabel"])->name('label.generate');
     Route::post("/labelDelete", [Label::class, "labelDelete"])->name('label.delete');
+    Route::post("/labelDownloadCn23", [Label::class, "labelDownloadCn23"])->name('label.download_cn23');
     Route::get("/bordereaux", [Label::class, "bordereaux"])->name('bordereaux');
     Route::post("/generateBordereau", [Label::class, "generateBordereau"])->name('bordereau.generate');
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
@@ -183,12 +187,12 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
-// Tache crons mise a jours tiers chaque 30minute tous les jours.
+// Tache crons mise a jours status commande colissimo 21h tous les jours
 Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 // Email preview
-Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+// Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 

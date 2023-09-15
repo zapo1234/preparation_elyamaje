@@ -20,5 +20,8 @@ return [
     'finished' => 'Terminée',
     "partial_prepared_order" => "Commande partielle",
     "partial_prepared_order_validate" => "Commande validée",
-    "order-new-distrib" => "Commmande futur distibuteur"
+    "order-new-distrib" => "Commmande futur distibuteur",
+    "lpc_delivered"     => "Colis livré",
+    "lpc_ready_to_ship"     => "Colis prêt à être expédier",
+
 ];

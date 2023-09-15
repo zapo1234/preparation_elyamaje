@@ -64,6 +64,13 @@
                 </a>
             </li>
             <li>
+                <a href="{{ url('billing') }}">
+                    <div class="parent-icon"><i class='bx bx-credit-card-front'></i>
+                    </div>
+                    <div class="menu-title">Facturation</div>
+                </a>
+            </li>
+            <li>
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class='bx bx-history'></i>
