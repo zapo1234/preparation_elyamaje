@@ -424,7 +424,7 @@ class Order extends BaseController
       $order_id = 94489; // Données de test
       $order = $this->order->getOrderByIdWithCustomer($order_id);
 
-      dd($order);
+    
 
       if($order){
 
@@ -450,7 +450,8 @@ class Order extends BaseController
         
         $orders = $this->woocommerce->transformArrayOrder($order);
         $orders[0]['emballeur'] = Auth()->user()->name;
-
+       
+        dd($orders);
         // envoi des données pour créer des facture via api dolibar....
         $this->factorder->Transferorder($orders);
 
