@@ -405,7 +405,7 @@ class TransferOrder
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
-                                        $list->ref_sku = $ref_sku;
+                                        $list->ref_sku = $pharse;
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
@@ -505,12 +505,13 @@ class TransferOrder
                          }
                         */
                           
-                      /*  if(count($data_echec)!=0){
+                      dd($data_echec);
+                        if(count($data_echec)!=0){
                           echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
                           exit;
                             
                         }
-                      */
+                      
                         
                       
                          // Create le client via Api...
