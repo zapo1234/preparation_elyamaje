@@ -398,7 +398,8 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $data_echec[] = $values['name'];
+                                        $info = 'Numero de comande '.$donnees['order_id'].'';
+                                        $data_echec[] = $values['name'].','.$info;
                                         $note =  'La facture est rejetée un produit n\'as pas un barcode lisible infos :'.$values['name'].' Numero commande :'.$donnees['id'].'';
                                         $ref_sku = $values['name'].','.$note;
                                         $list = new Transfertrefunded();
@@ -505,11 +506,11 @@ class TransferOrder
                       
                         if(count($data_echec)!=0){
                           $list = implode(',',$data_echec);
-                          echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode n\'est pas lisible,facture réjétée , informez le service informatique  infos :'.$list.' !']);
+                          echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode est illisible , informez le service informatique  infos :'.$list.' !']);
                           exit;
                             
                         }
-                      
+                        
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
