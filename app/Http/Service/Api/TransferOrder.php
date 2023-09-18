@@ -514,7 +514,7 @@ class TransferOrder
                         }
                         
                          // Create le client via Api...
-                  /*      foreach($data_tiers as $data) {
+                      foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
 
