@@ -405,7 +405,7 @@ class TransferOrder
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
-                                        $list->ref_sku = $pharse;
+                                        $list->ref_sku = $ref_sku;
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
