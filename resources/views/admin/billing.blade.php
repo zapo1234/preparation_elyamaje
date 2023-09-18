@@ -41,7 +41,7 @@
 									@csrf
 									<div class="col-md-12 mt-3">
 										<label for="order_id" class="form-label">Numéro de commande</label>
-										<input value="" name="order_id" type="text" class="form-control" id="order_id">
+										<input required value="" name="order_id" type="text" class="form-control" id="order_id">
 									</div>
 								
 									<div class="col-12 mt-3">

@@ -89,6 +89,11 @@
 									@endforeach
 							</select>
 
+
+							<select class="d-none date_research input_form_type">
+								<input class="custom_input" type="date">
+							</select>
+
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>

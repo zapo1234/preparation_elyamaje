@@ -18,7 +18,8 @@ class Colissimo
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
-        $mobilePhone = $this->getMobilePhone(str_replace(" ", "", $order['billing']['phone']), $order['shipping']['country']);
+        $address = $this->getAdress($order);
+
         
         if($productCode){
             try {
@@ -75,24 +76,14 @@ class Colissimo
                         'addressee' => [
                             'addresseeParcelRef' => $order_id,
                             'codeBarForReference' => false,
-                            'address' => [
-                                'companyName' => "",
-                                'lastName' => $order['shipping']['last_name'],
-                                'firstName' => $order['shipping']['first_name'],
-                                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
-                                'countryCode' => $order['shipping']['country'],
-                                'city' => $order['shipping']['city'],
-                                'zipCode' => $order['shipping']['postcode'],
-                                'email' => $order['billing']['email'],
-                                'mobileNumber' =>  $mobilePhone,
-                            ]
+                            'address' => $address
                         ]
                     ]
                 ];
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
-                
+
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -322,7 +313,59 @@ class Colissimo
         return in_array($product_code, $nonMachinable) ? false : true;
     }
 
+    protected function getAdress($order){
+
+        if(isset($order['billing']['phone'])){
+            $phoneNumber              = str_replace(' ', '', $order['billing']['phone']);
+            $frenchMobileNumberRegex  = '/^(?:(?:\+|00)33|0)(?:6|7)\d{8}$/';
+    
+            if($order['shipping']['country'] == "FR" && !preg_match($frenchMobileNumberRegex, $phoneNumber)){
+                $address = [
+                    'companyName' => "",
+                    'lastName' => $order['shipping']['last_name'],
+                    'firstName' => $order['shipping']['first_name'],
+                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'countryCode' => $order['shipping']['country'],
+                    'city' => $order['shipping']['city'],
+                    'zipCode' => $order['shipping']['postcode'],
+                    'email' => $order['billing']['email'],
+                    'phoneNumber' => $phoneNumber
+                ];
+            
+                return $address;
+            } else {
+                $address = [
+                    'companyName' => "",
+                    'lastName' => $order['shipping']['last_name'],
+                    'firstName' => $order['shipping']['first_name'],
+                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'countryCode' => $order['shipping']['country'],
+                    'city' => $order['shipping']['city'],
+                    'zipCode' => $order['shipping']['postcode'],
+                    'email' => $order['billing']['email'],
+                    'mobileNumber' => $this->getMobilePhone($order['billing']['phone'], $order['shipping']['country'])
+                ];
+
+                return $address;
+            }
+        } else {
+            $address = [
+                'companyName' => "",
+                'lastName' => $order['shipping']['last_name'],
+                'firstName' => $order['shipping']['first_name'],
+                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                'countryCode' => $order['shipping']['country'],
+                'city' => $order['shipping']['city'],
+                'zipCode' => $order['shipping']['postcode'],
+                'email' => $order['billing']['email'],
+                // 'mobileNumber' => ''
+            ];
+            return $address;
+        }
+    }
+
     protected function getMobilePhone($mobile, $country){
+      
         if($mobile != "" && $mobile != null && !str_contains($mobile, '+')){
             if($country == "FR"){
                 $mobile = $mobile;
