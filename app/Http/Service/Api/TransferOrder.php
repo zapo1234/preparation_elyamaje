@@ -213,8 +213,6 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
-                  dd($data_list_product);
-
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
