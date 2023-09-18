@@ -398,8 +398,8 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $data_echec[] = 'Le produit : '.$values['name'].', le  Numero de commande '.$donnees['order_id'];
-                                        $note =  'le produit bloquant sur le barcode facture rejeté';
+                                        $data_echec[] = $values['name'];
+                                        $note =  'La facture est rejetée un produit n\'as pas un barcode lisible infos :'.$values['name'].' Numero commande :'.$donnees['id'].'';
                                         $ref_sku = $values['name'].','.$note;
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
@@ -505,7 +505,7 @@ class TransferOrder
                       
                         if(count($data_echec)!=0){
                           $list = implode(',',$data_echec);
-                          echo json_encode(['success' => false, 'message'=> '  Attention la commande contient un produit dont le barcode n\'est pas lisible  infos :'.$list.' !']);
+                          echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode n\'est pas lisible,facture réjétée , informez le service informatique  infos :'.$list.' !']);
                           exit;
                             
                         }
