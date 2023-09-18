@@ -136,7 +136,7 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
-                 dd($listproduct);
+                 
               
                  
                  if(count($listproduct)==0){
@@ -209,8 +209,10 @@ class TransferOrder
                      $data_list_product[$values['id']] = $values['barcode'];
                       // tableau associatve entre ref et label product....
                   }
-                   
-                   // recupére les orders des données provenant de  woocomerce
+
+                  dd($data_list_product);
+
+                    // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -225,6 +227,8 @@ class TransferOrder
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
                      $info_tiers_flush = [];// l'array qui va servir a flush dans ma base de données interne le nouveau client.
+                     $data_echec = [];
+
 
                      // travailler sur le nommenclature de la ref facture
                       $date = date('Y-m-d');
@@ -394,6 +398,7 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
+                                        $data_echec[] = $values['name'];
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
@@ -496,32 +501,37 @@ class TransferOrder
                            }
                          }
                         */
+
+                             if(count($data_echec)!=0){
+                                echo json_encode(['success' => false, 'message'=> '  Attention la commande comporte un produit qui n\'a pas le bon barcode !']);
+                                 exit;
+                              }
                           
                         
-                         // Create le client via Api...
-                        foreach($data_tiers as $data) {
-                           // insérer les données tiers dans dolibar
-                           $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                       }
+                            // Create le client via Api...
+                             foreach($data_tiers as $data) {
+                             // insérer les données tiers dans dolibar
+                              $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                            }
                     
-                         foreach($data_lines as $donnes){
-                         // insérer les details des données de la facture dans dolibarr
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                       }
+                             foreach($data_lines as $donnes){
+                              // insérer les details des données de la facture dans dolibarr
+                              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                            }
 
-                         // mettre la facture en status en payé et l'attribue un compte bancaire.
-                         if(count($data_lines)!=0){
-                          $this->invoicespay($orders);
-                        }
-                        // merger le client et les data coupons.....
-                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        $tiers_exist = $this->don->gettiers();
-                         // insert le tiers dans la BDD...
-                       if(count($data_infos_order)!=0){
-                          // insert 
-                         if(isset($tiers_exist[$data_infos_order['email']])==false){
-                          $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                          // JOINTRE les produits.
+                             // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            if(count($data_lines)!=0){
+                               $this->invoicespay($orders);
+                             }
+                             // merger le client et les data coupons.....
+                            $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                            $tiers_exist = $this->don->gettiers();
+                            // insert le tiers dans la BDD...
+                           if(count($data_infos_order)!=0){
+                              // insert 
+                              if(isset($tiers_exist[$data_infos_order['email']])==false){
+                                $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                               // JOINTRE les produits.
                          }
                       }
                           // Ajouter le client dans la base de données interne 
