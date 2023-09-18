@@ -123,22 +123,39 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
+<<<<<<< HEAD
                 
               
         
                   $method = "GET";
+=======
+              
+            
+                $method = "GET";
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                // $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
-                 $produitParam = ["limit" => 900, "sortfield" => "rowid"];
+                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
+                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
+
+                 $produitParam = ["limit" => 950, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+<<<<<<< HEAD
                   
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba..
                 dd($listproduct);
                  
                 if(count($listproduct)==0){
+=======
+
+                 // reference ref_client dans dolibar
+                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+               
+               if(count($listproduct)==0){
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
@@ -150,6 +167,7 @@ class TransferOrder
 
                 
                  // recuperer les ids commandes
+
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                  // recupérer le tableau de ids
@@ -167,16 +185,27 @@ class TransferOrder
                   foreach($list_tier as $val) {
                     //$data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
+<<<<<<< HEAD
                        $data_list[$val['socid']] = $val['email'];
                        
                      }
                      
+=======
+                       $data_list[$val['socid']] = mb_strtolower($val['email']);
+                     }
+                     
+                      if($val['phone']!=""){
+                        $data_phone[$val['socid']] = $val['phone'];
+                     }
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                      
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
-                        $data_code[$val['socid']] = $code_cls;
+                        if($code_cls!=0){
+                          $data_code[$val['socid']] = $code_cls;
+                        }
                       }
                   }
 
@@ -202,11 +231,13 @@ class TransferOrder
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
                   foreach($listproduct as $values) {
-                     $data_list_product[$values['id']] = $values['barcode'];
+                     if($values['barcode']!=""){
+                        $data_list_product[$values['id']] = $values['barcode'];
+                       }
                       // tableau associatve entre ref et label product....
                   }
-                   
-                   // recupére les orders des données provenant de  woocomerce
+
+                    // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -221,6 +252,8 @@ class TransferOrder
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
                      $info_tiers_flush = [];// l'array qui va servir a flush dans ma base de données interne le nouveau client.
+                     $data_echec = [];
+
 
                      // travailler sur le nommenclature de la ref facture
                       $date = date('Y-m-d');
@@ -236,6 +269,7 @@ class TransferOrder
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
+<<<<<<< HEAD
 
                              $email_true = mb_strtolower($donnees['billing']['email']);
                              // recupérer id du tiers en fonction de son email...
@@ -243,8 +277,23 @@ class TransferOrder
                              //creer un tableau avec phone et socid
                              // recupérer id en fonction du customer id
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
+=======
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
 
-                            // convertir la date en format timesamp de la facture .
+                              //  $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $fk_tiers = array_search($email_true,$data_list);
+                             
+                               $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
+                               $fk_tiers_phone = array_search($espace_phone,$data_phone);
+                             // recupérer id en fonction du customer id
+                             
+                               // recupérer id en fonction du customer id
+                               $fk_tier = array_search($donnees['customer_id'],$data_code);
+
+                              // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date']; // date recu de woocomerce.
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
@@ -256,8 +305,15 @@ class TransferOrder
                                $socid = $fk_tiers;
                              }
 
+<<<<<<< HEAD
+=======
+                              if($fk_tiers_phone!=""){
+                                $socid = $fk_tiers_phone;
+                             }
+                            
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                              // construire le tableau
-                             if($fk_tier!="" && $fk_tiers==""){
+                             if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
@@ -362,6 +418,7 @@ class TransferOrder
                                               
                                                $tva_product = 20;
                                                $data_product[] = [
+                                              "remise_percent"=> $donnees['discount_amount'],
                                               "multicurrency_subprice"=> floatval($values['subtotal']),
                                               "multicurrency_total_ht" => floatval($values['subtotal']),
                                               "multicurrency_total_tva" => floatval($values['total_tax']),
@@ -379,10 +436,13 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $ref_sku="";
+                                        $info = 'Numero de comande '.$donnees['order_id'].'';
+                                        $data_echec[] = $values['name'].','.$info;
+                                        $note =  'La facture est rejetée un produit n\'as pas un barcode lisible infos :'.$values['name'].' Numero commande :'.$donnees['id'].'';
+                                        $ref_sku = $values['name'].','.$note;
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
-                                        $list->ref_sku = $ref_sku;
+                                        $list->ref_sku = $note;
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
@@ -410,11 +470,10 @@ class TransferOrder
                                         $ref="";
                                         $cb ="CB";
                                         $data_lines[] = [
-                                       'socid'=> $socid,
+                                       'socid'=> 15364,
                                        'ref_client' =>$ref,
                                        'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
-                                       "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
@@ -465,7 +524,7 @@ class TransferOrder
                     
                       }
 
-                           // filtrer les doublons du tableau
+                           // filtrer les doublons du tableau..
                            $id_commande_exist = array_unique($id_commande_existe);
                            // recupérer le tableau
                            $this->setDataidcommande($id_commande_exist);
@@ -481,9 +540,21 @@ class TransferOrder
                            }
                          }
                         */
+<<<<<<< HEAD
                          dump($data_tiers);
                           dd($data_lines);
                          
+=======
+                          
+                      
+                        if(count($data_echec)!=0){
+                          $list = implode(',',$data_echec);
+                          echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode est illisible , informez le service informatique  infos :'.$list.' !']);
+                          exit;
+                            
+                        }
+                        
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                          // Create le client via Api...
                   /*      foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -493,6 +564,7 @@ class TransferOrder
                     
                          foreach($data_lines as $donnes){
                          // insérer les details des données de la facture dans dolibarr
+<<<<<<< HEAD
                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                   
                          }
@@ -510,6 +582,24 @@ class TransferOrder
                          if(isset($tiers_exist[$data_infos_order['email']])==false){
                           $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                           // JOINTRE les produits.
+=======
+                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                       }
+
+                             // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            if(count($data_lines)!=0){
+                               $this->invoicespay($orders);
+                             }
+                             // merger le client et les data coupons.....
+                            $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                            $tiers_exist = $this->don->gettiers();
+                            // insert le tiers dans la BDD...
+                           if(count($data_infos_order)!=0){
+                              // insert 
+                              if(isset($tiers_exist[$data_infos_order['email']])==false){
+                                $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                               // JOINTRE les produits.
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                          }
                       }
                           // Ajouter le client dans la base de données interne 
@@ -532,8 +622,11 @@ class TransferOrder
            
               $method = "GET";
             
-                $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                 //$apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                //$apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+
+                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
+                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 
@@ -650,6 +743,15 @@ class TransferOrder
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
+                   
+                   elseif($account_name=="apple_pay"){
+                        $mode_reglement_id =6;
+                   }
+                   
+                    elseif($account_name=="bancontact"){
+                        $mode_reglement_id =6;
+                   }
+                   
                     elseif($account_name=="oney_x4_with_fees"){
                       $mode_reglement_id=108; // payplug 4x..
                    }
@@ -666,7 +768,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
                    if(in_array($account_name,$array_paiment)){
@@ -724,9 +826,3 @@ class TransferOrder
          }
 
   }
-     
-    
-
-
-
-

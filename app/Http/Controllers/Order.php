@@ -420,16 +420,19 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-      $order_id = $request->post('order_id');
-      // $order_id = 80283; // Données de test
+      //$order_id = $request->post('order_id');
+      $order_id = 96293; // Données de test9// Données de test9
+     // Données de test9
       $order = $this->order->getOrderByIdWithCustomer($order_id);
+
+    
 
       if($order){
 
-        if($order[0]['status'] == "finished"){
-          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-          return;
-        }
+        // if($order[0]['status'] != "prepared-order" || $order[0]['status'] != "processing"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        //   return;
+        // }
 
         // Données de test
         // $is_distributor = false;
@@ -447,14 +450,21 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
+       
         $orders[0]['emballeur'] = Auth()->user()->name;
-
+       
+        
         // envoi des données pour créer des facture via api dolibar....
         $this->factorder->Transferorder($orders);
 
         // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+<<<<<<< HEAD
         //$this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
        // $this->order->updateOrdersById([$order_id], "finished");
+=======
+        // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        // $this->order->updateOrdersById([$order_id], "finished");
+>>>>>>> 044811352689546ea49983b2a6d69336dec7f913
         
         // Insert la commande dans histories
         $data = [
@@ -515,6 +525,7 @@ class Order extends BaseController
 
           if(isset($label['success'])){
             $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+            $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
             $insert_label = $this->label->save($label);
             $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
   

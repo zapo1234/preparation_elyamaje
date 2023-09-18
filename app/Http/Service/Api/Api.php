@@ -21,20 +21,31 @@ class Api
     }
   }
 
+
+  public function getOrdersWoocommerceByOrderId($order_id){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$order_id);
+      return $response->json();
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
+
   public function updateOrdersWoocommerce($status, $id){
 
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
-    
-    // Écrit le résultat dans le fichier
-    // file_put_contents("orders_update.txt", config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id);
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
         'status' => $status,
       ]);
       
-    //   file_put_contents("orders_update_response.txt", $status);
       return $response->json() ? true : false;
     } catch(Exception $e){
       return $e->getMessage();
@@ -276,7 +287,7 @@ class Api
         case 200:  # OK
           break;
         default:
-        echo json_encode(['success' => false, 'message'=> 'Erreur code : '. $http_code.' "\n" : !']);
+        echo json_encode(['success' => false, 'message'=> 'Erreur code : '. $http_code.' !']);
         exit;
           
       }

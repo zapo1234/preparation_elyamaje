@@ -671,7 +671,7 @@ a {
 		margin-bottom: 10px;
 	}
 
-	.colissimo_form{
+	.colissimo_form, .billing_form{
 		width: 95% !important;
 	}
 	
@@ -7601,7 +7601,7 @@ button[disabled]{
     max-height: 30vh !important;
 }
 
-.colissimo_form{
+.colissimo_form, .billing_form{
 	max-width: 600px;
 }
 
@@ -7666,4 +7666,3 @@ tr:has(.chronopost_shipping){
 .manually_barcode i{
 	font-size: 25px;
 }
-

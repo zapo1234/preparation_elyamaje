@@ -26,7 +26,8 @@ $(".validate_order").on("click", function(){
 
             var order = JSON.parse(data).order;
             var is_distributor = JSON.parse(data).is_distributor;
-
+            var country = getCountry(order[0]);
+            
             // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
@@ -41,6 +42,11 @@ $(".validate_order").on("click", function(){
                         ${order[0].shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
                         <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
                     </div>
+
+                    ${country ?  `<div class="d-flex w-100 justify-content-center">
+                        <span style="width: fit-content" class="mb-3 badge bg-default">${country}</span>
+                    </div>`: ''} 
+                   
 
                     <div class="d-flex w-100 justify-content-center">
                         <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
@@ -497,4 +503,20 @@ function clean_scan(){
     $("#customer").val("")
     $(".validate_order").attr('disabled', true)
     $("#detail_order").val("")
+}
+
+function getCountry(order){
+    if(typeof order['billing_customer_country'] != "undefined"){
+        if(order['billing_customer_country'] == 'CH'){
+            return "Suisse"
+        } else if(order['billing_customer_country'] == 'FR'){
+            return "France"
+        } else if(order['billing_customer_country'] == 'BE'){
+            return "Belgique"
+        } else {
+            return false
+        }
+    } else {
+        return false
+    }
 }

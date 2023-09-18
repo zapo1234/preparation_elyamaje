@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Http\Service\Api\TransferOrder;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
+use App\Repository\Order\OrderRepository;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -31,6 +34,9 @@ class Admin extends BaseController
     private $distributors;
     private $printer;
     private $colissimoConfiguration;
+    private $order;
+    private $woocommerce;
+    private $factorder;
 
     public function __construct(
         Api $api, 
@@ -41,7 +47,10 @@ class Admin extends BaseController
         ProductRepository $products,
         DistributorRepository $distributors,
         PrinterRepository $printer,
-        ColissimoRepository $colissimoConfiguration
+        ColissimoRepository $colissimoConfiguration,
+        OrderRepository $order,
+        WoocommerceService $woocommerce,
+        TransferOrder $factorder
     ){
         $this->api = $api;
         $this->category = $category;
@@ -52,6 +61,9 @@ class Admin extends BaseController
         $this->distributors = $distributors;
         $this->printer = $printer;
         $this->colissimoConfiguration = $colissimoConfiguration;
+        $this->order = $order;
+        $this->woocommerce = $woocommerce;
+        $this->factorder = $factorder;
     }
 
     public function syncCategories(){
@@ -514,7 +526,98 @@ class Admin extends BaseController
         } catch(Exception $e){
             return redirect()->route('colissimo')->with('error', $e->getMessage());
         }
+    }
 
+    public function billing(){
+        return view('admin.billing');
+    }
 
+    public function billingOrder(Request $request){
+        $order_id = $request->post('order_id');
+        $order = $this->order->getOrderByIdWithCustomer($order_id);
+
+        if($order_id == ""){
+            return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
+        } else {
+            if($order){
+                $order = $this->woocommerce->transformArrayOrder($order);
+                $order[0]['emballeur'] = "admin";
+            } else {
+                // Récupère directement sur Woocommerce si pas en local
+                $order[0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
+                $coupons = [];
+                $discount = [];
+                $amount = [];
+                
+                if(isset($order[0]['code'])){
+                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+                } else {
+
+                     // Coupons
+                     if(isset($order[0]['coupon_lines'])){
+                        foreach($order[0]['coupon_lines'] as $coupon){
+                           $coupons[] = $coupon['code'];
+                           $discount[] = $coupon['discount'];
+                           $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+                        }
+                    }
+
+                    $order[0]['date'] = $order[0]['date_created'];
+                    $order[0]['total_tax_order'] = $order[0]['total_tax'];
+                    $order[0]['total_order'] = $order[0]['total'];
+                    $order[0]['payment_method'] = $order[0]['payment_method'] ? $order[0]['payment_method'] : (count($order[0]['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null );
+                    $order[0]['coupons'] = count($coupons) > 0 ? implode(',', $coupons) : "";
+                    $order[0]['discount'] = count($discount) > 0 ? implode(',', $discount) : 0;
+                    $order[0]['discount_amount'] = count($amount) > 0 ? implode(',', $amount) : 0;
+                    $order[0]['order_id'] = $order[0]['id'];
+                    $order[0]['preparateur'] = "admin";
+                    $order[0]['emballeur'] = "admin";
+
+                    if(in_array(100, explode(',', $order[0]['discount_amount'])) && str_contains($order[0]['coupons'], 'fem')){
+                        $order[0]['coupons'] = "";
+                        $order[0]['discount'] = 0;
+                        $order[0]['discount_amount'] = 0;
+                    }
+
+                    // Liste des produits
+                    foreach($order[0]['line_items'] as $key => $line){
+
+                        $order[0]['line_items'][$key]['subtotal'] =  floatval($line['subtotal']) / floatval($line['quantity']);
+                        $order[0]['line_items'][$key]['ref'] = $line['sku'];
+                        $order[0]['line_items'][$key]['subtotal_tax'] = floatval($line['subtotal_tax']);
+                        $order[0]['line_items'][$key]['total'] = floatval($line['total']);
+                        $order[0]['line_items'][$key]['total_tax'] = floatval($line['total_tax']);
+
+                        if($line['total'] == 0){
+                            // Get Real price of product
+                            $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
+                            $product = $this->products->getProductById($product_id);
+                            $order[0]['line_items'][$key]['real_price'] = floatval($product[0]->price);
+                        }
+
+                        // for fem gift
+                        if(($line['total'] - ($order[0]['line_items'][$key]['subtotal'] * $order[0]['line_items'][$key]['quantity']) > 0.10) && in_array(100, explode(',', $order[0]['discount_amount'])) && $order[0]['total'] != 0.0){
+                            // Get Real price of product
+                            $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
+                            $product = $this->products->getProductById($product_id);
+                            
+                            $order[0]['line_items'][$key]['quantity'] = $order[0]['line_items'][$key]['quantity'] > 1 ? $order[0]['line_items'][$key]['quantity'] - 1 : 1;
+                            $order[0]['line_items'][$key]['subtotal_tax'] = $order[0]['line_items'][$key]['total_tax'] * $order[0]['line_items'][$key]['quantity'];
+
+                            $order[0]['line_items'][] = ['name' => $order[0]['name'], 'product_id' => $order[0]['product_id'], 'variation_id' => $order[0]['variation_id'], 
+                            'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
+                            'real_price' =>  $product[0]->price];
+                        }
+                    }
+                }
+            }
+
+            try {
+                $this->factorder->Transferorder($order);  
+                return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
+            } catch(Exception $e){
+                return redirect()->route('admin.billing')->with('error', $e->getMessage());
+            }
+        }
     }
 }

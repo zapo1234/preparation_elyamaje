@@ -89,6 +89,11 @@
 									@endforeach
 							</select>
 
+
+							<select class="d-none date_research input_form_type">
+								<input class="custom_input" type="date">
+							</select>
+
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>
@@ -96,6 +101,7 @@
 										<th>Status</th>
 										<th>Date commande</th>
 										<th class="col-md-2">Étiquette</th>
+										<th class="col-md-2">Déclaration douanière</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -146,6 +152,26 @@
 													<div>
 														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
 													</div>
+												@endif
+											</td>
+											<td data-label="Déclaration douanière">
+												@if(isset($order['labels']))
+													@foreach($order['labels'] as $label)
+														<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
+															<div>
+																@if($label['cn23'])
+																	<form class="d-flex" method="POST" action="{{ route('label.download_cn23') }}">
+																		@csrf
+																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
+																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
+																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger</button>
+																	</form>
+																@else 
+																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
+																@endif
+															</div>
+														</div>
+													@endforeach
 												@endif
 											</td>
 										</tr>

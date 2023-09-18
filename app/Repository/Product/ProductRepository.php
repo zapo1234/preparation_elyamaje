@@ -19,6 +19,10 @@ class ProductRepository implements ProductInterface
       $this->model = $model;
    }
 
+   public function getProductById($product_id){
+      return $this->model::select('*')->where('product_woocommerce_id', $product_id)->get();
+   }
+
    public function getAllProducts(){
       return $this->model::select('*')->where('is_variable', 0)->orderBy('menu_order', 'ASC')->get();
    }

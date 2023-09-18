@@ -93,10 +93,13 @@ document.addEventListener("keydown", function (e) {
     && !$("#infoMessageModal").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show')
     && !$(".info_message").hasClass('show')) {
         var order_id = $("#order_in_progress").val()
-
+       
         if (!isNaN(parseInt(e.key))) {
             $("#barcode").val($("#barcode").val() + e.key)
             if ($("#barcode").val().length == 13) {
+
+                var quantity_to_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
+
                 if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).length > 0) {
                     if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).hasClass('pick')) {
                         $(".info_message").text("Ce produit à déjà été bippé !")
@@ -104,13 +107,19 @@ document.addEventListener("keydown", function (e) {
                     } else {
                         $("#order_" + order_id + " .barcode_" + $("#barcode").val()).addClass('pick')
                         
+                        // Ajout d'un visuel produit bippé
+                        // $(".product_order").removeClass('product_pick')
+                        // $("#order_" + order_id + " .barcode_" + $("#barcode").val()).addClass('product_pick')
+
                         // Passe de "Préparer" à "Reprendre" si un produit ou plus est bippé
                         if($("#"+order_id).text() != "Reprendre"){
                             $("#"+order_id).text("Reprendre")
                         }
+
                         var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text())
                         quantity_pick_in = quantity_pick_in + 1
-                        
+                        quantity_pick_in = quantity_pick_in > quantity_to_pick_in ? quantity_to_pick_in : quantity_pick_in
+
                         if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1 &&
                             (parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0) {
 
@@ -139,6 +148,7 @@ document.addEventListener("keydown", function (e) {
                         } else {
                             saveItem(order_id, false)
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(1)
+                            $(".show .barcode_"+$("#barcode").val())[0].scrollIntoView({behavior: 'smooth'}, true)
                         }
 
                         if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length) {
@@ -152,7 +162,6 @@ document.addEventListener("keydown", function (e) {
                     $(".info_message").text("Aucun produit ne correspond à ce code barre !")
                     $("#infoMessageModal").modal('show')
                 }
-
                 $("#barcode").val("")
             }
         }
@@ -174,9 +183,11 @@ document.addEventListener("keydown", function (e) {
 
                     if (parseInt($("#quantity_product_to_verif").text()) == 0) {
                         $("#modalverification").modal('hide')
+                        $(".show .barcode_"+localStorage.getItem('product_quantity_verif'))[0].scrollIntoView({behavior: 'smooth'}, true)
                         localStorage.removeItem('product_quantity_verif');
                     }
                     $("#barcode_verif").val('')
+
                 } else {
                     $("#barcode_verif").val('')
                     $(".info_message").text("Aucun produit ne correspond à ce code barre !")
@@ -410,6 +421,7 @@ $('body').on('click', '.impression_code', function () {
 
 function saveItem(order_id, mutiple_quantity, manually = false) {
 
+    var quantity_to_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
     if(manually){
         var quantity_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
     } else {
@@ -420,6 +432,8 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
         }
     }
 
+    // Sécurité quantité pickée ne peut pas dépasser quantité à picker
+    quantity_pick_in = quantity_pick_in > quantity_to_pick_in ? quantity_to_pick_in : quantity_pick_in
 
     if (localStorage.getItem('barcode')) {
         var list_barcode = JSON.parse(localStorage.getItem('barcode'))

@@ -12,9 +12,11 @@ $(document).ready(function() {
             $("#example").removeClass('d-none')
             $("#example_length select").css('margin-right', '10px')
             $(".status_dropdown").appendTo('.dataTables_length')
+            $(".date_research").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".status_dropdown").removeClass('d-none')
+            $(".date_research").removeClass('d-none')
             $(".status_dropdown").select2({
             	width: '150px',
             });

@@ -13,15 +13,15 @@ class Chronopost
     public function generateLabelChrono($order, $weight, $order_id, $colissimo){
 
         $productCode = $this->getProductCode();
-        $format = $colissimo ? $colissimo->format : "PDF";
+        $format = "PDF"; //$colissimo ? $colissimo->format : "PDF";
         $SaturdayShipping = 1;
        
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
-            'password'                      => config('app.chronopost_password'), 
+            'password'                      => '255562', // config('app.chronopost_password'), 
             // Chronopost account / Compte client chronopost
             'headerValue'                   => [
-                "accountNumber"             => config('app.chronopost_accountNumber'),
+                "accountNumber"             => '19869502', // config('app.chronopost_accountNumber'),
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
@@ -43,7 +43,7 @@ class Chronopost
                 "shipperPreAlert"           => '',
             ],
                // Customer / Client
-               'customerValue' => [
+            'customerValue' => [
                 "customerCivility"          => ' ',
                 "customerName"              => $this->getFilledValue($order['shipping']['company'] ?? ''),
                 "customerName2"             => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']),      
@@ -97,15 +97,13 @@ class Chronopost
                 "weightUnit"                => 'KGM',                   
                 "bulkNumber"                => 1, 
                 'height'                    => 0,
-                'length'                    => 0,
-                'width'                     => 0
+				'length'                    => 0,
+				'width'                     => 0,
             ],
             // client's ref. value / Code barre client
             'refValue' => [
                 "shipperRef"                => $order['order_id'],            
                 "recipientRef"              => $order['customer_id'],      
-                "customerSkybillNumber"     => '',
-                "PCardTransactionNumber"    => '',
             ],
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
