@@ -123,9 +123,9 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-              
-          
-              
+            
+              dd($orders);
+            
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
@@ -178,7 +178,9 @@ class TransferOrder
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
-                        $data_code[$val['socid']] = $code_cls;
+                        if($code_cls!=0){
+                          $data_code[$val['socid']] = $code_cls;
+                        }
                       }
                   }
 
@@ -233,8 +235,11 @@ class TransferOrder
                       $ref_ext ="WC-$jour$mm-$int_text";
 
                       
+
                     
                        foreach($orders as $k => $donnees) {
+                           
+                           
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
@@ -244,10 +249,9 @@ class TransferOrder
                              // recupérer id en fonction du customer id
                               
                              $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-                             $fk_tiers_phone = array_search($donnees['billing']['phone'],$data_phone);
+                             $fk_tiers_phone = array_search($espace_phone,$data_phone);
                              // recupérer id en fonction du customer id
                             
-
                              $fk_tier = array_search($donnees['customer_id'],$data_code);
 
                             // convertir la date en format timesamp de la facture .
@@ -263,13 +267,14 @@ class TransferOrder
                              }
 
                              if($fk_tiers_phone!=""){
-                                $socid =$fk_tiers_phone;
+                                $socid = $fk_tiers_phone;
                              }
                              // construire le tableau
-                             if($fk_tier!="" && $fk_tiers==""){
+                             if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
+                       
 
                            if($socid!=""){
                                  $data =  $this->tiers->gettiersid($socid);
@@ -291,7 +296,7 @@ class TransferOrder
                           }
 
         
-                            if($fk_tiers=="" && $fk_tier=="") {
+                            if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -317,20 +322,21 @@ class TransferOrder
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
                                     'code_client'	=> $code_client,
-                                    'country_code'=> $donnees['billing']['country']
+                                    'country_code'=> $donnees['billing']['country'],
+                                    'array_options'=>[]
                                  ];
                                  
                                    $data_infos_user = [
                                         'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                         'last_name' =>'',
-                                        'email'=>$donnees['billing']['email'],
+                                        'email'=>$email_true,
                                      ];
                                     // recupérer un array pour créer un client via bdd base de données.
                                   $info_tiers_flush =[
                                      'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                      'socid'=> $socid,
                                      'code_client'	=> $code_client,
-                                      'email' => $donnees['billing']['email'],
+                                      'email' => mb_strtolower($donnees['billing']['email']),
                                       'name_alias' => $woo,
                                       'address' => $donnees['billing']['address_1'],
                                       'city'=>  $donnees['billing']['city'],
@@ -490,9 +496,7 @@ class TransferOrder
                            }
                          }
                         */
-
-                    
-                        
+                          
                         
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
@@ -658,6 +662,16 @@ class TransferOrder
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
+                   elseif($account_name=="apple_pay"){
+                        $mode_reglement_id =6;
+                   }
+                   
+                    elseif($account_name=="bancontact"){
+                        $mode_reglement_id =6;
+                   }
+                   
+                   
+                   
                     elseif($account_name=="oney_x4_with_fees"){
                       $mode_reglement_id=108; // payplug 4x..
                    }
@@ -674,7 +688,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiment = array('vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
                    if(in_array($account_name,$array_paiment)){
