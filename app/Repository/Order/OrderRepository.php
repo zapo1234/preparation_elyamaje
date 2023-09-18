@@ -639,7 +639,7 @@ class OrderRepository implements OrderInterface
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(500)
+      ->limit(100)
       ->get();
    }
 
@@ -662,7 +662,7 @@ class OrderRepository implements OrderInterface
 
       $query->orderBy('labels.created_at', 'DESC');
       $query->orderBy('labels.created_at', 'DESC');
-      $query->limit(500);
+      $query->limit(100);
 
       $results = $query->get();
       return $results;
