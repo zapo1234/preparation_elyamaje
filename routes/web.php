@@ -146,6 +146,8 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
+    Route::post("/labels", [Label::class, "getlabels"])->name('labels.filter');
+
     Route::post("/labelDownload", [Label::class, "labelDownload"])->name('label.download');
     Route::post("/labelPrintZPL", [Label::class, "labelPrintZPL"])->name('label.printZpl');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');

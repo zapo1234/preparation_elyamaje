@@ -90,10 +90,13 @@
 							</select>
 
 
-							<select class="d-none date_research input_form_type">
-								<input class="custom_input" type="date">
-							</select>
-
+							<form method="POST" action="{{ route('labels.filter') }}" class="d-none date_research">
+								@csrf
+								<input name="filter_type" value="created_at" type="hidden">
+								<input name="filter_label" class="custom_input" style="padding: 4px;" type="date">
+							</form>
+							
+						
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>

@@ -17,11 +17,19 @@ $(document).ready(function() {
             $(".dataTables_length").addClass('select2_custom')
             $(".status_dropdown").removeClass('d-none')
             $(".date_research").removeClass('d-none')
+            $(".date_research input").css('margin-left', '10px')
+
             $(".status_dropdown").select2({
             	width: '150px',
             });
+
+            
         },
     })
+})
+
+$('.date_research input').on('change', function(e){
+    $(".date_research").submit()
 })
 
 $('.status_dropdown').on('change', function(e){
