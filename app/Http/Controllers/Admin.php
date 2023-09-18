@@ -572,6 +572,7 @@ class Admin extends BaseController
                         }
                     }
 
+                    $order[0]['date'] = $order[0]['date_created'];
                     $order[0]['total_tax_order'] = $order[0]['total_tax'];
                     $order[0]['total_order'] = $order[0]['total'];
                     $order[0]['payment_method'] = $order[0]['payment_method'] ? $order[0]['payment_method'] : (count($order[0]['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null );
