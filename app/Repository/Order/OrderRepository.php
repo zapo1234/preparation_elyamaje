@@ -639,7 +639,16 @@ class OrderRepository implements OrderInterface
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(1000)
+      // ->limit(500)
+      ->get();
+   }
+
+   public function getAllOrdersAndLabelByFilter($filter_type, $filter){
+      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
+      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->orderBy('labels.created_at', 'DESC')
+      ->where('labels.'.$filter_type, 'LIKE', '%'.$filter.'%')
       ->get();
    }
    

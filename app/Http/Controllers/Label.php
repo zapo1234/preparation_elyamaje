@@ -56,9 +56,18 @@ class Label extends BaseController
         $this->colissimoTracking = $colissimoTracking;
     }
 
-    public function getlabels(){
+    public function getlabels(Request $request){
+
         // Liste des commandes
-        $orders = $this->order->getAllOrdersAndLabel()->toArray();
+        if($request->post('filter_label')){
+            $filter = $request->post('filter_label');
+            $filter_type = $request->post('filter_type');
+
+            $orders = $this->order->getAllOrdersAndLabelByFilter($filter_type, $filter)->toArray();
+        } else {
+            $orders = $this->order->getAllOrdersAndLabel()->toArray();
+        }
+       
         $labels = $this->label->getAllLabels()->toArray();
 
         $array_order = [];

@@ -421,21 +421,17 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
           
       $order_id = $request->post('order_id');
-     // Données de test9// Données de test9
-     // Données de test9
       $order = $this->order->getOrderByIdWithCustomer($order_id);
-
-    
 
       if($order){
 
-         if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
-           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-           return;
-         }
+       
+        if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
+          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+          return;
+        }
 
-        // Données de test
-        // $is_distributor = false;
+ 
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         
         if($is_distributor){
@@ -450,16 +446,14 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
-       
         $orders[0]['emballeur'] = Auth()->user()->name;
-       
-        
+
         // envoi des données pour créer des facture via api dolibar....
         $this->factorder->Transferorder($orders);
 
         // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
         $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-         $this->order->updateOrdersById([$order_id], "finished");
+        $this->order->updateOrdersById([$order_id], "finished");
         
         // Insert la commande dans histories
         $data = [
