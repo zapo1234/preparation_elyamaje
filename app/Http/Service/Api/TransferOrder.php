@@ -129,7 +129,7 @@ class TransferOrder
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
-                 $produitParam = ["limit" => 900, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 950, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
 
                  // reference ref_client dans dolibar
