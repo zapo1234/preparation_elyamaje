@@ -123,8 +123,10 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-
-                  $method = "GET";
+              
+        dd($orders);
+                  
+                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
@@ -135,7 +137,7 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
-                 dd($listproduct);
+          
               
                  
                 if(count($listproduct)==0){
