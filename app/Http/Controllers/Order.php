@@ -431,6 +431,7 @@ class Order extends BaseController
           return;
         }
 
+ 
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         
         if($is_distributor){
