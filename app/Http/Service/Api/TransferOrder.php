@@ -381,6 +381,7 @@ class TransferOrder
                                               
                                                $tva_product = 20;
                                                $data_product[] = [
+                                              "remise_percent"=> $donnees['discount_amount'],
                                               "multicurrency_subprice"=> floatval($values['subtotal']),
                                               "multicurrency_total_ht" => floatval($values['subtotal']),
                                               "multicurrency_total_tva" => floatval($values['total_tax']),
