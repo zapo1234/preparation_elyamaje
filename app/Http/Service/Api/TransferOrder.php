@@ -128,7 +128,7 @@ class TransferOrder
                   
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey ='wO8VrCL4t07qJTci4L8AR22a1Lkg1tMb';
+                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
                  $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
 
                  $produitParam = ["limit" => 950, "sortfield" => "rowid"];
