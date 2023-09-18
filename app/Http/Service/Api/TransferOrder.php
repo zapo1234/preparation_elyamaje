@@ -505,7 +505,7 @@ class TransferOrder
                          }
                         */
                           
-                      dd($data_echec);
+                      dump($data_echec);
                         if(count($data_echec)!=0){
                           echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
                           exit;
@@ -513,7 +513,7 @@ class TransferOrder
                         }
                       
                         
-                      
+                      dd($data_lines);
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
