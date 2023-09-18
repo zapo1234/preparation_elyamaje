@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-              dd($orders);
+              
             
                 $method = "GET";
                  // recupérer les clé Api dolibar transfertx..........
@@ -497,6 +497,9 @@ class TransferOrder
                          }
                         */
                           
+                      dd($data_tiers);
+
+                      dump($data_lines);
                         
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
