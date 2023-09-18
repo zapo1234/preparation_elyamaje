@@ -124,15 +124,15 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-          
+            
                   
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                // $apiKey ='wO8VrCL4t07qJTci4L8AR22a1Lkg1tMb';
-                // $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
+                // $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
                  $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
-                 $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
+                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
 
                  $produitParam = ["limit" => 950, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -140,11 +140,7 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
-                 dd($listproduct);
-          
-              
-                 
-                if(count($listproduct)==0){
+               if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
@@ -215,6 +211,7 @@ class TransferOrder
                       // tableau associatve entre ref et label product....
                   }
 
+                  dd($data_list_product);
 
                     // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -507,13 +504,13 @@ class TransferOrder
                          }
                         */
                           
-                       /* if(count($data_echec)!=0){
+                      /*  if(count($data_echec)!=0){
                           echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
                           exit;
                             
                         }
+                      */
                         
-                        */
                         dump($data_tiers);
                         dd($data_lines);
                          // Create le client via Api...
@@ -563,12 +560,10 @@ class TransferOrder
               $method = "GET";
             
                  //$apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                //$apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
                  $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
                  $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
-
-                 
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 
