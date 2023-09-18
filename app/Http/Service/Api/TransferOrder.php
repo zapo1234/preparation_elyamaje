@@ -404,7 +404,7 @@ class TransferOrder
                                         $ref_sku = $values['name'].','.$note;
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
-                                        $list->ref_sku = $ref_sku;
+                                        $list->ref_sku = $note;
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
@@ -506,7 +506,8 @@ class TransferOrder
                           
                       dump($data_echec);
                         if(count($data_echec)!=0){
-                          echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
+                          $list = implode(',',$data_echec);
+                          echo json_encode(['success' => false, 'message'=> '  Attention la commande contient un produit dont le barcode n\'est pas lisible'.$list.' !']);
                           exit;
                             
                         }
