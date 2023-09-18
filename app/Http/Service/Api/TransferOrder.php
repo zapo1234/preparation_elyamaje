@@ -123,16 +123,9 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-<<<<<<< HEAD
-                
-              
-        
-                  $method = "GET";
-=======
               
             
                 $method = "GET";
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                  // recupérer les clé Api dolibar transfertx........
                 // $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                 // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
@@ -142,20 +135,11 @@ class TransferOrder
 
                  $produitParam = ["limit" => 950, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-<<<<<<< HEAD
-                  
-                 // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba..
-                dd($listproduct);
-                 
-                if(count($listproduct)==0){
-=======
 
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
                if(count($listproduct)==0){
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
@@ -185,19 +169,12 @@ class TransferOrder
                   foreach($list_tier as $val) {
                     //$data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
-<<<<<<< HEAD
-                       $data_list[$val['socid']] = $val['email'];
-                       
-                     }
-                     
-=======
                        $data_list[$val['socid']] = mb_strtolower($val['email']);
                      }
                      
                       if($val['phone']!=""){
                         $data_phone[$val['socid']] = $val['phone'];
                      }
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                      
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
@@ -269,16 +246,6 @@ class TransferOrder
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
-<<<<<<< HEAD
-
-                             $email_true = mb_strtolower($donnees['billing']['email']);
-                             // recupérer id du tiers en fonction de son email...
-                             $fk_tiers = array_search($email_true,$data_list);
-                             //creer un tableau avec phone et socid
-                             // recupérer id en fonction du customer id
-                             $fk_tier = array_search($donnees['customer_id'],$data_code);
-=======
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
 
                               //  $email_true = mb_strtolower($donnees['billing']['email']);
                               // recupérer id du tiers en fonction de son email...
@@ -305,13 +272,10 @@ class TransferOrder
                                $socid = $fk_tiers;
                              }
 
-<<<<<<< HEAD
-=======
                               if($fk_tiers_phone!=""){
                                 $socid = $fk_tiers_phone;
                              }
                             
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                              // construire le tableau
                              if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
@@ -540,11 +504,6 @@ class TransferOrder
                            }
                          }
                         */
-<<<<<<< HEAD
-                         dump($data_tiers);
-                          dd($data_lines);
-                         
-=======
                           
                       
                         if(count($data_echec)!=0){
@@ -554,7 +513,6 @@ class TransferOrder
                             
                         }
                         
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                          // Create le client via Api...
                   /*      foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -564,25 +522,6 @@ class TransferOrder
                     
                          foreach($data_lines as $donnes){
                          // insérer les details des données de la facture dans dolibarr
-<<<<<<< HEAD
-                       $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                  
-                         }
-                     */
-                         // mettre la facture en status en payé et l'attribue un compte bancaire.
-                         if(count($data_lines)!=0){
-                          $this->invoicespay($orders);
-                        }
-                        // merger le client et les data coupons.....
-                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        $tiers_exist = $this->don->gettiers();
-                         // insert le tiers dans la BDD...
-                       if(count($data_infos_order)!=0){
-                          // insert 
-                         if(isset($tiers_exist[$data_infos_order['email']])==false){
-                          $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                          // JOINTRE les produits.
-=======
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
 
@@ -599,7 +538,6 @@ class TransferOrder
                               if(isset($tiers_exist[$data_infos_order['email']])==false){
                                 $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                                // JOINTRE les produits.
->>>>>>> 044811352689546ea49983b2a6d69336dec7f913
                          }
                       }
                           // Ajouter le client dans la base de données interne 
