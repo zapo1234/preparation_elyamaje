@@ -504,7 +504,7 @@ class TransferOrder
                          }
                         */
                           
-                      dump($data_echec);
+                      
                         if(count($data_echec)!=0){
                           $list = implode(',',$data_echec);
                           echo json_encode(['success' => false, 'message'=> '  Attention la commande contient un produit dont le barcode n\'est pas lisible'.$list.' !']);
