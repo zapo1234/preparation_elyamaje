@@ -165,11 +165,18 @@ class TransferOrder
                      if($val['email']!="") {
                        $data_list[$val['socid']] = mb_strtolower($val['email']);
                      }
+                     
+                      if($val['phone']!=""){
+                        $data_phone[$val['socid']] = $val['phone'];
+                     }
+                     
                       // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
-                        $data_code[$val['socid']] = $code_cls;
+                        if($code_cls!=0){
+                          $data_code[$val['socid']] = $code_cls;
+                        }
                       }
                   }
 
@@ -230,15 +237,20 @@ class TransferOrder
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
 
-                            //  $email_true = mb_strtolower($donnees['billing']['email']);
-                             // recupérer id du tiers en fonction de son email...
-                             $email_true = mb_strtolower($donnees['billing']['email']);
-                             // recupérer id du tiers en fonction de son email...
-                             $fk_tiers = array_search($email_true,$data_list);
+                              //  $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $fk_tiers = array_search($email_true,$data_list);
+                             
+                               $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
+                               $fk_tiers_phone = array_search($espace_phone,$data_phone);
                              // recupérer id en fonction du customer id
-                             $fk_tier = array_search($donnees['customer_id'],$data_code);
+                             
+                               // recupérer id en fonction du customer id
+                               $fk_tier = array_search($donnees['customer_id'],$data_code);
 
-                            // convertir la date en format timesamp de la facture .
+                              // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date']; // date recu de woocomerce.
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
@@ -250,13 +262,12 @@ class TransferOrder
                                $socid = $fk_tiers;
                              }
 
-
-                             if($fk_tiers==""){
-
-                                 $socid = $fk_socid_phone;
+                              if($fk_tiers_phone!=""){
+                                $socid = $fk_tiers_phone;
                              }
+                            
                              // construire le tableau
-                             if($fk_tier!="" && $fk_tiers==""){
+                             if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
@@ -652,6 +663,15 @@ class TransferOrder
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
+                   
+                   elseif($account_name=="apple_pay"){
+                        $mode_reglement_id =6;
+                   }
+                   
+                    elseif($account_name=="bancontact"){
+                        $mode_reglement_id =6;
+                   }
+                   
                     elseif($account_name=="oney_x4_with_fees"){
                       $mode_reglement_id=108; // payplug 4x..
                    }
@@ -668,7 +688,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card');// carte bancaire....
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
                    if(in_array($account_name,$array_paiment)){
