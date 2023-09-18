@@ -128,6 +128,9 @@ class TransferOrder
                   
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
+                // $apiKey ='wO8VrCL4t07qJTci4L8AR22a1Lkg1tMb';
+                // $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
+
                  $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
                  $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
 
@@ -140,6 +143,7 @@ class TransferOrder
                  dd($listproduct);
           
               
+                 
                 if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
@@ -558,8 +562,13 @@ class TransferOrder
            
               $method = "GET";
             
-              $apiKey ='wO8VrCL4t07qJTci4L8AR22a1Lkg1tMb';
-              $apiUrl ='https://transfertx.elyamaje.com/api/index.php/';
+                 //$apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+
+                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
+                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
+
+                 
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 
