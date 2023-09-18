@@ -536,34 +536,60 @@ class Admin extends BaseController
         $order_id = $request->post('order_id');
         $order = $this->order->getOrderByIdWithCustomer($order_id);
 
-        if($order){
-            $order = $this->woocommerce->transformArrayOrder($order);
-            $order[0]['emballeur'] = "admin";
+        if($order_id == ""){
+            return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
-            // Récupère directement sur Woocommerce si pas en local
-            $order = $this->api->getOrdersWoocommerceByOrderId($order_id);
-            
-            if(isset($order['code'])){
-                return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+            if($order){
+                $order = $this->woocommerce->transformArrayOrder($order);
+                $order[0]['emballeur'] = "admin";
             } else {
-                foreach($order['line_items'] as $key => $line){
-                    if($line['total'] == 0){
-                        // Get Real price of product
-                        $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
-                        $product = $this->products->getProductById($product_id);
-                        $order['line_items'][$key]['real_price'] = $product[0]->price;
-                    }
-                }
-                $order['preparateur'] = "admin";
-                $order['emballeur'] = "admin";
-            }
-        }
+                // Récupère directement sur Woocommerce si pas en local
+                $order[0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
+                $coupons = [];
+                $discount = [];
+                $amount = [];
+                
+                if(isset($order[0]['code'])){
+                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+                } else {
 
-        try {
-            $this->factorder->Transferorder($order);  
-            return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
-        } catch(Exception $e){
-            return redirect()->route('admin.billing')->with('error', $e->getMessage());
+                    // Liste des produits
+                    foreach($order[0]['line_items'] as $key => $line){
+                        if($line['total'] == 0){
+                            // Get Real price of product
+                            $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
+                            $product = $this->products->getProductById($product_id);
+                            $order[0]['line_items'][$key]['real_price'] = $product[0]->price;
+                        }
+                    }
+
+                    // Coupons
+                    if(isset($order[0]['coupon_lines'])){
+                        foreach($order[0]['coupon_lines'] as $coupon){
+                           $coupons[] = $coupon['code'];
+                           $discount[] = $coupon['discount'];
+                           $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+                        }
+                    }
+
+                    $order[0]['total_tax_order'] = $order[0]['total_tax'];
+                    $order[0]['total_order'] = $order[0]['total'];
+                    $order[0]['payment_method'] = $order[0]['payment_method'] ? $order[0]['payment_method'] : (count($order[0]['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null );
+                    $order[0]['coupons'] = count($coupons) > 0 ? implode(',', $coupons) : "";
+                    $order[0]['discount'] = count($discount) > 0 ? implode(',', $discount) : 0;
+                    $order[0]['discount_amount'] = count($amount) > 0 ? implode(',', $amount) : 0;
+                    $order[0]['order_id'] = $order[0]['id'];
+                    $order[0]['preparateur'] = "admin";
+                    $order[0]['emballeur'] = "admin";
+                }
+            }
+
+            try {
+                $this->factorder->Transferorder($order);  
+                return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
+            } catch(Exception $e){
+                return redirect()->route('admin.billing')->with('error', $e->getMessage());
+            }
         }
     }
 }
