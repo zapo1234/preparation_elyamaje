@@ -124,7 +124,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-        dd($orders);
+            dd($orders);
                   
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -398,7 +398,9 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $data_echec[] = $values['name'];
+                                        $data_echec[] = $values['name'].','.$values['order_id'];
+                                        $phrase =  'le produit bloquant sur le barcode facture rejeté';
+                                        $ref_sku = $values['name'].','.$pharse;
                                         $ref_sku="";
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
@@ -502,7 +504,14 @@ class TransferOrder
                          }
                         */
                           
+                        if(count($data_echec)!=0){
+                          echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
+                          exit;
+                            
+                        }
                         
+                        dump($data_tiers);
+                        dd($data_lines);
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
