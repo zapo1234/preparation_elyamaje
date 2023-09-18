@@ -421,7 +421,7 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
           
       //$order_id = $request->post('order_id');
-      $order_id = 93385; // Données de test9// Données de test9
+      $order_id = 96293; // Données de test9// Données de test9
      // Données de test9
       $order = $this->order->getOrderByIdWithCustomer($order_id);
 
