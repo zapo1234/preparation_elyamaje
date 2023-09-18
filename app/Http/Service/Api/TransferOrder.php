@@ -398,7 +398,7 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $data_echec[] = $values['name'].','.$values['order_id'];
+                                        $data_echec[] = $values['name'].','.$donnees['order_id'];
                                         $phrase =  'le produit bloquant sur le barcode facture rejeté';
                                         $ref_sku = $values['name'].','.$pharse;
                                         $ref_sku="";
