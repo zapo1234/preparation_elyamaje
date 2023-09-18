@@ -5,6 +5,8 @@ namespace App\Repository\Product;
 
 interface ProductInterface
 {
+    public function getProductById($product_id);
+
     public function getAllProducts();
 
     public function getAllProductsPublished();

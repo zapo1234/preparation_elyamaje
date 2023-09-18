@@ -123,34 +123,32 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
-              
-            
-                $method = "GET";
-                 // recupérer les clé Api dolibar transfertx..........
+
+                  $method = "GET";
+                 // recupérer les clé Api dolibar transfertx........
                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
                  $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
-                 
+                 dd($listproduct);
               
                  
-                 if(count($listproduct)==0){
-                  echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
-                   exit;
-                 }
-
+                if(count($listproduct)==0){
+                   echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
+                    exit;
+                  }
                 //Recuperer les ref_client existant dans dolibar
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
                  $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
-                
                  // recuperer les ids commandes
+
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                  // recupérer le tableau de ids
@@ -166,15 +164,16 @@ class TransferOrder
                   $data_code =[];// tableau associative entre id(socid et le code client )
                   $data_phone = [];
                   foreach($list_tier as $val) {
-                     $data_email[$val['code_client']] = $val['email'];
+                    //$data_email[$val['code_client']] = $val['email'];
                      if($val['email']!="") {
-                       $data_list[$val['socid']] =  mb_strtolower($val['email']);
+                       $data_list[$val['socid']] = mb_strtolower($val['email']);
                      }
-
-                     if($val['phone']!=""){
+                     
+                      if($val['phone']!=""){
                         $data_phone[$val['socid']] = $val['phone'];
                      }
-                      // recuperer id customer du client et créer un tableau associative.;
+                     
+                      // recuperer id customer du client et créer un tableau associative.
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
@@ -239,26 +238,26 @@ class TransferOrder
                       $ref_ext ="WC-$jour$mm-$int_text";
 
                       
-
                     
                        foreach($orders as $k => $donnees) {
-                           
-                           
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
                              $ref_client = rand(4,10);
-                             $email_true = mb_strtolower($donnees['billing']['email']);
-                             // recupérer id du tiers en fonction de son email...
-                             $fk_tiers = array_search($email_true,$data_list);
-                             // recupérer id en fonction du customer id
-                              
-                             $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-                             $fk_tiers_phone = array_search($espace_phone,$data_phone);
-                             // recupérer id en fonction du customer id
-                            
-                             $fk_tier = array_search($donnees['customer_id'],$data_code);
 
-                            // convertir la date en format timesamp de la facture .
+                              //  $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $email_true = mb_strtolower($donnees['billing']['email']);
+                              // recupérer id du tiers en fonction de son email...
+                               $fk_tiers = array_search($email_true,$data_list);
+                             
+                               $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
+                               $fk_tiers_phone = array_search($espace_phone,$data_phone);
+                             // recupérer id en fonction du customer id
+                             
+                               // recupérer id en fonction du customer id
+                               $fk_tier = array_search($donnees['customer_id'],$data_code);
+
+                              // convertir la date en format timesamp de la facture .
                               $datetime = $donnees['date']; // date recu de woocomerce.
                              
                               $date_recu = explode(' ',$datetime); // dolibar...
@@ -270,15 +269,15 @@ class TransferOrder
                                $socid = $fk_tiers;
                              }
 
-                             if($fk_tiers_phone!=""){
+                              if($fk_tiers_phone!=""){
                                 $socid = $fk_tiers_phone;
                              }
+                            
                              // construire le tableau
                              if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 
                             }
-                       
 
                            if($socid!=""){
                                  $data =  $this->tiers->gettiersid($socid);
@@ -300,7 +299,7 @@ class TransferOrder
                           }
 
         
-                            if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
+                            if($fk_tiers=="" && $fk_tier=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -326,21 +325,20 @@ class TransferOrder
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
                                     'code_client'	=> $code_client,
-                                    'country_code'=> $donnees['billing']['country'],
-                                    'array_options'=>[]
+                                    'country_code'=> $donnees['billing']['country']
                                  ];
                                  
                                    $data_infos_user = [
                                         'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                         'last_name' =>'',
-                                        'email'=>$email_true,
+                                        'email'=>$donnees['billing']['email'],
                                      ];
                                     // recupérer un array pour créer un client via bdd base de données.
                                   $info_tiers_flush =[
                                      'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                      'socid'=> $socid,
                                      'code_client'	=> $code_client,
-                                      'email' => mb_strtolower($donnees['billing']['email']),
+                                      'email' => $donnees['billing']['email'],
                                       'name_alias' => $woo,
                                       'address' => $donnees['billing']['address_1'],
                                       'city'=>  $donnees['billing']['city'],
@@ -460,7 +458,8 @@ class TransferOrder
                                        $historique->date = $date;
                                         // insert to
                                        $historique->save();
-
+                                      
+                                      
 
                                    }
                                     else{
@@ -471,9 +470,8 @@ class TransferOrder
                                          $data_options_kdo =[];
                                          $account="";
                                          $this->setAccountpay($account);
-
-                                         echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
-                                         exit;
+                                          echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble etre deja facturée signalez au service informatique !']);
+                                            exit;
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
@@ -501,23 +499,18 @@ class TransferOrder
                            }
                          }
                         */
-
-                             if(count($data_echec)!=0){
-                                echo json_encode(['success' => false, 'message'=> '  Attention la commande comporte un produit qui n\'a pas le bon barcode !']);
-                                 exit;
-                              }
                           
                         
-                            // Create le client via Api...
-                             foreach($data_tiers as $data) {
-                             // insérer les données tiers dans dolibar
-                              $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                            }
+                         // Create le client via Api...
+                        foreach($data_tiers as $data) {
+                           // insérer les données tiers dans dolibar
+                           $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                       }
                     
-                             foreach($data_lines as $donnes){
-                              // insérer les details des données de la facture dans dolibarr
-                              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                            }
+                         foreach($data_lines as $donnes){
+                         // insérer les details des données de la facture dans dolibarr
+                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                       }
 
                              // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
@@ -672,6 +665,7 @@ class TransferOrder
                       // le mode de paiment.
                        $mode_reglement_id =106;// prod.....
                    }
+                   
                    elseif($account_name=="apple_pay"){
                         $mode_reglement_id =6;
                    }
@@ -679,8 +673,6 @@ class TransferOrder
                     elseif($account_name=="bancontact"){
                         $mode_reglement_id =6;
                    }
-                   
-                   
                    
                     elseif($account_name=="oney_x4_with_fees"){
                       $mode_reglement_id=108; // payplug 4x..
@@ -698,7 +690,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact');// carte bancaire....
+                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
                    if(in_array($account_name,$array_paiment)){
@@ -756,9 +748,3 @@ class TransferOrder
          }
 
   }
-     
-    
-
-
-
-

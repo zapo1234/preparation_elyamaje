@@ -25,7 +25,8 @@ class LabelRepository implements LabelInterface
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
          'created_at' => date('Y-m-d H:i:s'),
-         'tracking_status' => 0
+         'tracking_status' => 0,
+         'cn23' => $label['cn23'] ?? null,
      ]);
    }
 
@@ -36,7 +37,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function getLabelById($label){
-      return $this->model::select('label', 'label_format')->where('id', $label)->get();
+      return $this->model::select('label', 'label_format', 'cn23')->where('id', $label)->get();
    }
 
    public function getParcelNumbersyDate($date){

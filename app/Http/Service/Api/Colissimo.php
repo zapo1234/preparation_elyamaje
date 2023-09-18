@@ -18,7 +18,8 @@ class Colissimo
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
-        $mobilePhone = $this->getMobilePhone(str_replace(" ", "", $order['billing']['phone']), $order['shipping']['country']);
+        $address = $this->getAdress($order);
+
         
         if($productCode){
             try {
@@ -75,24 +76,14 @@ class Colissimo
                         'addressee' => [
                             'addresseeParcelRef' => $order_id,
                             'codeBarForReference' => false,
-                            'address' => [
-                                'companyName' => "",
-                                'lastName' => $order['shipping']['last_name'],
-                                'firstName' => $order['shipping']['first_name'],
-                                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
-                                'countryCode' => $order['shipping']['country'],
-                                'city' => $order['shipping']['city'],
-                                'zipCode' => $order['shipping']['postcode'],
-                                'email' => $order['billing']['email'],
-                                'mobileNumber' =>  $mobilePhone,
-                            ]
+                            'address' => $address
                         ]
                     ]
                 ];
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
-                
+
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -105,6 +96,7 @@ class Colissimo
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
+                $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
 
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
@@ -120,7 +112,8 @@ class Colissimo
                         'origin' => 'colissimo',
                         'label_format' => explode('_', $format)[0],
                         'label_created_at' => date('Y-m-d h:i:s'),
-                        'tracking_number' => $trackingNumber
+                        'tracking_number' => $trackingNumber,
+                        'cn23' => $cn23
                     ];
 
                     try{
@@ -320,7 +313,59 @@ class Colissimo
         return in_array($product_code, $nonMachinable) ? false : true;
     }
 
+    protected function getAdress($order){
+
+        if(isset($order['billing']['phone'])){
+            $phoneNumber              = str_replace(' ', '', $order['billing']['phone']);
+            $frenchMobileNumberRegex  = '/^(?:(?:\+|00)33|0)(?:6|7)\d{8}$/';
+    
+            if($order['shipping']['country'] == "FR" && !preg_match($frenchMobileNumberRegex, $phoneNumber)){
+                $address = [
+                    'companyName' => "",
+                    'lastName' => $order['shipping']['last_name'],
+                    'firstName' => $order['shipping']['first_name'],
+                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'countryCode' => $order['shipping']['country'],
+                    'city' => $order['shipping']['city'],
+                    'zipCode' => $order['shipping']['postcode'],
+                    'email' => $order['billing']['email'],
+                    'phoneNumber' => $phoneNumber
+                ];
+            
+                return $address;
+            } else {
+                $address = [
+                    'companyName' => "",
+                    'lastName' => $order['shipping']['last_name'],
+                    'firstName' => $order['shipping']['first_name'],
+                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'countryCode' => $order['shipping']['country'],
+                    'city' => $order['shipping']['city'],
+                    'zipCode' => $order['shipping']['postcode'],
+                    'email' => $order['billing']['email'],
+                    'mobileNumber' => $this->getMobilePhone($order['billing']['phone'], $order['shipping']['country'])
+                ];
+
+                return $address;
+            }
+        } else {
+            $address = [
+                'companyName' => "",
+                'lastName' => $order['shipping']['last_name'],
+                'firstName' => $order['shipping']['first_name'],
+                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                'countryCode' => $order['shipping']['country'],
+                'city' => $order['shipping']['city'],
+                'zipCode' => $order['shipping']['postcode'],
+                'email' => $order['billing']['email'],
+                // 'mobileNumber' => ''
+            ];
+            return $address;
+        }
+    }
+
     protected function getMobilePhone($mobile, $country){
+      
         if($mobile != "" && $mobile != null && !str_contains($mobile, '+')){
             if($country == "FR"){
                 $mobile = $mobile;

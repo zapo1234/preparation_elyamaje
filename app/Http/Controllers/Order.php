@@ -428,10 +428,10 @@ class Order extends BaseController
 
       if($order){
 
-        if($order[0]['status'] == "finished"){
-          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-          return;
-        }
+        // if($order[0]['status'] != "prepared-order" || $order[0]['status'] != "processing"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        //   return;
+        // }
 
         // Données de test
         // $is_distributor = false;
@@ -449,6 +449,7 @@ class Order extends BaseController
         }
         
         $orders = $this->woocommerce->transformArrayOrder($order);
+       
         $orders[0]['emballeur'] = Auth()->user()->name;
        
         
@@ -518,6 +519,7 @@ class Order extends BaseController
 
           if(isset($label['success'])){
             $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+            $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
             $insert_label = $this->label->save($label);
             $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
   
