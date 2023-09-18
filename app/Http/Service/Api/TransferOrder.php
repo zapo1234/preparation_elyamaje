@@ -402,7 +402,6 @@ class TransferOrder
                                         $data_echec[] = $values['name'].','.$donnees['order_id'];
                                         $note =  'le produit bloquant sur le barcode facture rejeté';
                                         $ref_sku = $values['name'].','.$note;
-                                        $ref_sku="";
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
                                         $list->ref_sku = $ref_sku;
