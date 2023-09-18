@@ -504,7 +504,6 @@ class TransferOrder
                          }
                         */
                           
-                        dd($data_lines);
                       
                         if(count($data_echec)!=0){
                           $list = implode(',',$data_echec);
