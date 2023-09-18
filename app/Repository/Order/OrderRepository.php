@@ -639,7 +639,7 @@ class OrderRepository implements OrderInterface
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(100)
+      ->limit(500)
       ->get();
    }
 
@@ -654,7 +654,6 @@ class OrderRepository implements OrderInterface
             if($key == "created_at"){
                $query->where("labels.".$key."","LIKE",  "%".$filter."%");
             } else {
-               dd($filter);
                $query->where("orders.".$key."", $filter);
             }
 
@@ -662,7 +661,8 @@ class OrderRepository implements OrderInterface
       }
 
       $query->orderBy('labels.created_at', 'DESC');
-      $query->limit(100);
+      $query->orderBy('labels.created_at', 'DESC');
+      $query->limit(500);
 
       $results = $query->get();
       return $results;

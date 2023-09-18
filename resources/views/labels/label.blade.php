@@ -82,25 +82,23 @@
 								</div>
 							</div>
 
-						
-
-
-							<!-- <form method="GET" action="{{ route('labels.filter') }}" class="d-none date_research">
-							
-								<input name="filter_type" value="created_at" type="hidden">
-							</form> -->
-
 							<form method="GET" action="{{ route('labels.filter') }}" class="d-flex d-none order_research">
 								<select name="status" class="select2_custom status_dropdown input_form_type">
 									<option value="">Status</option>
-										@foreach($status_list as $status)
-											<option value="{{$status}}">{{$status}}</option>
+										@foreach($status_list as $keyStatus => $status)
+											@if(isset($parameter['status']))
+												@if($parameter['status'] == $keyStatus)
+													<option selected value="{{$keyStatus}}">{{$status}}</option>
+												@else 
+													<option value="{{$keyStatus}}">{{$status}}</option>
+												@endif
+											@else 
+												<option value="{{$keyStatus}}">{{$status}}</option>
+											@endif
 										@endforeach
 								</select>
-								<!-- @csrf -->
-								<!-- <input name="filter_type" value="order_id" type="hidden"> -->
-								<input name="created_at" class="custom_input" style="padding: 4px;" type="date">
-								<input placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
+								<input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
+								<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
 								<button style="margin-left:10px" class="d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
@@ -175,7 +173,7 @@
 																		@csrf
 																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger</button>
+																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
 																	</form>
 																@else 
 																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>

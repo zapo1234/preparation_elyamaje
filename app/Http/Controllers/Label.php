@@ -61,7 +61,6 @@ class Label extends BaseController
 
         if(count($request->all()) > 0){
             $filters = $request->all();
-            dd($filters);
             $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();
             $orders = json_encode($orders);
             $orders = json_decode($orders, true);
@@ -104,7 +103,7 @@ class Label extends BaseController
 
         // Liste des status commandes
         $status_list = __('status_order');
-        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list]);
+        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all()]);
     }
 
     public function labelDownload(Request $request){
