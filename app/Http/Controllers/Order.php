@@ -420,9 +420,11 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
           
-      $order_id = $request->post('order_id');
-      // $order_id = 80283; // Données de test
+      //$order_id = $request->post('order_id');
+      $order_id =94840; // Données de test9
       $order = $this->order->getOrderByIdWithCustomer($order_id);
+
+    
 
       if($order){
 
@@ -449,13 +451,14 @@ class Order extends BaseController
         $orders = $this->woocommerce->transformArrayOrder($order);
        
         $orders[0]['emballeur'] = Auth()->user()->name;
+       
+        
         // envoi des données pour créer des facture via api dolibar....
         $this->factorder->Transferorder($orders);
 
         // // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-
-        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-        $this->order->updateOrdersById([$order_id], "finished");
+        // $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        // $this->order->updateOrdersById([$order_id], "finished");
         
         // Insert la commande dans histories
         $data = [

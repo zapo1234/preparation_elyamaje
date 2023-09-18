@@ -41,6 +41,7 @@ class TiersRepository implements TiersInterface
        // transformer les retour objets en tableau
        $list = json_encode($data);
        $lists = json_decode($data,true);
+
        
        return $lists;
 
@@ -55,6 +56,7 @@ class TiersRepository implements TiersInterface
        // transformer les retour objets en tableau
        $list = json_encode($data);
        $lists = json_decode($data,true);
+
        
        return $lists;
 
@@ -177,7 +179,7 @@ class TiersRepository implements TiersInterface
              'sortorder' => 'DESC',
          );
 
-          // recuperer les données api dolibar copie projet tranfer x.
+          // recuperer les données api dolibar copie projet tranfer x...
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
            $lists = json_decode($listinvoice,true);
             

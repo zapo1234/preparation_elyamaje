@@ -343,6 +343,7 @@ class TransferOrder
                                    ];
                               }
                             
+                           
                                foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
@@ -432,7 +433,6 @@ class TransferOrder
                                         'array_options'=> $data_options,
                                     
                                       ];
-                                      dd($data_lines);
 
                                       $data_options_kdo = [
                                         "order_id"=>$donnees['order_id'],
@@ -746,9 +746,3 @@ class TransferOrder
          }
 
   }
-     
-    
-
-
-
-
