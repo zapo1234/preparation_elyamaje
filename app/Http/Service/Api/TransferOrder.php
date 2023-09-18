@@ -431,11 +431,10 @@ class TransferOrder
                                         $ref="";
                                         $cb ="CB";
                                         $data_lines[] = [
-                                       'socid'=> 15366,
+                                       'socid'=> 15364,
                                        'ref_client' =>$ref,
                                        'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
-                                       "remise_percent"=> $donnees['discount_amount'],
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
@@ -511,8 +510,6 @@ class TransferOrder
                             
                         }
                       
-                        
-                      dd($data_lines);
                          // Create le client via Api...
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
