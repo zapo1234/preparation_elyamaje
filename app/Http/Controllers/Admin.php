@@ -585,6 +585,7 @@ class Admin extends BaseController
                 }
             }
 
+            dd($order);
             try {
                 $this->factorder->Transferorder($order);  
                 return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
