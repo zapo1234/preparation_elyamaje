@@ -10,14 +10,20 @@ $(document).ready(function() {
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
+            $("#example_filter").remove()
             $("#example_length select").css('margin-right', '10px')
-            $(".status_dropdown").appendTo('.dataTables_length')
-            $(".date_research").appendTo('.dataTables_length')
+            // $(".status_dropdown").appendTo('.dataTables_length')
+            // $(".date_research").appendTo('.dataTables_length')
+            $(".order_research").appendTo('.dataTables_length')
+
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
-            $(".status_dropdown").removeClass('d-none')
-            $(".date_research").removeClass('d-none')
-            $(".date_research input").css('margin-left', '10px')
+            // $(".status_dropdown").removeClass('d-none')
+            $(".order_research").removeClass('d-none')
+            // $(".date_research").removeClass('d-none')
+            // $(".date_research input").css('margin-left', '10px')
+            $(".order_research input").css('margin-left', '10px')
+
 
             $(".status_dropdown").select2({
             	width: '150px',
@@ -29,15 +35,16 @@ $(document).ready(function() {
 })
 
 $('.date_research input').on('change', function(e){
-    $(".date_research").submit()
+    // $(".date_research").submit()
 })
 
-$('.status_dropdown').on('change', function(e){
-    var status_dropdown = $(this).val();
-    $('#example').DataTable()
-    .column(1).search(status_dropdown, true, false)
-    .draw();
-})
+// $('.status_dropdown').on('change', function(e){
+    
+//     var status_dropdown = $(this).val();
+//     $('#example').DataTable()
+//     .column(1).search(status_dropdown, true, false)
+//     .draw();
+// })
 
 $("#show_modal_bordereau").on('click', function(){
     $("#modalBordereau").modal('show')

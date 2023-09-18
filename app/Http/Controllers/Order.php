@@ -425,7 +425,8 @@ class Order extends BaseController
 
       if($order){
 
-        if($order[0]['status'] != "prepared-order" || $order[0]['status'] != "processing"){
+        
+        if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;
         }

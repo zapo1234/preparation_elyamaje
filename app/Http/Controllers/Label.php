@@ -58,12 +58,13 @@ class Label extends BaseController
 
     public function getlabels(Request $request){
 
-        // Liste des commandes
-        if($request->post('filter_label')){
-            $filter = $request->post('filter_label');
-            $filter_type = $request->post('filter_type');
 
-            $orders = $this->order->getAllOrdersAndLabelByFilter($filter_type, $filter)->toArray();
+        if(count($request->all()) > 0){
+            $filters = $request->all();
+            dd($filters);
+            $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders = json_encode($orders);
+            $orders = json_decode($orders, true);
         } else {
             $orders = $this->order->getAllOrdersAndLabel()->toArray();
         }

@@ -667,6 +667,28 @@ a {
 
 @media (max-width: 650px) { 
 
+	.dataTables_wrapper .col-md-6{
+		width: 100% !important;
+	}
+	.dataTables_length{
+		flex-direction: column;
+	}
+
+	.dataTables_length .select2,
+	.dataTables_length .custom_input,
+	.dataTables_length button{
+		width: 100% !important;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+		margin-top: 5px !important;
+	}
+
+	.dataTables_length form{
+		flex-direction: column;
+		margin: 0px;
+		margin-top: 5px !important;
+	}
+
 	.chronopost_shipping_method_preparateur{
 		margin-bottom: 10px;
 	}
@@ -5287,7 +5309,9 @@ input::placeholder {
 	#example_length label select, 
 	.select2_custom .selection,
 	.select2_custom .select2-selection,
-	.custom_dropdown{
+	.custom_dropdown,
+	.dataTables_length .custom_input,
+	.dataTables_length form button{
 		height: 100% !important;
 	}
 
@@ -6916,7 +6940,10 @@ select:focus, input:focus{
 	font-size: 12px;
 }
 
-.select2_custom .select2-selection{
+.select2_custom .select2-selection,
+.dataTables_length .custom_dropdown,
+.dataTables_length .custom_input,
+.dataTables_length button{
 	height: 31px;
 	border: 1px solid #ced4da
 }

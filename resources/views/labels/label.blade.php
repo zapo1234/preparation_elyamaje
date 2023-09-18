@@ -82,18 +82,26 @@
 								</div>
 							</div>
 
-							<select class="d-none select2_custom status_dropdown input_form_type">
-								<option value="">Status</option>
-									@foreach($status_list as $status)
-										<option value="{{$status}}">{{$status}}</option>
-									@endforeach
-							</select>
+						
 
 
-							<form method="POST" action="{{ route('labels.filter') }}" class="d-none date_research">
-								@csrf
+							<!-- <form method="GET" action="{{ route('labels.filter') }}" class="d-none date_research">
+							
 								<input name="filter_type" value="created_at" type="hidden">
-								<input name="filter_label" class="custom_input" style="padding: 4px;" type="date">
+							</form> -->
+
+							<form method="GET" action="{{ route('labels.filter') }}" class="d-flex d-none order_research">
+								<select name="status" class="select2_custom status_dropdown input_form_type">
+									<option value="">Status</option>
+										@foreach($status_list as $status)
+											<option value="{{$status}}">{{$status}}</option>
+										@endforeach
+								</select>
+								<!-- @csrf -->
+								<!-- <input name="filter_type" value="order_id" type="hidden"> -->
+								<input name="created_at" class="custom_input" style="padding: 4px;" type="date">
+								<input placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
+								<button style="margin-left:10px" class="d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
 						
@@ -102,7 +110,7 @@
 									<tr>
 										<th>Commande</th>
 										<th>Status</th>
-										<th>Date commande</th>
+										<th>Générée le</th>
 										<th class="col-md-2">Étiquette</th>
 										<th class="col-md-2">Déclaration douanière</th>
 									</tr>
@@ -116,7 +124,7 @@
 											<td data-label="Status">
 												<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
 											</td>
-											<td data-label="Date commande">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
+											<td data-label="Générée le">{{ date("d/m/Y", strtotime($order[0]['label_created_at'])) }}</td>
 											<td data-label="Étiquette">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)
