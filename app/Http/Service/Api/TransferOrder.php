@@ -488,7 +488,7 @@ class TransferOrder
                     
                       }
 
-                           // filtrer les doublons du tableau
+                           // filtrer les doublons du tableau..
                            $id_commande_exist = array_unique($id_commande_existe);
                            // recupérer le tableau
                            $this->setDataidcommande($id_commande_exist);
