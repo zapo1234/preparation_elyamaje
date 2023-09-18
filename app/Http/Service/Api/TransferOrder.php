@@ -136,7 +136,7 @@ class TransferOrder
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
                
-
+                 dd($listproduct);
               
                  
                  if(count($listproduct)==0){
