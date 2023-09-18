@@ -432,11 +432,11 @@ class TransferOrder
                                         $ref="";
                                         $cb ="CB";
                                         $data_lines[] = [
-                                       'socid'=> $socid,
+                                       'socid'=> 15366,
                                        'ref_client' =>$ref,
                                        'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
-                                       "remise_percent"=> floatval($donnees['discount_amount']),
+                                       "remise_percent"=> $donnees['discount_amount'],
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
