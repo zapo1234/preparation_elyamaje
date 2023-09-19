@@ -348,6 +348,8 @@ class Label extends BaseController
                     }
                 } 
 
+                dd("dd");
+
                 $order[0]['total_order'] = $subtotal;
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){

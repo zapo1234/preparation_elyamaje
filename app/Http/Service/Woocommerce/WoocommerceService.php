@@ -55,12 +55,12 @@ class WoocommerceService
                   
 
                     // for amb gift
-                    // if($or['total_price'] == 0){
-                      
-                    //   $order['line_items'][$key]['real_price'] = $or['price'];
-                    // }
+                    if($or['total_price'] == 0){
+                   
+                      $products['line_items'][$key]['real_price'] = $or['price'];
+                    }
                     
-                    // dd($order['line_items'][$key]);
+                   
                     // for fem gift
                     if($or['cost'] * $or['quantity'] != $or['total_price'] && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
                       $products['line_items'][$key]['quantity'] = $products['line_items'][$key]['quantity'] > 1 ? $products['line_items'][$key]['quantity'] - 1 : 1;
