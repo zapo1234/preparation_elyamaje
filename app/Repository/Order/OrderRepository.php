@@ -652,17 +652,22 @@ class OrderRepository implements OrderInterface
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
 
+      $haveFilter = false;
       foreach($filters as $key => $filter){
          if($filter){
+            $haveFilter = true;
             if($key == "created_at"){
                $query->where("labels.".$key."","LIKE",  "%".$filter."%");
             } else {
                $query->where("orders.".$key."", $filter);
             }
-
          }
       }
 
+      if(!$haveFilter){
+         $date = date('Y-m-d');
+         $query->where("labels.created_at","LIKE",  "%".$date."%");
+      }
       $query->orderBy('labels.created_at', 'DESC');
       $query->limit(500);
 
