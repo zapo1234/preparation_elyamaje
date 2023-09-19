@@ -7693,3 +7693,7 @@ tr:has(.chronopost_shipping){
 .manually_barcode i{
 	font-size: 25px;
 }
+
+select option[disabled] { 
+	color: #dee2e6;
+}
