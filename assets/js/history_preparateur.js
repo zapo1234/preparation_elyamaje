@@ -90,8 +90,8 @@ var reconnect = 0;
 function imprimerPages() {
     
     // IP à mettre dynamiquement
-    var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
+    var printer_ip = "192.168.0.159"; // $(".printer_ip").val() ?? false
+    var printer_port = 9100; //$(".printer_port").val() ?? false
     
     
     if (!printer_ip) {
@@ -102,9 +102,10 @@ function imprimerPages() {
 }
 
 function cbConnect(data, ePos) {
-    var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
-   
+    var printer_ip = "192.168.0.159"; // $(".printer_ip").val() ?? false
+    var printer_port = 9100; //$(".printer_port").val() ?? false
+    
+    console.log(data)
     if (data == 'OK' || data == 'SSL_CONNECT_OK') {
         var deviceID = "local_printer";
         ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
