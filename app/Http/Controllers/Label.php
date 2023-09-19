@@ -297,6 +297,11 @@ class Label extends BaseController
                 echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
                 return;
             }
+
+            if($product_order[0]['shipping_method'] == null){
+                echo json_encode(['success' => false, 'message' => 'Aucune méthode d\'expédition n\'a été trouvée pour cette commande']);
+                return;
+            }
         }
      
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
