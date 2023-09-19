@@ -59,9 +59,11 @@ class WoocommerceService
                     $key_line_item = count($products['line_items']) - 1;
                     $products['line_items'][$key_line_item]['real_price'] = $or['price'];
                   }
-                  
+
+
+              
                   // for fem gift
-                  if($or['cost'] * $or['quantity'] != $or['total_price'] && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
+                  if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
                     $key_line_item = count($products['line_items']) - 1;
                     $products['line_items'][$key_line_item]['quantity'] = $products['line_items'][$key_line_item]['quantity'] > 1 ? $products['line_items'][$key_line_item]['quantity'] - 1 : 1;
                     $products['line_items'][$key_line_item]['subtotal_tax'] = $products['line_items'][$key_line_item]['total_tax'] * $products['line_items'][$key_line_item]['quantity'];

@@ -339,14 +339,17 @@ class Label extends BaseController
                 foreach($order[0]['line_items'] as $or){
                     if(isset($or['product_id'])){
                         $quantity = $quantity_product[$or['product_id']];
-                        $subtotal = $subtotal + $or['subtotal'] * $quantity;
+                        if(isset($or['real_price'] )){
+                            $subtotal = $subtotal + $or['real_price'];
+                        } else {
+                            $subtotal = $subtotal + $or['subtotal'] * $quantity;
+                        }
 
                         if(is_numeric($or['weight'])){
                             $weight = $weight + number_format(($or['weight'] * $quantity), 2);
                         }
                     }
                 } 
-
 
                 $order[0]['total_order'] = $subtotal;
                 // Étiquette Chronopost
