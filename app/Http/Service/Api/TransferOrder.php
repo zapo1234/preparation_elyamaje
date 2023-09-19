@@ -202,7 +202,11 @@ class TransferOrder
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
                   foreach($listproduct as $values) {
-                     $data_list_product[$values['id']] = $values['barcode'];
+                      
+                      if($values['barcode']!=""){
+                          $data_list_product[$values['id']] = $values['barcode'];
+                     
+                      }
                       // tableau associatve entre ref et label product....
                   }
                    
