@@ -337,7 +337,6 @@ class Label extends BaseController
             $subtotal = 0;
            
                 foreach($order[0]['line_items'] as $or){
-
                     if(isset($or['product_id'])){
                         $quantity = $quantity_product[$or['product_id']];
                         $subtotal = $subtotal + $or['subtotal'] * $quantity;
@@ -348,7 +347,6 @@ class Label extends BaseController
                     }
                 } 
 
-                dd("dd");
 
                 $order[0]['total_order'] = $subtotal;
                 // Étiquette Chronopost

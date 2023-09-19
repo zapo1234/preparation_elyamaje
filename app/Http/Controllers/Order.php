@@ -424,16 +424,12 @@ class Order extends BaseController
       $order = $this->order->getOrderByIdWithCustomer($order_id);
 
       if($order){
-
-        
         if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;
         }
 
- 
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
-        
         if($is_distributor){
           $barcode_array = $request->post('pick_items');
           $products_quantity = $request->post('pick_items_quantity');
