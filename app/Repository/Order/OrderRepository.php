@@ -670,7 +670,6 @@ class OrderRepository implements OrderInterface
       }
       $query->orderBy('labels.created_at', 'DESC');
       $query->limit(500);
-
       $results = $query->get();
       return $results;
    }
