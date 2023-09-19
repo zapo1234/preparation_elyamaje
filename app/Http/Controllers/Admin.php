@@ -141,6 +141,8 @@ class Admin extends BaseController
                     $variation = $attribut['name'];
                 }
             }
+            
+          
 
             if($variation){
                 $ids = array_column($product['attributes'], "name");
