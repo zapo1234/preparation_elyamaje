@@ -552,6 +552,7 @@ class Admin extends BaseController
                     // Insert la commande
                     $insert = $this->order->insertOrdersByUsers($order);
                     $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
+                    $order_insert[0]['emballeur'] = "admin";
                     $order = $this->woocommerce->transformArrayOrder($order_insert);
                 }
             }

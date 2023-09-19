@@ -332,18 +332,20 @@ class Label extends BaseController
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+
             $weight = 0; // Kg
             $subtotal = 0;
-
            
                 foreach($order[0]['line_items'] as $or){
-                  $quantity = $quantity_product[$or['product_id']];
-                  $subtotal = $subtotal + $or['subtotal'] * $quantity;
 
-                  if(is_numeric($or['weight'])){
-                    $weight = $weight + number_format(($or['weight'] * $quantity), 2);
-                  }
-                  
+                    if(isset($or['product_id'])){
+                        $quantity = $quantity_product[$or['product_id']];
+                        $subtotal = $subtotal + $or['subtotal'] * $quantity;
+
+                        if(is_numeric($or['weight'])){
+                            $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+                        }
+                    }
                 } 
 
                 $order[0]['total_order'] = $subtotal;

@@ -57,7 +57,8 @@ class LabelRepository implements LabelInterface
    }
 
    public function getAllLabels(){
-      return $this->model::all();
+      $date = date('Y-m-d');
+      return $this->model::select('*')->where('created_at', 'LIKE', '%'.$date.'%')->get();
    }
 
    public function getAllLabelsByStatusAndDate($rangeDate){

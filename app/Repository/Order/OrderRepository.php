@@ -635,11 +635,14 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabel(){
+
+      $date = date('Y-m-d');
       return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(100)
+      // ->limit(50)
       ->get();
    }
 
