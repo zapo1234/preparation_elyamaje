@@ -122,7 +122,7 @@
 											<td data-label="Status">
 												<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
 											</td>
-											<td data-label="Générée le">{{ date("d/m/Y", strtotime($order[0]['label_created_at'])) }}</td>
+											<td data-label="Générée le">{{ $order[0]['label_created_at'] ? date("d/m/Y", strtotime($order[0]['label_created_at'])) : '' }}</td>
 											<td data-label="Étiquette">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)

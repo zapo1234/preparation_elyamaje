@@ -70,6 +70,8 @@ class Label extends BaseController
        
         $labels = $this->label->getAllLabels()->toArray();
 
+    
+
         $array_order = [];
 
         foreach($orders as $order){
@@ -100,7 +102,7 @@ class Label extends BaseController
                 ];
             }
         }
-
+    
         // Liste des status commandes
         $status_list = __('status_order');
         return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all()]);
