@@ -49,42 +49,48 @@ class WoocommerceService
             // Récupère que des produits spécifique de la commande
             if(count($specific_product) > 0){
                 if(in_array($or['product_woocommerce_id'], $specific_product)){
-                   
+                    $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
+                    'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
+                    'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+                  
+
                     // for amb gift
-                    if($or['total_price'] == 0){
-                      $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                      'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-                      'weight' =>  $or['weight'], 'ref' => $or['ref'], 'real_price' => $or['price'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-                    } else   if($or['cost'] * $or['quantity'] != $or['total_price'] && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
+                    // if($or['total_price'] == 0){
+                      
+                    //   $order['line_items'][$key]['real_price'] = $or['price'];
+                    // }
+                    
+                    // dd($order['line_items'][$key]);
+                    // for fem gift
+                    if($or['cost'] * $or['quantity'] != $or['total_price'] && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
                       $products['line_items'][$key]['quantity'] = $products['line_items'][$key]['quantity'] > 1 ? $products['line_items'][$key]['quantity'] - 1 : 1;
                       $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
                       $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                       'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
                       'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
-                    } else {
-                      $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                      'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-                      'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
                     }
                 }
             } else {
-                
+                $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
+                'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
+                'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+
+            
+
                 // for amb gift or fem
                 if($or['total_price'] == 0){
-                  $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-                'weight' =>  $or['weight'], 'ref' => $or['ref'], 'real_price' => $or['price'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-                } else if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
+                  $products['line_items'][$key]['real_price'] = $or['price'];
+                }
+
+
+                // for fem gift
+                if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
                   $products['line_items'][$key]['quantity'] = $products['line_items'][$key]['quantity'] > 1 ? $products['line_items'][$key]['quantity'] - 1 : 1;
                   $products['line_items'][$key]['subtotal_tax'] = $products['line_items'][$key]['total_tax'] * $products['line_items'][$key]['quantity'];
                   $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                     'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
                     'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
-                } else {
-                  $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                  'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-                  'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-                } 
+                }
             }
 
 
