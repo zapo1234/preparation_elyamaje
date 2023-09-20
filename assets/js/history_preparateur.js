@@ -92,18 +92,10 @@ function imprimerPages() {
     // IP à mettre dynamiquement
     var printer_ip = $(".printer_ip").val() ?? false
     var printer_port = $(".printer_port").val() ?? false
+    var deviceID = "local_printer";
+
     //Create an ePOS-Print Builder object
     var builder = new epson.ePOSBuilder();
-
-    // printer.addTextLang('fr');
-    // printer.addTextAlign(printer.ALIGN_CENTER);
-    // printer.addTextDouble(true, true);
-    // printer.addTextSize(1, 1);
-    // printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
-    // printer.addText("\n"+$(".show .info_order").text());
-    // printer.addText("\n\n\n");
-    // printer.addCut(printer.CUT_FEED);
-    
 
     builder.addTextLang('fr')
     builder.addTextAlign(builder.ALIGN_CENTER);
@@ -111,13 +103,13 @@ function imprimerPages() {
     builder.addTextFont(builder.FONT_A);
     builder.addTextSize(1, 1);
     builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
-    // builder.addText("\n"+$(".show .info_order").text());
-    builder.addText("\n\n\n");
+    builder.addText("\n"+$(".show .info_order").text()+"\n");
+    // builder.addText("\n\n\n");
     builder.addCut(builder.CUT_FEED);
 
     //Acquire the print document
     var request = builder.toString();
-    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid=local_printer&timeout=1000';
+    var address = 'http://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=1000';
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
         // if(res.success || !res.success){
