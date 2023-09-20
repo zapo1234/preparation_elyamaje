@@ -21,6 +21,7 @@ use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -572,7 +573,9 @@ class Admin extends BaseController
     }
 
     public function print(){
-        $connector = new NetworkPrintConnector("192.168.0.159", 9100);
+        // dd(gethostname());
+        // $connector = new NetworkPrintConnector("192.168.0.159", 9100);
+        $connector = new WindowsPrintConnector("smb://".gethostname()."/POS-80");
         $printer = new Printer($connector);
 
         try {
