@@ -126,8 +126,10 @@ class TransferOrder
 
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
-                 $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                 $apiKey = env('KEY_API_DOLIBAR'); 
+                 $apiUrl = env('KEY_API_URL');
+
+                 
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -549,9 +551,10 @@ class TransferOrder
         {
            
               $method = "GET";
-            
-                $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                 $apiKey = env('KEY_API_DOLIBAR'); 
+                 $apiUrl = env('KEY_API_URL');
+
+
               //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 
