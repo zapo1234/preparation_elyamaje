@@ -112,11 +112,13 @@ function imprimerPages() {
     var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=1000';
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
-        // if(res.success || !res.success){
+        if(!res.success){
+            alert(res)
+        }
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
         $(".impression_code").attr('disabled', false)
-        // }
+      
         console.log(res);
     }
     //Send the print document
