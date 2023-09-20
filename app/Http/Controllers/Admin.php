@@ -279,9 +279,10 @@ class Admin extends BaseController
     public function analytics(){
 
         dump(env('KEY_API_URL'));
+        dump(env('KEY_API_DOLIBAR'));
 
-//         KEY_API_DOLIBAR = 'tWMneh4ap7N8pk9CAyY66dPZHMK01y08'
-// KEY_API_URL 
+        //      KEY_API_DOLIBAR = 'tWMneh4ap7N8pk9CAyY66dPZHMK01y08'
+        //      KEY_API_URL 
 
         $date = date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
