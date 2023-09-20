@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\TransferOrder;
@@ -19,6 +20,7 @@ use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -566,6 +568,19 @@ class Admin extends BaseController
             } catch(Exception $e){
                 return redirect()->route('admin.billing')->with('error', $e->getMessage());
             }
+        }
+    }
+
+    public function print(){
+        $connector = new NetworkPrintConnector("192.168.0.159", 9100);
+        $printer = new Printer($connector);
+
+        try {
+            $printer -> text("Hello World!\n");
+            $printer -> cut();
+            $printer -> close();
+        } catch(Exception $e) {
+            dd("Couldn't print to this printer: " . $e -> getMessage() . "\n");
         }
     }
 }

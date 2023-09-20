@@ -196,5 +196,9 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 // Email preview
-// Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+
+
+Route::get("/print", [Admin::class, "print"])->name('print'); 
+
 
