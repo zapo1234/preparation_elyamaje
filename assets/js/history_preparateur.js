@@ -109,7 +109,7 @@ function imprimerPages() {
 
     //Acquire the print document
     var request = builder.toString();
-    var address = 'http://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=1000';
+    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=1000';
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
         // if(res.success || !res.success){
