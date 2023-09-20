@@ -199,6 +199,4 @@ Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrap
 Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 
 
-Route::get("/print", [Admin::class, "print"])->name('print'); 
-
 
