@@ -103,13 +103,13 @@ function imprimerPages() {
     builder.addTextFont(builder.FONT_A);
     builder.addTextSize(1, 1);
     builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
-    builder.addText("\n"+$(".show .info_order").text()+"\n");
+    // builder.addText("\n"+$(".show .info_order").text()+"\n");
     // builder.addText("\n\n\n");
     builder.addCut(builder.CUT_FEED);
 
     //Acquire the print document
     var request = builder.toString();
-    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=1000';
+    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=3000';
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
         if(!res.success){
@@ -118,8 +118,7 @@ function imprimerPages() {
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
         $(".impression_code").attr('disabled', false)
-      
-        console.log(res);
+
     }
     //Send the print document
     epos.send(request);
