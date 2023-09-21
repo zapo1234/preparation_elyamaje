@@ -113,7 +113,7 @@ function imprimerPages() {
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
         if(!res.success){
-            alert(res)
+            console.log(res)
         }
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
