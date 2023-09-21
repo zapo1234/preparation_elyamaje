@@ -103,9 +103,13 @@
 								</div>
 								<div class="w-100">
 									<div class="course-info d-flex justify-content-between align-items-center">
-										<div>
+										<div class="{{ $orders['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+										
+											@if($orders['details']['customer_note'])
+												<span class="customer_note_preparateur"><span>Note :</span> {{ $orders['details']['customer_note'] }} </h2>
+											@endif
 										</div>
 										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
@@ -218,9 +222,13 @@
 								</div>
 								<div class="w-100">
 									<div class="course-info d-flex justify-content-between align-items-center">
-										<div>
+										<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+										
+											@if($order['details']['customer_note'])
+												<span class="customer_note_preparateur"><span>Note :</span> {{ $order['details']['customer_note'] }} </h2>
+											@endif
 										</div>
 										@if(str_contains($order['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
@@ -333,9 +341,13 @@
 									</div>
 									<div class="w-100">
 										<div class="course-info d-flex justify-content-between align-items-center">
-											<div>
+											<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 												<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 												<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+											
+												@if($order['details']['customer_note'])
+													<span class="customer_note_preparateur"><span>Note :</span> {{ $order['details']['customer_note'] }} </h2>
+												@endif
 											</div>
 											@if(str_contains($order['details']['shipping_method'], 'chrono'))
 												<div class="chronopost_shipping_method_preparateur"></div>

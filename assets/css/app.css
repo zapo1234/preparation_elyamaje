@@ -7697,3 +7697,19 @@ tr:has(.chronopost_shipping){
 select option[disabled] { 
 	color: #dee2e6;
 }
+
+.customer_note{
+	word-break: break-word;
+	white-space: break-spaces;
+	margin-top: 8px;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.customer_note_preparateur span{
+	font-weight: bold;
+}
+
+.customer_note_mobile{
+	margin: 10px 0px;
+}
