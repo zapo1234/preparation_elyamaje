@@ -102,8 +102,8 @@ function imprimerPages() {
     builder.addTextSmooth(true);
     builder.addTextFont(builder.FONT_A);
     builder.addTextSize(1, 1);
-    builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
-    builder.addText("\n"+$(".show .info_order").text()+"\n");
+    builder.addSymbol($(".show #qrcode").attr('title')+"\n", builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
+    builder.addText($(".show .info_order").text()+"\n");
     // builder.addText("\n\n\n");
     builder.addCut(builder.CUT_FEED);
 
