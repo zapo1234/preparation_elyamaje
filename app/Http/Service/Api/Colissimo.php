@@ -9,16 +9,15 @@ class Colissimo
 {
 
     public function generateLabel($order, $weight, $order_id, $colissimo){
-
         $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
-        // $isCN23 = $this->isCN23($order['total_order'], $weight);
+        // $isCN23 = $this->isCn23($order['total_order'], $weight);
         $customsArticle = $this->customsArticle($order);
 
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
-        $address = $this->getAdress($order);
+        $address = $this->getAddress($order);
 
         
         if($productCode){
@@ -43,7 +42,7 @@ class Colissimo
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
                             'insuranceValue' => $insuranceValue,
-                            // 'nonMachinable' => $nonMachinable, //  // Format du colis, true pour non standard
+                            // 'nonMachinable' => $nonMachinable, //Format du colis, true pour non standard
                             'pickupLocationId' => $order['pick_up_location_id'] ?? null
                         ],
                         'sender' => [
@@ -313,7 +312,7 @@ class Colissimo
         return in_array($product_code, $nonMachinable) ? false : true;
     }
 
-    protected function getAdress($order){
+    protected function getAddress($order){
 
         if(isset($order['billing']['phone'])){
             $phoneNumber              = str_replace(' ', '', $order['billing']['phone']);
@@ -414,10 +413,9 @@ class Colissimo
                 'originalIdent' => 'A',
                 'originCountry' => 'FR',
                 'hsCode'        => '33049900', // code pour produits esthétique, beauté
-                'weight'        => $item['quantity'] * floatval($item['weight'])
+                'weight'        => $item['weight']
             ];
-        }
-
+        }   
         return $customsArticle;
     }
  
