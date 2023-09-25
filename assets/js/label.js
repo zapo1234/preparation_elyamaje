@@ -196,11 +196,15 @@ function total_weight(){
 }
 
 document.addEventListener("keydown", function(e) {
-    $("#detail_order_label").val($("#detail_order_label").val()+e.key)
-    var array = $("#detail_order_label").val().split(',')
-    if(array.length == 4 && $("#order_id").val() == ""){
-        $("#order_id").val(array[0])
-        $(".custom_input").val(array[0])
-        $(".research_label_order").click()
+    
+    if(e.key.length == 1){
+        $("#detail_order_label").val($("#detail_order_label").val()+e.key)
+        var array = $("#detail_order_label").val().split(',')
+        if(array.length == 2 && $("#order_id").val() == ""){
+            $("#order_id").val(array[0])
+            $(".custom_input").val(array[0])
+            $(".research_label_order").click()
+        }
     }
+
 })
