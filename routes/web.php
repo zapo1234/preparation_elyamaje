@@ -84,11 +84,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // Distributeurs
     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
     Route::get("/syncDistributors", [Distributors::class, "getAllDistributors"])->name('sync.distributors');
-    // CRUD Imprimantes
-    Route::get("/printers", [Admin::class, "printers"])->name('printers');
-    Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
-    Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
-    Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 
     // Colissimo configuration
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
@@ -141,6 +136,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
+    // CRUD Imprimantes
+    Route::get("/printers", [Admin::class, "printers"])->name('printers');
+    Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
+    Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
+    Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -199,4 +199,5 @@ Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrap
 Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 
 
-
+// 98357
+// 98366 

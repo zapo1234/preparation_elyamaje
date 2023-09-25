@@ -45,6 +45,8 @@
                 <ul>
                     <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
                     </li>
+                    <li> <a href="{{ url('printers') }}"><i class="bx bx-right-arrow-alt"></i>Imprimantes</a>
+                    </li>
                 </ul>
             </li>
         @endif
