@@ -255,6 +255,7 @@
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script src="{{asset('assets/js/label.js')}}"></script>
+		
 	@endsection
 
 

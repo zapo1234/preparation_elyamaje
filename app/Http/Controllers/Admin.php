@@ -277,7 +277,6 @@ class Admin extends BaseController
     }
 
     public function analytics(){
-
         $date = date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
         $list_histories = [];
