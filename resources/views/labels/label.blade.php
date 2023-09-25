@@ -16,6 +16,7 @@
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
 									<li class="breadcrumb-item active" aria-current="page">Étiquettes</li>
+									<input id="order_id" type="hidden" value="">
 									<input type="hidden" value="" id="detail_order_label">
 								</ol>
 							</nav>
