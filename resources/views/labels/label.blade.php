@@ -16,6 +16,7 @@
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
 									<li class="breadcrumb-item active" aria-current="page">Étiquettes</li>
+									<input type="hidden" value="" id="detail_order_label">
 								</ol>
 							</nav>
 						</div>
@@ -99,7 +100,7 @@
 								</select>
 								<input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
 								<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
-								<button style="margin-left:10px" class="d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
+								<button style="margin-left:10px" class="research_label_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
 						

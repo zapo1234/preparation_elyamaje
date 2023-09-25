@@ -194,3 +194,12 @@ function total_weight(){
     }); 
     $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
 }
+
+document.addEventListener("keydown", function(e) {
+    $("#detail_order_label").val($("#detail_order_label").val()+e.key)
+    var array = $("#detail_order_label").val().split(',')
+    if(array.length == 4 && $("#order_id").val() == ""){
+        $(".custom_input").val(array[0])
+        $(".research_label_order").click()
+    }
+})
