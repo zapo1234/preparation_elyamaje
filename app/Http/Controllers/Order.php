@@ -126,7 +126,8 @@ class Order extends BaseController
           foreach($orders as $key => $order){
             $take_order = true;
             if(count($order['shipping_lines']) > 0){
-              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
+              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100" 
+              || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002"){
                 $take_order = false;
               }
             } 
@@ -425,6 +426,7 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
 
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
       $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderByIdWithCustomer($order_id);
 
