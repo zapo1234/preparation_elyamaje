@@ -46,7 +46,9 @@ class Api
         'status' => $status,
       ]);
       
-      return $response->json() ? true : false;
+      return $response->json();
+
+      // return $response->json() ? true : false;
     } catch(Exception $e){
       return $e->getMessage();
     }
