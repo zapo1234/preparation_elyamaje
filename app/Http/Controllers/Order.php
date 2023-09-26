@@ -127,7 +127,7 @@ class Order extends BaseController
             $take_order = true;
             if(count($order['shipping_lines']) > 0){
               if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100" 
-                /* || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002" */){
+                || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002"){
                 $take_order = false;
               }
             } 
@@ -153,7 +153,7 @@ class Order extends BaseController
           foreach($orders as $key => $order){
             if(count($order['shipping_lines']) > 0){
                if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"
-                /* && $order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Marseille 13002" */ ){
+                && $order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Marseille 13002"){
                 $list_orders[] = $order;
                }
             } else {
