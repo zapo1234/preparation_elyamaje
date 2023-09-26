@@ -339,8 +339,8 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
         if(array.length == 4 && $("#order_id").val() == ""){
-            $("#order_id").val(array[0])
-            $(".order_id_input").val(array[0])
+            $("#order_id").val(array[0].split(',')[0])
+            $(".order_id_input").val(array[0].split(',')[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
             $(".validate_order").attr('disabled', false)

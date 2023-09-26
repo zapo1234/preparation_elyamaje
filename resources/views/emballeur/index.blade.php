@@ -60,7 +60,7 @@
             <div class="empty_order title mx-auto to_hide"> Scanner le QR Code </div>
             <span class="empty_order mb-2 text-center to_hide">OU</span>
             <div class="empty_order to_hide mb-3 d-flex justify-content-center input_order_id">
-                <input class="empty_order order_id_input" type="text" placeholder="Renseigner le numéro de commande">
+                <input class="empty_order order_id_input" type="number" placeholder="Renseigner le numéro de commande">
             </div>
 
 
