@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
@@ -25,6 +26,7 @@ use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+use App\Repository\LogError\LogErrorRepository;
 
 class Order extends BaseController
 {
@@ -47,6 +49,7 @@ class Order extends BaseController
     private $colissimoConfiguration;
     private $product;
     private $chronopost;
+    private $logError;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -63,7 +66,8 @@ class Order extends BaseController
     PrinterRepository $printer,
     ColissimoRepository $colissimoConfiguration,
     ProductRepository $product,
-    Chronopost $chronopost
+    Chronopost $chronopost,
+    LogErrorRepository $logError
     ){
       $this->api = $api;
       $this->user = $user;
@@ -82,6 +86,7 @@ class Order extends BaseController
       $this->colissimoConfiguration = $colissimoConfiguration;
       $this->product = $product;
       $this->chronopost = $chronopost;
+      $this->logError = $logError;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -445,23 +450,26 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
-        $this->factorder->Transferorder($orders);
+        try{
+          $this->factorder->Transferorder($orders);
 
+            // Insert la commande dans histories
+            $data = [
+              'order_id' => $order_id,
+              'user_id' => Auth()->user()->id,
+              'status' => 'finished',
+              'poste' => Auth()->user()->poste ?? 0,
+              'created_at' => date('Y-m-d H:i:s')
+            ];
 
-        // Insert la commande dans histories
-        $data = [
-          'order_id' => $order_id,
-          'user_id' => Auth()->user()->id,
-          'status' => 'finished',
-          'poste' => Auth()->user()->poste,
-          'created_at' => date('Y-m-d H:i:s')
-        ];
+            $this->history->save($data);
+            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+            $this->order->updateOrdersById([$order_id], "finished");
+            $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
 
-        $this->history->save($data);
-        // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-        $this->order->updateOrdersById([$order_id], "finished");
-        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-
+        } catch(Exception $e){
+          $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
+        }
 
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
