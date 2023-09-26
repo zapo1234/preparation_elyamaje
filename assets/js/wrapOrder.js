@@ -341,8 +341,8 @@ document.addEventListener("keydown", function(e) {
         if(array.length == 2 && $("#order_id").val() == ""){
             $("#order_id").val(array[0])
             $(".order_id_input").val(array[0])
-            $("#product_count").val(array[1])
-            $("#customer").val(array[2])
+            // $("#product_count").val(array[1])
+            // $("#customer").val(array[2])
             $(".validate_order").attr('disabled', false)
             $(".validate_order").click()
         }

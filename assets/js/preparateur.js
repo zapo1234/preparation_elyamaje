@@ -240,7 +240,7 @@ $(".validate_pick_in").on('click', function () {
 
             if (JSON.parse(data).success) {
                 $(".success_prepared_command").removeClass('d-none')
-                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + user_name;
+                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
                 const size = 150;
 
                 $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)

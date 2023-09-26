@@ -13,7 +13,7 @@ $('body').on('click', '.show_order_history_code', function () {
     var preparateur_name = $(this).attr('data-preparateur')
 
 
-    const href = id + "," + product + "," + accentsTidy(customer_name) + "," + preparateur_name;
+    const href = id + "," + product + "," + accentsTidy(customer_name) + "," + accentsTidy(preparateur_name);
     const size = 150;
 
     // Quantity of product
