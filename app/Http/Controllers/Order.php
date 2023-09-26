@@ -465,7 +465,11 @@ class Order extends BaseController
             $this->history->save($data);
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
             $this->order->updateOrdersById([$order_id], "finished");
-            $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+            $update_woocommerce = $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+
+            if(!$update_woocommerce){
+              $this->logError->insert(['order_id' => $order_id, 'message' => 'Problème mise à jour commande sur Woocommerce']);
+            }
 
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
