@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class LogError extends Model
 {
     use HasFactory;
+
+    protected $table = 'log_error';
 }
