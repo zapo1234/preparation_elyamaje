@@ -458,18 +458,16 @@ class Order extends BaseController
               'order_id' => $order_id,
               'user_id' => Auth()->user()->id,
               'status' => 'finished',
-              'poste' => Auth()->user()->poste ?? 0,
+              'poste' => Auth()->user()->poste,
               'created_at' => date('Y-m-d H:i:s')
             ];
 
             $this->history->save($data);
+
             // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
             $this->order->updateOrdersById([$order_id], "finished");
-            $update_woocommerce = $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-
-            // if(!$update_woocommerce){
-              $this->logError->insert(['order_id' => $order_id, 'message' => $update_woocommerce]);
-            // }
+            $test = $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+            file_put_contents("order.txt", $test);
 
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
