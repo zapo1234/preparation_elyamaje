@@ -347,6 +347,19 @@ class Order extends BaseController
      
     }
 
+    public function transfersPrepared(Request $request){
+      $barcode_array = $request->post('pick_items');
+      $products_quantity = $request->post('pick_items_quantity');
+      $order_id = $request->post('order_id');
+
+      if($barcode_array != null){
+        $check = $this->reassort->checkIfDone($order_id, $barcode_array, $products_quantity);
+      }
+     
+      echo json_encode(["success" => $check]);
+
+    }
+
     public function ordersReset(Request $request){
       $order_id = $request->post('order_id');
       $orderReset = $this->order->orderReset($order_id);

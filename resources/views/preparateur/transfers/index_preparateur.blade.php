@@ -56,8 +56,9 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Transfert</h6>
+									<!-- <h2>{{ $orders['id'] }}</h2> -->
 								</div>
-								<div class="w-100">
+								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
 										<div>
 											<h6>Le {{ \Carbon\Carbon::parse($orders['date'])->isoFormat(' DD/MM/YY') }}</h6>
@@ -69,7 +70,6 @@
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 									</div>
 								</div>
-								
 							</div>
 						</div>
 
@@ -118,7 +118,7 @@
 												</div>
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
-													<button type="button" class="reset_order btn btn-dark px-5"><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>
+													<button type="button" class="reset_order btn btn-dark px-5"><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la préparation</span></button>
 													<button type="button" class="validate_pick_in_transfer btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
 												</div>
 
@@ -154,7 +154,7 @@
 						</div>
 
 						<div class="d-none success_prepared_command d-flex flex-column align-items-center">
-							<h2 class="no-print mb-5 d-flex ">Commande préparée avec succès !</h2>
+							<h2 class="no-print mb-5 d-flex ">Transfert préparé avec succès !</h2>
 							<div class="d-flex" id="qrcode"></div>
 
 							<span class="d-flex info_order"></span>
@@ -165,7 +165,8 @@
 								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
 								<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
-								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-20">
+									<i class="bx bx-printer"></i>	
 									<span>Imprimer</span>
 									<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 								</button>
@@ -196,7 +197,7 @@
 				<div class="modal-content">
 
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
-						<h2 class="text-center">Recommencer la commande ?</h2>
+						<h2 class="text-center">Recommencer la préparation ?</h2>
 						<div class="mt-3 w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
 							<button style="margin-left:15px" type="button" class="btn btn-dark px-5 confirmation_reset_order ">Oui</button>

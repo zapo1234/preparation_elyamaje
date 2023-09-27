@@ -101,7 +101,7 @@
 									<h6>Commande</h6>
 									<h2>#{{ $orders['details']['id'] }}</h2>
 								</div>
-								<div class="w-100">
+								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
 										<div class="{{ $orders['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
@@ -220,7 +220,7 @@
 									<h6>Commande</h6>
 									<h2>#{{ $order['details']['id'] }}</h2>
 								</div>
-								<div class="w-100">
+								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
 										<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
@@ -339,7 +339,7 @@
 										<h6>Commande</h6>
 										<h2>#{{ $order['details']['id'] }}</h2>
 									</div>
-									<div class="w-100">
+									<div class="w-100 d-flex flex-column justify-content-between">
 										<div class="course-info d-flex justify-content-between align-items-center">
 											<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 												<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
@@ -481,7 +481,8 @@
 								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
 								<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
-								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-20">
+									<i class="bx bx-printer"></i>	
 									<span>Imprimer</span>
 									<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 								</button>

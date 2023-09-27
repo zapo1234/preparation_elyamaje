@@ -147,7 +147,8 @@
 													<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
 													<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 													
-													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+													<button data-id="{{ $histo['details']['id'] }}" style="width:250px" type="button" class="impression_code mt-5 btn btn-dark px-5 radius-20">
+														<i class="bx bx-printer"></i>	
 														<span>Imprimer</span>
 														<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 													</button>

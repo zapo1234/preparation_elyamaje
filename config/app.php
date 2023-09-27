@@ -59,11 +59,11 @@ return [
     */
 
     'companyName' => 'ELYA MAJE',
-    'line2' => '18 Rue Melchior Guinot',
+    'line2' => '6 BD GUEIDON',
     'countryCode' => 'FR',
     'countryName' => 'FRANCE',
     'city' => 'Marseille',
-    'zipCode' => '13003',
+    'zipCode' => '13013',
     'email'  => 'expedition@elyamaje.com',
     'companyPhone'  => '0491847750',
     'companyMobilePhone'  => '0764089045',

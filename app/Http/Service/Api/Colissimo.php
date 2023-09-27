@@ -55,7 +55,7 @@ class Colissimo
                                 'countryCode' => config('app.countryCode'),
                                 'city' => config('app.city'),
                                 'zipCode' => config('app.zipCode'),
-                                "email" => ""
+                                "email" => config('app.email'),
                             ]
                         ],
                         'customsDeclarations' => [
@@ -320,7 +320,7 @@ class Colissimo
     
             if($order['shipping']['country'] == "FR" && !preg_match($frenchMobileNumberRegex, $phoneNumber)){
                 $address = [
-                    'companyName' => "",
+                    'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'],
                     'firstName' => $order['shipping']['first_name'],
                     'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
@@ -334,7 +334,7 @@ class Colissimo
                 return $address;
             } else {
                 $address = [
-                    'companyName' => "",
+                    'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'],
                     'firstName' => $order['shipping']['first_name'],
                     'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
@@ -349,7 +349,7 @@ class Colissimo
             }
         } else {
             $address = [
-                'companyName' => "",
+                'companyName' =>$order['shipping']['company'] ?? '',
                 'lastName' => $order['shipping']['last_name'],
                 'firstName' => $order['shipping']['first_name'],
                 'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
