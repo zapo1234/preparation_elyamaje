@@ -277,7 +277,6 @@ class Admin extends BaseController
     }
 
     public function analytics(){
-
         $date = date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
         $list_histories = [];
@@ -417,7 +416,7 @@ class Admin extends BaseController
     }
 
     public function printers(){
-        $preparateurs = $this->user->getUsersByRole([2]);
+        $preparateurs = $this->user->getUsersAndRoles();
         $printers = $this->printer->getPrinters();
         return view('admin.printers', ['printers' => $printers, 'preparateurs' => $preparateurs]);
     }
@@ -563,6 +562,21 @@ class Admin extends BaseController
 
             try {
                 $this->factorder->Transferorder($order);  
+
+                // Stock historique
+                $data = [
+                    'order_id' => $order_id,
+                    'user_id' => Auth()->user()->id,
+                    'status' => 'finished',
+                    'poste' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+          
+                $this->history->save($data);
+                // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+                $this->order->updateOrdersById([$order_id], "finished");
+                $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+
                 return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
             } catch(Exception $e){
                 return redirect()->route('admin.billing')->with('error', $e->getMessage());

@@ -94,6 +94,7 @@ class OrderRepository implements OrderInterface
 
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
+                  'customer_note' => $orderData['customer_note']
                ];
                
 
@@ -196,7 +197,8 @@ class OrderRepository implements OrderInterface
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
                   'shipping_amount' => $order['shipping_amount'],
-                  'shipping_method' => $order['shipping_method']
+                  'shipping_method' => $order['shipping_method'],
+                  'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -215,7 +217,8 @@ class OrderRepository implements OrderInterface
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
                   'shipping_amount' => $order['shipping_amount'],
-                  'shipping_method' => $order['shipping_method']
+                  'shipping_method' => $order['shipping_method'],
+                  'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
             }
@@ -573,7 +576,8 @@ class OrderRepository implements OrderInterface
                   'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
                   'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
-                  'pick_up_location_id' => $pickUpLocationId
+                  'pick_up_location_id' => $pickUpLocationId,
+                  'customer_note' => $insert_order_by_user['customer_note']
                ];
 
                // Insert produits

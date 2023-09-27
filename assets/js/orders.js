@@ -95,9 +95,11 @@ $(document).ready(function() {
                         users: users,
                         products_pick: products_pick,
                         shipping_amount: shipping_amount,
-                        shipping_method: shipping_method
+                        shipping_method: shipping_method,
+                        customer_note:  order.customer_note
                     };
                 });
+
                 return combinedData;
             }
         },
@@ -106,7 +108,9 @@ $(document).ready(function() {
             { 
             data: null, 
                 render: function(data, type, row) {
-                    return `<div> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}</div>`
+                    return `<div class="d-flex flex-column"> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
+                                ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                            </div>`
                 }
             },
             {data: null,

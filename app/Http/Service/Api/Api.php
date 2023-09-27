@@ -45,7 +45,6 @@ class Api
       $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
         'status' => $status,
       ]);
-      
       return $response->json() ? true : false;
     } catch(Exception $e){
       return $e->getMessage();

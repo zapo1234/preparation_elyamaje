@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\Colissimo;
@@ -25,6 +26,7 @@ use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+use App\Repository\LogError\LogErrorRepository;
 
 class Order extends BaseController
 {
@@ -47,6 +49,7 @@ class Order extends BaseController
     private $colissimoConfiguration;
     private $product;
     private $chronopost;
+    private $logError;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -63,7 +66,8 @@ class Order extends BaseController
     PrinterRepository $printer,
     ColissimoRepository $colissimoConfiguration,
     ProductRepository $product,
-    Chronopost $chronopost
+    Chronopost $chronopost,
+    LogErrorRepository $logError
     ){
       $this->api = $api;
       $this->user = $user;
@@ -82,6 +86,7 @@ class Order extends BaseController
       $this->colissimoConfiguration = $colissimoConfiguration;
       $this->product = $product;
       $this->chronopost = $chronopost;
+      $this->logError = $logError;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -121,7 +126,8 @@ class Order extends BaseController
           foreach($orders as $key => $order){
             $take_order = true;
             if(count($order['shipping_lines']) > 0){
-              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
+              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100" 
+                || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002"){
                 $take_order = false;
               }
             } 
@@ -146,7 +152,8 @@ class Order extends BaseController
         } else {
           foreach($orders as $key => $order){
             if(count($order['shipping_lines']) > 0){
-               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"
+                && $order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Marseille 13002"){
                 $list_orders[] = $order;
                }
             } else {
@@ -419,8 +426,9 @@ class Order extends BaseController
     }
 
     public function validWrapOrder(Request $request){
-          
-      $order_id = $request->post('order_id');
+
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
+      $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderByIdWithCustomer($order_id);
 
       if($order){
@@ -445,23 +453,27 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
 
         // envoi des données pour créer des facture via api dolibar....
-        $this->factorder->Transferorder($orders);
+        try{
+          $this->factorder->Transferorder($orders);
 
+            // Insert la commande dans histories
+            $data = [
+              'order_id' => $order_id,
+              'user_id' => Auth()->user()->id,
+              'status' => 'finished',
+              'poste' => Auth()->user()->poste,
+              'created_at' => date('Y-m-d H:i:s')
+            ];
 
-        // Insert la commande dans histories
-        $data = [
-          'order_id' => $order_id,
-          'user_id' => Auth()->user()->id,
-          'status' => 'finished',
-          'poste' => Auth()->user()->poste,
-          'created_at' => date('Y-m-d H:i:s')
-        ];
+            $this->history->save($data);
 
-        $this->history->save($data);
-        // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-        $this->order->updateOrdersById([$order_id], "finished");
-        $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
-
+            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+            $this->order->updateOrdersById([$order_id], "finished");
+            $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+        } catch(Exception $e){
+          $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
+          echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+        }
 
         // Génère l'étiquette ou non
         if($request->post('label') == "true"){
@@ -706,6 +718,15 @@ class Order extends BaseController
         echo json_encode(['success' => true]);
       } else {
         echo json_encode(['success' => false]);
+      }
+    }
+
+    public function dolibarrOrder($token){
+      if($token =="U9rsZCwu1PeAbuImPRcTi3dlAiZ124tawABEmiPXdsLkuMdPWliUpz29xZqu"){
+        dd("Ok !");
+      } else {
+        echo json_encode(['success' => false, 'message' => 'Erreur token !']);
+        return;
       }
     }
 }

@@ -13,7 +13,7 @@ $('body').on('click', '.show_order_history_code', function () {
     var preparateur_name = $(this).attr('data-preparateur')
 
 
-    const href = id + "," + product + "," + accentsTidy(customer_name) + "," + preparateur_name;
+    const href = id + "," + product + "," + accentsTidy(customer_name) + "," + accentsTidy(preparateur_name);
     const size = 150;
 
     // Quantity of product
@@ -83,27 +83,17 @@ $('body').on('click', '.impression_code', function () {
 })
 
 
-var printer = null;
-// var ePosDev = new epson.ePOSDevice();
+var builder = null;
 var reconnect = 0;
 
 function imprimerPages() {
     
     // IP à mettre dynamiquement
     var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
+    var deviceID = "local_printer";
+
     //Create an ePOS-Print Builder object
     var builder = new epson.ePOSBuilder();
-
-    // printer.addTextLang('fr');
-    // printer.addTextAlign(printer.ALIGN_CENTER);
-    // printer.addTextDouble(true, true);
-    // printer.addTextSize(1, 1);
-    // printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
-    // printer.addText("\n"+$(".show .info_order").text());
-    // printer.addText("\n\n\n");
-    // printer.addCut(printer.CUT_FEED);
-    
 
     builder.addTextLang('fr')
     builder.addTextAlign(builder.ALIGN_CENTER);
@@ -111,93 +101,33 @@ function imprimerPages() {
     builder.addTextFont(builder.FONT_A);
     builder.addTextSize(1, 1);
     builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
-    // builder.addText("\n"+$(".show .info_order").text());
-    builder.addText("\n\n\n");
+    builder.addText("\n"+$(".show .info_order").text()+"\n");
+    builder.addText("\n");
     builder.addCut(builder.CUT_FEED);
 
     //Acquire the print document
     var request = builder.toString();
-    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid=local_printer&timeout=1000';
+    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=6000';
     var epos = new epson.ePOSPrint(address);
     epos.onreceive = function (res) {
-        // if(res.success || !res.success){
+        if(!res.success){
+            console.log(res)
+        }
+
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
         $(".impression_code").attr('disabled', false)
-        // }
-        console.log(res);
+    }
+
+    epos.onerror = function (err) {
+        $(".impression_code span").removeClass('d-none')
+        $(".impression_code div").addClass('d-none')
+        $(".impression_code").attr('disabled', false)
+        alert('Imprimante '+printer_ip+' non trouvée !')
     }
     //Send the print document
     epos.send(request);
-
-
-
-    // if (!printer_ip) {
-    //     window.print()
-    // } else {
-    //     ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
-    // }
 }
-
-function cbConnect(data, ePos) {
-    var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
-    
-    if (data == 'OK' || data == 'SSL_CONNECT_OK') {
-        var deviceID = "local_printer";
-        ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
-    } else if (reconnect < 3 && printer_ip != false){
-        reconnect = reconnect + 1
-        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
-    } else {
-        console.log('Erreur 1:' + data)
-        $(".impression_code span").removeClass('d-none')
-        $(".impression_code div").addClass('d-none')
-        $(".impression_code").attr('disabled', false)
-        window.print()
-    }
-}
-
-function cbCreateDevice_printer(devobj, retcode) {
-    if (retcode == 'OK') {
-        printer = devobj;
-        printer.timeout = 60000;
-        printer.onreceive = function (res) {
-            if (!res.success) {
-                window.print()
-            }
-        };
-        printer.oncoveropen = function () { alert('coveropen'); };
-        printOrder()
-    } else {
-        console.log('Erreur 2:' + retcode)
-        $(".impression_code span").removeClass('d-none')
-        $(".impression_code div").addClass('d-none')
-        $(".impression_code").attr('disabled', false)
-        window.print()
-    }
-}
-
-function printOrder() {
-    printer.addTextLang('fr');
-    printer.addTextAlign(printer.ALIGN_CENTER);
-    printer.addTextDouble(true, true);
-    printer.addTextSize(1, 1);
-    printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
-    printer.addText("\n"+$(".show .info_order").text());
-
-    // $('.show .info_order_product').find('span').each(function () {
-    //     printer.addText("\n\n" + $(this).text());
-    // });
-
-    printer.addText("\n\n\n");
-    printer.addCut(printer.CUT_FEED);
-    printer.send();
-    $(".impression_code span").removeClass('d-none')
-    $(".impression_code div").addClass('d-none')
-    $(".impression_code").attr('disabled', false)
-}
-
 
 window.addEventListener("afterprint", (event) => {
     $(".impression_code span").removeClass('d-none')
