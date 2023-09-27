@@ -102,16 +102,20 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
 
+    // Email preview
+    Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 });
 
 // PRÉPARATEUR
 Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/orders", [Controller::class, "orderPreparateur"])->name('orders');
     Route::get("/ordersDistributeurs", [Controller::class, "ordersDistributeurs"])->name('orders.distributeurs');
+    Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
+    Route::post("/checkProductBarcodeForTransfers", [Order::class, "checkProductBarcodeForTransfers"])->name('orders.checkProductBarcodeForTransfers'); 
 });
 
 // EMBALLEUR
@@ -205,9 +209,4 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
-// Email preview
-Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 
-
-// 98357
-// 98366 

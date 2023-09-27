@@ -6889,6 +6889,10 @@ select:focus, input:focus{
 	border: none !important;
 }
 
+.modal_verif_order2 .quantity_product{
+	border: none !important;
+	color: red;
+}
 .modal_backfrop_fixe{
     background-color: rgba(0, 0, 0, 0.4);
 }

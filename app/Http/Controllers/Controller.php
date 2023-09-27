@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Service\Api\Api;
+use App\Repository\Reassort\ReassortRepository;
 
 class Controller extends BaseController
 {
@@ -29,6 +30,8 @@ class Controller extends BaseController
     private $categories;
     private $products;
     private $printer;
+    private $api;
+    private $reassort;
 
     public function __construct(
         Order $orderController,
@@ -38,7 +41,8 @@ class Controller extends BaseController
         CategoriesRepository $categories,
         ProductRepository $products,
         PrinterRepository $printer,
-        Api $api
+        Api $api,
+        ReassortRepository $reassort
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -47,7 +51,8 @@ class Controller extends BaseController
         $this->categories = $categories;
         $this->products = $products;
         $this->printer = $printer;
-        $this->api=$api;
+        $this->api = $api;
+        $this->reassort = $reassort;
     }
 
     // INDEX ADMIN
@@ -169,6 +174,31 @@ class Controller extends BaseController
         ]);
     }
 
+    // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
+    public function ordersTransfers(){
+        $orders = [];
+        $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
+
+        foreach($reassort as $key => $rea){
+            $orders[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
+            $orders[$rea->identifiant_reassort]['date'] = $rea->datem;
+            $orders[$rea->identifiant_reassort]['products'][] = [
+                'product_id' => $rea->product_id,
+                'name' => $rea->name,
+                'qty' => $rea->qty,
+                'price' => $rea->price,
+                'barcode' => $rea->barcode,
+                'location' => $rea->location
+            ];
+
+        }
+
+        // Récupère le premier réassort
+        $total_order = count($orders);
+        $orders = $orders[array_key_first($orders)];
+        return view('preparateur.transfers.index_preparateur', ['orders' => $orders, 'number_orders' => $total_order, 'user' => Auth()->user()->name]);
+    }
+
     // INDEX EMBALLEUR 
     public function wrapOrder()
     {
@@ -179,10 +209,10 @@ class Controller extends BaseController
 
         
         $method = "GET";
-       $apiKey = env('KEY_API_DOLIBAR'); 
-        // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+        $apiKey = env('KEY_API_DOLIBAR'); 
+            // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
 
-       $apiUrl = env('KEY_API_URL');
+        $apiUrl = env('KEY_API_URL');
         // $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
 
 
@@ -284,7 +314,7 @@ class Controller extends BaseController
         // $coef = 1*1.10;
 
         $coef = 1;
-        $limite = 100;
+        $limite = 50;
 
           $produitParam = array(
             'apikey' => $apiKey,

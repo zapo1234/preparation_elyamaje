@@ -120,7 +120,7 @@ document.addEventListener("keydown", function (e) {
                         quantity_pick_in = quantity_pick_in + 1
                         quantity_pick_in = quantity_pick_in > quantity_to_pick_in ? quantity_to_pick_in : quantity_pick_in
 
-                        if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1 &&
+                        if ((quantity_to_pick_in > 1 && quantity_to_pick_in <= 10) &&
                             (parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0) {
 
                             // Update pick quantity
@@ -141,6 +141,22 @@ document.addEventListener("keydown", function (e) {
                             $("#modalverification").modal('show')
                             $("#barcode_verif").val($("#barcode").val())
                             saveItem(order_id, true)
+                        } else if(quantity_to_pick_in > 10){
+
+                            $(".quantity_product").text('')
+                            $(".quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
+                            $(".name_quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).children('.detail_product_name_order').children('span').text())
+                            $("#product_to_verif").val($("#barcode").val())
+
+                            $('#modalverification2').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+
+                            $("#modalverification2").attr('data-order', order_id)
+                            $("#modalverification2").modal('show')
+                            $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
+                            saveItem(order_id, false, true)
                         } else if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1) {
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
                             $("#barcode_verif").val($("#barcode").val())
@@ -563,6 +579,7 @@ function enter_manually_barcode(product_id, order_id){
     $("#modalManuallyBarcode").modal('show')
 }
 
+// Commandes classiques
 $(".valid_manually_barcode").on('click', function(){
 
     var product_id = $("#product_id_barcode").val()
@@ -593,3 +610,140 @@ $(".valid_manually_barcode").on('click', function(){
         $("#barcode").val("")
     })
 })
+
+
+
+
+
+/* ----------------- TRANSFER ----------------- */
+
+$(".valid_manually_barcode_transfert").on('click', function(){
+
+    var product_id = $("#product_id_barcode").val()
+    var barcode = $("#barcode_manually").val()
+    var order_id = $("#product_id_barcode_order_id").val()
+
+    // Update en base de données
+    $.ajax({
+        url: "checkProductBarcodeForTransfers",
+        method: 'POST',
+        data: { _token: $('input[name=_token]').val(), product_id: product_id, barcode: barcode}
+    }).done(function (data) {
+        if (JSON.parse(data).success) {
+            if(!$(".barcode_"+barcode).hasClass('pick')){
+                $(".barcode_"+barcode).addClass('pick')
+                $(".barcode_"+barcode).find('.quantity_pick_in').text($(".barcode_"+barcode).find('.quantity_to_pick_in').text())
+                $("#modalManuallyBarcode").modal('hide')
+                $("#barcode").val(barcode)
+                saveItem(order_id, false, true)
+            } else {
+                $("#modalManuallyBarcode").modal('hide')
+            }
+        } else {
+           $("#barcode_manually").css('border', '1px solid red')
+           $('#barcode_manually').attr('placeholder','Code barre invalide !');
+        }
+        $("#barcode_manually").val("")
+        $("#barcode").val("")
+    })
+})
+
+// $(".validate_pick_in_transfer").on('click', function(){
+//     var order_id = $("#order_in_progress").val()
+    
+//     if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
+//         // Ouvre la modal de loading
+//         $(".loading_prepared_command").removeClass('d-none')
+//         $("#modalSuccess").modal('show')
+//         var pick_items = JSON.parse(localStorage.getItem('barcode'))
+//         var order_object = false
+
+//         if (pick_items) {
+//             // Récupère les produits de cette commande
+//             order_object = pick_items.find(
+//                 element => element.order_id == order_id
+//             )
+//         }
+        
+
+//         if (order_object) {
+//             pick_items = order_object.products
+//             pick_items_quantity = order_object.quantity
+//         } else {
+//             pick_items = false
+//             pick_items_quantity = false
+//         }
+
+//         var customer_name = $(".customer_name_" + order_id).text()
+//         var user_name = $("#userinfo").val()
+
+//         $(".modal_order").modal('hide')
+
+//         $.ajax({
+//             url: "ordersPrepared",
+//             method: 'POST',
+//             data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0 }
+//         }).done(function (data) {
+            
+//             $(".loading_prepared_command").addClass('d-none')
+
+//             if (JSON.parse(data).success) {
+//                 $(".success_prepared_command").removeClass('d-none')
+//                 const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
+//                 const size = 150;
+
+//                 $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
+//                 var list_products = ""
+//                 $("#order_" + order_id + " .product_order").each(function () {
+//                     list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
+//                 });
+
+//                 $(".info_order_product").children('span').remove()
+//                 $(".info_order_product").append(list_products)
+
+//                 new QRCode(document.querySelector("#qrcode"), {
+//                     text: href,
+//                     width: size,
+//                     height: size,
+
+//                     colorDark: "#000000",
+//                     colorLight: "#ffffff"
+//                 });
+
+
+//                 if (localStorage.getItem('barcode')) {
+//                     pick_items = JSON.parse(localStorage.getItem('barcode'))
+//                     Object.keys(pick_items).forEach(function (k, v) {
+//                         if (pick_items[k]) {
+//                             if (order_id == pick_items[k].order_id) {
+//                                 pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+//                             }
+//                         }
+//                     })
+//                 }
+
+//                 if (pick_items.length == 0) {
+//                     localStorage.removeItem('barcode');
+//                 } else {
+//                     localStorage.setItem('barcode', JSON.stringify(pick_items));
+//                 }
+
+//             } else {
+//                 $(".info_message").text("Produits manquants !")
+//                 $("#infoMessageModal").modal('show')
+//                 $(".error_prepared_command").removeClass('d-none')
+//             }
+//         });
+//     } else {
+//         // Récupère les produits de cette commande
+//         if ($("#order_" + order_id + " .pick").length >= 0) {
+//             $('#modalPartial').modal({
+//                 backdrop: 'static',
+//                 keyboard: false
+//             })
+//             $("#modalPartial").modal('show')
+//         }
+//     }
+// })
+
+/* ----------------- TRANSFER ----------------- */
