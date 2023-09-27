@@ -7250,7 +7250,7 @@ textarea:focus{
 	text-align: center !important;
 }
 
-.alert-danger div::before{
+.alert-danger div:not(#dangerReassort)::before{
 	display: inline-block;
     font: normal normal normal 32px/1'LineIcons';
     font-size: 22px;
@@ -7269,7 +7269,7 @@ textarea:focus{
 	color: white !important;
 }
 
-.alert-success div::before{
+.alert-success div:not(#successReassort)::before{
 	content: "\ea54";
 	display: inline-block;
     font: normal normal normal 32px/1'LineIcons';
