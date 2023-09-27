@@ -720,15 +720,6 @@ class Order extends BaseController
         echo json_encode(['success' => false]);
       }
     }
-
-    public function dolibarrOrder($token){
-      if($token =="U9rsZCwu1PeAbuImPRcTi3dlAiZ124tawABEmiPXdsLkuMdPWliUpz29xZqu"){
-        dd("Ok !");
-      } else {
-        echo json_encode(['success' => false, 'message' => 'Erreur token !']);
-        return;
-      }
-    }
 }
 
 

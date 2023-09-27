@@ -136,6 +136,8 @@
                     </li>
                     <li> <a href="{{ url('ordersDistributeurs') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
                     </li>
+                    <li> <a href="{{ url('ordersTransfers') }}"><i class="bx bx-right-arrow-alt"></i>Transfert</a>
+                    </li>
                     <li> <a href="{{ url('ordersHistory') }}"><i class="bx bx-right-arrow-alt"></i>Historique</a>
                     </li>
                 </ul>

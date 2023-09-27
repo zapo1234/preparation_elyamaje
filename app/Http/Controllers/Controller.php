@@ -163,6 +163,11 @@ class Controller extends BaseController
         ]);
     }
 
+    // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
+    public function ordersTransfers(){
+        dd("d");
+    }
+
     // INDEX EMBALLEUR 
     public function wrapOrder()
     {
