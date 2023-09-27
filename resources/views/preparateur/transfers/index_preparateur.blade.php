@@ -55,25 +55,17 @@
 						<div class="courses-container mb-4">
 							<div class="course">
 								<div class="course-preview">
-									<h6>Commande</h6>
-									<h2>#{{ $orders['details']['id'] }}</h2>
+									<h6>Transfert</h6>
 								</div>
 								<div class="w-100">
 									<div class="course-info d-flex justify-content-between align-items-center">
-										<div class="{{ $orders['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
-											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
-											<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
-										
-											@if($orders['details']['customer_note'])
-												<span class="customer_note_preparateur"><span>Note :</span> {{ $orders['details']['customer_note'] }} </h2>
-											@endif
+										<div>
+											<h6>Le {{ \Carbon\Carbon::parse($orders['date'])->isoFormat(' DD/MM/YY') }}</h6>
 										</div>
-										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
-											<div class="chronopost_shipping_method_preparateur"></div>
-										@endif
-										<button id="{{ $orders['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+
+										<button id="{{ $orders['id'] }}" class="d-none show_order btn">Préparer</button>
 									</div>
-									<div class="progress" id="progress_{{ $orders['details']['id'] }}">
+									<div class="progress" id="progress_{{ $orders['id'] }}">
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 									</div>
 								</div>
@@ -82,7 +74,7 @@
 						</div>
 
 						<!-- MODAL -->
-						<div class="modal_order modal fade" data-order="{{ $orders['details']['id'] }}" id="order_{{ $orders['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+						<div class="modal_order modal fade" data-order="{{ $orders['id'] }}" id="order_{{ $orders['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered" role="document">
 								<div class="modal-content">
 									<div class="modal-body detail_product_order">
@@ -95,26 +87,24 @@
 											</div>
 
 											<div class="body_detail_product_order">
-												@foreach($orders['items'] as $item)
-												<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['quantity'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+												@foreach($orders['products'] as $product)
+												<div class="barcode_{{ $product['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
-														@if($item['cost'] == 0)
-														<span><span class="text-success">(Cadeau) </span>{{ $item['name'] }}</span>
+														
+														@if($product['name'])
+															<span>{{ $product['name'] }}</span>
 														@else
-															@if($item['name'])
-																<span>{{ $item['name'] }}</span>
-															@else
-																<span class="text-danger">Produit manquant</span>
-															@endif
+															<span class="text-danger">Produit manquant</span>
 														@endif
+													
 														<div class="mt-1 d-flex align-items-center">
-															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<span style="font-size:13px">{{ $product['barcode'] ?? '' }}</span>
+															<span onclick="enter_manually_barcode({{ $product['product_id']}} , {{ $orders['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
 														</div>
 													</div>
-													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
-													<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['quantity'] }}</span> </span>
-													<span class="column44">{{ $item['location'] }}</span>
+													<span class="column22">{{ round(floatval($product['price']),2) }}</span>
+													<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $product['qty'] }}</span> </span>
+													<span class="column44">{{ $product['location'] }}</span>
 												</div>
 												@endforeach
 											</div>
@@ -122,40 +112,14 @@
 											<div class="align-items-end flex-column mt-2 d-flex justify-content-end">
 												<div class="w-100 d-flex align-items-end justify-content-between flex-wrap">
 													<span class="mt-1 mb-2 montant_total_order">
-														@if($orders['details']['coupons'])
-														@foreach(explode(',', $orders['details']['coupons']) as $key => $coupon)
-														<div><span class="font-18 badge bg-success">Code : {{ $coupon }}</span></div>
-														@endforeach
-														@endif
-
-														#{{ $orders['details']['id'] }}
+														#Transfert {{ $orders['id'] }}
 													</span>
-													<div class="mt-1 mb-2 montant_total_order detail_amount">
-														<div>
-															</span>Sous-total des articles : <strong> {{ $orders['details']['total'] + $orders['details']['discount'] + $orders['details']['gift_card_amount'] - $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
-														</div>
-														<div class="text-success">
-															@if($orders['details']['discount'] > 0)
-															</span>Code promo: <strong class="discount"> {{ $orders['details']['coupons'] ?? '' }} (-{{ $orders['details']['discount'] }} {{ config('app.currency_symbol') }})</strong>
-															@endif
-														</div>
-														<div>
-															<span class="detail_footer_order">TVA: </span><strong>{{ $orders['details']['total_tax'] }} {{ config('app.currency_symbol') }}</strong>
-														</div>
-														<div class="text-success">
-															@if($orders['details']['gift_card_amount'] > 0)
-															</span>Gift Card : <strong class="discount"> ({{-$orders['details']['gift_card_amount'] }}{{ config('app.currency_symbol') }})</strong>
-															@endif
-														</div>
-														<div>
-															<span class="detail_footer_order">Payé: </span><strong>{{ $orders['details']['total'] }} {{ config('app.currency_symbol') }}</strong>
-														</div>
-													</div>
+											
 												</div>
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													<button type="button" class="reset_order btn btn-dark px-5"><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>
-													<button type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
+													<button type="button" class="validate_pick_in_transfer btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
 												</div>
 
 											</div>
@@ -255,6 +219,21 @@
 			</div>
 		</div>
 
+		<!-- Modal vérification quantité +10 -->
+		<div class="modal_reset_order modal_verif_order2 modal fade" data-order="" id="modalverification2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+						<h2 class="text-center">Attention, cette commande contient <span class="quantity_product"></span> <span class="name_quantity_product"></span></h2>
+						<!-- <input type="hidden" value="" id="product_to_verif"> -->
+					</div>
+					<div class="modal-footer d-flex w-100 justify-content-center">
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Modal info produit déjà bippé ou inexistant-->
 		<div class="modal fade modal_reset_order" id="infoMessageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
@@ -280,7 +259,7 @@
 						<input type="hidden" id="product_id_barcode_order_id" value="">
 						<div class="mt-3 w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-							<button style="margin-left:10px;" type="button" class="valid_manually_barcode btn btn-dark px-5">Valider</button>
+							<button style="margin-left:10px;" type="button" class="valid_manually_barcode_transfert btn btn-dark px-5">Valider</button>
 						</div>
 					</div>
 				</div>

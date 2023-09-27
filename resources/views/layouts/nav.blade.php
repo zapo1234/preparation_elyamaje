@@ -49,6 +49,13 @@
                     </li>
                 </ul>
             </li>
+            <li>
+                <a href="{{ url('getVieuxSplay') }}">
+                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    </div>
+                    <div class="menu-title">Approvisionnements</div>
+                </a>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
@@ -123,6 +130,13 @@
                     </li>
                 </ul>
             </li>
+            <li>
+                <a href="{{ url('getVieuxSplay') }}">
+                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    </div>
+                    <div class="menu-title">Approvisionnements</div>
+                </a>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
@@ -170,14 +184,6 @@
                 </ul>
             </li>
         @endif
-
-        <li>
-            <a href="{{ url('getVieuxSplay') }}">
-                <div class="parent-icon"><i class="bx bx-lock-open"></i>
-                </div>
-                <div class="menu-title">Approvisionnements</div>
-            </a>
-        </li>
     </ul>
     
     <!--end navigation-->

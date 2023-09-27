@@ -27,6 +27,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 use App\Repository\LogError\LogErrorRepository;
+use App\Repository\Reassort\ReassortRepository;
 
 class Order extends BaseController
 {
@@ -50,6 +51,7 @@ class Order extends BaseController
     private $product;
     private $chronopost;
     private $logError;
+    private $reassort;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -67,7 +69,9 @@ class Order extends BaseController
     ColissimoRepository $colissimoConfiguration,
     ProductRepository $product,
     Chronopost $chronopost,
-    LogErrorRepository $logError
+    LogErrorRepository $logError,
+    ReassortRepository $reassort
+
     ){
       $this->api = $api;
       $this->user = $user;
@@ -87,6 +91,7 @@ class Order extends BaseController
       $this->product = $product;
       $this->chronopost = $chronopost;
       $this->logError = $logError;
+      $this->reassort = $reassort;
     }
 
     public function orders($id = null, $distributeur = false){
@@ -715,6 +720,18 @@ class Order extends BaseController
       $barcode_valid = $this->product->checkProductBarcode($product_id, $barcode);
       
       if($barcode_valid == 1){
+        echo json_encode(['success' => true]);
+      } else {
+        echo json_encode(['success' => false]);
+      }
+    }
+
+    public function checkProductBarcodeForTransfers(Request $request){
+      $product_id = $request->post('product_id');
+      $barcode = $request->post('barcode');
+      $barcode_valid = $this->reassort->checkProductBarcode($product_id, $barcode);
+      
+      if($barcode_valid > 0){
         echo json_encode(['success' => true]);
       } else {
         echo json_encode(['success' => false]);
