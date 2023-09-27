@@ -65,6 +65,13 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
      // ajax verification des commandes api dolibar factures.
      Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
 
+     // Route pour approvisionnement
+     Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
+     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
+
+     Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
+
      
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');

@@ -29,11 +29,12 @@ class TransferOrder
       private $countc = [];// les clients non distributeur.
       private $accountpay;
     
-       public function __construct(Api $api,
-       CommandeidsRepository $commande,
-       TiersRepository $tiers,
-       DonRepository $don,
-       DonsproductRepository $dons
+       public function __construct(
+        Api $api,
+        CommandeidsRepository $commande,
+        TiersRepository $tiers,
+        DonRepository $don,
+        DonsproductRepository $dons
        )
        {
          $this->api=$api;

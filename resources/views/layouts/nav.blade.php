@@ -170,6 +170,14 @@
                 </ul>
             </li>
         @endif
+
+        <li>
+            <a href="{{ url('getVieuxSplay') }}">
+                <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                </div>
+                <div class="menu-title">Approvisionnements</div>
+            </a>
+        </li>
     </ul>
     
     <!--end navigation-->
