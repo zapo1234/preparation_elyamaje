@@ -69,8 +69,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
      Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
      Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
      Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
+     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
+     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
 
-     Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
+
+    //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
 
      
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');

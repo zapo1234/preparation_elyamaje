@@ -205,17 +205,30 @@ class Controller extends BaseController
        // dd($wh_id_name);
 
         // dump($listWarehouses);
-         //dd($data_reassort);
+       //  dd($data_reassort);
 
         $liste_reassort = array();
         $id_etrepot_source = "";
         $id_etrepot_destination = "";
+        $etat = "";
+        $val_etat = 0;
 
         foreach ($data_reassort as $key => $value) {
 
             if ($id_etrepot_source == "" && $id_etrepot_destination == "") {
                 $id_etrepot_source = (explode("to",$value->sense))[0];
                 $id_etrepot_destination = (explode("to",$value->sense))[1];
+                
+            }
+            $val_etat = $value->id_reassort;
+            if ($val_etat == 0) {
+                $etat = '<span class="badge bg-warning text-dark">En attente</span>';
+            }
+            if ($val_etat < 0) {
+                $etat = '<span class="badge bg-info text-dark">En court</span>';
+            }
+            if ($val_etat > 0) {
+                $etat = '<span class="badge bg-success">Validé</span>';
             }
             
 
@@ -224,11 +237,12 @@ class Controller extends BaseController
                 "date" => date('d/m/Y H:i:s', $value->identifiant_reassort),
                 "entrepot_source" => $wh_id_name[$id_etrepot_source],
                 "entrepot_destination" => $wh_id_name[$id_etrepot_destination],
-                "etat" => ($value->id_reassort == 0)? '<span class="badge bg-warning text-dark">En attente</span>':'<span class="badge bg-success">Validé</span>',
+                "etat" => $etat,
+                "val_etat" => $value->id_reassort
             ]);
         }
 
-       // dd($liste_reassort);
+        // dd($liste_reassort);
 
 
         return view('admin.supply',
@@ -265,7 +279,7 @@ class Controller extends BaseController
         // 1- On récupère toute les facture de la semaine -7 jours pour vour les vente
         // puis on calcule la moyen hebdomadaire de vente pour chaque produit
 
-        $interval = date("Y-m-d", strtotime("-14 days")); // 24 semaines
+        $interval = date("Y-m-d", strtotime("-28 days")); // 24 semaines
         $coef = 1.10/(0.25);
         // $coef = 1*1.10;
 
@@ -616,77 +630,14 @@ class Controller extends BaseController
 
     }
 
-    function teste_insert(){
 
-        $data = [
-            [
-                'product_id' => '4962',
-                'warehouse_id' => '1',
-                'qty' => -25,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '4962',
-                'warehouse_id' => '6',
-                'qty' => '25',
-                'type' => 0,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5467',
-                'warehouse_id' => '1',
-                'qty' => -98,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5467',
-                'warehouse_id' => '6',
-                'qty' => '98',
-                'type' => 0,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5466',
-                'warehouse_id' => '1',
-                'qty' => -58,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ]
-        ];
-        
+    function delete_transfert($identifiant){
 
-                
-
-        $resDB = DB::table('prepa_hist_reassort')->insert($data_save);
+        dd($identifiant);
+    }
 
 
-
+    function cancel_transfert($identifiant){
+        dd($identifiant);
     }
 }

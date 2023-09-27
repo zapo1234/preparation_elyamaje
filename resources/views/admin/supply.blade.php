@@ -19,7 +19,7 @@
         {{-- alert succes --}}
         <div class="alert alert-success border-0 bg-success alert-dismissible fade show alert-succes-calcul" style="display: none">
 
-            <div class="text-white text_alert">Transfère réussit</div>
+            <div class="text-white text_alert">Transfère envoyer pour préparation</div>
 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 
@@ -46,19 +46,21 @@
 
                             <select id="entrepot_source" name="entrepot_source" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à déstoquer</option>
-                                @foreach ($listWarehouses as $listWarehouse)
-                                  
-                                    @if (isset($products_reassort))
-                                        @if ($listWarehouse["id"] == $entrepot_source)
-                                            <option value="{{$listWarehouse["id"]}}" selected>"{{$listWarehouse["libelle"]}}"</option>
-                                        @else
-                                            <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
-                                        @endif 
-                                    @else  
-                                        <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
-                                    @endif
-                                    
-                                @endforeach
+                                    @foreach ($listWarehouses as $listWarehouse)
+                                        @if ($listWarehouse["id"] == "6")
+                                            @if (isset($products_reassort))
+                                                @if ($listWarehouse["id"] == $entrepot_source)
+                                                    <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                                @else
+                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                @endif 
+                                            @else  
+                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                            @endif
+                                        @else  
+                                            {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
+                                        @endif
+                                    @endforeach
                             </select>
                         </div>
 
@@ -72,14 +74,18 @@
                             <select id="entrepot_destination" name="entrepot_destination" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à approvisionner</option>
                                 @foreach ($listWarehouses as $listWarehouse)
-                                    @if (isset($products_reassort))
-                                        @if ($listWarehouse["id"] == $entrepot_destination)
-                                            <option value="{{$listWarehouse["id"]}}" selected>"{{$listWarehouse["libelle"]}}"</option>
-                                        @else
-                                            <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
+                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11")
+                                        @if (isset($products_reassort))
+                                            @if ($listWarehouse["id"] == $entrepot_destination)
+                                                <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                            @else
+                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                            @endif
+                                        @else  
+                                            <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
                                         @endif
                                     @else  
-                                        <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
+                                        {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
                                     @endif
                                     
                                 @endforeach
@@ -276,6 +282,7 @@
                                     <th title="L'entrepôt qui va être décrémenté">Entrepot source</th>
                                     <th title="L'entrepôt qui va être décrémenté">Entrepôt de destination</th>
                                     <th title="Points actuellement valide de l'utilisateur">Etat</th>
+                                    <th title="Points actuellement valide de l'utilisateur">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody_id_1">
@@ -287,10 +294,49 @@
                                         <td id="{{$value["identifiant"]}}_entrepot_source" style="text-align: left !important;">{{$value["entrepot_source"]}}</td>
                                         <td id="{{$value["identifiant"]}}_entrepot_destination" style="text-align: left !important;">{{$value["entrepot_destination"]}}</td>
                                         <td id="{{$value["identifiant"]}}_etat" style="text-align: left !important;">{!!$value["etat"]!!}</td>
-                                    </tr>
-                                
-                                @endforeach
+                                       
+                                        <td id="{{$value["identifiant"]}}_action" class="d-flex">
+                                    
+                                            @if ($value["val_etat"] == 0)
+                                                {{-- a griser --}}
+                                                <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                </button>
 
+                                                <form action="{{ route('delete_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post">
+                                                    @csrf
+                                                    <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;">
+                                                        <i class="fadeIn animated bx bx-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @elseif ($value["val_etat"] > 0)
+                                                <form action="{{ route('cancel_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post">
+                                                    @csrf
+                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
+                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                    </button>
+                                                </form>
+                                                {{-- a griser --}}
+                                                <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <i class="fadeIn animated bx bx-trash"></i>
+                                                </button>
+                                            @elseif ($value["val_etat"] < 0)
+                                            
+                                            <div>
+                                                <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
+                                                    <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                </button>
+                                            </div>
+                                            {{-- a griser --}}
+                                            <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                <i class="fadeIn animated bx bx-trash"></i>
+                                            </button>
+
+                                            @endif
+
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>   
@@ -567,6 +613,9 @@
         $(this).html(spinner);
 
     })
+
+    // supprimer un transfère (uniquement si la preparation n'a pas commencé)
+
 
 </script>
 
