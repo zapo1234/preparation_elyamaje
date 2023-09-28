@@ -485,7 +485,9 @@ class Label extends BaseController
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
                 // Update status sur Wordpress pour les colis livré
                 //$update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
+                dd($trackingLabelChronopost);
                 $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
+
 
                 // $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
                 // Update en local
