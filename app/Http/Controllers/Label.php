@@ -466,10 +466,10 @@ class Label extends BaseController
                 // dd($labels);
                 // Récupère les status de chaque commande
                 $trackingLabel = $this->colissimoTracking->getStatus($labels);
-                // Update en local
-                $this->label->updateLabelStatus($trackingLabel);
                 // Update status sur Wordpress pour les colis livré
                 $update = $this->colissimo->trackingStatusLabel($trackingLabel);
+                // Update en local
+                $this->label->updateLabelStatus($trackingLabel);
                 
                 return $update;
             } catch(Exception $e){

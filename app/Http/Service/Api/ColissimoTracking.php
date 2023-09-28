@@ -26,7 +26,7 @@ class ColissimoTracking
 
 
             } catch(Exception $e){
-                dd("Erreur");
+                dd($e->getMessage());
             }
     
             if ($response->status() === 200) {
@@ -38,7 +38,7 @@ class ColissimoTracking
                 foreach($responseData['parcel']['step'] as $step){
                     if($step['status'] == "STEP_STATUS_ACTIVE"){
                         $orders_status[$key]['step'] = $step['stepId'];
-                        $orders_status[$key]['message'] = $step['labelShort'];
+                        $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
                     }
                 }
             }
