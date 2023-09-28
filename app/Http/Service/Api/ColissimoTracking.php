@@ -50,10 +50,6 @@ class ColissimoTracking
             } catch(Exception $e){
                 dd($e->getMessage());
             }
-
-            if($trackingNumber->tracking_number == "6C17542153750"){
-                dd("dd");
-            }
         }
 
         return $orders_status;

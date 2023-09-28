@@ -463,15 +463,6 @@ class Label extends BaseController
 
             try{
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
-               
-                foreach( $labels as $label){
-                    if($label->tracking_number == "6C17542153750"){
-                        dd("dd");
-                    }
-                }
-
-                die;
-                // dd($labels);
                 // Récupère les status de chaque commande
                 $trackingLabel = $this->colissimoTracking->getStatus($labels);
                 // Update status sur Wordpress pour les colis livré
