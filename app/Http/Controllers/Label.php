@@ -481,19 +481,16 @@ class Label extends BaseController
             try{
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
                 // Récupère les status de chaque commande
-                // $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
+                $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
                 // Update status sur Wordpress pour les colis livré
-                //$update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
+                $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
                 $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
-
-
-                // $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
+                $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
                 // Update en local
-                // $this->label->updateLabelStatus($trackingLabel);
-                
-                dd($update2);
-                // return $update;
+                $this->label->updateLabelStatus($trackingLabel);
+
+                return $update;
             } catch(Exception $e){
                 $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
                 // dd($e->getMessage());
