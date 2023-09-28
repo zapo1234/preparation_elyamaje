@@ -44,7 +44,7 @@ class ColissimoTracking
                     }
                 }
             } catch(Exception $e){
-                dd("Erreur ".$e->getMessage());
+                dd($responseData);
             }
         }
 
