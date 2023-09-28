@@ -2,6 +2,7 @@
 
 namespace App\Repository\Reassort;
 
+use Exception;
 use App\Models\Reassort;
 
 class ReassortRepository implements ReassortInterface 
@@ -25,7 +26,50 @@ class ReassortRepository implements ReassortInterface
 
     public function checkProductBarcode($product_id, $barcode){
         return $this->model::where('product_id', $product_id)->where('barcode', $barcode)->count();
-    }
+     }
+
+     public function findByIdentifiantReassort($identifiant, $cles = null)
+     {
+        try {
+            if ($cles) {
+                $res = Reassort::where('identifiant_reassort', $identifiant)->get($cles)->toArray();
+                return $res;
+            }else {
+                $res = Reassort::where('identifiant_reassort', $identifiant)->get()->toArray();
+                return $res;
+            }
+        } catch (Exception $e) {
+            return -1;
+        }
+
+     }
+
+     public function deleteByIdentifiantReassort($identifiant)
+     {
+        try {
+            $deletedRows = Reassort::where('identifiant_reassort', $identifiant)->delete();
+            return $deletedRows;
+        } catch (Exception $e) {
+            return -1;
+        }
+     }
+
+     public function update_in_hist_reassort($identifiant, $colonnes_values){
+
+        try {
+            Reassort::where('identifiant_reassort', $identifiant)
+            ->update($colonnes_values);
+            return true;
+
+        } catch (\Throwable $th) {
+            return -1;
+        }
+
+     }
+
+
+
+     
 
     public function checkIfDone($order_id, $barcode_array, $products_quantity){
 

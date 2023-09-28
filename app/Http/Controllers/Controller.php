@@ -283,6 +283,8 @@ class Controller extends BaseController
       
         $wh_id_name = array();
 
+        
+
         foreach ($listWarehouses as $key => $value) {
            foreach ($value as $k => $val) {
             if ($k == "id") {
@@ -290,33 +292,52 @@ class Controller extends BaseController
             }
            }
         }
-       // dd($wh_id_name);
+    //    dump($wh_id_name);
 
         // dump($listWarehouses);
-         //dd($data_reassort);
+       //  dd($data_reassort);
 
         $liste_reassort = array();
         $id_etrepot_source = "";
         $id_etrepot_destination = "";
+        $etat = "";
+        $val_etat = 0;
+
+    //    dump($data_reassort);
 
         foreach ($data_reassort as $key => $value) {
 
-            if ($id_etrepot_source == "" && $id_etrepot_destination == "") {
-                $id_etrepot_source = (explode("to",$value->sense))[0];
-                $id_etrepot_destination = (explode("to",$value->sense))[1];
-            }
-            
+            $id_etrepot_source = (explode("to",$value->sense))[0];
+            $id_etrepot_destination = (explode("to",$value->sense))[1];
+                
+            $val_etat = $value->id_reassort;
+
+            if (!$value->origin_id_reassort) {          
+                if ($val_etat == 0) {
+                    $etat = '<span class="badge bg-warning text-dark">En attente</span>';
+                }
+                if ($val_etat < 0) {
+                    $etat = '<span class="badge bg-info text-dark">En court</span>';
+                }
+                if ($val_etat > 0) {
+                    $etat = '<span class="badge bg-success">Validé</span>';
+                }
+            }else {
+                $etat = '<span class="badge bg-secondary">Annulé ('.$value->origin_id_reassort.')</span>';
+            } 
 
             array_push($liste_reassort,[
                 "identifiant" => $value->identifiant_reassort,
                 "date" => date('d/m/Y H:i:s', $value->identifiant_reassort),
                 "entrepot_source" => $wh_id_name[$id_etrepot_source],
                 "entrepot_destination" => $wh_id_name[$id_etrepot_destination],
-                "etat" => ($value->id_reassort == 0)? '<span class="badge bg-warning text-dark">En attente</span>':'<span class="badge bg-success">Validé</span>',
+                "etat" => $etat,
+                "val_etat" => $value->id_reassort,
+                "origin_id_reassort" => $value->origin_id_reassort
             ]);
         }
 
-       // dd($liste_reassort);
+        //   dd($listWarehouses);
 
 
         return view('admin.supply',
@@ -334,8 +355,6 @@ class Controller extends BaseController
         $entrepot_source = $request->post('entrepot_source');
         $entrepot_destination = $request->post('entrepot_destination');
 
-      //  dd($entrepot_destination);
-
         if (!$entrepot_source || !$entrepot_destination) {
             dd("selectionnez les entrepots");
         }
@@ -350,36 +369,54 @@ class Controller extends BaseController
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
 
+    
+
         // 1- On récupère toute les facture de la semaine -7 jours pour vour les vente
         // puis on calcule la moyen hebdomadaire de vente pour chaque produit
 
-        $interval = date("Y-m-d", strtotime("-28 days")); // 24 semaines
-        $coef = 1.10/(0.25);
-        // $coef = 1*1.10;
-
-        $coef = 1;
-        $limite = 50;
-
-          $produitParam = array(
-            'apikey' => $apiKey,
-            'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC4%'",
-
-        //    'sqlfilters' => "t.ref LIKE '%TC1%'",
-
-            'limit' => $limite,
-
-            'page' => 0,
-            'sortfield' => 'rowid',
-            'sortorder' => 'DESC',
-        );
-
+        $mois = 1; // nombre de mois
+        $jours = $mois*28;
+        $interval = date("Y-m-d", strtotime("-$jours days")); 
         
+        $coef = (1.10)/($jours/7);
+        $limite = 100;
 
-        // $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-        // $factures = json_decode($listinvoice,true); 
+        // boutique elyamaje
+        if ($entrepot_destination== "1") {
+            $produitParam = array(
+                'apikey' => $apiKey,
+                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC1%'",
+                'limit' => $limite,
+                'page' => 0,
+                'sortfield' => 'rowid',
+                'sortorder' => 'DESC',
+            );
 
-        // dd($factures);
-        
+        }
+
+        // boutique nice
+        if ($entrepot_destination== "11") {
+            $produitParam = array(
+                'apikey' => $apiKey,
+                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC4%'",
+                'limit' => $limite,
+                'page' => 0,
+                'sortfield' => 'rowid',
+                'sortorder' => 'DESC',
+            );
+        }
+
+        // boutique nice
+        if ($entrepot_destination== "12") {
+            $produitParam = array(
+                'apikey' => $apiKey,
+                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                'limit' => $limite,
+                'page' => 0,
+                'sortfield' => 'rowid',
+                'sortorder' => 'DESC',
+            );
+        }
 
         $array_factures_total = array();
         $page = $produitParam['page'];
@@ -399,26 +436,17 @@ class Controller extends BaseController
             if (count($factures) < $limite) {
                 $condition = false;
             }
-        } while ($condition);
+        } while ($condition); 
 
         // dd($array_factures_total);
-        
-        $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-        $factures = json_decode($listinvoice,true);  
 
         $vente_by_product = array();
 
        
-      
         foreach ($array_factures_total as $ktotal => $factures) {
             foreach ($factures as $key => $facture) {
-
                 $lines = $facture["lines"];
                 foreach ($lines as $kline => $line) {
-
-                    // if ($line["fk_product"] =="4953") {
-                    //     dd($facture);
-                    // }
 
                     if ($line["fk_product"] !="") {
                         if (!isset($vente_by_product[$line["fk_product"]])) {
@@ -513,7 +541,7 @@ class Controller extends BaseController
                                 "barcode" => $product["barcode"]?$product["barcode"]:"no_barcode",
                                 "product_id" => $product["id"],
                                 "price" => $product["price"]? $product["price"]:"0", 
-                                "stock" => $pr_st_wh["stock" ],
+                                "stock" => $pr_st_wh["stock" ]?$pr_st_wh["stock" ]:0,
                                 "libelle" => $product["label"]
                             ];
                         }
@@ -537,10 +565,8 @@ class Controller extends BaseController
             if (isset($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct])) {
                 $qte_en_stock_in_source = $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct]["stock"];
             }else {
-                $qte_en_stock_in_source = "Ø";
+                $qte_en_stock_in_source = "0";
             }
-
-            
 
             if (isset($vente_by_product[$kproduct])) {
 
@@ -553,7 +579,7 @@ class Controller extends BaseController
                         "libelle" => $stock_in_war["libelle"],
                         "product_id" => $kproduct,
                         "barcode" => $stock_in_war["barcode"],
-                        "qte_act" => $stock_in_war["stock"],
+                        "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                         "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
                         "demande" => ceil($vente_by_product[$kproduct]["qty"]),
                         "qte_optimale" => ceil($vente_by_product[$kproduct]["qty"])*3
@@ -568,7 +594,7 @@ class Controller extends BaseController
                     "libelle" => $stock_in_war["libelle"],
                     "product_id" => $kproduct,
                     "barcode" => $stock_in_war["barcode"],
-                    "qte_act" => $stock_in_war["stock"],
+                    "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                     "price" => $stock_in_war["price"]? $stock_in_war["price"]:"0",
                     "demande" => "inconnue",
                     "qte_optimale" => "inconnue"
@@ -589,11 +615,13 @@ class Controller extends BaseController
 
         foreach ($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"] as $key => $value) {
             if (isset($warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key])) {
-               $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$key]["qte_in_destination"] = $warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key]["stock"];
+               $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$key]["qte_in_destination"] = 
+               $warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key]["stock"]? $warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key]["stock"]:0;
             }
         }
 
-        
+        // récupérer les user 
+        $users = $this->users->getUsers()->toArray();
 
         return view('admin.supply',
             [
@@ -604,7 +632,8 @@ class Controller extends BaseController
                 "entrepot_destination" => $entrepot_destination,
                 "entrepot_source_product" => $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"],
                 "name_entrepot_a_alimenter" => $name_entrepot_a_alimenter,
-                "name_entrepot_a_destocker" => $name_entrepot_a_destocker
+                "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                "users" => $users
             ]);
     }
 
@@ -614,167 +643,188 @@ class Controller extends BaseController
     function postReassort(Request $request){
 
 
-        $data_save = array();
-       
-
-        $incrementation = 0;
-        $decrementation = 0;
-        $apiUrl = env('KEY_API_URL');
-        $apiKey = env('KEY_API_DOLIBAR'); 
-
-        $tabProduitReassort1 = $request->post('tabProduitReassort1');
-        $entrepot_source = $request->post('entrepot_source');
-        $entrepot_destination = $request->post('entrepot_destination');
-        $name_date_reassort = "reassort_du_".date('Y-m-d H:i:s');
-        $identifiant_reassort = time();
-        $sense_transfert = $entrepot_source."to".$entrepot_destination;
-
-        foreach ($tabProduitReassort1 as $key => $lineR) {
-
-
-            $data1 = array(
-                'product_id' => $lineR["product_id"],
-                'warehouse_id' => $entrepot_source, 
-                'qty' => $lineR["qte_transfere"] * (-1), // Quantité à ajouter (peut être négative pour une sortie)
-                'type' => 1, // 0 pour entrée, 1 pour sortie (conformément à la documentation)
-                'movementcode' => NULL, // Code de mouvement (facultatif)
-                'movementlabel' => 'Transfere via preparation', // Étiquette de mouvement (facultatif)
-                'price' => $lineR["price"], // Pour mettre à jour l'AWP lors d'une augmentation de stock
-                'datem' => date('Y-m-d'), // Date du mouvement (facultatif, au format YYYY-MM-DD)
-                'dlc' => date('Y-m-d'), // Date limite de consommation (facultatif, au format YYYY-MM-DD)
-                'dluo' => date('Y-m-d'), // Date de péremption (facultatif, au format YYYY-MM-DD)  /stockmovements
-            );
-
-           // $stockmovements1 = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data1));
-            // if ($stockmovements1) {
-
-                $data1["libelle_reassort"] = $name_date_reassort;
-                $data1["id_reassort"] = 0;
-                $data1["barcode"] = $lineR["barcode"];
-                $data1["identifiant_reassort"] = $identifiant_reassort;
-                $data1["sense"] = $sense_transfert;
-                array_push($data_save,$data1);
-                $decrementation++;
-            // }
-            $data2 = array(
-                'product_id' => $lineR["product_id"],
-                'warehouse_id' => $entrepot_destination, // J'ai changé la clé pour correspondre à la documentation
-                'qty' => $lineR["qte_transfere"], // Quantité à ajouter (peut être négative pour une sortie)
-                'type' => 0, // 0 pour entrée, 1 pour sortie (conformément à la documentation)
-                'movementcode' => NULL, // Code de mouvement (facultatif)
-                'movementlabel' => 'Transfere via preparation', // Étiquette de mouvement (facultatif)
-                'price' => $lineR["price"], // Pour mettre à jour l'AWP lors d'une augmentation de stock
-                'datem' => date('Y-m-d'), // Date du mouvement (facultatif, au format YYYY-MM-DD)
-                'dlc' => date('Y-m-d'), // Date limite de consommation (facultatif, au format YYYY-MM-DD)
-                'dluo' => date('Y-m-d'), // Date de péremption (facultatif, au format YYYY-MM-DD)
-            );
-
-            // $stockmovements2 = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data2));
-            // if ($stockmovements2) {
-
-                $data2["libelle_reassort"] = $name_date_reassort;
-                $data2["id_reassort"] = 0;
-                $data2["barcode"] = $lineR["barcode"];
-                $data2["identifiant_reassort"] = $identifiant_reassort;
-                $data2["sense"] = $sense_transfert;
-                array_push($data_save,$data2);
-                $incrementation++;
-            // }
-        }
-
-        if ($incrementation != $decrementation) {
-            return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
-        }
-        // php artisan make:migration sense_to_hist_reassort
-
         try {
-            $resDB = DB::table('hist_reassort')->insert($data_save);
+          
+            $data_save = array();
+            $incrementation = 0;
+            $decrementation = 0;
+            $user_id = $request->post('user');
+            $tabProduitReassort1 = $request->post('tabProduitReassort1');
+            $entrepot_source = $request->post('entrepot_source');
+            $entrepot_destination = $request->post('entrepot_destination');
+            $name_date_reassort = "reassort_du_".date('Y-m-d H:i:s');
+            $identifiant_reassort = time();
+            $sense_transfert = $entrepot_source."to".$entrepot_destination;
+
+            foreach ($tabProduitReassort1 as $key => $lineR) {
+
+                if ($lineR["qte_transfere"]) {           
+                    $data1 = array(
+                        'product_id' => $lineR["product_id"],
+                        'warehouse_id' => $entrepot_source, 
+                        'qty' => $lineR["qte_transfere"] * (-1), 
+                        'type' => 1, 
+                        'movementcode' => NULL, 
+                        'movementlabel' => 'Transfere via preparation', 
+                        'price' => $lineR["price"], 
+                        'datem' => date('Y-m-d'), 
+                        'dlc' => date('Y-m-d'), 
+                        'dluo' => date('Y-m-d'), 
+                    );
+
+                        $data1["libelle_reassort"] = $name_date_reassort;
+                        $data1["id_reassort"] = 0;
+                        $data1["barcode"] = $lineR["barcode"];
+                        $data1["identifiant_reassort"] = $identifiant_reassort;
+                        $data1["sense"] = $sense_transfert;
+                        $data1["user_id"] = $user_id;
+                        array_push($data_save,$data1);
+                        $decrementation++;
+                    $data2 = array(
+                        'product_id' => $lineR["product_id"],
+                        'warehouse_id' => $entrepot_destination, 
+                        'qty' => $lineR["qte_transfere"], 
+                        'type' => 0, 
+                        'movementcode' => NULL,
+                        'movementlabel' => 'Transfere via preparation',
+                        'price' => $lineR["price"],
+                        'datem' => date('Y-m-d'),
+                        'dlc' => date('Y-m-d'),
+                        'dluo' => date('Y-m-d'),
+                    );
+
+                        $data2["libelle_reassort"] = $name_date_reassort;
+                        $data2["id_reassort"] = 0;
+                        $data2["barcode"] = $lineR["barcode"];
+                        $data2["identifiant_reassort"] = $identifiant_reassort;
+                        $data2["sense"] = $sense_transfert;
+                        $data2["user_id"] = $user_id;
+                        array_push($data_save,$data2);
+                        $incrementation++;
+                }
+            }
+
+            if ($incrementation != $decrementation) {
+                return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
+            }
+
+            try {
+                $resDB = DB::table('hist_reassort')->insert($data_save);
+            } catch (\Throwable $th) {
+                return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
+            }
+
+            return ["response" => true,"decrementation" => $decrementation,"incrementation" => $incrementation,"resDB" => $resDB];
+
         } catch (\Throwable $th) {
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
-        }
-        
-
-
-        return ["response" => true,"decrementation" => $decrementation,"incrementation" => $incrementation,"resDB" => $resDB];
-
+        } 
     }
 
 
-    function executerTransfere(){
+    function executerTransfere($datas){
 
-    }
+        try {
+            $nbr_line = 0;
+            $apiUrl = env('KEY_API_URL');
+            $apiKey = env('KEY_API_DOLIBAR');
 
-    function teste_insert(){
 
-        $data = [
-            [
-                'product_id' => '4962',
-                'warehouse_id' => '1',
-                'qty' => -25,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '4962',
-                'warehouse_id' => '6',
-                'qty' => '25',
-                'type' => 0,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5467',
-                'warehouse_id' => '1',
-                'qty' => -98,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5467',
-                'warehouse_id' => '6',
-                'qty' => '98',
-                'type' => 0,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ],
-            [
-                'product_id' => '5466',
-                'warehouse_id' => '1',
-                'qty' => -58,
-                'type' => 1,
-                'movementcode' => null,
-                'movementlabel' => null,
-                'price' => null,
-                'datem' => null,
-                'dlc' => null,
-                'dluo' => null,
-            ]
-        ];
-        
+            foreach ($datas as $key => $data) {
+                $stockmovements1 = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+                $nbr_line++;
+            }
 
+            // ne pas oublier de destocker de woocomerce
+
+            if ($nbr_line%2 !=0) {
                 
+                return redirect()->back()->with('error',  "Aucun transfère trouvé ou le nombrebre de ligne est inpaire");
+            }
 
-        $resDB = DB::table('prepa_hist_reassort')->insert($data_save);
+            return redirect()->back()->with('success', 'transfère réussit');
+           
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error',  "Une érreur s'est produite");
+        }
+
+    }
 
 
+    function delete_transfert($identifiant){
+
+        $res = $this->reassort->deleteByIdentifiantReassort($identifiant);
+
+       
+        if ($res != -1) {
+            return redirect()->back()->with('success', 'Transfère supprimé');
+        }else {
+            return redirect()->back()->with('error',  "Une érreur s'est produite");
+        }
+    }
+
+
+    function cancel_transfert($identifiant){
+
+      //  $cles = ['product_id','warehouse_id','qty','type','movementcode','movementlabel','price','datem','dlc','dluo','sense'];
+        $transfert = $this->reassort->findByIdentifiantReassort($identifiant);
+
+        if ($transfert != -1) {
+
+            if (count($transfert) && count($transfert)%2 == 0) {
+
+                $transfertCopie = $transfert;
+                $date = date('Y-m-d');
+                $identifiant_reassort = time();
+
+                foreach ($transfert as $key => $line) {
+                    unset($transfert[$key]['id']);
+                    $sense = $line["sense"];
+                    $wh_id_source = explode("to",$sense)[0];
+                    $wh_id_destination = explode("to",$sense)[1];
+
+                    $new_sense = $wh_id_destination."to".$wh_id_source;
+
+
+                    $transfert[$key]["libelle_reassort"] = "Annulation réassort du ".date('Y-m-d H:i:s');
+                    $transfert[$key]["id_reassort"] = 0;
+                    $transfert[$key]["movementlabel"] = "Annulation transfert (".$line["id_reassort"].")";
+
+                    $transfert[$key]["datem"] = $date;
+                    $transfert[$key]["dlc"] = $date;
+                    $transfert[$key]["dluo"] = $date;
+                    $transfert[$key]["identifiant_reassort"] = $identifiant_reassort;
+                    
+                   
+                    if ($line[ "warehouse_id"] == $wh_id_source) {
+                        $transfert[$key]["warehouse_id"] = $wh_id_destination;
+                    }
+
+                    if ($line[ "warehouse_id"] == $wh_id_destination) {
+                        $transfert[$key]["warehouse_id"] = $wh_id_source;
+                    }
+
+                    $transfert[$key]["sense"] = $new_sense;
+
+                }
+
+            $resDB = DB::table('hist_reassort')->insert($transfert);
+            // mettre en annule le identifiant
+
+            $colonnes_values = ['origin_id_reassort' => $identifiant];
+            $res = $this->reassort->update_in_hist_reassort($identifiant, $colonnes_values);
+
+            return redirect()->back()->with('success', 'Transfère annulé');
+               
+                
+            }else {
+                return redirect()->back()->with('error',  "Aucun transfère trouvé ou le nombrebre de ligne est inpaire");
+            }
+
+        }else {
+            return redirect()->back()->with('error',  "Une érreur s'est produite");
+        }
 
     }
 }

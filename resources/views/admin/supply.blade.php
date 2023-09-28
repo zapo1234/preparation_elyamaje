@@ -19,7 +19,7 @@
         {{-- alert succes --}}
         <div class="alert alert-success border-0 bg-success alert-dismissible fade show alert-succes-calcul" style="display: none">
 
-            <div class="text-white text_alert">Transfère réussit</div>
+            <div class="text-white text_alert">Transfère envoyer pour préparation</div>
 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 
@@ -34,6 +34,46 @@
 
         </div>
 
+        {{-- Modal de confirmation delete --}}
+
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Confirmation de la suppression</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes-vous sûr de vouloir supprimer ce transfert ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Confirmer la suppression</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal de confirmation annulation --}}
+
+        <div class="modal fade" id="confirmationModal2" tabindex="-1" aria-labelledby="confirmationModal2Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModal2Label">Confirmation de l'annulation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes-vous sûr de vouloir annuler ce transfert ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-danger" id="confirmCancel">Confirmer l'annulation'</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
             
             <div class="card">
@@ -46,19 +86,21 @@
 
                             <select id="entrepot_source" name="entrepot_source" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à déstoquer</option>
-                                @foreach ($listWarehouses as $listWarehouse)
-                                  
-                                    @if (isset($products_reassort))
-                                        @if ($listWarehouse["id"] == $entrepot_source)
-                                            <option value="{{$listWarehouse["id"]}}" selected>"{{$listWarehouse["libelle"]}}"</option>
-                                        @else
-                                            <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
-                                        @endif 
-                                    @else  
-                                        <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
-                                    @endif
-                                    
-                                @endforeach
+                                    @foreach ($listWarehouses as $listWarehouse)
+                                        @if ($listWarehouse["id"] == "6")
+                                            @if (isset($products_reassort))
+                                                @if ($listWarehouse["id"] == $entrepot_source)
+                                                    <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                                @else
+                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                @endif 
+                                            @else  
+                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                            @endif
+                                        @else  
+                                            {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
+                                        @endif
+                                    @endforeach
                             </select>
                         </div>
 
@@ -72,14 +114,18 @@
                             <select id="entrepot_destination" name="entrepot_destination" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à approvisionner</option>
                                 @foreach ($listWarehouses as $listWarehouse)
-                                    @if (isset($products_reassort))
-                                        @if ($listWarehouse["id"] == $entrepot_destination)
-                                            <option value="{{$listWarehouse["id"]}}" selected>"{{$listWarehouse["libelle"]}}"</option>
-                                        @else
-                                            <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
+                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11" || $listWarehouse["id"] == "12")
+                                        @if (isset($products_reassort))
+                                            @if ($listWarehouse["id"] == $entrepot_destination)
+                                                <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                            @else
+                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                            @endif
+                                        @else  
+                                            <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
                                         @endif
                                     @else  
-                                        <option value="{{$listWarehouse["id"]}}">"{{$listWarehouse["libelle"]}}"</option>
+                                        {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
                                     @endif
                                     
                                 @endforeach
@@ -126,12 +172,38 @@
                                     <td data-key="libelle" data-value="{{$value["libelle"]}}" id="{{$value["product_id"]}}_libelle" style="text-align: left !important;">{{$value["libelle"]}}</td>
                                     <td data-key="price" data-value="{{$value["price"]}}" id="{{$value["price"]}}_price" style="text-align: left !important;">{{round($value["price"],2)}}</td>
 
-                                    <td data-key="qte_en_stock_in_source" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_en_stock_in_source" style="text-align: left !important;">{{$value["name_entrepot_a_destocker"]}} ({{$value["qte_en_stock_in_source"]}})</td>
+                                    @if ($value["qte_en_stock_in_source"] <= 0)
+                                        <td class="error_stock" title="Il semble y avoir une erreur dans ce stock" data-key="qte_en_stock_in_source" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_en_stock_in_source" style="text-align: left !important;">{{$value["name_entrepot_a_destocker"]}} ({{$value["qte_en_stock_in_source"]}})</td>
+                                    @else
+                                        <td class="" data-key="qte_en_stock_in_source" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_en_stock_in_source" style="text-align: left !important;">{{$value["name_entrepot_a_destocker"]}} ({{$value["qte_en_stock_in_source"]}})</td>
+                                    @endif
+                                    
                                     <td data-key="demande" data-value="{{$value["demande"]}}" id="{{$value["product_id"]}}_demande">{{$value["demande"]}}</td>
-                                    <td data-key="qte_act" data-value="{{$value["qte_act"]}}" id="{{$value["product_id"]}}_qte_act">{{$value["entrepot_a_alimenter"]}} ({{$value["qte_act"]}})</td>
-                                    <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">{{$value["qte_optimale"]}}</td>
-                                    <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
+                                    
 
+                                    @if ($value["qte_act"] < 0)
+                                        <td class="error_stock" title="Il semble y avoir une erreur dans ce stock" data-key="qte_act" data-value="{{$value["qte_act"]}}" id="{{$value["product_id"]}}_qte_act">{{$value["entrepot_a_alimenter"]}} ({{$value["qte_act"]}})</td>
+                                    @else
+                                        <td data-key="qte_act" data-value="{{$value["qte_act"]}}" id="{{$value["product_id"]}}_qte_act">{{$value["entrepot_a_alimenter"]}} ({{$value["qte_act"]}})</td>
+                                    @endif
+                                    <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">{{$value["qte_optimale"]}}</td>
+
+
+
+
+                                    @if ($value["qte_act"] < 0 || $value["qte_en_stock_in_source"] <= 0)
+                                        <td data-key="qte_transfere" data-value="0" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="0" disabled></td>
+                                    @else
+                                        <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
+                                    @endif
+
+
+                                    
+
+
+
+
+                                    
                                     <td data-key="action" id="{{$value["product_id"]}}_action">
                                         <button onclick='delete_line({{$value["product_id"]}})' type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;" class="update_line">
                                             <a class="" title="Supprimer l'offre" href="javascript:void(0)">
@@ -158,19 +230,31 @@
                     </table>
                 </div>
 
-                <div class="col-12 d-flex justify-content-center mt-5">
-                    <button id="id_sub_validation_reassort" onclick="valide_reassort1()" class="btn btn-primary mb-4" type="submit">Valider le réassort</button>
-                </div>
+                <div class="row">
+                    <div class="col-md-3"></div>
 
-              
+                    <div class="col-md-2 d-flex justify-content-center mt-5">
+                        <button id="id_sub_validation_reassort" onclick="valide_reassort1()" class="btn btn-primary mb-4" type="submit">Valider le réassort</button>
+                    </div>
+
+                    <div class="col-md-4 d-flex justify-content-center" style="margin-top: 3.3rem!important;">
+                        <select id="user_selected" class="js-states form-control" name="user_selected">
+                            <option style="width:100%" value="" selected>Selectionnez l'utilisateur</option>
+                            @foreach($users as $u => $user) 
+                                <option value="{{$user["id"]}}"> {{$user["name"]}} </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-3"></div>
+
+                </div>
 
 
                 <div class="row g-3 mb-4">
                     <div class="col-md-2"></div>
 
                     <div class="col-md-6">
-
-                        {{-- {{dd($entrepot_source_product)}} --}}
 
                         <select id="product_add" class="js-states form-control" name="email">
                             <option style="width:100%" value="" selected>Selectionnez le produit</option>
@@ -276,6 +360,7 @@
                                     <th title="L'entrepôt qui va être décrémenté">Entrepot source</th>
                                     <th title="L'entrepôt qui va être décrémenté">Entrepôt de destination</th>
                                     <th title="Points actuellement valide de l'utilisateur">Etat</th>
+                                    <th title="Points actuellement valide de l'utilisateur">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody_id_1">
@@ -287,10 +372,66 @@
                                         <td id="{{$value["identifiant"]}}_entrepot_source" style="text-align: left !important;">{{$value["entrepot_source"]}}</td>
                                         <td id="{{$value["identifiant"]}}_entrepot_destination" style="text-align: left !important;">{{$value["entrepot_destination"]}}</td>
                                         <td id="{{$value["identifiant"]}}_etat" style="text-align: left !important;">{!!$value["etat"]!!}</td>
-                                    </tr>
-                                
-                                @endforeach
+                                       
+                                        <td id="{{$value["identifiant"]}}_action" class="d-flex">
+                                    
+                                            @if (!$value["origin_id_reassort"])
+                                                
+                                            
+                                                @if ($value["val_etat"] == 0)
+                                                    {{-- a griser --}}
+                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
+                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                    </button>
 
+                                                    <form action="{{ route('delete_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="deleteForm">
+                                                        @csrf
+                                                        <button type="button" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal">
+                                                            <i class="fadeIn animated bx bx-trash"></i>
+                                                        </button>
+                                                    </form>
+
+
+                                                @elseif ($value["val_etat"] > 0)
+                                                    <form action="{{ route('cancel_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="cancelForm">
+                                                        @csrf
+                                                        <button type="button" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal2">
+                                                            <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                    {{-- a griser --}}
+                                                    <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                        <i class="fadeIn animated bx bx-trash"></i>
+                                                    </button>
+                                                @elseif ($value["val_etat"] < 0)
+                                                
+                                                <div>
+                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
+                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                    </button>
+                                                </div>
+                                                {{-- a griser --}}
+                                                <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <i class="fadeIn animated bx bx-trash"></i>
+                                                </button>
+
+                                                @endif
+                                            @else
+                                                <div>
+                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
+                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                    </button>
+                                                </div>
+                                                {{-- a griser --}}
+                                                <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <i class="fadeIn animated bx bx-trash"></i>
+                                                </button>
+
+                                            @endif
+
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>   
@@ -313,6 +454,9 @@
 <script>
 
     $('#product_add').select2({
+        width: '100%'
+    });
+    $('#user_selected').select2({
         width: '100%'
     });
 
@@ -355,6 +499,44 @@
     "drawCallback": function(settings) {
         $('#entrepot_source, #entrepot_destination').prop('disabled', true);
     }
+
+    });
+
+    // 
+
+    $('#example4').DataTable({
+    language: {
+        info: "_TOTAL_ lignes",
+        infoEmpty: "Aucun utlisateur à afficher",
+        infoFiltered: "(filtrés sur un total de _MAX_ éléments)",
+        lengthMenu: "_MENU_",
+        search: "",
+        paginate: {
+            first: ">>",
+            last: "<<",
+            next: ">",
+            previous: "<"
+        }
+    },
+
+
+    order: [[2, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
+    pageLength: 1000,
+
+    dom: 'Bfrtip',
+
+    buttons: [
+        'copy',
+        'excel',
+        'csv',
+        'pdf',
+        'print'
+    ],
+
+    lengthMenu: [
+        [5,10, 25, 50, -1],
+        ['5','10', '25', '50', 'Tout']
+    ],
 
     });
 
@@ -411,8 +593,10 @@
       //  console.log(tabProduitReassort1);
 
         var urlCreateReassort = "{{route('postReassort')}}";
+        var urlRedirection = "{{route('getVieuxSplay')}}";
         var entrepot_source = $("#entrepot_source").val();
         var entrepot_destination = $("#entrepot_destination").val();
+        var user = $("#user_selected").val();
 
 
         $("#id_sub_validation_reassort").addClass("disabled-link");
@@ -424,11 +608,11 @@
         $.ajax({
             url: urlCreateReassort,
             method: 'POST',
-            // data : {tabProduitReassort1:JSON.stringify(tabProduitReassort1)},
             data : {
                 tabProduitReassort1:tabProduitReassort1,
                 entrepot_source:entrepot_source,
-                entrepot_destination:entrepot_destination
+                entrepot_destination:entrepot_destination,
+                user:user
                     
             },
 
@@ -444,7 +628,8 @@
                     $(".alert-succes-calcul").show();
                     setTimeout(() => {
                         $(".alert-succes-calcul").hide();
-                    }, 4000);   
+                        window.location.href = urlRedirection;
+                    }, 3000);   
 
                     $('#example2 tbody').empty();
 
@@ -456,8 +641,9 @@
 					$(".alert-danger-calcul").show();
 					setTimeout(() => {
 						$(".alert-danger-calcul").hide();
-					}, 4000);
-                    console.log(response);
+                        window.location.href = urlRedirection;
+					}, 10000);
+                    console.log(response.error);
                 }
 
             },
@@ -466,7 +652,8 @@
                 $(".alert-danger-calcul").show();
 					setTimeout(() => {
 						$(".alert-danger-calcul").hide();
-					}, 4000);
+                        window.location.href = urlRedirection;
+					}, 3000);
 					
 					console.error(error);
 
@@ -523,7 +710,7 @@
 
 
 
-        console.log(data_product);
+        // console.log(data_product);
         
 
         var line_add = `
@@ -567,6 +754,17 @@
         $(this).html(spinner);
 
     })
+
+    // supprimer un transfère (uniquement si la preparation n'a pas commencé)
+
+    $('#confirmDelete').on('click', function() {
+        $('#deleteForm').submit();
+    });
+    $('#confirmCancel').on('click', function() {
+        $('#cancelForm').submit();
+    });
+    
+
 
 </script>
 
