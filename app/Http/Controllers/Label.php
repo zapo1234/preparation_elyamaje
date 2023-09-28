@@ -459,21 +459,24 @@ class Label extends BaseController
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
             // Get all orders labels -10 jours
-            $rangeDate = 30;
-
+            $rangeDate = 10;
+            $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
             try{
-                $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+              
                 // Récupère les status de chaque commande
                 $trackingLabel = $this->colissimoTracking->getStatus($labels);
-                // Update en local
-                $this->label->updateLabelStatus($trackingLabel);
-                // Update status sur Wordpress pour les colis livré
-                $update = $this->colissimo->trackingStatusLabel($trackingLabel);
-                
-                return $update;
+            
             } catch(Exception $e){
                 dd($e->getMessage());
             }
+
+
+            // Update en local
+            $this->label->updateLabelStatus($trackingLabel);
+            // Update status sur Wordpress pour les colis livré
+            $update = $this->colissimo->trackingStatusLabel($trackingLabel);
+            
+            return $update;
         }
     }
 }
