@@ -830,8 +830,10 @@ class Controller extends BaseController
 
 
     function preparationCommandeByToken(Request $request){
+      
+        $id = request('id');
+        $token = request('token');
 
-
-        return 'okokokook';
+        return $id;
     }
 }
