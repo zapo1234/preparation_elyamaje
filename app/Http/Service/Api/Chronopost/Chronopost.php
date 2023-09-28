@@ -148,7 +148,7 @@ class Chronopost
         foreach($trackingNumbers as $key => $trackingNumber){
             try {
 
-                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/searchPOD?accountNumber=".config('app.chronopost_accountNumber')."&password=".config('app.chronopost_password')."&language=fr_FR&skybillNumber=XA165862625FR&pdf=true");
+                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/searchPOD?accountNumber=".config('app.chronopost_accountNumber')."&password=".config('app.chronopost_password')."&language=fr_FR&skybillNumber=".$trackingNumber->tracking_number."&pdf=true");
 
                 // Vérifiez si la requête HTTP a réussi
                 if ($response->successful()) {
