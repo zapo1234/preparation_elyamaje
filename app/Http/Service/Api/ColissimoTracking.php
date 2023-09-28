@@ -37,7 +37,6 @@ class ColissimoTracking
                         'step' => 0,
                     ];
 
-                    dd($responseData);
 
 
                     if(isset($responseData['parcel'])){
@@ -53,7 +52,11 @@ class ColissimoTracking
             } catch(Exception $e){
                 dd($e->getMessage());
             }
+
+        dd($orders_status);
+
         }
+
 
         return $orders_status;
     }
