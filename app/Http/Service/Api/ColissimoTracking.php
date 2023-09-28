@@ -36,15 +36,19 @@ class ColissimoTracking
                         'order_id' => $trackingNumber->order_id,
                         'step' => 0,
                     ];
-                    foreach($responseData['parcel']['step'] as $step){
-                        if($step['status'] == "STEP_STATUS_ACTIVE"){
-                            $orders_status[$key]['step'] = $step['stepId'];
-                            $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
+
+                    if(isset($responseData['parcel'])){
+                        foreach($responseData['parcel']['step'] as $step){
+                            if($step['status'] == "STEP_STATUS_ACTIVE"){
+                                $orders_status[$key]['step'] = $step['stepId'];
+                                $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
+                            }
                         }
                     }
+                    
                 }
             } catch(Exception $e){
-                dd($responseData);
+                dd($e->getMessage());
             }
         }
 
