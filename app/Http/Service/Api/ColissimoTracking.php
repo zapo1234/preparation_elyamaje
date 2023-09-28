@@ -15,7 +15,7 @@ class ColissimoTracking
                 $data =[
                     'login' => config('app.colissimo_contractNumber'),
                     'password' => config('app.colissimo_password'),
-                    'parcelNumber' => "6C17542153750",
+                    'parcelNumber' => $trackingNumber->tracking_number,
                     'lang' => 'fr_FR'
                 ];
     
@@ -37,8 +37,6 @@ class ColissimoTracking
                         'step' => 0,
                     ];
 
-
-
                     if(isset($responseData['parcel'])){
                         foreach($responseData['parcel']['step'] as $step){
                             if($step['status'] == "STEP_STATUS_ACTIVE"){
@@ -53,10 +51,10 @@ class ColissimoTracking
                 dd($e->getMessage());
             }
 
-        dd($orders_status);
-
+            if($trackingNumber->tracking_number == "6C17542153750"){
+                dd("dd");
+            }
         }
-
 
         return $orders_status;
     }

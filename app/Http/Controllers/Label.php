@@ -463,6 +463,12 @@ class Label extends BaseController
 
             try{
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+               
+                foreach( $labels as $label){
+                    dd($label);
+                }
+
+                die;
                 // dd($labels);
                 // Récupère les status de chaque commande
                 $trackingLabel = $this->colissimoTracking->getStatus($labels);
