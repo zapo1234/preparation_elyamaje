@@ -465,7 +465,7 @@ class Label extends BaseController
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
                
                 foreach( $labels as $label){
-                    dd($label);
+                    dd($label->tracking_number);
                 }
 
                 die;
