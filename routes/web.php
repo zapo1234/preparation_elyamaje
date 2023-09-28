@@ -26,6 +26,9 @@ Route::get('/index', function () {
     return redirect()->route('/');
 })->name('index');
 
+// Route::get("/preparationCommandeByToken", [Controller::class, "preparationCommandeByToken"])->name('preparationCommandeByToken'); // acces pour preparer la commande doli
+
+
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         switch (Auth()->user()->roles->toArray()[0]['id']) {

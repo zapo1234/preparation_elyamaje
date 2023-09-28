@@ -774,4 +774,11 @@ class Controller extends BaseController
         }
 
     }
+
+
+    function preparationCommandeByToken(Request $request){
+
+
+        return 'okokokook';
+    }
 }
