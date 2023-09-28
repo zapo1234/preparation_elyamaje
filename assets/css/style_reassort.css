@@ -3,3 +3,7 @@
     opacity: 0.5; 
     cursor: not-allowed;
 }
+
+.error_stock{
+    color: red;
+}
