@@ -2,6 +2,7 @@
 
 namespace App\Repository\Reassort;
 
+use Exception;
 use App\Models\Reassort;
 
 class ReassortRepository implements ReassortInterface 
@@ -17,9 +18,10 @@ class ReassortRepository implements ReassortInterface
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['user_id', $user_id],
-            ['id_reassort', 0],
             ['type', 0]
-        ])->get();
+        ])
+        ->whereIn('id_reassort', [0, -1])
+        ->get();
     }
 
     public function checkProductBarcode($product_id, $barcode){
@@ -101,6 +103,10 @@ class ReassortRepository implements ReassortInterface
         } else {
             return true;
         }
+    }
+
+    public function updateStatusReassort($transfer_id, $status){
+        return $this->model::where('identifiant_reassort', $transfer_id)->update(['id_reassort' => $status]);
     }
 }
 

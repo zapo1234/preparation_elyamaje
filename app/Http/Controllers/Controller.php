@@ -116,12 +116,19 @@ class Controller extends BaseController
     public function orderPreparateur()
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
+       
+        $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
+        $count_rea = [];
+        foreach($reassort as $rea){
+            $count_rea[$rea->identifiant_reassort] = $rea;
+        }
+
         $orders = $this->orderController->getOrder();
         $order_process = [];
         $orders_waiting_to_validate = [];
         $orders_validate = [];
 
-        foreach ($orders as $order) {
+        foreach ($orders['orders'] as $order) {
             if ($order['details']['status'] == "waiting_to_validate") {
                 $orders_waiting_to_validate[] = $order;
             } else if ($order['details']['status'] == "waiting_validate") {
@@ -139,7 +146,9 @@ class Controller extends BaseController
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
             'number_orders_validate' =>  count($orders_validate),
-            'printer' => $printer[0] ?? false
+            'printer' => $printer[0] ?? false,
+            'count_orders' => $orders['count'],
+            'count_rea' => count($count_rea)
         ]);
     }
 
@@ -148,11 +157,18 @@ class Controller extends BaseController
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $orders = $this->orderController->getOrderDistributeur();
+
+        $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
+        $count_rea = [];
+        foreach($reassort as $rea){
+            $count_rea[$rea->identifiant_reassort] = $rea;
+        }
+
         $order_process = [];
         $orders_waiting_to_validate = [];
         $orders_validate = [];
 
-        foreach ($orders as $order) {
+        foreach ($orders['orders'] as $order) {
             if ($order['details']['status'] == "waiting_to_validate") {
                 $orders_waiting_to_validate[] = $order;
             } else if ($order['details']['status'] == "waiting_validate") {
@@ -170,38 +186,75 @@ class Controller extends BaseController
             'number_orders' =>  count($order_process),
             'number_orders_waiting_to_validate' =>  count($orders_waiting_to_validate),
             'number_orders_validate' =>  count($orders_validate),
-            'printer' => $printer[0] ?? false
+            'printer' => $printer[0] ?? false,
+            'count_orders' => $orders['count'],
+            'count_rea' => count($count_rea)
         ]);
     }
 
     // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
     public function ordersTransfers(){
-        $orders = [];
+        $transfers = [];
+        $transfers_progress = [];
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
 
-        foreach($reassort as $key => $rea){
-            $orders[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
-            $orders[$rea->identifiant_reassort]['date'] = $rea->datem;
-            $orders[$rea->identifiant_reassort]['products'][] = [
-                'product_id' => $rea->product_id,
-                'name' => $rea->name,
-                'qty' => $rea->qty,
-                'price' => $rea->price,
-                'barcode' => $rea->barcode,
-                'location' => $rea->location
-            ];
+        // Compte les autres commandes à faire
+        $orders = $this->orderController->getOrder();
 
+        foreach($reassort as $key => $rea){
+
+            if($rea->id_reassort == 0){
+                $transfers[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
+                $transfers[$rea->identifiant_reassort]['date'] = $rea->datem;
+                $transfers[$rea->identifiant_reassort]['products'][] = [
+                    'product_id' => $rea->product_id,
+                    'name' => $rea->name,
+                    'qty' => $rea->qty,
+                    'price' => $rea->price,
+                    'barcode' => $rea->barcode,
+                    'location' => $rea->location
+                ];
+            } else if($rea->id_reassort == -1){
+                $transfers_progress[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
+                $transfers_progress[$rea->identifiant_reassort]['date'] = $rea->datem;
+                $transfers_progress[$rea->identifiant_reassort]['products'][] = [
+                    'product_id' => $rea->product_id,
+                    'name' => $rea->name,
+                    'qty' => $rea->qty,
+                    'price' => $rea->price,
+                    'barcode' => $rea->barcode,
+                    'location' => $rea->location
+                ];
+            }
         }
 
         // Récupère le premier réassort
-        $total_order = count($orders);
+        $total_transfers = count($transfers);
+        $total_transfers_progress = count($transfers_progress);
+        $transfers = $total_transfers > 0 ? $transfers[array_key_first($transfers)] : [];
+        $transfers_progress = $total_transfers_progress > 0 ? $transfers_progress[array_key_first($transfers_progress)] : [];
 
-        if($total_order > 0){
-            $orders = $orders[array_key_first($orders)];
-        } else {
-            $orders= [];
+        return view('preparateur.transfers.index_preparateur', 
+        [
+            'transfers' => $transfers, 
+            'transfers_progress' => $transfers_progress,
+            'total_transfers' => $total_transfers, 
+            'total_transfers_progress' => $total_transfers_progress, 
+            'user' => Auth()->user()->name,
+            'count_orders' => $orders['count'],
+            'count_rea' => $total_transfers + $total_transfers_progress
+        ]);
+    }
+
+    // Mise à jour du status du transfers pour mettre en cours de traitement
+    public function transfersProcesssing(Request $request){
+        $transfer_id = $request->post('transfer_id');
+        $status = $request->post('status');
+
+        if($transfer_id && $status){
+            return $this->reassort->updateStatusReassort($transfer_id, $status);
         }
-        return view('preparateur.transfers.index_preparateur', ['orders' => $orders, 'number_orders' => $total_order, 'user' => Auth()->user()->name]);
+        
     }
 
     // INDEX EMBALLEUR 

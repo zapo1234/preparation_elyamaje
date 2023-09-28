@@ -597,4 +597,15 @@
 <script src="{{asset('assets/js/qrcode.js')}}"></script>
 <script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
 <script src="{{asset('assets/js/preparateur.js')}}"></script>
+
+<script>
+	var count_orders = '<?php echo json_encode($count_orders); ?>'
+	var count_rea = '<?php echo $count_rea; ?>'
+	var count_orders = JSON.parse(count_orders)
+
+	$(".orders_customer").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.order+' <span class="visually-hidden">unread messages</span></span>')
+	$(".orders_distributor").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.distrib+' <span class="visually-hidden">unread messages</span></span>')
+	$(".transfers_orders").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_rea+' <span class="visually-hidden">unread messages</span></span>')
+
+</script>
 @endsection

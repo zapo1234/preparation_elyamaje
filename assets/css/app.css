@@ -7728,3 +7728,15 @@ select option[disabled] {
 .success_prepared_command{
 	height: 100%;
 }
+
+.orders_customer, 
+.orders_distributor,
+.transfers_orders{
+	position: relative;
+}
+
+.badge_order_count{
+	position: absolute;
+    right: 15px;
+    top: 18px;
+}

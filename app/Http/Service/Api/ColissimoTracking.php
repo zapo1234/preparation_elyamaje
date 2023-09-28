@@ -28,19 +28,27 @@ class ColissimoTracking
             } catch(Exception $e){
                 dd($e->getMessage());
             }
-    
-            if ($response->status() === 200) {
-                $responseData = $response->json();
-                $orders_status[] = [
-                    'order_id' => $trackingNumber->order_id,
-                    'step' => 0,
-                ];
-                foreach($responseData['parcel']['step'] as $step){
-                    if($step['status'] == "STEP_STATUS_ACTIVE"){
-                        $orders_status[$key]['step'] = $step['stepId'];
-                        $orders_status[$key]['message'] = $step['labelShort'];
+            
+            try {
+                if ($response->status() === 200) {
+                    $responseData = $response->json();
+                    $orders_status[] = [
+                        'order_id' => $trackingNumber->order_id,
+                        'step' => 0,
+                    ];
+
+                    if(isset($responseData['parcel'])){
+                        foreach($responseData['parcel']['step'] as $step){
+                            if($step['status'] == "STEP_STATUS_ACTIVE"){
+                                $orders_status[$key]['step'] = $step['stepId'];
+                                $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
+                            }
+                        }
                     }
+                    
                 }
+            } catch(Exception $e){
+                dd($e->getMessage());
             }
         }
 
