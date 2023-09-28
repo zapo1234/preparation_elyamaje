@@ -462,19 +462,37 @@ class Label extends BaseController
     public function getTrackingLabelStatus($token){
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
+
             // Get all orders labels -10 jours
             $rangeDate = 10;
+            $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+            $colissimo = [];
+            $chronopost = [];
+
+
+            foreach($labels as $label){
+                if($label->origin == "colissimo"){
+                    $colissimo[] = $label;
+                } else if($label->origin == "chronopost"){
+                    $chronopost[] = $label;
+                }
+            }
 
             try{
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
                 // Récupère les status de chaque commande
-                $trackingLabel = $this->colissimoTracking->getStatus($labels);
+                // $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
+                $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
                 // Update status sur Wordpress pour les colis livré
-                $update = $this->colissimo->trackingStatusLabel($trackingLabel);
+                //$update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
+                $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
+
+                // $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
                 // Update en local
-                $this->label->updateLabelStatus($trackingLabel);
+                // $this->label->updateLabelStatus($trackingLabel);
                 
-                return $update;
+                dd($update2);
+                // return $update;
             } catch(Exception $e){
                 $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
                 // dd($e->getMessage());
