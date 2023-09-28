@@ -26,7 +26,7 @@ class ColissimoTracking
 
 
             } catch(Exception $e){
-                dd($e->getMessage());
+                dd("Erreur");
             }
     
             if ($response->status() === 200) {
