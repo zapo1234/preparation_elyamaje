@@ -1,5 +1,19 @@
 $('body').on('click', '.show_order', function () {
     var id = $(this).attr('id')
+    
+    // Update le status pour mettre le transfer en cours de traitement
+    var transfers = $(this).attr('data-tarnsfers')
+    if(typeof transfers != "undefined"){
+        $.ajax({
+            url: "transfersProcesssing",
+            method: 'POST',
+            data: { _token: $('input[name=_token]').val(), transfer_id: id, status: -1}
+        }).done(function (data) {
+            // if(data <= 0){
+            //     console.log("Erreur !")
+            // }
+        })
+    } 
 
     // Stock l'id de la comande en cours de prépa pour la récupérer plus tard
     $("#order_in_progress").val(id)

@@ -146,11 +146,11 @@
                     <div class="menu-title">Préparation</div>
                 </a>
                 <ul>
-                    <li> <a href="{{ url('orders') }}"><i class="bx bx-right-arrow-alt"></i>Internet</a>
+                    <li class="orders_customer"> <a href="{{ url('orders') }}"><i class="bx bx-right-arrow-alt"></i>Internet</a>
                     </li>
-                    <li> <a href="{{ url('ordersDistributeurs') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
+                    <li class="orders_distributor"> <a href="{{ url('ordersDistributeurs') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
                     </li>
-                    <li> <a href="{{ url('ordersTransfers') }}"><i class="bx bx-right-arrow-alt"></i>Transfert</a>
+                    <li class="transfers_orders"> <a href="{{ url('ordersTransfers') }}"><i class="bx bx-right-arrow-alt"></i>Transfert</a>
                     </li>
                     <li> <a href="{{ url('ordersHistory') }}"><i class="bx bx-right-arrow-alt"></i>Historique</a>
                     </li>

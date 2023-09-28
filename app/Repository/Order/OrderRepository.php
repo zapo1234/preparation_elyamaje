@@ -157,6 +157,9 @@ class OrderRepository implements OrderInterface
       }
 
       $list = [];
+      $orders_count['distrib'] = 0;
+      $orders_count['order'] = 0;
+      $temporaly_array = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
@@ -184,6 +187,10 @@ class OrderRepository implements OrderInterface
       foreach($orders as $key => $order){
          if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id) || $order['status'] == "order-new-distrib"){
+               // Comptabilise le nombre de commande 
+               if(!isset($list[$order['order_woocommerce_id']])){
+                  $orders_count['distrib'] = $orders_count['distrib'] + 1;
+               }
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -201,9 +208,18 @@ class OrderRepository implements OrderInterface
                   'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
+            } else {
+               if(!isset($temporaly_array[$order['order_woocommerce_id']])){
+                  $orders_count['order'] = $orders_count['order'] + 1;
+               }
+               $temporaly_array[$order['order_woocommerce_id']] = 0;
             }
          } else {
             if(!in_array($order['customer_id'], $distributeurs_id) && $order['status'] != "order-new-distrib"){
+               // Comptabilise le nombre de commande 
+               if(!isset($list[$order['order_woocommerce_id']])){
+                  $orders_count['order'] = $orders_count['order'] + 1;
+               }
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -221,6 +237,13 @@ class OrderRepository implements OrderInterface
                   'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
+               
+            } else {
+               if(!isset($temporaly_array[$order['order_woocommerce_id']])){
+                  $orders_count['distrib'] = $orders_count['distrib'] + 1;
+               }
+               $temporaly_array[$order['order_woocommerce_id']] = 0;
+               
             }
          }
       }
@@ -265,7 +288,7 @@ class OrderRepository implements OrderInterface
       }
       
       $list = array_values($list);
-      return $list;
+      return ['orders' => $list, 'count' => $orders_count];
    }
 
    public function updateOrdersById($ids, $status = "finished"){
