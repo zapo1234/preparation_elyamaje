@@ -63,7 +63,7 @@ class LabelRepository implements LabelInterface
 
    public function getAllLabelsByStatusAndDate($rangeDate){
       $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
-      return $this->model::where('created_at', '>', $current_date)->where('tracking_status', '!=', 5)->where('origin', '=', "colissimo")->get();
+      return $this->model->where('tracking_status', '!=', 5)->where('origin', '=', "colissimo")->get();
    }
 
    public function updateLabelStatus($labels){
