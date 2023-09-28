@@ -195,7 +195,12 @@ class Controller extends BaseController
 
         // Récupère le premier réassort
         $total_order = count($orders);
-        $orders = $orders[array_key_first($orders)];
+
+        if($total_order > 0){
+            $orders = $orders[array_key_first($orders)];
+        } else {
+            $orders= [];
+        }
         return view('preparateur.transfers.index_preparateur', ['orders' => $orders, 'number_orders' => $total_order, 'user' => Auth()->user()->name]);
     }
 

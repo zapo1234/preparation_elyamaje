@@ -648,102 +648,93 @@ $(".valid_manually_barcode_transfert").on('click', function(){
     })
 })
 
-// $(".validate_pick_in_transfer").on('click', function(){
-//     var order_id = $("#order_in_progress").val()
+$(".validate_pick_in_transfer").on('click', function(){
+    var order_id = $("#order_in_progress").val()
     
-//     if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
-//         // Ouvre la modal de loading
-//         $(".loading_prepared_command").removeClass('d-none')
-//         $("#modalSuccess").modal('show')
-//         var pick_items = JSON.parse(localStorage.getItem('barcode'))
-//         var order_object = false
+    if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
+        // Ouvre la modal de loading
 
-//         if (pick_items) {
-//             // Récupère les produits de cette commande
-//             order_object = pick_items.find(
-//                 element => element.order_id == order_id
-//             )
-//         }
+        $(".loading_prepared_command").removeClass('d-none')
+        $("#modalSuccess").modal('show')
+        var pick_items = JSON.parse(localStorage.getItem('barcode'))
+        var order_object = false
+
+        if (pick_items) {
+            // Récupère les produits de cette commande
+            order_object = pick_items.find(
+                element => element.order_id == order_id
+            )
+        }
         
 
-//         if (order_object) {
-//             pick_items = order_object.products
-//             pick_items_quantity = order_object.quantity
-//         } else {
-//             pick_items = false
-//             pick_items_quantity = false
-//         }
+        if (order_object) {
+            pick_items = order_object.products
+            pick_items_quantity = order_object.quantity
+        } else {
+            pick_items = false
+            pick_items_quantity = false
+        }
 
-//         var customer_name = $(".customer_name_" + order_id).text()
-//         var user_name = $("#userinfo").val()
+        var user_name = $("#userinfo").val()
 
-//         $(".modal_order").modal('hide')
+        $(".modal_order").modal('hide')
 
-//         $.ajax({
-//             url: "ordersPrepared",
-//             method: 'POST',
-//             data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0 }
-//         }).done(function (data) {
+        $.ajax({
+            url: "transfersPrepared",
+            method: 'POST',
+            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity}
+        }).done(function (data) {
             
-//             $(".loading_prepared_command").addClass('d-none')
+            $(".loading_prepared_command").addClass('d-none')
 
-//             if (JSON.parse(data).success) {
-//                 $(".success_prepared_command").removeClass('d-none')
-//                 const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
-//                 const size = 150;
+            if (JSON.parse(data).success) {
+                $(".success_prepared_command").removeClass('d-none')
+                const href = order_id + "," + pick_items.length + "," + "Transfert" + "," + accentsTidy(user_name);
+                const size = 150;
 
-//                 $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
-//                 var list_products = ""
-//                 $("#order_" + order_id + " .product_order").each(function () {
-//                     list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
-//                 });
+                $(".info_order").text("#Transfert " + order_id + " - " + pick_items.length + " Produit(s)" + " - "+user_name)
+                var list_products = ""
+                $("#order_" + order_id + " .product_order").each(function () {
+                    list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
+                });
 
-//                 $(".info_order_product").children('span').remove()
-//                 $(".info_order_product").append(list_products)
+                $(".info_order_product").children('span').remove()
+                $(".info_order_product").append(list_products)
 
-//                 new QRCode(document.querySelector("#qrcode"), {
-//                     text: href,
-//                     width: size,
-//                     height: size,
+                new QRCode(document.querySelector("#qrcode"), {
+                    text: href,
+                    width: size,
+                    height: size,
 
-//                     colorDark: "#000000",
-//                     colorLight: "#ffffff"
-//                 });
+                    colorDark: "#000000",
+                    colorLight: "#ffffff"
+                });
 
 
-//                 if (localStorage.getItem('barcode')) {
-//                     pick_items = JSON.parse(localStorage.getItem('barcode'))
-//                     Object.keys(pick_items).forEach(function (k, v) {
-//                         if (pick_items[k]) {
-//                             if (order_id == pick_items[k].order_id) {
-//                                 pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
-//                             }
-//                         }
-//                     })
-//                 }
+                if (localStorage.getItem('barcode')) {
+                    pick_items = JSON.parse(localStorage.getItem('barcode'))
+                    Object.keys(pick_items).forEach(function (k, v) {
+                        if (pick_items[k]) {
+                            if (order_id == pick_items[k].order_id) {
+                                pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                            }
+                        }
+                    })
+                }
 
-//                 if (pick_items.length == 0) {
-//                     localStorage.removeItem('barcode');
-//                 } else {
-//                     localStorage.setItem('barcode', JSON.stringify(pick_items));
-//                 }
+                if (pick_items.length == 0) {
+                    localStorage.removeItem('barcode');
+                } else {
+                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                }
 
-//             } else {
-//                 $(".info_message").text("Produits manquants !")
-//                 $("#infoMessageModal").modal('show')
-//                 $(".error_prepared_command").removeClass('d-none')
-//             }
-//         });
-//     } else {
-//         // Récupère les produits de cette commande
-//         if ($("#order_" + order_id + " .pick").length >= 0) {
-//             $('#modalPartial').modal({
-//                 backdrop: 'static',
-//                 keyboard: false
-//             })
-//             $("#modalPartial").modal('show')
-//         }
-//     }
-// })
+            } else {
+                $(".info_message").text("Produits manquants !")
+                $("#infoMessageModal").modal('show')
+                $(".error_prepared_command").removeClass('d-none')
+            }
+        });
+    }
+})
 
 /* ----------------- TRANSFER ----------------- */

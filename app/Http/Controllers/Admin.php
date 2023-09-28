@@ -144,7 +144,6 @@ class Admin extends BaseController
             }
             
           
-
             if($variation){
                 $ids = array_column($product['attributes'], "name");
                 $clesRecherchees = array_keys($ids,  $variation);
@@ -176,12 +175,13 @@ class Admin extends BaseController
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
-    
                         if(isset($product['variation_attributes'])){
                             if(count($product['variation_attributes']) > 0){
-                                $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
-                                $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
-                            } 
+                                if(isset($product['variation_attributes'][$product['variations'][$key]])){
+                                    $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
+                                    $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
+                                }
+                            }
                         } 
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
