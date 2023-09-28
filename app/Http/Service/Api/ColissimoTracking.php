@@ -26,7 +26,7 @@ class ColissimoTracking
 
 
             } catch(Exception $e){
-                dd($e->getMessage());
+                // dd($e->getMessage());
             }
             
             try {
@@ -48,7 +48,7 @@ class ColissimoTracking
                     
                 }
             } catch(Exception $e){
-                dd($e->getMessage());
+                // dd($e->getMessage());
             }
         }
 

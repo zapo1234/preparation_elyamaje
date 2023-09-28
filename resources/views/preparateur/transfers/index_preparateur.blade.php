@@ -380,9 +380,9 @@
 	var count_rea = '<?php echo $count_rea; ?>'
 	var count_orders = JSON.parse(count_orders)
 
-	$(".orders_customer").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.order+' <span class="visually-hidden">unread messages</span></span>')
-	$(".orders_distributor").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.distrib+' <span class="visually-hidden">unread messages</span></span>')
-	$(".transfers_orders").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_rea+' <span class="visually-hidden">unread messages</span></span>')
+	$(".orders_customer").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.order+'</span>')
+	$(".orders_distributor").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.distrib+'</span>')
+	$(".transfers_orders").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_rea+'</span>')
 
 </script>
 @endsection

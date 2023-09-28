@@ -18,6 +18,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+use App\Repository\LogError\LogErrorRepository;
 
 class Label extends BaseController
 {
@@ -33,6 +34,7 @@ class Label extends BaseController
     private $chronopost;
     private $colissimoTracking;
     private $api;
+    private $logError;
 
     public function __construct(
         LabelRepository $label, 
@@ -43,7 +45,8 @@ class Label extends BaseController
         LabelProductOrderRepository $labelProductOrder,
         ColissimoRepository $colissimoConfiguration,
         Chronopost $chronopost,
-        ColissimoTracking $colissimoTracking
+        ColissimoTracking $colissimoTracking,
+        LogErrorRepository $logError
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -54,6 +57,7 @@ class Label extends BaseController
         $this->colissimoConfiguration = $colissimoConfiguration;
         $this->chronopost = $chronopost;
         $this->colissimoTracking = $colissimoTracking;
+        $this->logError = $logError;
     }
 
     public function getlabels(Request $request){
@@ -472,7 +476,8 @@ class Label extends BaseController
                 
                 return $update;
             } catch(Exception $e){
-                dd($e->getMessage());
+                $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
+                // dd($e->getMessage());
             }
         }
     }
