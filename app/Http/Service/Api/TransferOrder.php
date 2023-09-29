@@ -125,19 +125,18 @@ class TransferOrder
       {
               
             
-                $method = "GET";
-                 // recupérer les clé Api dolibar transfertx........
-                // $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                // $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
-
-                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
-                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
+        
+            $method = "GET";
+  
+                 $apiKey = env('KEY_API_DOLIBAR');
+                 $apiUrl = env('KEY_API_URL');
 
                  $produitParam = ["limit" => 950, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+                   $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+
+                  
                
                if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
@@ -147,10 +146,9 @@ class TransferOrder
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
-                 $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ...
+                 $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
 
-                
-                 // recuperer les ids commandes
+             // recuperer les ids commandes
 
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
@@ -187,7 +185,7 @@ class TransferOrder
                   }
 
                 
-                dd($data_list);
+                
                   // recuperer le dernier id => socid du tiers dans dolibarr.
                   $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
@@ -241,32 +239,29 @@ class TransferOrder
                       $ref_ext ="WC-$jour$mm-$int_text";
 
                       
+                
                     
                        foreach($orders as $k => $donnees) {
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
-                             $ref_client = rand(4,10);
-
-                              //  $email_true = mb_strtolower($donnees['billing']['email']);
-                              // recupérer id du tiers en fonction de son email...
-                               $email_true = mb_strtolower($donnees['billing']['email']);
-                              // recupérer id du tiers en fonction de son email...
-                               $fk_tiers = array_search($email_true,$data_list);
-                             
-                               $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-                               $fk_tiers_phone = array_search($espace_phone,$data_phone);
-                             // recupérer id en fonction du customer id
-                             
-                               // recupérer id en fonction du customer id
-                               $fk_tier = array_search($donnees['customer_id'],$data_code);
-
-                              // convertir la date en format timesamp de la facture .
-                              $datetime = $donnees['date']; // date recu de woocomerce.
-                             
-                              $date_recu = explode(' ',$datetime); // dolibar...
-                              // transformer la date en format date Y-m-d...
-                              $datex = $date_recu[0];
-                              $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
+                               $ref_client = rand(4,10);
+                                //  $email_true = mb_strtolower($donnees['billing']['email']);
+                                // recupérer id du tiers en fonction de son email...
+                                 $email_true = mb_strtolower($donnees['billing']['email']);
+                                 // recupérer id du tiers en fonction de son email...
+                                  $fk_tiers = array_search($email_true,$data_list);
+                                  $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
+                              
+                                  $fk_tiers_phone = array_search($espace_phone,$data_phone);
+                                   // recupérer id en fonction du customer id
+                                  // recupérer id en fonction du customer id
+                                   $fk_tier = array_search($donnees['customer_id'],$data_code);
+                                  // convertir la date en format timesamp de la facture .
+                                    $datetime = $donnees['date']; // date recu de woocomerce.
+                                    $date_recu = explode(' ',$datetime); // dolibar...
+                                    // transformer la date en format date Y-m-d...
+                                    $datex = $date_recu[0];
+                                    $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
                       
                              if($fk_tiers!="") {
                                $socid = $fk_tiers;
@@ -301,8 +296,7 @@ class TransferOrder
 
                           }
 
-        
-                            if($fk_tiers=="" && $fk_tier=="") {
+                     if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -434,7 +428,7 @@ class TransferOrder
                                         $ref="";
                                         $cb ="CB";
                                         $data_lines[] = [
-                                       'socid'=> 15364,
+                                       'socid'=> $socid,
                                        'ref_client' =>$ref,
                                        'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
@@ -506,12 +500,15 @@ class TransferOrder
                         */
                           
                       
-                        if(count($data_echec)!=0){
+                       /* if(count($data_echec)!=0){
                           $list = implode(',',$data_echec);
                           echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode est illisible , informez le service informatique  infos :'.$list.' !']);
                           exit;
                             
                         }
+
+                       */
+                        
                         
                          // Create le client via Api...
                       foreach($data_tiers as $data) {
@@ -520,12 +517,12 @@ class TransferOrder
 
                        }
                     
-                         foreach($data_lines as $donnes){
+                        foreach($data_lines as $donnes){
                          // insérer les details des données de la facture dans dolibarr
                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                        }
 
-                             // mettre la facture en status en payé et l'attribue un compte bancaire.
+                          // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
                                $this->invoicespay($orders);
                              }
@@ -558,18 +555,15 @@ class TransferOrder
         public function invoicespay($orders)
         {
            
-              $method = "GET";
+                $method = "GET";
             
-                 //$apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                //$apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
-
-                 $apiKey ='tWMneh4ap7N8pk9CAyY66dPZHMK01y08';
-                 $apiUrl ='https://www.transfertx.elyamaje.com/api/index.php/';
-              //appelle de la fonction  Api
-              // $data = $this->api->getDatadolibar($apikey,$url);
-             // domp affichage test 
-              // recupérer le dernière id des facture 
-              // recuperer dans un tableau les ref_client existant id.
+                $apiKey = env('KEY_API_DOLIBAR');
+                $apiUrl = env('KEY_API_URL');
+               //appelle de la fonction  Api
+               // $data = $this->api->getDatadolibar($apikey,$url);
+               // domp affichage test 
+               // recupérer le dernière id des facture 
+               // recuperer dans un tableau les ref_client existant id.
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 
