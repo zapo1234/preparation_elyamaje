@@ -832,30 +832,27 @@ class Controller extends BaseController
 
     function preparationCommandeByToken(Request $request){
 
+
         try {
 
             
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
             
-            $id = request('id');
-            $token = request('tokenPrepa');
+            // $id = request('id');
+            // $token = request('tokenPrepa');
 
 
           //  return $id."----".$token;
 
             // return $id;
-            // $id = "6";
-            // $token = "lyestoken";
+            $id = "8";
+            $token = "lyestoken";
+
 
             if ($token == "lyestoken" && $id) {
-
-            // $apiUrl = env('KEY_API_URL');
-            // $apiKey = env('KEY_API_DOLIBAR');
-
-         
-
-                $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
-                $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
-
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
@@ -920,12 +917,15 @@ class Controller extends BaseController
                         $res = DB::table('lines_commande_doli')->insert($lines);
 
                         // changer le statut de la commande CU2305-13591  CU2304-12158
-                        $data = [
-                            "statut"	=> 2,
-                        ];
-            
-                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode($data));
-                        $order_put = json_decode($order_put, true);
+
+                      //  sleep(10);
+
+
+                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
+
+                        // $order_put = json_decode($order_put, true);
+
+                        // dd($order_put);
 
                     // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
                         return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
