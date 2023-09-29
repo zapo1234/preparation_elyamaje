@@ -924,20 +924,23 @@ class Controller extends BaseController
                         $res = DB::table('lines_commande_doli')->insert($lines);
                         $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
-                    // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
                         return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
 
                     }else {
-                        return "le produit (". $product_no_bc.") n'a pas de code barre";
-                       // return json_encode(["response" => false, "message" => "le produit (". $product_no_bc.") n'a pas de code barre"]);
+
+                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
+
+                       // return "le produit (". $product_no_bc.") n'a pas de code barre";
                     }
                 }else {
-                    return "Le devis n'a pas été validé";
-                    // return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
+
+                    // $message = "Le devis n'a pas été validé";
+                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
                 }
             }else {
-                return "Le devis n'a pas été validé";
-                return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
+                // $message = "Le devis n'a pas été validé";
+                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
+
             }
         } catch (Throwable $th) {
             return $th->getMessage();
