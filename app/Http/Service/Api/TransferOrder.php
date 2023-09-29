@@ -125,14 +125,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-            
-        
-            $method = "GET";
-  
-                 $apiKey = env('KEY_API_DOLIBAR');
-                 $apiUrl = env('KEY_API_URL');
-
-    
+          
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
@@ -523,8 +516,6 @@ class TransferOrder
                       // echo json_encode($data_lines);
 
                     
-
-                       */
                         
                         
                          // Create le client via Api...
