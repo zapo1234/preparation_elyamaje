@@ -19,6 +19,7 @@ use App\Repository\Categorie\CategoriesRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Repository\Tiers\TiersRepository;
 
 class Controller extends BaseController
 {
@@ -43,7 +44,8 @@ class Controller extends BaseController
         ProductRepository $products,
         PrinterRepository $printer,
         Api $api,
-        ReassortRepository $reassort
+        ReassortRepository $reassort,
+        TiersRepository $tiersRepository
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -54,6 +56,7 @@ class Controller extends BaseController
         $this->printer = $printer;
         $this->api = $api;
         $this->reassort = $reassort;
+        $this->tiersRepository = $tiersRepository;
     }
 
     // INDEX ADMIN
@@ -859,8 +862,35 @@ class Controller extends BaseController
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
 
-                $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
-                $tier = json_decode($tier, true);
+                $tier_prep = $this->tiersRepository->getAllColoneByid($order["socid"]);
+
+                if ($tier_prep) {
+
+                    $name = $tier_prep[0]->nom;
+                    $pname = $tier_prep[0]->nom;
+                    $adresse = $tier_prep[0]->adresse;
+                    $city = $tier_prep[0]->ville;
+                    $company = $tier_prep[0]->nom;
+                    $code_postal = $tier_prep[0]->zip_code;
+                    $contry = isset($tier_prep[0]->country_code)? $tier_prep[0]->country_code: "FR";
+                    $email = $tier_prep[0]->email;
+                    $phone = $tier_prep[0]->phone;
+
+
+                }else {
+                    $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
+                    $tier = json_decode($tier, true);
+
+                    $name = $tier["name"];
+                    $pname = $tier["name"];
+                    $adresse = $tier["address"];
+                    $city = $tier["town"];
+                    $company = $tier["name_alias"];
+                    $code_postal = $tier["zip"];
+                    $contry = $tier["country_code"];
+                    $email = $tier["email"];
+                    $phone = $tier["phone"];
+                }
 
                 if ($order["statut"] == 1) {
 
@@ -877,15 +907,19 @@ class Controller extends BaseController
                             "ref_order" => $order["ref"],
                             "fk_commande" => $order["id"],
                             "socid" => $order["socid"],
-                            "name" => $tier["name"],
-                            "pname" => $tier["name"],
-                            "adresse" => $tier["address"],
-                            "city" => $tier["town"],
-                            "company" => $tier["name_alias"],
-                            "code_postal" => $tier["zip"],
-                            "contry" => $tier["country_code"],
-                            "email" => $tier["email"],
-                            "phone" => $tier["phone"],
+
+
+                            "name" => $name,
+                            "pname" => $pname,
+                            "adresse" => $adresse,
+                            "city" => $city,
+                            "company" => $company,
+                            "code_postal" => $code_postal,
+                            "contry" => $contry,
+                            "email" => $email,
+                            "phone" => $phone,
+
+
                             "date" => date('Y-m-d H:i:s'),
                             "total_tax" => $order["total_tva"],
                             "total_order_ttc" => $order["total_ttc"],
@@ -895,12 +929,14 @@ class Controller extends BaseController
                         ];
 
                     
-                        $id = DB::table('orders_doli')->insertGetId($detail_facture);
+                       // dd($detail_facture);
+
+                        $id_f = DB::table('orders_doli')->insertGetId($detail_facture);
                         $lines = array();
                         foreach ($order["lines"] as $key => $line) {
                             array_push($lines,
                             $data_line = [
-                                "id_commande" => $id,
+                                "id_commande" => $id_f,
                                 "libelle" => $line["libelle"],
                                 "id_product" => $line["fk_product"],
                                 "barcode" => $line["product_barcode"],
@@ -920,12 +956,9 @@ class Controller extends BaseController
 
                         // changer le statut de la commande CU2305-13591  CU2304-12158
 
-                        sleep(5);
-                       
-                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
-                        // $order_put = json_decode($order_put, true);
+                       // sleep(20);
 
-                        // dd($order_put);
+                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
                     // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
                         return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
