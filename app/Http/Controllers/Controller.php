@@ -841,15 +841,17 @@ class Controller extends BaseController
             $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
             $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
             
-            // $id = request('id');
-            // $token = request('tokenPrepa');
+            $id = request('id');
+            $token = request('tokenPrepa');
 
 
           //  return $id."----".$token;
 
             // return $id;
-            $id = "8";
-            $token = "lyestoken";
+            // $id = "8";
+            // $token = "lyestoken";
+
+            $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
 
             if ($token == "lyestoken" && $id) {
@@ -921,7 +923,7 @@ class Controller extends BaseController
                       //  sleep(10);
 
 
-                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
+                        
 
                         // $order_put = json_decode($order_put, true);
 
