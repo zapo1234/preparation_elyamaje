@@ -840,8 +840,12 @@ class Controller extends BaseController
 
         if ($token == "lyestoken" && $id) {
 
-            $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
+
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+
 
             $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
             $order = json_decode($order, true);
