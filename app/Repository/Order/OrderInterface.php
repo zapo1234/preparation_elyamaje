@@ -12,7 +12,7 @@ interface OrderInterface
 
    public function getAllOrdersAndLabel();
 
-   public function getAllOrdersAndLabelByFilter($filter_type, $filter);
+   public function getAllOrdersAndLabelByFilter($filters);
 
    public function insertOrdersByUsers($array_user);
 

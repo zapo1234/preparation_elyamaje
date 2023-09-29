@@ -29,11 +29,12 @@ class TransferOrder
       private $countc = [];// les clients non distributeur.
       private $accountpay;
     
-       public function __construct(Api $api,
-       CommandeidsRepository $commande,
-       TiersRepository $tiers,
-       DonRepository $don,
-       DonsproductRepository $dons
+       public function __construct(
+        Api $api,
+        CommandeidsRepository $commande,
+        TiersRepository $tiers,
+        DonRepository $don,
+        DonsproductRepository $dons
        )
        {
          $this->api=$api;
@@ -131,8 +132,17 @@ class TransferOrder
                  $apiKey = env('KEY_API_DOLIBAR');
                  $apiUrl = env('KEY_API_URL');
 
-                 $produitParam = ["limit" => 950, "sortfield" => "rowid"];
+    
+                  $method = "GET";
+                 // recupérer les clé Api dolibar transfertx........
+                 $apiKey = env('KEY_API_DOLIBAR'); 
+                 $apiUrl = env('KEY_API_URL');
+
+
+                 $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+                
+
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
 
@@ -206,9 +216,11 @@ class TransferOrder
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
       
                   foreach($listproduct as $values) {
-                     if($values['barcode']!=""){
-                        $data_list_product[$values['id']] = $values['barcode'];
-                       }
+                      
+                      if($values['barcode']!=""){
+                          $data_list_product[$values['id']] = $values['barcode'];
+                     
+                      }
                       // tableau associatve entre ref et label product....
                   }
 
@@ -310,7 +322,7 @@ class TransferOrder
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
-                                  
+
                                     $data_tiers[] =[ 
                                    'entity' =>'1',
                                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
@@ -346,7 +358,7 @@ class TransferOrder
                                       'date_created'=> date('Y-m-d H:i:s')
                                    ];
                               }
-                            
+                              
                            
                                foreach($donnees['line_items'] as $key => $values){
                                   foreach($values['meta_data'] as $val) {
@@ -373,7 +385,11 @@ class TransferOrder
                                                      ];
                                                       // recupérer les produit en kdo avec leur prix initial.
                                                  }
-                                              
+                                                 
+
+                                               
+                                                
+
                                                $tva_product = 20;
                                                $data_product[] = [
                                               "remise_percent"=> $donnees['discount_amount'],
@@ -424,6 +440,7 @@ class TransferOrder
                                       
                                        
                                         // liée la facture à l'utilisateur via un socidet le details des produits
+
                                         $d=1;
                                         $ref="";
                                         $cb ="CB";
@@ -438,6 +455,8 @@ class TransferOrder
                                         "paye"=>"1",
                                         "lines" =>$data_product,
                                         'array_options'=> $data_options,
+
+                                        // 'linkedObjectsIds' => ["commande" => [""=>"8"]], // ajouter cette ligne si la facture d'une commande
                                     
                                       ];
 
@@ -498,29 +517,32 @@ class TransferOrder
                            }
                          }
                         */
-                          
-                      
-                       /* if(count($data_echec)!=0){
-                          $list = implode(',',$data_echec);
-                          echo json_encode(['success' => false, 'message'=> ' Attention la commande contient un produit dont le barcode est illisible , informez le service informatique  infos :'.$list.' !']);
-                          exit;
-                            
-                        }
+                         
+                      //   dump($data_tiers);
+
+                      // echo json_encode($data_lines);
+
+                    
 
                        */
                         
                         
                          // Create le client via Api...
-                      foreach($data_tiers as $data) {
+
+                    
+                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
 
                        }
                     
+
                         foreach($data_lines as $donnes){
-                         // insérer les details des données de la facture dans dolibarr
-                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                       }
+                          // insérer les details des données de la facture dans dolibarr
+                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                        }
+                       
+                        // dd('dddddddddddddddd');
 
                           // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
@@ -555,15 +577,16 @@ class TransferOrder
         public function invoicespay($orders)
         {
            
-                $method = "GET";
-            
-                $apiKey = env('KEY_API_DOLIBAR');
-                $apiUrl = env('KEY_API_URL');
-               //appelle de la fonction  Api
-               // $data = $this->api->getDatadolibar($apikey,$url);
-               // domp affichage test 
-               // recupérer le dernière id des facture.
-               // recuperer dans un tableau les ref_client existant id.
+              $method = "GET";
+                 $apiKey = env('KEY_API_DOLIBAR'); 
+                 $apiUrl = env('KEY_API_URL');
+
+
+              //appelle de la fonction  Api
+              // $data = $this->api->getDatadolibar($apikey,$url);
+             // domp affichage test 
+              // recupérer le dernière id des facture 
+              // recuperer dans un tableau les ref_client existant id.
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 

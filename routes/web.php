@@ -26,6 +26,9 @@ Route::get('/index', function () {
     return redirect()->route('/');
 })->name('index');
 
+// Route::get("/preparationCommandeByToken", [Controller::class, "preparationCommandeByToken"])->name('preparationCommandeByToken'); // acces pour preparer la commande doli
+
+
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
         switch (Auth()->user()->roles->toArray()[0]['id']) {
@@ -59,13 +62,22 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // mise a jours des tiers via dolibar.
     Route::post("/refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
     // orders facturé via dolibarr
-     Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
-     //traitement ajax des commande facture 
-     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
-     // ajax verification des commandes api dolibar factures.
-     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
+    Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
+    //traitement ajax des commande facture 
+    Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
+    // ajax verification des commandes api dolibar factures.
+    Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
 
-     
+    // Route pour approvisionnement
+    Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
+    Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+    Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
+    Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
+    Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
+
+
+    //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
+
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
@@ -84,11 +96,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // Distributeurs
     Route::get("/distributors", [Admin::class, "distributors"])->name('distributors');
     Route::get("/syncDistributors", [Distributors::class, "getAllDistributors"])->name('sync.distributors');
-    // CRUD Imprimantes
-    Route::get("/printers", [Admin::class, "printers"])->name('printers');
-    Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
-    Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
-    Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 
     // Colissimo configuration
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
@@ -97,16 +104,22 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
 
+    // Email preview
+    Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 });
 
 // PRÉPARATEUR
 Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/orders", [Controller::class, "orderPreparateur"])->name('orders');
     Route::get("/ordersDistributeurs", [Controller::class, "ordersDistributeurs"])->name('orders.distributeurs');
+    Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
+    Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
+    Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
+    Route::post("/checkProductBarcodeForTransfers", [Order::class, "checkProductBarcodeForTransfers"])->name('orders.checkProductBarcodeForTransfers'); 
 });
 
 // EMBALLEUR
@@ -141,6 +154,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
+    // CRUD Imprimantes
+    Route::get("/printers", [Admin::class, "printers"])->name('printers');
+    Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
+    Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
+    Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -195,6 +213,4 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 // Route test à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
-// Email preview
-// Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 

@@ -16,6 +16,8 @@
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
 									<li class="breadcrumb-item active" aria-current="page">Étiquettes</li>
+									<input id="order_id" type="hidden" value="">
+									<input type="hidden" value="" id="detail_order_label">
 								</ol>
 							</nav>
 						</div>
@@ -82,18 +84,24 @@
 								</div>
 							</div>
 
-							<select class="d-none select2_custom status_dropdown input_form_type">
-								<option value="">Status</option>
-									@foreach($status_list as $status)
-										<option value="{{$status}}">{{$status}}</option>
-									@endforeach
-							</select>
-
-
-							<form method="POST" action="{{ route('labels.filter') }}" class="d-none date_research">
-								@csrf
-								<input name="filter_type" value="created_at" type="hidden">
-								<input name="filter_label" class="custom_input" style="padding: 4px;" type="date">
+							<form method="GET" action="{{ route('labels.filter') }}" class="d-flex d-none order_research">
+								<select name="status" class="select2_custom status_dropdown input_form_type">
+									<option value="">Status</option>
+										@foreach($status_list as $keyStatus => $status)
+											@if(isset($parameter['status']))
+												@if($parameter['status'] == $keyStatus)
+													<option selected value="{{$keyStatus}}">{{$status}}</option>
+												@else 
+													<option value="{{$keyStatus}}">{{$status}}</option>
+												@endif
+											@else 
+												<option value="{{$keyStatus}}">{{$status}}</option>
+											@endif
+										@endforeach
+								</select>
+								<input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
+								<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
+								<button style="margin-left:10px" class="research_label_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
 						
@@ -102,7 +110,7 @@
 									<tr>
 										<th>Commande</th>
 										<th>Status</th>
-										<th>Date commande</th>
+										<th>Générée le</th>
 										<th class="col-md-2">Étiquette</th>
 										<th class="col-md-2">Déclaration douanière</th>
 									</tr>
@@ -116,7 +124,7 @@
 											<td data-label="Status">
 												<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
 											</td>
-											<td data-label="Date commande">{{ date("d/m/Y", strtotime($order[0]['date'])) }}</td>
+											<td data-label="Générée le">{{ $order[0]['label_created_at'] ? date("d/m/Y", strtotime($order[0]['label_created_at'])) : '' }}</td>
 											<td data-label="Étiquette">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)
@@ -167,7 +175,7 @@
 																		@csrf
 																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger</button>
+																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
 																	</form>
 																@else 
 																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
@@ -247,6 +255,7 @@
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script src="{{asset('assets/js/label.js')}}"></script>
+		
 	@endsection
 
 

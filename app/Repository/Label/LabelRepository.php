@@ -57,7 +57,8 @@ class LabelRepository implements LabelInterface
    }
 
    public function getAllLabels(){
-      return $this->model::all();
+      $date = date('Y-m-d');
+      return $this->model::select('*')->where('created_at', 'LIKE', '%'.$date.'%')->get();
    }
 
    public function getAllLabelsByStatusAndDate($rangeDate){
@@ -67,13 +68,17 @@ class LabelRepository implements LabelInterface
 
    public function updateLabelStatus($labels){
 
-      $updateQuery = "UPDATE prepa_labels SET tracking_status = CASE order_id";
+      $order_id = [];
+      $updateQuery = "UPDATE prepa_labels SET tracking_status = (CASE order_id";
 
       foreach ($labels as  $value) {
+         $order_id[] = $value['order_id'];
          $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
       }
 
-      $updateQuery.= " END";
+   
+
+      $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";
       $response = DB::update($updateQuery);
 
    }

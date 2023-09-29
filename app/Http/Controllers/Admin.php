@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Service\Api\TransferOrder;
@@ -141,7 +142,8 @@ class Admin extends BaseController
                     $variation = $attribut['name'];
                 }
             }
-
+            
+          
             if($variation){
                 $ids = array_column($product['attributes'], "name");
                 $clesRecherchees = array_keys($ids,  $variation);
@@ -173,12 +175,13 @@ class Admin extends BaseController
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
-    
                         if(isset($product['variation_attributes'])){
                             if(count($product['variation_attributes']) > 0){
-                                $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
-                                $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
-                            } 
+                                if(isset($product['variation_attributes'][$product['variations'][$key]])){
+                                    $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
+                                    $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
+                                }
+                            }
                         } 
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
@@ -413,7 +416,7 @@ class Admin extends BaseController
     }
 
     public function printers(){
-        $preparateurs = $this->user->getUsersByRole([2]);
+        $preparateurs = $this->user->getUsersAndRoles();
         $printers = $this->printer->getPrinters();
         return view('admin.printers', ['printers' => $printers, 'preparateurs' => $preparateurs]);
     }
@@ -543,77 +546,37 @@ class Admin extends BaseController
                 $order = $this->woocommerce->transformArrayOrder($order);
                 $order[0]['emballeur'] = "admin";
             } else {
-                // Récupère directement sur Woocommerce si pas en local
-                $order[0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
-                $coupons = [];
-                $discount = [];
-                $amount = [];
-                
-                if(isset($order[0]['code'])){
+                // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
+                $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
+
+                if(isset($order[1][0]['code'])){
                     return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
                 } else {
-
-                     // Coupons
-                     if(isset($order[0]['coupon_lines'])){
-                        foreach($order[0]['coupon_lines'] as $coupon){
-                           $coupons[] = $coupon['code'];
-                           $discount[] = $coupon['discount'];
-                           $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
-                        }
-                    }
-
-                    $order[0]['date'] = $order[0]['date_created'];
-                    $order[0]['total_tax_order'] = $order[0]['total_tax'];
-                    $order[0]['total_order'] = $order[0]['total'];
-                    $order[0]['payment_method'] = $order[0]['payment_method'] ? $order[0]['payment_method'] : (count($order[0]['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null );
-                    $order[0]['coupons'] = count($coupons) > 0 ? implode(',', $coupons) : "";
-                    $order[0]['discount'] = count($discount) > 0 ? implode(',', $discount) : 0;
-                    $order[0]['discount_amount'] = count($amount) > 0 ? implode(',', $amount) : 0;
-                    $order[0]['order_id'] = $order[0]['id'];
-                    $order[0]['preparateur'] = "admin";
-                    $order[0]['emballeur'] = "admin";
-
-                    if(in_array(100, explode(',', $order[0]['discount_amount'])) && str_contains($order[0]['coupons'], 'fem')){
-                        $order[0]['coupons'] = "";
-                        $order[0]['discount'] = 0;
-                        $order[0]['discount_amount'] = 0;
-                    }
-
-                    // Liste des produits
-                    foreach($order[0]['line_items'] as $key => $line){
-
-                        $order[0]['line_items'][$key]['subtotal'] =  floatval($line['subtotal']) / floatval($line['quantity']);
-                        $order[0]['line_items'][$key]['ref'] = $line['sku'];
-                        $order[0]['line_items'][$key]['subtotal_tax'] = floatval($line['subtotal_tax']);
-                        $order[0]['line_items'][$key]['total'] = floatval($line['total']);
-                        $order[0]['line_items'][$key]['total_tax'] = floatval($line['total_tax']);
-
-                        if($line['total'] == 0){
-                            // Get Real price of product
-                            $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
-                            $product = $this->products->getProductById($product_id);
-                            $order[0]['line_items'][$key]['real_price'] = floatval($product[0]->price);
-                        }
-
-                        // for fem gift
-                        if(($line['total'] - ($order[0]['line_items'][$key]['subtotal'] * $order[0]['line_items'][$key]['quantity']) > 0.10) && in_array(100, explode(',', $order[0]['discount_amount'])) && $order[0]['total'] != 0.0){
-                            // Get Real price of product
-                            $product_id = $line['variation_id'] != 0 ? $line['variation_id'] : $line['product_id'];
-                            $product = $this->products->getProductById($product_id);
-                            
-                            $order[0]['line_items'][$key]['quantity'] = $order[0]['line_items'][$key]['quantity'] > 1 ? $order[0]['line_items'][$key]['quantity'] - 1 : 1;
-                            $order[0]['line_items'][$key]['subtotal_tax'] = $order[0]['line_items'][$key]['total_tax'] * $order[0]['line_items'][$key]['quantity'];
-
-                            $order[0]['line_items'][] = ['name' => $order[0]['name'], 'product_id' => $order[0]['product_id'], 'variation_id' => $order[0]['variation_id'], 
-                            'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
-                            'real_price' =>  $product[0]->price];
-                        }
-                    }
+                    // Insert la commande
+                    $insert = $this->order->insertOrdersByUsers($order);
+                    $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
+                    $order_insert[0]['emballeur'] = "admin";
+                    $order = $this->woocommerce->transformArrayOrder($order_insert);
                 }
             }
 
             try {
                 $this->factorder->Transferorder($order);  
+
+                // Stock historique
+                $data = [
+                    'order_id' => $order_id,
+                    'user_id' => Auth()->user()->id,
+                    'status' => 'finished',
+                    'poste' => 0,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+          
+                $this->history->save($data);
+                // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+                $this->order->updateOrdersById([$order_id], "finished");
+                $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+
                 return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
             } catch(Exception $e){
                 return redirect()->route('admin.billing')->with('error', $e->getMessage());

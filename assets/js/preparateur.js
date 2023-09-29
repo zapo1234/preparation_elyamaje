@@ -1,5 +1,19 @@
 $('body').on('click', '.show_order', function () {
     var id = $(this).attr('id')
+    
+    // Update le status pour mettre le transfer en cours de traitement
+    var transfers = $(this).attr('data-tarnsfers')
+    if(typeof transfers != "undefined"){
+        $.ajax({
+            url: "transfersProcesssing",
+            method: 'POST',
+            data: { _token: $('input[name=_token]').val(), transfer_id: id, status: -1}
+        }).done(function (data) {
+            // if(data <= 0){
+            //     console.log("Erreur !")
+            // }
+        })
+    } 
 
     // Stock l'id de la comande en cours de prépa pour la récupérer plus tard
     $("#order_in_progress").val(id)
@@ -120,7 +134,7 @@ document.addEventListener("keydown", function (e) {
                         quantity_pick_in = quantity_pick_in + 1
                         quantity_pick_in = quantity_pick_in > quantity_to_pick_in ? quantity_to_pick_in : quantity_pick_in
 
-                        if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1 &&
+                        if ((quantity_to_pick_in > 1 && quantity_to_pick_in <= 10) &&
                             (parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text()) - quantity_pick_in) > 0) {
 
                             // Update pick quantity
@@ -141,6 +155,22 @@ document.addEventListener("keydown", function (e) {
                             $("#modalverification").modal('show')
                             $("#barcode_verif").val($("#barcode").val())
                             saveItem(order_id, true)
+                        } else if(quantity_to_pick_in > 10){
+
+                            $(".quantity_product").text('')
+                            $(".quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
+                            $(".name_quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).children('.detail_product_name_order').children('span').text())
+                            $("#product_to_verif").val($("#barcode").val())
+
+                            $('#modalverification2').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            })
+
+                            $("#modalverification2").attr('data-order', order_id)
+                            $("#modalverification2").modal('show')
+                            $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
+                            saveItem(order_id, false, true)
                         } else if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1) {
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
                             $("#barcode_verif").val($("#barcode").val())
@@ -240,7 +270,7 @@ $(".validate_pick_in").on('click', function () {
 
             if (JSON.parse(data).success) {
                 $(".success_prepared_command").removeClass('d-none')
-                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + user_name;
+                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
                 const size = 150;
 
                 $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
@@ -496,72 +526,51 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
     $("#barcode_verif").val('')
 }
 
-var printer = null;
-var ePosDev = new epson.ePOSDevice();
+var builder = null;
 var reconnect = 0;
 
 function imprimerPages() {
+    
     // IP à mettre dynamiquement
     var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
+    var deviceID = "local_printer";
 
-    if (!printer_ip) {
-        window.print()
-    } else {
-        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
-    }
-}
+    //Create an ePOS-Print Builder object
+    var builder = new epson.ePOSBuilder();
 
-function cbConnect(data, ePos) {
-    var printer_ip = $(".printer_ip").val() ?? false
-    var printer_port = $(".printer_port").val() ?? false
+    builder.addTextLang('fr')
+    builder.addTextAlign(builder.ALIGN_CENTER);
+    builder.addTextSmooth(true);
+    builder.addTextFont(builder.FONT_A);
+    builder.addTextSize(1, 1);
+    builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
+    builder.addText("\n"+$(".show .info_order").text()+"\n");
+    builder.addText("\n");
+    builder.addCut(builder.CUT_FEED);
 
-    if (data == 'OK' || data == 'SSL_CONNECT_OK') {
-        var deviceID = "local_printer";
-        ePosDev.createDevice(deviceID, ePosDev.DEVICE_TYPE_PRINTER, { 'crypto': false, 'buffer': false }, cbCreateDevice_printer);
-    } else if (reconnect < 3 && printer_ip != false) {
-        reconnect = reconnect + 1
-        ePosDev.connect(printer_ip, printer_port, cbConnect, { "eposprint": true, "timeout": 30000 });
-    } else {
-        console.log('Erreur 1:' + data)
+    //Acquire the print document
+    var request = builder.toString();
+    var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=6000';
+    var epos = new epson.ePOSPrint(address);
+    epos.onreceive = function (res) {
+        if(!res.success){
+            console.log(res)
+        }
+
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
-        window.print()
+        $(".impression_code").attr('disabled', false)
     }
-}
 
-function cbCreateDevice_printer(devobj, retcode) {
-    if (retcode == 'OK') {
-        printer = devobj;
-        printer.timeout = 60000;
-        printer.onreceive = function (res) {
-            if (!res.success) {
-                window.print()
-            }
-        };
-        printer.oncoveropen = function () { alert('coveropen'); };
-        printOrder()
-    } else {
-        console.log('Erreur 2:' + retcode)
+    epos.onerror = function (err) {
         $(".impression_code span").removeClass('d-none')
         $(".impression_code div").addClass('d-none')
-        window.print()
+        $(".impression_code").attr('disabled', false)
+        alert('Imprimante '+printer_ip+' non trouvée !')
     }
-}
 
-function printOrder() {
-    printer.addTextLang('fr');
-    printer.addTextAlign(printer.ALIGN_CENTER);
-    printer.addTextDouble(true, true);
-    printer.addTextSize(1, 1);
-    printer.addSymbol($(".show #qrcode").attr('title'), printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_DEFAULT, 8, 0, 0);
-    printer.addText("\n"+$(".show .info_order").text());
-
-    printer.addText("\n\n\n");
-    printer.addCut(printer.CUT_FEED);
-    printer.send();
-    $(".impression_code span").removeClass('d-none')
-    $(".impression_code div").addClass('d-none')
+    //Send the print document
+    epos.send(request);
 }
 
 
@@ -584,6 +593,7 @@ function enter_manually_barcode(product_id, order_id){
     $("#modalManuallyBarcode").modal('show')
 }
 
+// Commandes classiques
 $(".valid_manually_barcode").on('click', function(){
 
     var product_id = $("#product_id_barcode").val()
@@ -614,3 +624,131 @@ $(".valid_manually_barcode").on('click', function(){
         $("#barcode").val("")
     })
 })
+
+
+
+
+
+/* ----------------- TRANSFER ----------------- */
+
+$(".valid_manually_barcode_transfert").on('click', function(){
+
+    var product_id = $("#product_id_barcode").val()
+    var barcode = $("#barcode_manually").val()
+    var order_id = $("#product_id_barcode_order_id").val()
+
+    // Update en base de données
+    $.ajax({
+        url: "checkProductBarcodeForTransfers",
+        method: 'POST',
+        data: { _token: $('input[name=_token]').val(), product_id: product_id, barcode: barcode}
+    }).done(function (data) {
+        if (JSON.parse(data).success) {
+            if(!$(".barcode_"+barcode).hasClass('pick')){
+                $(".barcode_"+barcode).addClass('pick')
+                $(".barcode_"+barcode).find('.quantity_pick_in').text($(".barcode_"+barcode).find('.quantity_to_pick_in').text())
+                $("#modalManuallyBarcode").modal('hide')
+                $("#barcode").val(barcode)
+                saveItem(order_id, false, true)
+            } else {
+                $("#modalManuallyBarcode").modal('hide')
+            }
+        } else {
+           $("#barcode_manually").css('border', '1px solid red')
+           $('#barcode_manually').attr('placeholder','Code barre invalide !');
+        }
+        $("#barcode_manually").val("")
+        $("#barcode").val("")
+    })
+})
+
+$(".validate_pick_in_transfer").on('click', function(){
+    var order_id = $("#order_in_progress").val()
+    
+    if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
+        // Ouvre la modal de loading
+
+        $(".loading_prepared_command").removeClass('d-none')
+        $("#modalSuccess").modal('show')
+        var pick_items = JSON.parse(localStorage.getItem('barcode'))
+        var order_object = false
+
+        if (pick_items) {
+            // Récupère les produits de cette commande
+            order_object = pick_items.find(
+                element => element.order_id == order_id
+            )
+        }
+        
+
+        if (order_object) {
+            pick_items = order_object.products
+            pick_items_quantity = order_object.quantity
+        } else {
+            pick_items = false
+            pick_items_quantity = false
+        }
+
+        var user_name = $("#userinfo").val()
+
+        $(".modal_order").modal('hide')
+
+        $.ajax({
+            url: "transfersPrepared",
+            method: 'POST',
+            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity}
+        }).done(function (data) {
+            
+            $(".loading_prepared_command").addClass('d-none')
+
+            if (JSON.parse(data).success) {
+                $(".success_prepared_command").removeClass('d-none')
+                const href = order_id + "," + pick_items.length + "," + "Transfert" + "," + accentsTidy(user_name);
+                const size = 150;
+
+                $(".info_order").text("#Transfert " + order_id + " - " + pick_items.length + " Produit(s)" + " - "+user_name)
+                var list_products = ""
+                $("#order_" + order_id + " .product_order").each(function () {
+                    list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
+                });
+
+                $(".info_order_product").children('span').remove()
+                $(".info_order_product").append(list_products)
+
+                new QRCode(document.querySelector("#qrcode"), {
+                    text: href,
+                    width: size,
+                    height: size,
+
+                    colorDark: "#000000",
+                    colorLight: "#ffffff"
+                });
+
+
+                if (localStorage.getItem('barcode')) {
+                    pick_items = JSON.parse(localStorage.getItem('barcode'))
+                    Object.keys(pick_items).forEach(function (k, v) {
+                        if (pick_items[k]) {
+                            if (order_id == pick_items[k].order_id) {
+                                pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                            }
+                        }
+                    })
+                }
+
+                if (pick_items.length == 0) {
+                    localStorage.removeItem('barcode');
+                } else {
+                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                }
+
+            } else {
+                $(".info_message").text("Produits manquants !")
+                $("#infoMessageModal").modal('show')
+                $(".error_prepared_command").removeClass('d-none')
+            }
+        });
+    }
+})
+
+/* ----------------- TRANSFER ----------------- */

@@ -99,7 +99,7 @@ class TiersController extends BaseController
            
           
 
-        return view('Tiers.orderfacturer',['list_result'=>$list_result]);
+        return view('tiers.orderfacturer',['list_result'=>$list_result]);
     }
     
     

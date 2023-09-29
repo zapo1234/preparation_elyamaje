@@ -667,6 +667,28 @@ a {
 
 @media (max-width: 650px) { 
 
+	.dataTables_wrapper .col-md-6{
+		width: 100% !important;
+	}
+	.dataTables_length{
+		flex-direction: column;
+	}
+
+	.dataTables_length .select2,
+	.dataTables_length .custom_input,
+	.dataTables_length button{
+		width: 100% !important;
+		margin-left: 0px !important;
+		margin-right: 0px !important;
+		margin-top: 5px !important;
+	}
+
+	.dataTables_length form{
+		flex-direction: column;
+		margin: 0px;
+		margin-top: 5px !important;
+	}
+
 	.chronopost_shipping_method_preparateur{
 		margin-bottom: 10px;
 	}
@@ -752,12 +774,23 @@ a {
 	z-index: 9999 !important;
 }
 
+.badge_order_count{
+	position: absolute;
+    right: 15px;
+    top: 18px;
+	font-size: 0.8em;
+}
+
 @media (max-width: 990px) { 
 
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
 		max-height: 48vh;
+	}
+
+	.badge_order_count{
+		font-size: 1em;
 	}
 
 	.modal button, .custom_input{
@@ -5287,7 +5320,9 @@ input::placeholder {
 	#example_length label select, 
 	.select2_custom .selection,
 	.select2_custom .select2-selection,
-	.custom_dropdown{
+	.custom_dropdown,
+	.dataTables_length .custom_input,
+	.dataTables_length form button{
 		height: 100% !important;
 	}
 
@@ -6470,7 +6505,6 @@ a{
 	flex-wrap: wrap;
 }
 
-
 .course .btn {
 	background-color: black;
 	border: 0;
@@ -6865,6 +6899,10 @@ select:focus, input:focus{
 	border: none !important;
 }
 
+.modal_verif_order2 .quantity_product{
+	border: none !important;
+	color: red;
+}
 .modal_backfrop_fixe{
     background-color: rgba(0, 0, 0, 0.4);
 }
@@ -6916,7 +6954,10 @@ select:focus, input:focus{
 	font-size: 12px;
 }
 
-.select2_custom .select2-selection{
+.select2_custom .select2-selection,
+.dataTables_length .custom_dropdown,
+.dataTables_length .custom_input,
+.dataTables_length button{
 	height: 31px;
 	border: 1px solid #ced4da
 }
@@ -7018,6 +7059,7 @@ textarea:focus{
     font-weight: 800;
     margin-bottom: 10px;
 	color: black;
+	text-align: center;
 }
 
 .info_order_product{
@@ -7208,7 +7250,7 @@ textarea:focus{
 }
 
 .info_order_product {
-	max-height: 80vh;
+	max-height: 40vh;
 	overflow-y: auto;
 	text-align: center;
 }
@@ -7223,7 +7265,7 @@ textarea:focus{
 	text-align: center !important;
 }
 
-.alert-danger div::before{
+.alert-danger div:not(#dangerReassort)::before{
 	display: inline-block;
     font: normal normal normal 32px/1'LineIcons';
     font-size: 22px;
@@ -7242,7 +7284,7 @@ textarea:focus{
 	color: white !important;
 }
 
-.alert-success div::before{
+.alert-success div:not(#successReassort)::before{
 	content: "\ea54";
 	display: inline-block;
     font: normal normal normal 32px/1'LineIcons';
@@ -7307,7 +7349,7 @@ textarea:focus{
 }
 
 .input_order_id input{
-	width: 275px;
+	width: 280px;
 	border-radius: 5px;
 	border: 1px solid rgb(214, 214, 214);
 	padding: 8px;
@@ -7666,3 +7708,41 @@ tr:has(.chronopost_shipping){
 .manually_barcode i{
 	font-size: 25px;
 }
+
+select option[disabled] { 
+	color: #dee2e6;
+}
+
+.customer_note{
+	word-break: break-word;
+	white-space: break-spaces;
+	margin-top: 8px;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.customer_note_preparateur span{
+	font-weight: bold;
+}
+
+.customer_note_mobile{
+	margin: 10px 0px;
+}
+
+.impression_code{
+	height: fit-content;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.success_prepared_command{
+	height: 100%;
+}
+
+.orders_customer, 
+.orders_distributor,
+.transfers_orders{
+	position: relative;
+}
+

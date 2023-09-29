@@ -18,6 +18,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
+use App\Repository\LogError\LogErrorRepository;
 
 class Label extends BaseController
 {
@@ -33,6 +34,7 @@ class Label extends BaseController
     private $chronopost;
     private $colissimoTracking;
     private $api;
+    private $logError;
 
     public function __construct(
         LabelRepository $label, 
@@ -43,7 +45,8 @@ class Label extends BaseController
         LabelProductOrderRepository $labelProductOrder,
         ColissimoRepository $colissimoConfiguration,
         Chronopost $chronopost,
-        ColissimoTracking $colissimoTracking
+        ColissimoTracking $colissimoTracking,
+        LogErrorRepository $logError
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -54,21 +57,24 @@ class Label extends BaseController
         $this->colissimoConfiguration = $colissimoConfiguration;
         $this->chronopost = $chronopost;
         $this->colissimoTracking = $colissimoTracking;
+        $this->logError = $logError;
     }
 
     public function getlabels(Request $request){
 
-        // Liste des commandes
-        if($request->post('filter_label')){
-            $filter = $request->post('filter_label');
-            $filter_type = $request->post('filter_type');
 
-            $orders = $this->order->getAllOrdersAndLabelByFilter($filter_type, $filter)->toArray();
+        if(count($request->all()) > 0){
+            $filters = $request->all();
+            $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders = json_encode($orders);
+            $orders = json_decode($orders, true);
         } else {
             $orders = $this->order->getAllOrdersAndLabel()->toArray();
         }
        
         $labels = $this->label->getAllLabels()->toArray();
+
+    
 
         $array_order = [];
 
@@ -100,10 +106,10 @@ class Label extends BaseController
                 ];
             }
         }
-
+    
         // Liste des status commandes
         $status_list = __('status_order');
-        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list]);
+        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all()]);
     }
 
     public function labelDownload(Request $request){
@@ -295,6 +301,11 @@ class Label extends BaseController
                 echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
                 return;
             }
+
+            if($product_order[0]['shipping_method'] == null){
+                echo json_encode(['success' => false, 'message' => 'Aucune méthode d\'expédition n\'a été trouvée pour cette commande']);
+                return;
+            }
         }
      
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
@@ -330,18 +341,23 @@ class Label extends BaseController
 
         if($order_by_id && $product_to_add_label){
             $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+
             $weight = 0; // Kg
             $subtotal = 0;
-
            
                 foreach($order[0]['line_items'] as $or){
-                  $quantity = $quantity_product[$or['product_id']];
-                  $subtotal = $subtotal + $or['subtotal'] * $quantity;
+                    if(isset($or['product_id'])){
+                        $quantity = $quantity_product[$or['product_id']];
+                        if(isset($or['real_price'] )){
+                            $subtotal = $subtotal + $or['real_price'];
+                        } else {
+                            $subtotal = $subtotal + $or['subtotal'] * $quantity;
+                        }
 
-                  if(is_numeric($or['weight'])){
-                    $weight = $weight + number_format(($or['weight'] * $quantity), 2);
-                  }
-                  
+                        if(is_numeric($or['weight'])){
+                            $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+                        }
+                    }
                 } 
 
                 $order[0]['total_order'] = $subtotal;
@@ -446,21 +462,38 @@ class Label extends BaseController
     public function getTrackingLabelStatus($token){
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
+
             // Get all orders labels -10 jours
             $rangeDate = 10;
+            $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+            $colissimo = [];
+            $chronopost = [];
+
+
+            foreach($labels as $label){
+                if($label->origin == "colissimo"){
+                    $colissimo[] = $label;
+                } else if($label->origin == "chronopost"){
+                    $chronopost[] = $label;
+                }
+            }
 
             try{
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
                 // Récupère les status de chaque commande
-                $trackingLabel = $this->colissimoTracking->getStatus($labels);
+                $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
+                $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
+                // Update status sur Wordpress pour les colis livré
+                $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
+                $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
+                $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
                 // Update en local
                 $this->label->updateLabelStatus($trackingLabel);
-                // Update status sur Wordpress pour les colis livré
-                $update = $this->colissimo->trackingStatusLabel($trackingLabel);
-                
+
                 return $update;
             } catch(Exception $e){
-                dd($e->getMessage());
+                $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
+                // dd($e->getMessage());
             }
         }
     }

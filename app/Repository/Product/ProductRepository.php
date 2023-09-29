@@ -61,6 +61,7 @@ class ProductRepository implements ProductInterface
 
             // Regarde si les données en local sont correctes
             foreach ($products_exists as $item) {
+               
                $product_exist = array_keys($product_id_on_local,  $item['product_woocommerce_id']);
                if(count($product_exist) == 0){
                   $difference_online[] = $item;

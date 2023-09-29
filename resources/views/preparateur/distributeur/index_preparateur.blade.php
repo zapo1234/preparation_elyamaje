@@ -101,11 +101,15 @@
 									<h6>Commande</h6>
 									<h2>#{{ $orders['details']['id'] }}</h2>
 								</div>
-								<div class="w-100">
+								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
-										<div>
+										<div class="{{ $orders['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($orders['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $orders['details']['id'] }}">{{ $orders['details']['first_name']  }} {{ $orders['details']['last_name']  }}</h2>
+										
+											@if($orders['details']['customer_note'])
+												<span class="customer_note_preparateur"><span>Note :</span> {{ $orders['details']['customer_note'] }} </h2>
+											@endif
 										</div>
 										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
@@ -216,11 +220,15 @@
 									<h6>Commande</h6>
 									<h2>#{{ $order['details']['id'] }}</h2>
 								</div>
-								<div class="w-100">
+								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
-										<div>
+										<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 											<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 											<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+										
+											@if($order['details']['customer_note'])
+												<span class="customer_note_preparateur"><span>Note :</span> {{ $order['details']['customer_note'] }} </h2>
+											@endif
 										</div>
 										@if(str_contains($order['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
@@ -331,11 +339,15 @@
 										<h6>Commande</h6>
 										<h2>#{{ $order['details']['id'] }}</h2>
 									</div>
-									<div class="w-100">
+									<div class="w-100 d-flex flex-column justify-content-between">
 										<div class="course-info d-flex justify-content-between align-items-center">
-											<div>
+											<div class="{{ $order['details']['customer_note'] ? 'customer_note_mobile' : '' }} ">
 												<h6>{{ \Carbon\Carbon::parse($order['details']['date'])->isoFormat(' DD/MM/YY à HH:mm') }}</h6>
 												<h2 class="customer_name_{{ $order['details']['id'] }}">{{ $order['details']['first_name']  }} {{ $order['details']['last_name']  }}</h2>
+											
+												@if($order['details']['customer_note'])
+													<span class="customer_note_preparateur"><span>Note :</span> {{ $order['details']['customer_note'] }} </h2>
+												@endif
 											</div>
 											@if(str_contains($order['details']['shipping_method'], 'chrono'))
 												<div class="chronopost_shipping_method_preparateur"></div>
@@ -469,7 +481,8 @@
 								<input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? ''}}">
 								<input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
 
-								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-30">
+								<button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-20">
+									<i class="bx bx-printer"></i>	
 									<span>Imprimer</span>
 									<div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 								</button>
@@ -584,4 +597,15 @@
 <script src="{{asset('assets/js/qrcode.js')}}"></script>
 <script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
 <script src="{{asset('assets/js/preparateur.js')}}"></script>
+
+<script>
+	var count_orders = '<?php echo json_encode($count_orders); ?>'
+	var count_rea = '<?php echo $count_rea; ?>'
+	var count_orders = JSON.parse(count_orders)
+
+	$(".orders_customer").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.order+'</span>')
+	$(".orders_distributor").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_orders.distrib+'</span>')
+	$(".transfers_orders").append('<span class="badge_order_count translate-middle badge rounded-pill bg-danger">+'+count_rea+'</span>')
+
+</script>
 @endsection

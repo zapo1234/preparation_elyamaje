@@ -27,6 +27,7 @@ $(".validate_order").on("click", function(){
             var order = JSON.parse(data).order;
             var is_distributor = JSON.parse(data).is_distributor;
             var country = getCountry(order[0]);
+            var order_shipping_method = order[0].shipping_method ? order[0].shipping_method : [];
             
             // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
@@ -39,7 +40,9 @@ $(".validate_order").on("click", function(){
             $(".detail_shipping_billing").append(`
                 <div class="to_hide detail_shipping_billing_div">
                     <div class="d-flex w-100 justify-content-around mb-3">
-                        ${order[0].shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
+
+                    
+                    ${order_shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
                         <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
                     </div>
 
@@ -277,6 +280,8 @@ function validWrapOrder(label){
                 $('.order_input').each(function(){
                     $(this).val('');
                 });
+                
+                $(".order_id_input").val('')
 
                 localStorage.removeItem('barcode_verif_wrapper');
                 $(".valid_order_and_generate_label").show()
@@ -334,7 +339,8 @@ document.addEventListener("keydown", function(e) {
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
         if(array.length == 4 && $("#order_id").val() == ""){
-            $("#order_id").val(array[0])
+            $("#order_id").val(array[0].split(',')[0])
+            $(".order_id_input").val(array[0].split(',')[0])
             $("#product_count").val(array[1])
             $("#customer").val(array[2])
             $(".validate_order").attr('disabled', false)

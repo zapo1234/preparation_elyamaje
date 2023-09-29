@@ -132,7 +132,7 @@
 					reversed: false
 				},
 				
-				colors: ['#4eda58', '#ff7300' /*, '#212529'*/],
+				colors: ['#4eda58', '#ff7300' , '#212529'],
 				series: [{
 					name: 'Commandes préparées',
 					data: order_prepared
@@ -140,10 +140,10 @@
 					name: 'Commandes emballées',
 					data: order_finished
 				}
-				// ,{
-				// 	name: 'Produits bippés',
-				// 	data: items_picked,
-				// }
+				,{
+					name: 'Produits bippés',
+					data: items_picked,
+				}
 				]
 			});
 

@@ -81,13 +81,14 @@ class TiersRepository implements TiersInterface
        {
            // inseré des clients de dolibar // connecté l'api dolibar tiers sous 3 jours .
            // $method = "GET";
-           // $apiKey ="9W8P7vJY9nYOrE4acS982RBwvl85rlMa";
-           //  $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
+               //    $apiKey = env('KEY_API_DOLIBAR'); 
+               //   $apiUrl = env('KEY_API_URL');
              
                 $method = "GET";
                // key et url api
-                  $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-                 $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+                 $apiKey = env('KEY_API_DOLIBAR'); 
+                 $apiUrl = env('KEY_API_URL');
+
                
                   $produitParam = array(
                     'apikey' => $apiKey,
@@ -168,8 +169,10 @@ class TiersRepository implements TiersInterface
       {
            $method = "GET";
            // key et url api
-           $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-           $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+
+            $apiKey = env('KEY_API_DOLIBAR'); 
+            $apiUrl = env('KEY_API_URL');
+
         
            $produitParam = array(
              'apikey' => $apiKey,
@@ -192,10 +195,11 @@ class TiersRepository implements TiersInterface
          
         $method = "GET";
         // key et url api
-           $apiKey ='VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
-          $apiUrl ='https://www.poserp.elyamaje.com/api/index.php/';
+
+         $apiKey = env('KEY_API_DOLIBAR'); 
+         $apiUrl = env('KEY_API_URL');
         
-           $produitParam = array(
+         $produitParam = array(
              'apikey' => $apiKey,
              'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-10 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
               'limit' => 0,

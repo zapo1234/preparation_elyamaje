@@ -94,6 +94,7 @@ class OrderRepository implements OrderInterface
 
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
+                  'customer_note' => $orderData['customer_note']
                ];
                
 
@@ -156,6 +157,9 @@ class OrderRepository implements OrderInterface
       }
 
       $list = [];
+      $orders_count['distrib'] = 0;
+      $orders_count['order'] = 0;
+      $temporaly_array = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
@@ -183,6 +187,10 @@ class OrderRepository implements OrderInterface
       foreach($orders as $key => $order){
          if($distributeur_order){
             if(in_array($order['customer_id'], $distributeurs_id) || $order['status'] == "order-new-distrib"){
+               // Comptabilise le nombre de commande 
+               if(!isset($list[$order['order_woocommerce_id']])){
+                  $orders_count['distrib'] = $orders_count['distrib'] + 1;
+               }
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -196,12 +204,22 @@ class OrderRepository implements OrderInterface
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
                   'shipping_amount' => $order['shipping_amount'],
-                  'shipping_method' => $order['shipping_method']
+                  'shipping_method' => $order['shipping_method'],
+                  'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
+            } else {
+               if(!isset($temporaly_array[$order['order_woocommerce_id']])){
+                  $orders_count['order'] = $orders_count['order'] + 1;
+               }
+               $temporaly_array[$order['order_woocommerce_id']] = 0;
             }
          } else {
             if(!in_array($order['customer_id'], $distributeurs_id) && $order['status'] != "order-new-distrib"){
+               // Comptabilise le nombre de commande 
+               if(!isset($list[$order['order_woocommerce_id']])){
+                  $orders_count['order'] = $orders_count['order'] + 1;
+               }
                $list[$order['order_woocommerce_id']]['details'] = [
                   'id' => $order['order_woocommerce_id'],
                   'first_name' => $order['billing_customer_first_name'],
@@ -215,9 +233,17 @@ class OrderRepository implements OrderInterface
                   'discount_amount' => $order['discount_amount'],
                   'gift_card_amount' => $order['gift_card_amount'],
                   'shipping_amount' => $order['shipping_amount'],
-                  'shipping_method' => $order['shipping_method']
+                  'shipping_method' => $order['shipping_method'],
+                  'customer_note'   => $order['customer_note']
                ];
                $list[$order['order_woocommerce_id']]['items'][] = $order;
+               
+            } else {
+               if(!isset($temporaly_array[$order['order_woocommerce_id']])){
+                  $orders_count['distrib'] = $orders_count['distrib'] + 1;
+               }
+               $temporaly_array[$order['order_woocommerce_id']] = 0;
+               
             }
          }
       }
@@ -262,7 +288,7 @@ class OrderRepository implements OrderInterface
       }
       
       $list = array_values($list);
-      return $list;
+      return ['orders' => $list, 'count' => $orders_count];
    }
 
    public function updateOrdersById($ids, $status = "finished"){
@@ -573,7 +599,8 @@ class OrderRepository implements OrderInterface
                   'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
                   'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
-                  'pick_up_location_id' => $pickUpLocationId
+                  'pick_up_location_id' => $pickUpLocationId,
+                  'customer_note' => $insert_order_by_user['customer_note']
                ];
 
                // Insert produits
@@ -635,21 +662,43 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabel(){
+
+      $date = date('Y-m-d');
       return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      // ->limit(500)
+      // ->limit(50)
       ->get();
    }
 
-   public function getAllOrdersAndLabelByFilter($filter_type, $filter){
-      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
+   public function getAllOrdersAndLabelByFilter($filters){
+   
+      $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
-      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
-      ->orderBy('labels.created_at', 'DESC')
-      ->where('labels.'.$filter_type, 'LIKE', '%'.$filter.'%')
-      ->get();
+      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
+
+      $haveFilter = false;
+      foreach($filters as $key => $filter){
+         if($filter){
+            $haveFilter = true;
+            if($key == "created_at"){
+               $query->where("labels.".$key."","LIKE",  "%".$filter."%");
+            } else {
+               $query->where("orders.".$key."", $filter);
+            }
+         }
+      }
+
+      if(!$haveFilter){
+         $date = date('Y-m-d');
+         $query->where("labels.created_at","LIKE",  "%".$date."%");
+      }
+      $query->orderBy('labels.created_at', 'DESC');
+      $query->limit(500);
+      $results = $query->get();
+      return $results;
    }
    
    public function getHistoryByUser($user_id){
@@ -775,7 +824,7 @@ class OrderRepository implements OrderInterface
 
    public function getProductOrder($order_id){
       return $this->model::select('products.name', 'products.weight', 
-         'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost', 'orders.status')
+         'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost', 'orders.status', 'orders.shipping_method')
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('orders.order_woocommerce_id', $order_id)
