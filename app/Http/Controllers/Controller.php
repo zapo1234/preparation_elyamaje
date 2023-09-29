@@ -930,18 +930,18 @@ class Controller extends BaseController
 
                     }else {
 
-                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
+                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
 
                        // return "le produit (". $product_no_bc.") n'a pas de code barre";
                     }
                 }else {
 
                     // $message = "Le devis n'a pas été validé";
-                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
+                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
                 }
             }else {
-                // $message = "Le devis n'a pas été validé";
-                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorOrderToPreparation');
+                // $message = "pas le droit";
+                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
 
             }
         } catch (Throwable $th) {
@@ -949,3 +949,4 @@ class Controller extends BaseController
         }
     }
 }
+    
