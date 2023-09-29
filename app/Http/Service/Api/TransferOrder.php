@@ -445,6 +445,8 @@ class TransferOrder
                                         "paye"=>"1",
                                         "lines" =>$data_product,
                                         'array_options'=> $data_options,
+
+                                        // 'linkedObjectsIds' => ["commande" => [""=>"8"]], // ajouter cette ligne si la facture d'une commande
                                     
                                       ];
 
@@ -506,8 +508,11 @@ class TransferOrder
                          }
                         */
                          
-                     
-                
+                  
+
+                      // echo json_encode($data_lines);
+
+                    
 
                          // Create le client via Api...
 
@@ -522,6 +527,8 @@ class TransferOrder
                           // insérer les details des données de la facture dans dolibarr
                           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                         }
+                       
+                        // dd('dddddddddddddddd');
 
 
                          // mettre la facture en status en payé et l'attribue un compte bancaire.

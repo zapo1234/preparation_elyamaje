@@ -834,6 +834,77 @@ class Controller extends BaseController
         $id = request('id');
         $token = request('token');
 
+
+        $id = "6";
+        $token = "lyestoken";
+
+        if ($token == "lyestoken" && $id) {
+
+            $apiUrl = env('KEY_API_URL');
+            $apiKey = env('KEY_API_DOLIBAR');
+
+            $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
+            $order = json_decode($order, true);
+
+            $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
+            $tier = json_decode($tier, true);
+
+            if ($order["statut"] == 1) {
+
+                $detail_facture = [
+
+                    "ref_order" => $order["ref"],
+                    "fk_commande" => $order["id"],
+                    "socid" => $order["socid"],
+                    "name" => $tier["name"],
+                    "pname" => $tier["name"],
+                    "adresse" => $tier["address"],
+                    "city" => $tier["town"],
+                    "company" => $tier["name_alias"],
+                    "code_postal" => $tier["zip"],
+                    "contry" => $tier["country_code"],
+                    "email" => $tier["email"],
+                    "phone" => $tier["phone"],
+                    "date" => date('Y-m-d H:i:s'),
+                    "total_tax" => $order["total_tva"],
+                    "total_order_ttc" => $order["total_ttc"],
+                    "user_id" => 0,
+                    "payment_methode" => $order["mode_reglement_code"],
+                    "statut" => "processing"
+                ];
+
+                $id = DB::table('orders_doli')->insertGetId($detail_facture);
+                $lines = array();
+                foreach ($order["lines"] as $key => $line) {
+                    array_push($lines,
+                    $data_line = [
+                        "id_commande" => $id,
+                        "libelle" => $line["libelle"],
+                        "id_product" => $line["fk_product"],
+                        "barcode" => $line["product_barcode"],
+                        "price" => $line["subprice"],
+                        "qte" => $line["qty"],
+                        "remise_percent" => $line["remise_percent"],
+                        "total_ht" => $line["total_ht"],
+                        "total_tva" => $line["total_tva"],
+                        "total_ttc" => $line["total_ttc"],
+                        "created_at" => date('Y-m-d H:i:s'),
+                        "updated_at" => date('Y-m-d H:i:s')
+        
+                    ]);
+                }
+
+                $res = DB::table('lines_commande_doli')->insert($lines);
+            }else {
+                dd("devis non validé");
+            }
+        }
+
+
+        dd($id);
+
+
+
         return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
 
 
