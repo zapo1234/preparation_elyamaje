@@ -851,7 +851,7 @@ class Controller extends BaseController
             // $id = "8";
             // $token = "lyestoken";
 
-            $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
+            
 
 
             if ($token == "lyestoken" && $id) {
@@ -920,11 +920,9 @@ class Controller extends BaseController
 
                         // changer le statut de la commande CU2305-13591  CU2304-12158
 
-                      //  sleep(10);
-
-
-                        
-
+                        sleep(5);
+                       
+                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
                         // $order_put = json_decode($order_put, true);
 
                         // dd($order_put);
