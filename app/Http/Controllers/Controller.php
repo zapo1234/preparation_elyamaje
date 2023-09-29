@@ -833,6 +833,9 @@ class Controller extends BaseController
     function preparationCommandeByToken(Request $request){
 
         try {
+
+            return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
+            
             $id = request('id');
             $token = request('token');
 
@@ -922,7 +925,7 @@ class Controller extends BaseController
                         $order_put = json_decode($order_put, true);
 
                     // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
-                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
+                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
 
                     }else {
                         return "le produit (". $product_no_bc.") n'a pas de code barre";
