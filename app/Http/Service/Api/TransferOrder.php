@@ -562,7 +562,7 @@ class TransferOrder
                //appelle de la fonction  Api
                // $data = $this->api->getDatadolibar($apikey,$url);
                // domp affichage test 
-               // recupérer le dernière id des facture 
+               // recupérer le dernière id des facture.
                // recuperer dans un tableau les ref_client existant id.
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
