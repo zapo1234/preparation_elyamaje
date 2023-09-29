@@ -925,12 +925,15 @@ class Controller extends BaseController
                         return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
 
                     }else {
-                        return json_encode(["response" => false, "message" => "le produit (". $product_no_bc.") n'a pas de code barre"]);
+                        return "le produit (". $product_no_bc.") n'a pas de code barre";
+                       // return json_encode(["response" => false, "message" => "le produit (". $product_no_bc.") n'a pas de code barre"]);
                     }
                 }else {
-                    return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
+                    return "Le devis n'a pas été validé";
+                    // return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
                 }
             }else {
+                return "Le devis n'a pas été validé";
                 return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
             }
         } catch (Throwable $th) {
