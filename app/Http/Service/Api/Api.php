@@ -282,7 +282,7 @@ class Api
 
     $result = curl_exec($curl);
     
-    if (!curl_errno($curl)) {
+    if (curl_errno($curl)) {
       switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
         case 200:  # OK
           break;
