@@ -834,10 +834,13 @@ class Controller extends BaseController
 
         try {
 
-            return $id."----".$token;
+            
             
             $id = request('id');
             $token = request('token');
+
+            
+            return $id."----".$token;
 
             // return $id;
             // $id = "6";
