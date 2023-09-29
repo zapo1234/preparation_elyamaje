@@ -774,12 +774,23 @@ a {
 	z-index: 9999 !important;
 }
 
+.badge_order_count{
+	position: absolute;
+    right: 15px;
+    top: 18px;
+	font-size: 0.8em;
+}
+
 @media (max-width: 990px) { 
 
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
 		max-height: 48vh;
+	}
+
+	.badge_order_count{
+		font-size: 1em;
 	}
 
 	.modal button, .custom_input{
@@ -7735,8 +7746,3 @@ select option[disabled] {
 	position: relative;
 }
 
-.badge_order_count{
-	position: absolute;
-    right: 15px;
-    top: 18px;
-}

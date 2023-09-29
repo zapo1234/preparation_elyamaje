@@ -15,13 +15,13 @@ class Chronopost
         $productCode = $this->getProductCode();
         $format = "PDF"; //$colissimo ? $colissimo->format : "PDF";
         $SaturdayShipping = 1;
-       
+
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
-            'password'                      => config('app.chronopost_password'), 
+            'password'                      => '255562', //config('app.chronopost_password'), 
             // Chronopost account / Compte client chronopost
             'headerValue'                   => [
-                "accountNumber"             => config('app.chronopost_accountNumber'),
+                "accountNumber"             => '19869502', //config('app.chronopost_accountNumber'),
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
@@ -137,6 +137,55 @@ class Chronopost
                 return $result->return->errorMessage;
             }
         } catch (Exception $e){
+            return $e->getMessage();
+        }
+    }
+
+
+    public function getStatus($trackingNumbers){
+
+        $orders_status = [];
+        foreach($trackingNumbers as $key => $trackingNumber){
+            try {
+
+                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/searchPOD?accountNumber=".config('app.chronopost_accountNumber')."&password=".config('app.chronopost_password')."&language=fr_FR&skybillNumber=".$trackingNumber->tracking_number."&pdf=true");
+
+                // Vérifiez si la requête HTTP a réussi
+                if ($response->successful()) {
+                  
+                    $xml = simplexml_load_string($response->body());
+                    $statusCode = $xml->xpath('//statusCode');
+
+                    if (!empty($statusCode)) {
+                        $statusCodeValue = (string)$statusCode[0];
+                        if($statusCodeValue == 5){
+                            $orders_status[] = [
+                                'order_id' => $trackingNumber->order_id,
+                                'step' => 5,
+                                'message' => ''
+                            ];
+                        }
+                    } 
+                }
+            } catch(Exception $e){
+
+            }
+        }
+
+        return $orders_status;
+    }
+
+    public function trackingStatusLabel($tracking_number){
+        $customer_key = config('app.woocommerce_customer_key');
+        $customer_secret = config('app.woocommerce_customer_secret');
+        
+        try {
+            $response = Http::withBasicAuth($customer_key, $customer_secret) 
+                ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/chronopost/trackingStatusLabel", [
+                    'data' => $tracking_number
+                ]); 
+            return $response->json();
+        } catch(Exception $e) {
             return $e->getMessage();
         }
     }
