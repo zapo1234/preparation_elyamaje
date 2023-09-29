@@ -843,11 +843,13 @@ class Controller extends BaseController
             // $apiKey = env('KEY_API_DOLIBAR');
             $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
             $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+
+            
             
             $id = request('id');
             $token = request('tokenPrepa');
 
-            if ($token == "lyestoken" && $id) {
+            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
