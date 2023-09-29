@@ -847,37 +847,11 @@ class Controller extends BaseController
             $id = request('id');
             $token = request('tokenPrepa');
 
-
-          //  return $id."----".$token;
-
-            // return $id;
-            // $id = "8";
-            // $token = "lyestoken";
-
-            
-
-
             if ($token == "lyestoken" && $id) {
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
 
-                $tier_prep = $this->tiersRepository->getAllColoneByid($order["socid"]);
-
-                if ($tier_prep) {
-
-                    $name = $tier_prep[0]->nom;
-                    $pname = $tier_prep[0]->nom;
-                    $adresse = $tier_prep[0]->adresse;
-                    $city = $tier_prep[0]->ville;
-                    $company = $tier_prep[0]->nom;
-                    $code_postal = $tier_prep[0]->zip_code;
-                    $contry = isset($tier_prep[0]->country_code)? $tier_prep[0]->country_code: "FR";
-                    $email = $tier_prep[0]->email;
-                    $phone = $tier_prep[0]->phone;
-
-
-                }else {
                     $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
                     $tier = json_decode($tier, true);
 
@@ -890,7 +864,6 @@ class Controller extends BaseController
                     $contry = $tier["country_code"];
                     $email = $tier["email"];
                     $phone = $tier["phone"];
-                }
 
                 if ($order["statut"] == 1) {
 
@@ -901,13 +874,13 @@ class Controller extends BaseController
                             $product_no_bc = $line["libelle"];
                         }
                     }
+
                     if ($product_no_bc == "") {
                         $detail_facture = [
 
                             "ref_order" => $order["ref"],
                             "fk_commande" => $order["id"],
                             "socid" => $order["socid"],
-
 
                             "name" => $name,
                             "pname" => $pname,
@@ -919,7 +892,6 @@ class Controller extends BaseController
                             "email" => $email,
                             "phone" => $phone,
 
-
                             "date" => date('Y-m-d H:i:s'),
                             "total_tax" => $order["total_tva"],
                             "total_order_ttc" => $order["total_ttc"],
@@ -927,9 +899,6 @@ class Controller extends BaseController
                             "payment_methode" => $order["mode_reglement_code"],
                             "statut" => "processing"
                         ];
-
-                    
-                       // dd($detail_facture);
 
                         $id_f = DB::table('orders_doli')->insertGetId($detail_facture);
                         $lines = array();
@@ -953,15 +922,10 @@ class Controller extends BaseController
                         }
 
                         $res = DB::table('lines_commande_doli')->insert($lines);
-
-                        // changer le statut de la commande CU2305-13591  CU2304-12158
-
-                       // sleep(20);
-
                         $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
                     // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
-                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
+                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
 
                     }else {
                         return "le produit (". $product_no_bc.") n'a pas de code barre";
