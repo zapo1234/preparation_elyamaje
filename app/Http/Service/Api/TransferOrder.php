@@ -134,7 +134,6 @@ class TransferOrder
 
                  $produitParam = ["limit" => 900, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-                
 
                  // reference ref_client dans dolibar
                  $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
@@ -248,6 +247,7 @@ class TransferOrder
                               //  $email_true = mb_strtolower($donnees['billing']['email']);
                               // recupérer id du tiers en fonction de son email...
                                $email_true = mb_strtolower($donnees['billing']['email']);
+
                               // recupérer id du tiers en fonction de son email...
                                $fk_tiers = array_search($email_true,$data_list);
                              
@@ -506,13 +506,11 @@ class TransferOrder
                          }
                         */
                          
-                      //   dump($data_tiers);
-
-                      //  dd($data_lines);
+                     
+                
 
                          // Create le client via Api...
 
-                    
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -525,6 +523,7 @@ class TransferOrder
                           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                         }
 
+
                          // mettre la facture en status en payé et l'attribue un compte bancaire.
                          if(count($data_lines)!=0){
                           $this->invoicespay($orders);
@@ -532,6 +531,9 @@ class TransferOrder
                         // merger le client et les data coupons.....
                         $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
                         $tiers_exist = $this->don->gettiers();
+
+                    
+
                          // insert le tiers dans la BDD...
                        if(count($data_infos_order)!=0){
                           // insert 
