@@ -127,11 +127,6 @@ class TransferOrder
               
             
         
-            $method = "GET";
-  
-                
-
-    
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
