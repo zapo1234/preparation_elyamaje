@@ -837,9 +837,9 @@ class Controller extends BaseController
             
             
             $id = request('id');
-            $token = request('token');
+            $token = request('tokenPrepa');
 
-            
+
             return $id."----".$token;
 
             // return $id;
