@@ -834,7 +834,7 @@ class Controller extends BaseController
 
         try {
 
-            return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders');
+            return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
             
             $id = request('id');
             $token = request('token');
