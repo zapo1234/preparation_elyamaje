@@ -28,7 +28,8 @@ $(".validate_order").on("click", function(){
             var is_distributor = JSON.parse(data).is_distributor;
             var country = getCountry(order[0]);
             var order_shipping_method = order[0].shipping_method ? order[0].shipping_method : [];
-            
+            var from_dolibarr = typeof order[0].from_dolibarr !== 'undefined' ? 1 : 0
+
             // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
@@ -87,8 +88,7 @@ $(".validate_order").on("click", function(){
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                   
-                    <button type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
+                    <button id="validWrapper" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
                 </div>
             `)
             
@@ -234,6 +234,8 @@ function validWrapOrder(label){
     $(".loading_detail_order").removeClass('d-none')
     
     var order_id = $("#order_id").val()
+    var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
+
 
     if(localStorage.getItem('barcode_verif_wrapper')){
         var pick_items = JSON.parse(localStorage.getItem('barcode_verif_wrapper'))
@@ -258,7 +260,7 @@ function validWrapOrder(label){
     $.ajax({
         url: "validWrapOrder",
         metho: 'POST',
-        data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, pick_items_quantity: pick_items_quantity},
+        data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, pick_items_quantity: pick_items_quantity, from_dolibarr: from_dolibarr},
         dataType: 'html' 
     }).done(function(data) {
         $(".action_button button").attr('disabled', false)

@@ -7388,7 +7388,7 @@ textarea:focus{
 
 #orderno {
     padding: 1vh 2vh 0;
-    font-size: smaller
+    font-size: 18px;
 }
 
 .qrcode_background{

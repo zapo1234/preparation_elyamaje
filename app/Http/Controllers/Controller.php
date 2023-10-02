@@ -140,7 +140,7 @@ class Controller extends BaseController
             } else {
                 $order_process[] = $order;
             }
-        }
+        }   
 
         return view('preparateur.index_preparateur', [
             'user' => Auth()->user()->name,
