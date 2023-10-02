@@ -125,8 +125,11 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-            
-        
+              // Si commande dolibarr ajouter cet attribut fk_commande
+              // if(isset($orders['fk_commande'])){
+
+              // }
+
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
