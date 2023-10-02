@@ -96,17 +96,17 @@ class Order extends BaseController
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
     }
-
+     /*
     public function orders($id = null, $distributeur = false){
 
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-        // $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id, $distributeur);
+        $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id, $distributeur);
 
-        // if(count($orderDolibarr['orders']) > 0){
-        //   $orders_user['orders'] = $orderDolibarr['orders'];
-        //   $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
-        // }
+        if(count($orderDolibarr['orders']) > 0){
+          $orders_user['orders'] = $orderDolibarr['orders'];
+          $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
+        }
 
         return $orders_user;
       } else {
@@ -131,11 +131,11 @@ class Order extends BaseController
         }  
 
         // Récupère également les commandes créées depuis dolibarr vers préparation
-        // $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
-        // if(count($orderDolibarr) > 0){
-        //   $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
-        //   $orders[] = $orderDolibarr;
-        // } 
+        $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
+        if(count($orderDolibarr) > 0){
+          $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
+          $orders[] = $orderDolibarr;
+        } 
 
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
@@ -194,6 +194,82 @@ class Order extends BaseController
               }
             } else {
               $list_orders[] = $order;
+            }
+          }
+        }
+
+        return $list_orders;
+      }
+      
+    } */
+
+    public function orders($id = null, $distributeur = false){
+
+      if($id){
+        $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
+        return $orders_user;
+      } else {
+
+        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
+        $per_page = 100;
+        $page = 1;
+        $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+        $count = count($orders);
+  
+        // Check if others page
+        if($count == 100){
+          while($count == 100){
+            $page = $page + 1;
+            $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+           
+            if(count($orders_other ) > 0){
+              $orders = array_merge($orders, $orders_other);
+            }
+          
+            $count = count($orders_other);
+          }
+        }  
+
+        // Récupère les commandes attribuée en base s'il y en a 
+        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
+        $ids = array_column($orders_distributed, "order_woocommerce_id");
+        $list_orders = [];
+
+       
+        if(count($orders_distributed) > 0){
+          foreach($orders as $key => $order){
+            $take_order = true;
+            if(count($order['shipping_lines']) > 0){
+              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
+                $take_order = false;
+              }
+            } 
+
+            if($take_order == true){
+              $clesRecherchees = array_keys($ids,  $order['id']);
+              if(count($clesRecherchees) > 0){
+                $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
+                $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
+                $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
+                $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+              } else {
+                $orders[$key]['user_id'] = null;
+                $orders[$key]['name'] = "Non attribuée";
+                $orders[$key]['status'] =  $orders[$key]['status'];
+                $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
+              }
+              $list_orders[] = $orders[$key];
+            }
+       
+          }
+        } else {
+          foreach($orders as $key => $order){
+            if(count($order['shipping_lines']) > 0){
+               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
+                $list_orders[] = $order;
+               }
+            } else {
+               $list_orders[] = $order;
             }
           }
         }
