@@ -124,8 +124,9 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-
-    
+              
+            
+        
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
@@ -136,9 +137,11 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
 
                  // reference ref_client dans dolibar
-                 $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba
-                 
-                if(count($listproduct)==0){
+                   $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+
+                  
+               
+               if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
@@ -146,8 +149,9 @@ class TransferOrder
 	               $tiers_ref = "";
                  // recupérer directement les tiers de puis bdd.
                  //$this->tiers->insertiers();// mise a jour api
-                 $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours .
-                 // recuperer les ids commandes
+                 $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
+
+             // recuperer les ids commandes
 
                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
@@ -212,8 +216,8 @@ class TransferOrder
                       }
                       // tableau associatve entre ref et label product....
                   }
-                   
-                   // recupére les orders des données provenant de  woocomerce
+
+                    // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -228,6 +232,8 @@ class TransferOrder
                      $data_infos_user =[];// pour gestion de kdo
                      $data_amount_kdo = [];// pour gestion kdo
                      $info_tiers_flush = [];// l'array qui va servir a flush dans ma base de données interne le nouveau client.
+                     $data_echec = [];
+
 
                      // travailler sur le nommenclature de la ref facture
                       $date = date('Y-m-d');
@@ -238,33 +244,29 @@ class TransferOrder
                       $ref_ext ="WC-$jour$mm-$int_text";
 
                       
+                
                     
                        foreach($orders as $k => $donnees) {
                              // créer des tiers pour dolibarr via les datas woocomerce. 
                              // créer le client via dolibarr à partir de woocomerce...
-                             $ref_client = rand(4,10);
-
-                              //  $email_true = mb_strtolower($donnees['billing']['email']);
-                              // recupérer id du tiers en fonction de son email...
-                               $email_true = mb_strtolower($donnees['billing']['email']);
-
-                              // recupérer id du tiers en fonction de son email...
-                               $fk_tiers = array_search($email_true,$data_list);
-                             
-                               $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-                               $fk_tiers_phone = array_search($espace_phone,$data_phone);
-                             // recupérer id en fonction du customer id
-                             
-                               // recupérer id en fonction du customer id
-                               $fk_tier = array_search($donnees['customer_id'],$data_code);
-
-                              // convertir la date en format timesamp de la facture .
-                              $datetime = $donnees['date']; // date recu de woocomerce.
-                             
-                              $date_recu = explode(' ',$datetime); // dolibar...
-                              // transformer la date en format date Y-m-d...
-                              $datex = $date_recu[0];
-                              $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
+                               $ref_client = rand(4,10);
+                                //  $email_true = mb_strtolower($donnees['billing']['email']);
+                                // recupérer id du tiers en fonction de son email...
+                                 $email_true = mb_strtolower($donnees['billing']['email']);
+                                 // recupérer id du tiers en fonction de son email...
+                                  $fk_tiers = array_search($email_true,$data_list);
+                                  $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
+                              
+                                  $fk_tiers_phone = array_search($espace_phone,$data_phone);
+                                   // recupérer id en fonction du customer id
+                                  // recupérer id en fonction du customer id
+                                   $fk_tier = array_search($donnees['customer_id'],$data_code);
+                                  // convertir la date en format timesamp de la facture .
+                                    $datetime = $donnees['date']; // date recu de woocomerce.
+                                    $date_recu = explode(' ',$datetime); // dolibar...
+                                    // transformer la date en format date Y-m-d...
+                                    $datex = $date_recu[0];
+                                    $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
                       
                              if($fk_tiers!="") {
                                $socid = $fk_tiers;
@@ -299,8 +301,7 @@ class TransferOrder
 
                           }
 
-
-                            if($fk_tiers=="" && $fk_tier=="") {
+                     if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -402,10 +403,13 @@ class TransferOrder
                                      
                                       if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
-                                        $ref_sku="";
+                                        $info = 'Numero de comande '.$donnees['order_id'].'';
+                                        $data_echec[] = $values['name'].','.$info;
+                                        $note =  'La facture est rejetée un produit n\'as pas un barcode lisible infos :'.$values['name'].' Numero commande :'.$donnees['id'].'';
+                                        $ref_sku = $values['name'].','.$note;
                                         $list = new Transfertrefunded();
                                         $list->id_commande = $donnees['order_id'];
-                                        $list->ref_sku = $ref_sku;
+                                        $list->ref_sku = $note;
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
@@ -438,7 +442,6 @@ class TransferOrder
                                        'ref_client' =>$ref,
                                        'date'=> $new_date,
                                        "email" => $donnees['billing']['email'],
-                                       "remise_percent"=> floatval($donnees['discount_amount']),
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                        "total_ttc" =>floatval($donnees['total_order']),
@@ -491,7 +494,7 @@ class TransferOrder
                     
                       }
 
-                           // filtrer les doublons du tableau
+                           // filtrer les doublons du tableau..
                            $id_commande_exist = array_unique($id_commande_existe);
                            // recupérer le tableau
                            $this->setDataidcommande($id_commande_exist);
@@ -513,7 +516,8 @@ class TransferOrder
                       // echo json_encode($data_lines);
 
                     
-
+                        
+                        
                          // Create le client via Api...
 
                         foreach($data_tiers as $data) {
@@ -530,23 +534,19 @@ class TransferOrder
                        
                         // dd('dddddddddddddddd');
 
-
-                         // mettre la facture en status en payé et l'attribue un compte bancaire.
-                         if(count($data_lines)!=0){
-                          $this->invoicespay($orders);
-                        }
-                        // merger le client et les data coupons.....
-                        $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                        $tiers_exist = $this->don->gettiers();
-
-                    
-
-                         // insert le tiers dans la BDD...
-                       if(count($data_infos_order)!=0){
-                          // insert 
-                         if(isset($tiers_exist[$data_infos_order['email']])==false){
-                          $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                          // JOINTRE les produits.
+                          // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            if(count($data_lines)!=0){
+                               $this->invoicespay($orders);
+                             }
+                             // merger le client et les data coupons.....
+                            $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                            $tiers_exist = $this->don->gettiers();
+                            // insert le tiers dans la BDD...
+                           if(count($data_infos_order)!=0){
+                              // insert 
+                              if(isset($tiers_exist[$data_infos_order['email']])==false){
+                                $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                               // JOINTRE les produits.
                          }
                       }
                           // Ajouter le client dans la base de données interne 

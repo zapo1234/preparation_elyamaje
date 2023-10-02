@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
+use Illuminate\Http\Request;
+use App\Http\Service\Api\Api;
 use App\Http\Controllers\Order;
+use Illuminate\Support\Facades\DB;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Categorie\CategoriesRepository;
+
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
-use App\Http\Service\Api\Api;
-use App\Repository\Reassort\ReassortRepository;
+use App\Repository\Tiers\TiersRepository;
 
 class Controller extends BaseController
 {
@@ -42,7 +44,8 @@ class Controller extends BaseController
         ProductRepository $products,
         PrinterRepository $printer,
         Api $api,
-        ReassortRepository $reassort
+        ReassortRepository $reassort,
+        TiersRepository $tiersRepository
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -53,6 +56,7 @@ class Controller extends BaseController
         $this->printer = $printer;
         $this->api = $api;
         $this->reassort = $reassort;
+        $this->tiersRepository = $tiersRepository;
     }
 
     // INDEX ADMIN
@@ -830,80 +834,119 @@ class Controller extends BaseController
 
 
     function preparationCommandeByToken(Request $request){
-      
-        $id = request('id');
-        $token = request('token');
 
 
-        $id = "6";
-        $token = "lyestoken";
+        try {
 
-        if ($token == "lyestoken" && $id) {
+            
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
 
-            $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
-            $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
-            $order = json_decode($order, true);
-            $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
-            $tier = json_decode($tier, true);
+            
+            
+            $id = request('id');
+            $token = request('tokenPrepa');
 
-            if ($order["statut"] == 1) {
-                $detail_facture = [
-                    "ref_order" => $order["ref"],
-                    "fk_commande" => $order["id"],
-                    "socid" => $order["socid"],
-                    "name" => $tier["name"],
-                    "pname" => $tier["name"],
-                    "adresse" => $tier["address"],
-                    "city" => $tier["town"],
-                    "company" => $tier["name_alias"],
-                    "code_postal" => $tier["zip"],
-                    "contry" => $tier["country_code"],
-                    "email" => $tier["email"],
-                    "phone" => $tier["phone"],
-                    "date" => date('Y-m-d H:i:s'),
-                    "total_tax" => $order["total_tva"],
-                    "total_order_ttc" => $order["total_ttc"],
-                    "user_id" => 0,
-                    "payment_methode" => $order["mode_reglement_code"],
-                    "statut" => "processing"
-                ];
+            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
-                $id = DB::table('orders_doli')->insertGetId($detail_facture);
-                $lines = array();
-                foreach ($order["lines"] as $key => $line) {
-                    array_push($lines,
-                    $data_line = [
-                        "id_commande" => $id,
-                        "libelle" => $line["libelle"],
-                        "id_product" => $line["fk_product"],
-                        "barcode" => $line["product_barcode"],
-                        "price" => $line["subprice"],
-                        "qte" => $line["qty"],
-                        "remise_percent" => $line["remise_percent"],
-                        "total_ht" => $line["total_ht"],
-                        "total_tva" => $line["total_tva"],
-                        "total_ttc" => $line["total_ttc"],
-                        "created_at" => date('Y-m-d H:i:s'),
-                        "updated_at" => date('Y-m-d H:i:s')
-        
-                    ]);
+                $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
+                $order = json_decode($order, true);
+
+                    $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
+                    $tier = json_decode($tier, true);
+
+                    $name = $tier["name"];
+                    $pname = $tier["name"];
+                    $adresse = $tier["address"];
+                    $city = $tier["town"];
+                    $company = $tier["name_alias"];
+                    $code_postal = $tier["zip"];
+                    $contry = $tier["country_code"];
+                    $email = $tier["email"];
+                    $phone = $tier["phone"];
+
+                if ($order["statut"] == 1) {
+
+                    // verifier que tout les produits ont un code barre
+                    $product_no_bc = "";
+                    foreach ($order["lines"] as $key => $line) {
+                        if (!$line["product_barcode"]) {
+                            $product_no_bc = $line["libelle"];
+                        }
+                    }
+
+                    if ($product_no_bc == "") {
+                        $detail_facture = [
+
+                            "ref_order" => $order["ref"],
+                            "fk_commande" => $order["id"],
+                            "socid" => $order["socid"],
+
+                            "name" => $name,
+                            "pname" => $pname,
+                            "adresse" => $adresse,
+                            "city" => $city,
+                            "company" => $company,
+                            "code_postal" => $code_postal,
+                            "contry" => $contry,
+                            "email" => $email,
+                            "phone" => $phone,
+
+                            "date" => date('Y-m-d H:i:s'),
+                            "total_tax" => $order["total_tva"],
+                            "total_order_ttc" => $order["total_ttc"],
+                            "user_id" => 0,
+                            "payment_methode" => $order["mode_reglement_code"],
+                            "statut" => "processing"
+                        ];
+
+                        $id_f = DB::table('orders_doli')->insertGetId($detail_facture);
+                        $lines = array();
+                        foreach ($order["lines"] as $key => $line) {
+                            array_push($lines,
+                            $data_line = [
+                                "id_commande" => $id_f,
+                                "libelle" => $line["libelle"],
+                                "id_product" => $line["fk_product"],
+                                "barcode" => $line["product_barcode"],
+                                "price" => $line["subprice"],
+                                "qte" => $line["qty"],
+                                "remise_percent" => $line["remise_percent"],
+                                "total_ht" => $line["total_ht"],
+                                "total_tva" => $line["total_tva"],
+                                "total_ttc" => $line["total_ttc"],
+                                "created_at" => date('Y-m-d H:i:s'),
+                                "updated_at" => date('Y-m-d H:i:s')
+                
+                            ]);
+                        }
+
+                        $res = DB::table('lines_commande_doli')->insert($lines);
+                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
+
+                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
+
+                    }else {
+
+                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
+
+                       // return "le produit (". $product_no_bc.") n'a pas de code barre";
+                    }
+                }else {
+
+                    // $message = "Le devis n'a pas été validé";
+                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
                 }
-
-                $res = DB::table('lines_commande_doli')->insert($lines);
             }else {
-                dd("devis non validé");
+                // $message = "pas le droit";
+                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
+
             }
+        } catch (Throwable $th) {
+            return $th->getMessage();
         }
-
-
-        dd($id);
-
-
-
-        return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
-
-
-       // return $id;
     }
 }
+    

@@ -265,5 +265,16 @@ class TiersRepository implements TiersInterface
 
             // tierer le csv
     }
+    function getAllColoneByid($socid){
+
+        $data =  DB::table('tiers')
+            ->where('socid','=',$socid)
+            ->get()
+            ->toArray()
+            ;
+
+        return $data;
+
+    }
 
 }
