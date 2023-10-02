@@ -808,7 +808,7 @@ class Order extends BaseController
       $barcode = $request->post('barcode');
       $barcode_valid = $this->product->checkProductBarcode($product_id, $barcode);
       
-      if($barcode_valid > 0){
+      if($barcode_valid == 1){
         echo json_encode(['success' => true]);
       } else {
         echo json_encode(['success' => false]);

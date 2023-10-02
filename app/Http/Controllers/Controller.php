@@ -972,7 +972,7 @@ class Controller extends BaseController
 
                         return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
 
-                       // return "le produit (". $product_no_bc.") n'a pas de code barre";
+                       // return "le produit (". $product_no_bc.") n'a pas de code barre";  
                     }
                 }else {
 
