@@ -231,7 +231,8 @@ document.addEventListener("keydown", function (e) {
 
 $(".validate_pick_in").on('click', function () {
     var order_id = $("#order_in_progress").val()
-    
+    var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
+
     if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
         // Ouvre la modal de loading
         $(".loading_prepared_command").removeClass('d-none')
@@ -263,7 +264,7 @@ $(".validate_pick_in").on('click', function () {
         $.ajax({
             url: "ordersPrepared",
             method: 'POST',
-            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0 }
+            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 0, from_dolibarr: from_dolibarr }
         }).done(function (data) {
             
             $(".loading_prepared_command").addClass('d-none')
@@ -403,6 +404,7 @@ $('body').on('click', '.valid_partial_order', function () {
     var pick_items = JSON.parse(localStorage.getItem('barcode')) ?? [];
     var order_id = $("#order_in_progress").val()
     var note_partial_order = $("#note_partial_order").val()
+    var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
     // Récupère les produits de cette commande
 
     if (pick_items.length > 0) {
@@ -428,7 +430,7 @@ $('body').on('click', '.valid_partial_order', function () {
         $.ajax({
             url: "ordersPrepared",
             method: 'POST',
-            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order }
+            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order, from_dolibarr: from_dolibarr }
         }).done(function (data) {
             console.log(data)
             if (JSON.parse(data).success) {
@@ -562,12 +564,12 @@ function imprimerPages() {
         $(".impression_code").attr('disabled', false)
     }
 
-    epos.onerror = function (err) {
-        $(".impression_code span").removeClass('d-none')
-        $(".impression_code div").addClass('d-none')
-        $(".impression_code").attr('disabled', false)
-        alert('Imprimante '+printer_ip+' non trouvée !')
-    }
+    // epos.onerror = function (err) {
+    //     $(".impression_code span").removeClass('d-none')
+    //     $(".impression_code div").addClass('d-none')
+    //     $(".impression_code").attr('disabled', false)
+    //     alert('Imprimante '+printer_ip+' non trouvée !')
+    // }
 
     //Send the print document
     epos.send(request);
