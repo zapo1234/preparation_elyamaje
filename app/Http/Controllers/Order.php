@@ -101,12 +101,12 @@ class Order extends BaseController
 
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-        $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id, $distributeur);
+        // $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id, $distributeur);
 
-        if(count($orderDolibarr['orders']) > 0){
-          $orders_user['orders'] = $orderDolibarr['orders'];
-          $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
-        }
+        // if(count($orderDolibarr['orders']) > 0){
+        //   $orders_user['orders'] = $orderDolibarr['orders'];
+        //   $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
+        // }
 
         return $orders_user;
       } else {
