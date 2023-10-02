@@ -882,6 +882,7 @@ class Controller extends BaseController
             
             $id = request('id');
             $token = request('tokenPrepa');
+            $server_name = request('server_name');
 
             if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
@@ -966,22 +967,22 @@ class Controller extends BaseController
 
 
 
-                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
+                        return redirect('https://'.$server_name.'/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
 
                     }else {
 
-                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
 
                        // return "le produit (". $product_no_bc.") n'a pas de code barre";  
                     }
                 }else {
 
                     // $message = "Le devis n'a pas été validé";
-                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
+                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
                 }
             }else {
                 // $message = "pas le droit";
-                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
+                return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
 
             }
         } catch (Throwable $th) {
