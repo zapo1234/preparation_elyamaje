@@ -119,12 +119,12 @@ function imprimerPages() {
         $(".impression_code").attr('disabled', false)
     }
 
-    epos.onerror = function (err) {
-        $(".impression_code span").removeClass('d-none')
-        $(".impression_code div").addClass('d-none')
-        $(".impression_code").attr('disabled', false)
-        alert('Imprimante '+printer_ip+' non trouvée !')
-    }
+    // epos.onerror = function (err) {
+    //     $(".impression_code span").removeClass('d-none')
+    //     $(".impression_code div").addClass('d-none')
+    //     $(".impression_code").attr('disabled', false)
+    //     alert('Imprimante '+printer_ip+' non trouvée !')
+    // }
     //Send the print document
     epos.send(request);
 }
