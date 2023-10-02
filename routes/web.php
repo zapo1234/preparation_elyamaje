@@ -75,6 +75,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
 
+    Route::get("/executerTransfere/{identifiant_reassort}", [Controller::class, "executerTransfere"])->name('executerTransfere');
+
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
 
