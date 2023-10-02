@@ -210,7 +210,7 @@ class Admin extends BaseController
                     'product_woocommerce_id' => $product['id'],
                     'parent_id' => 0,
                     'category' =>  implode(',', $category_name),
-                    'category_id' => implode(',', $category_id),
+                    'category_id' => implode(',', $category_id), 
                     'variation' => 0,
                     'name' => $product['name'],
                     'price' => $product['price'],
