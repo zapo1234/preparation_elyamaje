@@ -131,11 +131,11 @@ class Order extends BaseController
         }  
 
         // Récupère également les commandes créées depuis dolibarr vers préparation
-        $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
-        if(count($orderDolibarr) > 0){
-          $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
-          $orders[] = $orderDolibarr;
-        } 
+        // $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
+        // if(count($orderDolibarr) > 0){
+        //   $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
+        //   $orders[] = $orderDolibarr;
+        // } 
 
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
