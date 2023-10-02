@@ -525,7 +525,7 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $status = $request->post('status');
       $user_id = $request->post('user_id');
-      $from_dolibarr = $request->post('from_dolibarr');
+      $from_dolibarr = "false"; //$request->post('from_dolibarr');
 
       if($order_id && $status){
 
@@ -544,6 +544,7 @@ class Order extends BaseController
 
         // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
+
 
         if($from_dolibarr == "false"){
           if(!in_array($status,  $ignore_status)){
