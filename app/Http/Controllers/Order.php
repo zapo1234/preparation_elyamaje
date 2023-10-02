@@ -409,21 +409,21 @@ class Order extends BaseController
       $from_dolibarr = $request->post('from_dolibarr') == "true" ? true : false;
 
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
-        if($from_dolibarr){
-          if($barcode_array != null){
-            $check_if_order_done = $this->orderDolibarr->checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
-          } else if($partial == "1" && $barcode_array == null){
-            $this->orderDolibarr->updateOneOrderStatus("waiting_to_validate", $order_id);
-            $check_if_order_done = true;
-          }
-        } else {
+        // if($from_dolibarr){
+        //   if($barcode_array != null){
+        //     $check_if_order_done = $this->orderDolibarr->checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
+        //   } else if($partial == "1" && $barcode_array == null){
+        //     $this->orderDolibarr->updateOneOrderStatus("waiting_to_validate", $order_id);
+        //     $check_if_order_done = true;
+        //   }
+        // } else {
           if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
           } else if($partial == "1" && $barcode_array == null){
             $this->order->updateOrdersById([$order_id], "waiting_to_validate");
             $check_if_order_done = true;
           }
-        }
+        // }
 
 
         if($check_if_order_done && $partial == "1"){
