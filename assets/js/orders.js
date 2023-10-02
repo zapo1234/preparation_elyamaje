@@ -62,16 +62,19 @@ $(document).ready(function() {
                 var shipping_amount = 0
                 var shipping_method = '';
 
-
-                    order['coupon_lines'].forEach(function(cp){
-                        coupons = cp['code'];
-                        coupons_amount = cp['discount']
-                    })
-
-                    order['shipping_lines'].forEach(function(sp){
-                        shipping_amount = sp['total'];
-                        shipping_method = sp['method_id'];
-                    })
+                    if(order['coupon_lines']){
+                        order['coupon_lines'].forEach(function(cp){
+                            coupons = cp['code'];
+                            coupons_amount = cp['discount']
+                        })
+                    }
+                   
+                    if(order['shipping_lines']){
+                        order['shipping_lines'].forEach(function(sp){
+                            shipping_amount = sp['total'];
+                            shipping_method = sp['method_id'];
+                        })
+                    }
 
                     return {
                         id: order.id,
@@ -96,7 +99,8 @@ $(document).ready(function() {
                         products_pick: products_pick,
                         shipping_amount: shipping_amount,
                         shipping_method: shipping_method,
-                        customer_note:  order.customer_note
+                        customer_note:  order.customer_note,
+                        from_dolibarr:  order.from_dolibarr ?? false
                     };
                 });
 
@@ -126,7 +130,7 @@ $(document).ready(function() {
 
                     })
                     
-                    var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
+                    var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id}, ${row.from_dolibarr})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
 
                     if($("#select_"+row.id).val() == "Non attribuée"){
                         $("#select_"+row.id).addClass('empty_select')
@@ -151,7 +155,7 @@ $(document).ready(function() {
                         selectOptions += `<option ${key == row.status ? "selected" : ""} value="`+key+`">`+row.status_list[key]+`</option>`
                     });
                     
-                    var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id})" id="selectStatus_${row.id}" class="${row.status} select_status select_user empty_select">${selectOptions}</select>`;
+                    var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id}, ${row.from_dolibarr})" id="selectStatus_${row.id}" class="${row.status} select_status select_user empty_select">${selectOptions}</select>`;
                     return selectHtml;
                 }
             },
@@ -172,7 +176,6 @@ $(document).ready(function() {
                     var gift_card = row.gift_card.length > 0 ? parseFloat(row.gift_card[0].amount): 0
                     var total_tax = parseFloat(row.total_tax)
                     var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - parseFloat(row.shipping_amount)
-
                     var id = []
                     Object.entries(row.products_pick).forEach(([key, value]) => {
                         if (value.order_id == row.id){
@@ -191,7 +194,7 @@ $(document).ready(function() {
                                                 <span class="column2 name_column">Coût</span>
                                                 <span class="column3 name_column">Pick / Qté</span>
                                                 <span class="column4 name_column">Total</span>
-                                                <span class="column5 name_column">Action</span>
+                                                ${!row.from_dolibarr ? '<span class="column5 name_column">Action</span>' : ''}
                                             </div>	
 
                                             <div class="body_detail_product_order">
@@ -200,10 +203,11 @@ $(document).ready(function() {
                                                         <div class="column11 d-flex align-items-center detail_product_name_order">
                                                             ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                         </div>
-                                                        <span class="column22">	`+parseFloat(element.subtotal / element.quantity).toFixed(2)+ `</span>
+                                                        ${!row.from_dolibarr ? '<span class="column22">'+parseFloat(element.subtotal / element.quantity).toFixed(2)+ '</span>' : '<span class="column22">'+parseFloat(element.subtotal).toFixed(2)+ '</span>' }
+                                                        
                                                         <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
-                                                        <span class="column55"><i onclick="deleteProduct(`+row.id+`,`+element.id+`,`+element.variation_id+`,`+element.product_id+`,`+element.quantity+`)" class="edit_order bx bx-trash"></i></span>
+                                                        ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : ''}
                                                     </div>`
                                             ).join('')}
                                             </div>
@@ -585,7 +589,6 @@ function addProductOrderConfirm(){
 }
 
 function show(id){
-
     $('#order_'+id).modal({
         backdrop: 'static',
         keyboard: false
@@ -655,15 +658,14 @@ function deleteProductOrderConfirm(increase){
     });
 }
 
-function changeStatusOrder(order_id, user_id){
-    var order_id = order_id
-    var user_id = user_id
+function changeStatusOrder(order_id, user_id, from_dolibarr){
+    
     var status = $("#selectStatus_"+order_id).val()
     
     $.ajax({
         url: "updateOrderStatus",
         method: 'POST',
-        data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, user_id: user_id}
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, user_id: user_id, from_dolibarr: from_dolibarr}
     }).done(function(data) {
         if(JSON.parse(data).success){
             $("#selectStatus_"+order_id).removeClass('empty_select')
@@ -675,7 +677,8 @@ function changeStatusOrder(order_id, user_id){
 
 }
 
-function changeOneOrderAttribution(order_id){
+function changeOneOrderAttribution(order_id, from_dolibarr){
+
     var order_id = order_id
     var user_id = $("#select_"+order_id).val()
 
@@ -691,7 +694,7 @@ function changeOneOrderAttribution(order_id){
     $.ajax({
         url: "updateOneOrderAttribution",
         method: 'POST',
-        data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id}
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id, from_dolibarr: from_dolibarr}
     }).done(function(data) {
         if(JSON.parse(data).success){
             $("#number_attribution").text(JSON.parse(data).number_order_attributed)

@@ -120,8 +120,8 @@ class Controller extends BaseController
     public function orderPreparateur()
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-       
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
+
         $count_rea = [];
         foreach($reassort as $rea){
             $count_rea[$rea->identifiant_reassort] = $rea;
@@ -140,7 +140,7 @@ class Controller extends BaseController
             } else {
                 $order_process[] = $order;
             }
-        }
+        }   
 
         return view('preparateur.index_preparateur', [
             'user' => Auth()->user()->name,

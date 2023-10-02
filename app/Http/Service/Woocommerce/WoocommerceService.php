@@ -112,7 +112,75 @@ class WoocommerceService
         $orders[] = $order_new_array;
 
         return $orders;
+  }
+
+  public function transformArrayOrderDolibarr($orderDolibarr){
+    $transformOrder = [];
+
+
+    $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'];
+    $transformOrder['date'] = $orderDolibarr[0]['date'];
+    $transformOrder['date_created'] = $orderDolibarr[0]['date'];
+    $transformOrder['total_tax_order'] = $orderDolibarr[0]['total_tax'];
+    $transformOrder['total_tax'] = $orderDolibarr[0]['total_tax'];
+    $transformOrder['total_order'] = $orderDolibarr[0]['total_order_ttc'];
+    $transformOrder['total'] = $orderDolibarr[0]['total_order_ttc'];
+    $transformOrder['status'] = $orderDolibarr[0]['statut'];
+    $transformOrder['user_id'] = $orderDolibarr[0]['user_id'];
+    $transformOrder['payment_method'] = $orderDolibarr[0]['payment_methode'];
+    $transformOrder['is_distributor'] = false;
+    $transformOrder['customer_id'] = 0;
+    $transformOrder['order_woocommerce_id'] = $orderDolibarr[0]['orderDoliId'];
+    $transformOrder['order_id'] = $orderDolibarr[0]['orderDoliId'];
+    $transformOrder['id'] = $orderDolibarr[0]['orderDoliId'];
+    $transformOrder['discount_total'] = 0;
+    $transformOrder['shipping_amount'] = 0;
+    $transformOrder['gift_card'] = 0;
+    $transformOrder['from_dolibarr'] = true;
+    $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
+
+
+    // On force la méthode d'expédition en livraison à domicile avec signature
+    $transformOrder['shipping_method'] = "lpc_sign";
+    $transformOrder['shipping_method_detail'] = $orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)";
+
+
+    $transformOrder['billing'] = [
+      "first_name" => $orderDolibarr[0]['firstname'],
+      "last_name" => $orderDolibarr[0]['lastname'] != $orderDolibarr[0]['firstname'] ? $orderDolibarr[0]['lastname'] : '',
+      "company" => $orderDolibarr[0]['company'],
+      "address_1" => $orderDolibarr[0]['adresse'],
+      "address_2" => "",
+      "city" => $orderDolibarr[0]['city'],
+      "state" => "",
+      "postcode" => $orderDolibarr[0]['code_postal'],
+      "country" => $orderDolibarr[0]['contry'],
+      "email" =>  $orderDolibarr[0]['email'],
+      "phone" => $orderDolibarr[0]['phone'],
+    ]; 
+    $transformOrder['shipping'] =  $transformOrder['billing'];
+
+    foreach($orderDolibarr as $order){
+      $transformOrder['line_items'][]= [
+        'id' => $order['line_items_id_dolibarr'],
+        'name' => $order['productName'],
+        'product_id' => $order['product_woocommerce_id'],
+        'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
+        'quantity' => $order['qte'],
+        'subtotal' => $order['priceDolibarr'],
+        'price' => $order['priceDolibarr'],
+        'total' => $order['total_ht'],
+        'subtotal_tax' => $order['total_tva'],
+        'total_tax' => $order['total_tva'],
+        'weight' => $order['weight'],
+        'ref' => $order['ref'],
+        'meta_data' => [
+          ['key' => 'barcode', "value" => $order['barcode']]
+        ]
+      ];
     }
+    return $transformOrder;
+  }
 }
 
 
