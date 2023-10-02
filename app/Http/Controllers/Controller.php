@@ -116,8 +116,8 @@ class Controller extends BaseController
     public function orderPreparateur()
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-       
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
+
         $count_rea = [];
         foreach($reassort as $rea){
             $count_rea[$rea->identifiant_reassort] = $rea;
@@ -842,17 +842,13 @@ class Controller extends BaseController
 
             $apiUrl = env('KEY_API_URL');
             $apiKey = env('KEY_API_DOLIBAR');
-
             $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
             $order = json_decode($order, true);
-
             $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
             $tier = json_decode($tier, true);
 
             if ($order["statut"] == 1) {
-
                 $detail_facture = [
-
                     "ref_order" => $order["ref"],
                     "fk_commande" => $order["id"],
                     "socid" => $order["socid"],
