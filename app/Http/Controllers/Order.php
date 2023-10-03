@@ -539,9 +539,6 @@ class Order extends BaseController
       $transfers = $request->post('transfers') == "false" ? 0 : 1;
       $order_id = explode(',', $request->post('order_id'))[0];
 
-      dump($from_dolibarr);
-      dd($from_dolibarr);
-      
       if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
