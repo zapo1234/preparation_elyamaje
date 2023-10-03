@@ -334,7 +334,7 @@ class Order extends BaseController
       $from_transfers = $request->post('from_transfers') == "true" ? true : false;
 
 
-      dd($from_dolibarr);
+      dd($from_transfers);
 
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
         if($from_dolibarr){
