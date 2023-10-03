@@ -247,7 +247,7 @@ class Label extends BaseController
         }
     }
 
-    public function generateBordereau(Request $request){
+     public function generateBordereau(Request $request){
 
         $date = $request->post('date');
         // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré

@@ -633,7 +633,7 @@ class Controller extends BaseController
 
             foreach ($tabProduitReassort1 as $key => $lineR) {
 
-                if ($lineR["qte_transfere"]) {           
+                if ($lineR["qte_transfere"] != 0) {           
                     $data1 = array(
                         'product_id' => $lineR["product_id"],
                         'warehouse_id' => $entrepot_source, 
@@ -697,32 +697,66 @@ class Controller extends BaseController
     }
 
 
-    function executerTransfere($datas){
+    function executerTransfere($identifiant_reassort){
+
 
         try {
-            $nbr_line = 0;
+            $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
+
+            if (!$tabProduitReassort) {
+                return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+            }
+            $apiKey = env('KEY_API_DOLIBAR');   
             $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
+          
+            $data_save = array();
+            $incrementation = 0;
+            $decrementation = 0;
+            $i = 1;
+            $ids="";
+            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+            foreach ($tabProduitReassort as $key => $line) {
 
-
-            foreach ($datas as $key => $data) {
-                $stockmovements1 = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
-                $nbr_line++;
-            }
-
-            // ne pas oublier de destocker de woocomerce
-
-            if ($nbr_line%2 !=0) {
                 
-                return redirect()->back()->with('error',  "Aucun transfère trouvé ou le nombrebre de ligne est inpaire");
+
+                if ($line["qty"] != 0) {           
+                    $data = array(
+                        'product_id' => $line["product_id"],
+                        'warehouse_id' => $line["warehouse_id"], 
+                        'qty' => $line["qty"]*-1, 
+                        'type' => $line["type"], 
+                        'movementcode' => $line["movementcode"], 
+                        'movementlabel' => $line["movementlabel"], 
+                        'price' => $line["price"], 
+                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                    );
+                    // on execute le réassort
+                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+
+                    if ($stockmovements) {
+                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                        if (count($tabProduitReassort) != $i) {
+                            $ids .= $line['id'] . ",";
+                        }else{
+                            $ids .= $line['id'];
+                        }
+                        $i++;  
+                        $incrementation++;
+                    }
+                }
             }
+            $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
 
-            return redirect()->back()->with('success', 'transfère réussit');
-           
+            $response = DB::update($updateQuery);
 
+            return true;
+        
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error',  "Une érreur s'est produite");
-        }
+            dd($th);
+            return ["response" => false, "error" => $th->getMessage()];
+        } 
 
     }
 
@@ -819,6 +853,7 @@ class Controller extends BaseController
             
             $id = request('id');
             $token = request('tokenPrepa');
+            $server_name = request('server_name');
 
             if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
@@ -897,26 +932,50 @@ class Controller extends BaseController
                         $res = DB::table('lines_commande_doli')->insert($lines);
                         $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
-                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
+                        // 3760324816721  4669
+
+                        // "linkedObjectsIds" => [ "commande" => ["76": "7"]]
+
+
+
+                        return redirect('https://'.$server_name.'/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
 
                     }else {
 
-                        return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
 
-                       // return "le produit (". $product_no_bc.") n'a pas de code barre";
+                       // return "le produit (". $product_no_bc.") n'a pas de code barre";  
                     }
                 }else {
 
                     // $message = "Le devis n'a pas été validé";
-                    return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
+                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
                 }
             }else {
                 // $message = "pas le droit";
-                return redirect('https://www.transfertx.elyamaje.com/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
+                return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
 
             }
         } catch (Throwable $th) {
             return $th->getMessage();
+        }
+    }
+
+    function changeStatutOfOrder($id_order,$id_statut){
+
+        try {
+        
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+
+            $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> $id_statut]));
+            return true;
+
+        } catch (\Throwable $th) {
+
+            return false;
         }
     }
 }

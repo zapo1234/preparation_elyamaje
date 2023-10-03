@@ -308,14 +308,33 @@ class OrderRepository implements OrderInterface
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
       $list_product_orders = DB::table('products')
-      ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
-      ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
-      ->where('products_order.order_id', $order_id)
-      ->where('products_order.pick', 0)
-      ->get()
-      ->toArray();
+         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
+         ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
+         ->where('products_order.order_id', $order_id)
+         ->where('products_order.pick', 0)
+         ->get()
+         ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
+      
+    // Tout est bippé donc on valide
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
 
       // Tout est bippé
       if(count($list_product_orders) == 0){
@@ -375,16 +394,14 @@ class OrderRepository implements OrderInterface
       
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
-         if(count($clesRecherchees) > 0){
-            $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
-
-            $product_pick_in[] = [
-               'id' => $list_products[$clesRecherchees[0]]['id'],
-               'barcode' => $barcode,
-               'quantity' => intval($products_quantity[$key])
-            ];
-         }
-         
+          if(count($clesRecherchees) > 0){
+             $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+             $product_pick_in[] = [
+                'id' => $list_products[$clesRecherchees[0]]['id'],
+                'barcode' => $barcode,
+                'quantity' => intval($products_quantity[$key])
+             ];
+          }
       }
 
 
