@@ -333,9 +333,6 @@ class Order extends BaseController
       $from_dolibarr = $request->post('from_dolibarr') == "true" ? true : false;
       $from_transfers = $request->post('from_transfers') == "true" ? true : false;
 
-
-      dd($from_transfers);
-
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
         if($from_dolibarr){
           if($barcode_array != null){
@@ -352,6 +349,7 @@ class Order extends BaseController
             $check_if_order_done = true;
           }
         } else {
+          dd("ddd");
           if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
           } else if($partial == "1" && $barcode_array == null){
