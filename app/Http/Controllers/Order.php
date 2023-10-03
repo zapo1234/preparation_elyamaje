@@ -111,7 +111,7 @@ class Order extends BaseController
         return $orders_user;
       } else {
         $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
-        $per_page = 30;
+        $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
         $count = count($orders);
