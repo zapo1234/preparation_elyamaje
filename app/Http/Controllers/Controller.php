@@ -122,11 +122,6 @@ class Controller extends BaseController
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
 
-        $count_rea = [];
-        foreach($reassort as $rea){
-            $count_rea[$rea->identifiant_reassort] = $rea;
-        }
-
         $orders = $this->orderController->getOrder();
         $order_process = [];
         $orders_waiting_to_validate = [];
@@ -152,7 +147,7 @@ class Controller extends BaseController
             'number_orders_validate' =>  count($orders_validate),
             'printer' => $printer[0] ?? false,
             'count_orders' => $orders['count'],
-            'count_rea' => count($count_rea)
+            'count_rea' => count($reassort)
         ]);
     }
 
@@ -161,12 +156,7 @@ class Controller extends BaseController
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $orders = $this->orderController->getOrderDistributeur();
-
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
-        $count_rea = [];
-        foreach($reassort as $rea){
-            $count_rea[$rea->identifiant_reassort] = $rea;
-        }
 
         $order_process = [];
         $orders_waiting_to_validate = [];
@@ -192,61 +182,42 @@ class Controller extends BaseController
             'number_orders_validate' =>  count($orders_validate),
             'printer' => $printer[0] ?? false,
             'count_orders' => $orders['count'],
-            'count_rea' => count($count_rea)
+            'count_rea' => count($reassort)
         ]);
     }
 
     // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
     public function ordersTransfers(){
-        $transfers = [];
-        $transfers_progress = [];
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
 
         // Compte les autres commandes à faire
         $orders = $this->orderController->getOrder();
+        $transfers_progress = [];
+        $transfers_waiting_to_validate = [];
+        $transfers_validate = [];
 
-        foreach($reassort as $key => $rea){
-
-            if($rea->id_reassort == 0){
-                $transfers[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
-                $transfers[$rea->identifiant_reassort]['date'] = $rea->datem;
-                $transfers[$rea->identifiant_reassort]['products'][] = [
-                    'product_id' => $rea->product_id,
-                    'name' => $rea->name,
-                    'qty' => $rea->qty,
-                    'price' => $rea->price,
-                    'barcode' => $rea->barcode,
-                    'location' => $rea->location
-                ];
-            } else if($rea->id_reassort == -1){
-                $transfers_progress[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
-                $transfers_progress[$rea->identifiant_reassort]['date'] = $rea->datem;
-                $transfers_progress[$rea->identifiant_reassort]['products'][] = [
-                    'product_id' => $rea->product_id,
-                    'name' => $rea->name,
-                    'qty' => $rea->qty,
-                    'price' => $rea->price,
-                    'barcode' => $rea->barcode,
-                    'location' => $rea->location
-                ];
+        foreach ($reassort as $rea) {
+            if ($rea['details']['status'] == "waiting_to_validate") {
+                $transfers_waiting_to_validate[] = $rea;
+            } else if ($rea['details']['status'] == "waiting_validate") {
+                $transfers_validate[] = $rea;
+            } else {
+                $transfers_progress[] = $rea;
             }
         }
 
-        // Récupère le premier réassort
-        $total_transfers = count($transfers);
-        $total_transfers_progress = count($transfers_progress);
-        $transfers = $total_transfers > 0 ? $transfers[array_key_first($transfers)] : [];
-        $transfers_progress = $total_transfers_progress > 0 ? $transfers_progress[array_key_first($transfers_progress)] : [];
-
+  
         return view('preparateur.transfers.index_preparateur', 
         [
-            'transfers' => $transfers, 
-            'transfers_progress' => $transfers_progress,
-            'total_transfers' => $total_transfers, 
-            'total_transfers_progress' => $total_transfers_progress, 
+            'transfers_waiting_to_validate' => $transfers_waiting_to_validate,
+            'transfers_validate' => $transfers_validate,
+            'transfers' => isset($transfers_progress[0]) ? $transfers_progress[0] : [] /* Show only first order */,
+            'number_transfers' =>  count($transfers_progress),
+            'number_transfers_waiting_to_validate' =>  count($transfers_waiting_to_validate),
+            'number_transfers_validate' =>  count($transfers_validate),
             'user' => Auth()->user()->name,
             'count_orders' => $orders['count'],
-            'count_rea' => $total_transfers + $total_transfers_progress
+            'count_rea' => count($reassort)
         ]);
     }
 

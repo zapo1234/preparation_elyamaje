@@ -85,7 +85,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.user_id', $user_id)
-         ->where('orders_doli.statut', "processing")
+         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
          ->get();
 
          $orders = json_decode(json_encode($orders), true);
@@ -156,13 +156,16 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
-         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
 
-         $product_pick_in[] = [
-            'id' => $list_products[$clesRecherchees[0]]['id'],
-            'barcode' => $barcode,
-            'quantity' => intval($products_quantity[$key])
-         ];
+         if(count($clesRecherchees) != 0){
+            $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+
+            $product_pick_in[] = [
+               'id' => $list_products[$clesRecherchees[0]]['id'],
+               'barcode' => $barcode,
+               'quantity' => intval($products_quantity[$key])
+            ];
+         }
       }
 
       // Récupère les différences entre les produits de la commande et ceux qui ont été bippés

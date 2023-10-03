@@ -96,7 +96,7 @@ class Order extends BaseController
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
     }
-     /*
+  
     public function orders($id = null, $distributeur = false){
 
       if($id){
@@ -111,7 +111,7 @@ class Order extends BaseController
         return $orders_user;
       } else {
         $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
-        $per_page = 10;
+        $per_page = 30;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
         $count = count($orders);
@@ -200,85 +200,9 @@ class Order extends BaseController
 
         return $list_orders;
       }
-      
-    } */
+    } 
 
-    public function orders($id = null, $distributeur = false){
 
-      if($id){
-        $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-        return $orders_user;
-      } else {
-
-        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
-        $per_page = 100;
-        $page = 1;
-        $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-        $count = count($orders);
-  
-        // Check if others page
-        if($count == 100){
-          while($count == 100){
-            $page = $page + 1;
-            $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-           
-            if(count($orders_other ) > 0){
-              $orders = array_merge($orders, $orders_other);
-            }
-          
-            $count = count($orders_other);
-          }
-        }  
-
-        // Récupère les commandes attribuée en base s'il y en a 
-        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
-        $ids = array_column($orders_distributed, "order_woocommerce_id");
-        $list_orders = [];
-
-       
-        if(count($orders_distributed) > 0){
-          foreach($orders as $key => $order){
-            $take_order = true;
-            if(count($order['shipping_lines']) > 0){
-              if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100"){
-                $take_order = false;
-              }
-            } 
-
-            if($take_order == true){
-              $clesRecherchees = array_keys($ids,  $order['id']);
-              if(count($clesRecherchees) > 0){
-                $orders[$key]['user_id'] =  $orders_distributed[$clesRecherchees[0]]['user_id'];
-                $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
-                $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
-                $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
-              } else {
-                $orders[$key]['user_id'] = null;
-                $orders[$key]['name'] = "Non attribuée";
-                $orders[$key]['status'] =  $orders[$key]['status'];
-                $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
-              }
-              $list_orders[] = $orders[$key];
-            }
-       
-          }
-        } else {
-          foreach($orders as $key => $order){
-            if(count($order['shipping_lines']) > 0){
-               if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"){
-                $list_orders[] = $order;
-               }
-            } else {
-               $list_orders[] = $order;
-            }
-          }
-        }
-
-        return $list_orders;
-      }
-      
-    }
- 
     public function getOrder(){
       return $this->orders(Auth()->user()->id);
     }
@@ -407,23 +331,31 @@ class Order extends BaseController
       $partial = $request->post('partial');
       $note_partial_order = $request->post('note_partial_order') ?? null;
       $from_dolibarr = $request->post('from_dolibarr') == "true" ? true : false;
+      $from_transfers = $request->post('from_transfers') == "true" ? true : false;
 
       if($barcode_array != "false" && $order_id && $products_quantity != "false"){
-        // if($from_dolibarr){
-        //   if($barcode_array != null){
-        //     $check_if_order_done = $this->orderDolibarr->checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
-        //   } else if($partial == "1" && $barcode_array == null){
-        //     $this->orderDolibarr->updateOneOrderStatus("waiting_to_validate", $order_id);
-        //     $check_if_order_done = true;
-        //   }
-        // } else {
+        if($from_dolibarr){
+          if($barcode_array != null){
+            $check_if_order_done = $this->orderDolibarr->checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
+          } else if($partial == "1" && $barcode_array == null){
+            $this->orderDolibarr->updateOneOrderStatus("waiting_to_validate", $order_id);
+            $check_if_order_done = true;
+          }
+        } else if($from_transfers){
+          if($barcode_array != null){
+            $check_if_order_done = $this->reassort->checkIfDoneTransfersDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
+          } else if($partial == "1" && $barcode_array == null){
+            $this->reassort->updateStatusTextReassort($order_id ,"waiting_to_validate");;
+            $check_if_order_done = true;
+          }
+        } else {
           if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
           } else if($partial == "1" && $barcode_array == null){
             $this->order->updateOrdersById([$order_id], "waiting_to_validate");
             $check_if_order_done = true;
           }
-        // }
+        }
 
 
         if($check_if_order_done && $partial == "1"){
@@ -525,11 +457,20 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $status = $request->post('status');
       $user_id = $request->post('user_id');
-      $from_dolibarr = "false"; //$request->post('from_dolibarr');
+      $from_dolibarr = $request->post('from_dolibarr');
 
       if($order_id && $status){
 
-        if($status == "waiting_validate"){
+        // Si pas de user récupéré
+        if($user_id == null){
+          $order_details = $this->order->getOrderById($order_id);
+
+          if(count($order_details) > 0){
+            $user_id = $order_details[0]['user_id'];
+          } 
+        }
+
+        if($status == "waiting_validate" && $user_id != null){
           $data = [
             'from_user' => Auth()->user()->id,
             'to_user' => $user_id,
@@ -568,18 +509,25 @@ class Order extends BaseController
     public function checkExpedition(Request $request){
       $order_id = $request->get('order_id');
       $order = $this->order->getOrderById($order_id);
+
       if($order){
         // Check si commande distributeur, si oui rebipper les produits
         $is_distributor = false; //$this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
-        echo json_encode(['success' => true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => $is_distributor, 'status' =>  __('status.'.$order[0]['status'])]);
+        echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => $is_distributor, 'status' =>  __('status.'.$order[0]['status'])]);
       } else {
         // Check si commande dolibarr
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
-        // dd($order);
-        if($order){
-          echo json_encode(['success' => true, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
+        if(count($order) > 0){
+          echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {
-          echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
+          $order = $this->reassort->getReassortById($order_id);
+          if(count($order) > 0){
+          // Check si commande est un transfert
+          echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
+            
+          } else {
+            echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
+          }
         }
       }
     }
@@ -587,15 +535,19 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
 
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
-      $from_dolibarr = intval($request->post('from_dolibarr'));
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
       $order_id = explode(',', $request->post('order_id'))[0];
 
       if($from_dolibarr){
+        // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
+      } else if($transfers){
+        // Si transfert, envoyé les données à Lyes pour le valider
+        $order = $this->reassort->getReassortById($order_id);
       } else {
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
-
 
       if($order){
         if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){

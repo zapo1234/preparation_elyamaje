@@ -4,9 +4,21 @@ namespace App\Http\Service\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
+use App\Repository\Label\LabelRepository;
+use App\Repository\Bordereau\BordereauRepository;
 
 class Colissimo
 {
+    private $label;
+    private $bordereau;
+
+    public function __construct(
+        LabelRepository $label, 
+        BordereauRepository $bordereau
+    ){
+        $this->label = $label;
+        $this->bordereau = $bordereau;
+    }
 
     public function generateLabel($order, $weight, $order_id, $colissimo){
         $productCode = $this->getProductCode($order);
@@ -133,40 +145,51 @@ class Colissimo
     }
 
 
-    public function generateBordereauByParcelsNumbers($parcelNumbers_array){
+    public function generateBordereauByParcelsNumbers($parcelNumbers_array, $date){
 
-            $request = [
-                'contractNumber'                    => config('app.colissimo_contractNumber'),
-                'password'                          => config('app.colissimo_password'),
-                'generateBordereauParcelNumberList' => [
-                    'parcelsNumbers' => $parcelNumbers_array
-                ]
-            ];
+            $max_package = 250;
+            $new_array = $this->diviserTableau($parcelNumbers_array, $max_package);
+            foreach($new_array as $key => $array){
+                $request = [
+                    'contractNumber'                    => config('app.colissimo_contractNumber'),
+                    'password'                          => config('app.colissimo_password'),
+                    'generateBordereauParcelNumberList' => [
+                        'parcelsNumbers' => $array
+                    ]
+                ];
 
-
-            try {
-                $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateBordereauByParcelsNumbers";
+                try {
+                    $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateBordereauByParcelsNumbers";
+        
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'application/json'
+                    ])->post($url, $request);
     
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json'
-                ])->post($url, $request);
-
-
-                preg_match('/--(.*)\b/', $response, $boundary);
     
-                $content = empty($boundary)
-                ? $this->parseMonoPartBody($response)
-                : $this->parseMultiPartBody($response, $boundary[0]);
+                    preg_match('/--(.*)\b/', $response, $boundary);
+        
+                    $content = empty($boundary)
+                    ? $this->parseMonoPartBody($response)
+                    : $this->parseMultiPartBody($response, $boundary[0]);
+    
+                   
+                    if($content['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
+                        $bordereau_id = $content['<jsonInfos>']['bordereauHeader']['bordereauNumber'];
+                        $this->label->saveBordereau($bordereau_id, $array);
+                        $this->bordereau->save($bordereau_id, $content['<deliveryPaper>'], $date);
 
-                if($content['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
-                    return $content;
-                } else {
-                    return isset($content) ? $content : false;
+                        if($key == (count($new_array) -1)){
+                            return $content;
+                        }
+                    } else {
+                        return isset($content) ? $content : false;
+                    }
+                  
+                } catch(Exception $e) {
+                    return $e->getMessage();
                 }
-              
-            } catch(Exception $e) {
-                return $e->getMessage();
             }
+          
     }
 
 
@@ -342,7 +365,7 @@ class Colissimo
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
                     'email' => $order['billing']['email'],
-                    'mobileNumber' => $this->getMobilePhone($order['billing']['phone'], $order['shipping']['country'])
+                    'mobileNumber' => $this->getMobilePhone($phoneNumber, $order['shipping']['country'])
                 ];
 
                 return $address;
@@ -399,15 +422,14 @@ class Colissimo
     //         return false;
     //     }
     // }
-
+    // XC2F000423
     protected function customsArticle($order){
-   
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
             $customsArticle[] = [
                 'description'   => $item['name'],
                 'quantity'      => $item['quantity'],
-                'value'         => $item['total'],
+                'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
                 'currency'      => config('app.currency'),
                 'artref'        => $item['ref'] ?? '',
                 'originalIdent' => 'A',
@@ -417,6 +439,29 @@ class Colissimo
             ];
         }   
         return $customsArticle;
+    }
+
+    protected function diviserTableau($array, $max) {
+        $resultat = array();
+        $sousTableau = array();
+        $total = 0;
+    
+        foreach ($array as $valeur) {
+            if ($total < $max) {
+                $sousTableau[] = $valeur;
+                $total += 1;
+            } else {
+                $resultat[] = $sousTableau;
+                $sousTableau = array($valeur);
+                $total = 1;
+            }
+        }
+    
+        if (!empty($sousTableau)) {
+            $resultat[] = $sousTableau;
+        }
+    
+        return $resultat;
     }
  
 }

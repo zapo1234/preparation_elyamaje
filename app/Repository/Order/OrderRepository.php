@@ -311,10 +311,30 @@ class OrderRepository implements OrderInterface
       ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
       ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
       ->where('products_order.order_id', $order_id)
+      ->where('products_order.pick', 0)
       ->get()
       ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
+
+      // Tout est bippé
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
 
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
@@ -355,14 +375,18 @@ class OrderRepository implements OrderInterface
       
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
-         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+         if(count($clesRecherchees) > 0){
+            $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
 
-         $product_pick_in[] = [
-            'id' => $list_products[$clesRecherchees[0]]['id'],
-            'barcode' => $barcode,
-            'quantity' => intval($products_quantity[$key])
-         ];
+            $product_pick_in[] = [
+               'id' => $list_products[$clesRecherchees[0]]['id'],
+               'barcode' => $barcode,
+               'quantity' => intval($products_quantity[$key])
+            ];
+         }
+         
       }
+
 
       // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
       $barcode = array_column($product_pick_in, "barcode");
@@ -379,6 +403,7 @@ class OrderRepository implements OrderInterface
             $diff_barcode = true;
          }
       }
+
 
       // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
       $cases = collect($product_pick_in)->map(function ($item) {

@@ -3,8 +3,6 @@
 
 	@section("style")
 		<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-		<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
-		<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
 		<link href="{{asset('assets/plugins/highcharts/css/highcharts.css')}}" rel="stylesheet" />
 	@endsection
 
@@ -56,17 +54,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									@foreach ($histories as $histo)
-										@foreach ($histo as $his)
-											<tr>
-												<td data-label="Nom">{{ $his['name'] }}</td>
-												<td class="prepare_column" data-label="Commandes Préparées">{{ $his['prepared_count'] }}</td>
-												<td class="finished_column" data-label="Commandes Emballées">{{ $his['finished_count'] }}</td>
-												<td data-label="Produits bippés">{{ $his['items_picked'] }}</td>
-												<td data-label="Date">{{ $his['date'] }}</td>
-											</tr>
-										@endforeach
-									@endforeach
+									
 								</tbody>
 							</table>
 						</div>
@@ -88,66 +76,8 @@
 	@section("script")
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
 		<script src="assets/plugins/highcharts/js/highcharts.js"></script>
 		<script src="assets/js/analytics.js"></script>
-
-		<script>
-
-			var average = '<?php echo json_encode($average_by_name) ?>';
-			var list_name = []
-			var order_prepared = []
-			var order_finished = []
-			var items_picked = []
-
-			Object.entries(JSON.parse(average)).forEach(([key, value]) => {
-				list_name.push(key)
-				order_prepared.push(value.avg_prepared)
-				order_finished.push(value.avg_finished)
-				items_picked.push(value.avg_items_picked)
-			});
-
-			// chart 6
-			Highcharts.chart('chart6', {
-				chart: {
-					type: 'bar',
-					styledMode: true
-				},
-				title: {
-					text: 'Moyenne préparation / Jour'
-				},
-				xAxis: {
-					categories: list_name
-				},
-				yAxis: {
-					min: 0,
-					title: {
-						text: '',
-						style: {
-							display: 'none',
-						}
-					}
-				},
-				legend: {
-					reversed: false
-				},
-				
-				colors: ['#4eda58', '#ff7300' , '#212529'],
-				series: [{
-					name: 'Commandes préparées',
-					data: order_prepared
-				},{
-					name: 'Commandes emballées',
-					data: order_finished
-				}
-				,{
-					name: 'Produits bippés',
-					data: items_picked,
-				}
-				]
-			});
-
-		</script>
 	@endsection
 
 
