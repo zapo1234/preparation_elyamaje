@@ -245,7 +245,7 @@ class Label extends BaseController
         return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);
     }
 
-    public function generateBordereau(Request $request){
+     public function generateBordereau(Request $request){
 
         $date = $request->post('date');
         // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
@@ -259,21 +259,9 @@ class Label extends BaseController
         if(count($parcelNumbers_array) == 0){
             return redirect()->route('bordereaux')->with('error', 'Bordereau déjà généré ou aucune étiquette pour cette date !');
         } else {
-            $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array);
-
+            $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array, $date);
             
             if($bordereau['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
-                // Enregistre le bordereau_id dans la table labels liés aux parcelNumber
-                $bordereau_id = $bordereau['<jsonInfos>']['bordereauHeader']['bordereauNumber'];
-                $this->label->saveBordereau($bordereau_id, $parcelNumbers_array);
-                $this->bordereau->save($bordereau_id, $bordereau['<deliveryPaper>'], $date);
-    
-                // $pdf = $bordereau['<deliveryPaper>'];
-                // $headers = [
-                //     'Content-Type' => 'application/pdf',
-                // ];
-            
-                // Renvoyer le contenu en tant que réponse
                 return redirect()->route('bordereaux')->with('success', 'Borderau généré avec succès !');
                 // return Response::make($pdf, 200, $headers);
             } else {
