@@ -7757,4 +7757,56 @@ select option[disabled] {
 	50% { transform: rotate(0eg); }
 	75% { transform: rotate(-20deg); }
 	100% { transform: rotate(0deg); }
+}
+
+.loading_chart{
+	height: 110px;
+	width: 100%;
+}
+
+.loading_chart1{
+	background-color: #EEEEEE;
+	height: 20px;
+	-webkit-animation: linear infinite alternate;
+	-webkit-animation-name: run;
+	-webkit-animation-duration: 2s;
+}
+
+.loading_chart2{
+	background-color: #EEEEEE;
+	height: 20px;
+	margin-top: 10px;
+	-webkit-animation: linear infinite alternate;
+	-webkit-animation-name: run;
+	-webkit-animation-duration: 2.5s;
+}
+
+.loading_chart3{
+	background-color: #EEEEEE;
+	height: 20px;
+	margin-top: 10px;
+	-webkit-animation: linear infinite alternate;
+	-webkit-animation-name: run;
+	-webkit-animation-duration: 3s;
+}
+
+.loading_chart4{
+	background-color: #EEEEEE;
+	height: 20px;
+	margin-top: 10px;
+	-webkit-animation: linear infinite alternate;
+	-webkit-animation-name: run;
+	-webkit-animation-duration: 3.5s;
+}
+
+@-webkit-keyframes run {
+	0% {
+		width: 0%;
+	}
+	50% {
+		width: 50%;
+	}
+	100% {
+		width: 100%;
+	}
   }

@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    $(".pace").remove()
+
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
         "ajax": {
@@ -97,6 +99,7 @@ $(document).ready(function() {
     }).done(function(data) {
         if(JSON.parse(data).success){
             var data = JSON.parse(data)
+            $(".loading_chart").remove()
 
             // Créer le chart js
             chartAverage(data.average_by_name)

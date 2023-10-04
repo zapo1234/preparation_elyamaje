@@ -64,7 +64,16 @@
 				<div class="col">
 					<div class="card">
 						<div class="card-body">
-							<div class="chart_average" id="chart6"></div>
+							<div class="chart_average" id="chart6">
+
+								<div class="loading_chart">
+									<div class="loading_chart1"></div>
+									<div class="loading_chart2"></div>
+									<div class="loading_chart3"></div>
+									<div class="loading_chart4"></div>
+								</div>
+
+							</div>
 						</div>
 					</div>
 				</div>
