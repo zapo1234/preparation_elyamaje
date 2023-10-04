@@ -4,7 +4,7 @@
 		<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
 		<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
 		<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
-		<link href="{{asset('assets/plugins/highcharts/css/highcharts.css')}}" rel="stylesheet" />
+		<!-- <link href="{{asset('assets/plugins/highcharts/css/highcharts.css')}}" rel="stylesheet" /> -->
 	@endsection
 
 	@section("wrapper")
@@ -22,7 +22,7 @@
 						<div class="table-responsive">
 							
 				
-							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
+							<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>Date</th>
@@ -85,9 +85,9 @@
 	@section("script")
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
-		<script src="assets/plugins/highcharts/js/highcharts.js"></script>
-		<script src="assets/js/analytics.js"></script>
+		<!-- <script src="assets/plugins/select2/js/select2.min.js"></script> -->
+		<!-- <script src="assets/plugins/highcharts/js/highcharts.js"></script> -->
+		<!-- <script src="assets/js/analytics.js"></script> -->
 
 		<script>
           
