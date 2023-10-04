@@ -42,7 +42,7 @@ class HistoryRepository implements HistoryInterface
          DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
          'products_order.product_woocommerce_id', 'histories.created_at')
          ->join('users', 'users.id', '=', 'histories.user_id')
-         ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         // ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
          ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
          ->groupBy('histories.id')
          ->get()
