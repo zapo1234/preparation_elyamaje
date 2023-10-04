@@ -9,7 +9,7 @@ interface HistoryInterface
 
    public function getAllHistory();
 
-   public function getHistoryAdmin();
+   public function getHistoryAdmin($date);
    
    public function save($data);
 }

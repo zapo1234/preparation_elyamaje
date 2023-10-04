@@ -101,17 +101,21 @@ class Order extends BaseController
 
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-        $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id, $distributeur);
 
+        $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id);
         if(count($orderDolibarr['orders']) > 0){
-          $orders_user['orders'] = $orderDolibarr['orders'];
+          if(!$distributeur){
+            foreach($orderDolibarr['orders'] as $ord){
+              $orders_user['orders'][] = $ord;
+            }
+          }
           $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
         }
 
         return $orders_user;
       } else {
         $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
-        $per_page = 100;
+        $per_page = 1;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
         $count = count($orders);
@@ -131,10 +135,12 @@ class Order extends BaseController
         }  
 
         // Récupère également les commandes créées depuis dolibarr vers préparation
-        $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
+        $orderDolibarr = $this->orderDolibarr->getAllOrders();
         if(count($orderDolibarr) > 0){
-          $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
-          $orders[] = $orderDolibarr;
+          foreach($orderDolibarr as $ord){
+            $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord);
+            $orders[] = $orderDolibarr[0];
+          }
         } 
 
         // Récupère les commandes attribuée en base s'il y en a 
@@ -245,14 +251,14 @@ class Order extends BaseController
 
       // Liste des commandes déjà réparties entres les utilisateurs
       $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
-      $orderDolibarr = $this->orderDolibarr->getAllOrders()->toArray();
+      $orderDolibarr = $this->orderDolibarr->getAllOrders();
       if(count($orderDolibarr) > 0){
-        $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($orderDolibarr);
-        $orders_user[] = $orderDolibarr;
-      }
+        foreach($orderDolibarr as $ord){
+          $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord);
+          $orders_user[] = $orderDolibarr[0];
+        }
+      } 
 
-
-    
       foreach($orders_user as $order){
         if(in_array($order['user_id'], $list_preparateur)){
           $array_user[$order['user_id']][] =  $order;
@@ -549,7 +555,7 @@ class Order extends BaseController
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
 
-      if($order){
+      if($order && count($order) > 0){
         if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;

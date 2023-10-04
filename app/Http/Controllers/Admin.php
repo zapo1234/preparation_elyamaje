@@ -284,7 +284,7 @@ class Admin extends BaseController
         $date = date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
         $list_histories = [];
-        
+
         try{
             // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
             foreach($histories as $histo){

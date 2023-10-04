@@ -134,10 +134,12 @@ class WoocommerceService
     $transformOrder['order_id'] = $orderDolibarr[0]['orderDoliId'];
     $transformOrder['id'] = $orderDolibarr[0]['orderDoliId'];
     $transformOrder['discount_total'] = 0;
+    $transformOrder['coupons'] = "";
     $transformOrder['shipping_amount'] = 0;
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
+    $transformOrder['preparateur'] = $orderDolibarr[0]['preparateur'];
 
 
     // On force la méthode d'expédition en livraison à domicile avec signature
