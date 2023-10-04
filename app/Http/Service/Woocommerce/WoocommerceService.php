@@ -139,7 +139,7 @@ class WoocommerceService
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
-    $transformOrder['preparateur'] = $orderDolibarr[0]['preparateur'];
+    $transformOrder['preparateur'] = isset($orderDolibarr[0]['preparateur']) ? $orderDolibarr[0]['preparateur'] : '';
 
 
     // On force la méthode d'expédition en livraison à domicile avec signature

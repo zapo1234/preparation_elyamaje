@@ -21,9 +21,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       $array_order = [];
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
-      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent')
+      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'users.name as preparateur')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->join('users', 'users.id', '=', 'orders_doli.user_id')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);

@@ -596,9 +596,13 @@ class Order extends BaseController
 
             $this->history->save($data);
 
-            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-            $this->order->updateOrdersById([$order_id], "finished");
-            $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+            if($from_dolibarr){
+              $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
+            } else {
+              // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+              $this->order->updateOrdersById([$order_id], "finished");
+              $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+            }
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
           echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
