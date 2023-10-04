@@ -90,7 +90,8 @@
 		<!-- <script src="assets/js/analytics.js"></script> -->
 
 		<script>
-          
+		
+			$('#example').DataTable({})
           $('.verificode').click(function(){
               
                var id = $(this).data('id1');
