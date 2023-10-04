@@ -280,37 +280,22 @@ class Admin extends BaseController
         return view('admin.analytics');
     }
 
-    public function getAnalytics(){
-        $date = date('Y-m-d');
+    public function getAnalytics(Request $request){
+        $date = $request->get('date') ?? date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
         $list_histories = [];
-
         try{
-            // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
-            foreach($histories as $histo){
-                $id = date('d/m/Y', strtotime($histo['created_at']));
-                if(!isset($list_histories[$id][$histo['id']])){
-                    $list_histories[date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
-                        'name' => $histo['name'],
-                        'poste' => [$histo['poste']],
-                        'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
-                        'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
-                        'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
-                        'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-                        'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_quantity'] : 0,
-                        'date' => date('d/m/Y', strtotime($histo['created_at']))
-                    ];
-                } else {
-                    $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);
-                    $list_histories[$id][$histo['id']]['poste'][] = $histo['poste'];
-                    $list_histories[$id][$histo['id']]['prepared_order'] = array_unique($list_histories[$id][$histo['id']]['prepared_order']);
-                    $list_histories[$id][$histo['id']]['finished_order'] = array_unique($list_histories[$id][$histo['id']]['finished_order']);
-                    $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
-                    $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
-                    $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
-                    $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_quantity'] : 0;
-                }
-            }
+            $list_histories = $this->buildHistory($histories);
+            echo json_encode(['success' => true, 'histories' => $list_histories /*, 'average_by_name' => $average_by_name*/]);
+        } catch(Exception $e){
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getAverage(){
+        try{
+            $histories = $this->history->getAllHistoryAdmin();
+            $list_histories = $this->buildHistory($histories);
 
             // Calcule de la moyenne de commande préparées & emballées et des produits bippés par jour pour chaque préparateur & emballeurs
             $average = [];
@@ -336,8 +321,9 @@ class Admin extends BaseController
                 $number_finished = 0;
                 $number_items_picked = 0;
             }
-            echo json_encode(['success' => true, 'histories' => $list_histories, 'average_by_name' => $average_by_name]);
-        } catch(Exception $e){
+
+            echo json_encode(['success' => true, 'average_by_name' => $average_by_name]);
+        } catch (Exception $e){
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
@@ -589,5 +575,36 @@ class Admin extends BaseController
                 return redirect()->route('admin.billing')->with('error', $e->getMessage());
             }
         }
+    }
+
+    private function buildHistory($histories){
+        $list_histories = [];
+        // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
+        foreach($histories as $histo){
+            $id = date('d/m/Y', strtotime($histo['created_at']));
+            if(!isset($list_histories[$id][$histo['id']])){
+                $list_histories[date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
+                    'name' => $histo['name'],
+                    'poste' => [$histo['poste']],
+                    'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
+                    'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
+                    'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
+                    'finished_count' => $histo['status'] == "finished" ? 1 : 0,
+                    'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_quantity'] : 0,
+                    'date' => date('d/m/Y', strtotime($histo['created_at']))
+                ];
+            } else {
+                $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);
+                $list_histories[$id][$histo['id']]['poste'][] = $histo['poste'];
+                $list_histories[$id][$histo['id']]['prepared_order'] = array_unique($list_histories[$id][$histo['id']]['prepared_order']);
+                $list_histories[$id][$histo['id']]['finished_order'] = array_unique($list_histories[$id][$histo['id']]['finished_order']);
+                $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
+                $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
+                $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
+                $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_quantity'] : 0;
+            }
+        }
+
+        return $list_histories;
     }
 }

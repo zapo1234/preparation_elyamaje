@@ -45,6 +45,19 @@ class HistoryRepository implements HistoryInterface
          // ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
          ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
          ->groupBy('histories.id')
+         ->where('histories.created_at', 'LIKE', '%'.$date.'%')
+         ->get()
+         ->toArray();
+   }
+
+   public function getAllHistoryAdmin(){
+      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
+         DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
+         'products_order.product_woocommerce_id', 'histories.created_at')
+         ->join('users', 'users.id', '=', 'histories.user_id')
+         // ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
+         ->groupBy('histories.id')
          ->get()
          ->toArray();
    }

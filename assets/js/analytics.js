@@ -10,9 +10,6 @@ $(document).ready(function() {
                         data.push(json.histories[k][a])
                     })
                 });
-
-                // Créer le chart js
-                chartAverage(json.average_by_name)
                 return data;
             }
         },
@@ -91,21 +88,25 @@ $(document).ready(function() {
         }
 
     })
+
+
+    // Affiche la moyenne de préparation de chaque users
+    $.ajax({
+        url: "getAverage",
+        method: "GET"
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data = JSON.parse(data)
+
+            // Créer le chart js
+            chartAverage(data.average_by_name)
+        }
+    });
 })
 
 
 $('.date_dropdown').on('change', function(e){
-    var date_dropdown = $(this).val();
-
-    if(date_dropdown == ""){
-        date_dropdown = date_dropdown
-    } else {
-        date_dropdown = dateFormat(date_dropdown, 'dd/MM/yyyy')
-    }
-
-    $('#example').DataTable()
-    .column(4).search(date_dropdown, true, false)
-    .draw();
+    $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
 
@@ -133,7 +134,6 @@ $('.date_dropdown').on('change', function(e){
 
     return format;
 }
-
 
 function chartAverage(average){
     var average = average
