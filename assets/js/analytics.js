@@ -1,9 +1,28 @@
 $(document).ready(function() {
+
     $(".pace").remove()
+
+    // Affiche la moyenne de préparation de chaque users
+    $.ajax({
+        url: "getAverage",
+        method: "GET",
+        async: true,
+        cache: true,
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data = JSON.parse(data)
+            $(".loading_chart").remove()
+
+            // Créer le chart js
+            chartAverage(data.average_by_name)
+        }
+    });
+
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
         "ajax": {
             url: 'getAnalytics',
+            cache: true,
             dataSrc: function(json) {
                 var data = []
                 Object.keys(json.histories).forEach(function(k, v){
@@ -93,21 +112,6 @@ $(document).ready(function() {
         }
 
     })
-
-
-    // Affiche la moyenne de préparation de chaque users
-    $.ajax({
-        url: "getAverage",
-        method: "GET"
-    }).done(function(data) {
-        if(JSON.parse(data).success){
-            var data = JSON.parse(data)
-            $(".loading_chart").remove()
-
-            // Créer le chart js
-            chartAverage(data.average_by_name)
-        }
-    });
 })
 
 
