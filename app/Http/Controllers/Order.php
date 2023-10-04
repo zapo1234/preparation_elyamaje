@@ -570,7 +570,7 @@ class Order extends BaseController
         if($from_dolibarr){
           $orders = $this->woocommerce->transformArrayOrderDolibarr($order);
         } else {
-            $orders = $this->woocommerce->transformArrayOrder($order);
+          $orders = $this->woocommerce->transformArrayOrder($order);
         }
 
         $orders[0]['emballeur'] = Auth()->user()->name;

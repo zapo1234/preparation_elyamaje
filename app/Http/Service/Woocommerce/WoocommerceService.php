@@ -116,7 +116,7 @@ class WoocommerceService
 
   public function transformArrayOrderDolibarr($orderDolibarr){
     $transformOrder = [];
-
+    $newArray = [];
 
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'];
     $transformOrder['date'] = $orderDolibarr[0]['date'];
@@ -166,7 +166,7 @@ class WoocommerceService
         'name' => $order['productName'],
         'product_id' => $order['product_woocommerce_id'],
         'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
-        'quantity' => $order['qte'],
+        'quantity' => $order['quantity'],
         'subtotal' => $order['priceDolibarr'],
         'price' => $order['priceDolibarr'],
         'total' => $order['total_ht'],
@@ -179,7 +179,9 @@ class WoocommerceService
         ]
       ];
     }
-    return $transformOrder;
+
+    $newArray[] = $transformOrder;
+    return $newArray;
   }
 }
 
