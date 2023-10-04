@@ -7,7 +7,6 @@ $(document).ready(function() {
         url: "getAverage",
         method: "GET",
         async: true,
-        cache: true,
     }).done(function(data) {
         if(JSON.parse(data).success){
             var data = JSON.parse(data)
@@ -22,7 +21,7 @@ $(document).ready(function() {
         "order": [[ 4, 'desc' ]],
         "ajax": {
             url: 'getAnalytics',
-            cache: true,
+            async: true,
             dataSrc: function(json) {
                 var data = []
                 Object.keys(json.histories).forEach(function(k, v){

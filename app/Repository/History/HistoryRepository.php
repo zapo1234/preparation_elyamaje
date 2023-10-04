@@ -4,6 +4,7 @@ namespace App\Repository\History;
 
 use App\Models\History;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class HistoryRepository implements HistoryInterface
 {
@@ -41,8 +42,7 @@ class HistoryRepository implements HistoryInterface
       return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
          DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
          'products_order.product_woocommerce_id', 'histories.created_at')
-         ->join('users', 'users.id', '=', 'histories.user_id')
-         // ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         ->leftJoin('users', 'users.id', '=', 'histories.user_id')
          ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
          ->groupBy('histories.id')
          ->where('histories.created_at', 'LIKE', '%'.$date.'%')
@@ -51,15 +51,18 @@ class HistoryRepository implements HistoryInterface
    }
 
    public function getAllHistoryAdmin(){
-      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
-         DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
-         'products_order.product_woocommerce_id', 'histories.created_at')
-         ->join('users', 'users.id', '=', 'histories.user_id')
-         // ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
-         ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
-         ->groupBy('histories.id')
-         ->get()
-         ->toArray();
+      $data = Cache::remember('histories', 600, function () {
+         return  $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
+            DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
+            'products_order.product_woocommerce_id', 'histories.created_at')
+            ->leftJoin('users', 'users.id', '=', 'histories.user_id')
+            ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
+            ->groupBy('histories.id')
+            ->get()
+            ->toArray();
+      });
+
+      return $data;
    }
 
    public function save($data){
