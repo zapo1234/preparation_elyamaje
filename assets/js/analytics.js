@@ -1,6 +1,5 @@
 $(document).ready(function() {
     $(".pace").remove()
-
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
         "ajax": {
@@ -43,7 +42,11 @@ $(document).ready(function() {
                 }
             }
         ],
+        "language": {
+            loadingRecords: ""
+        },
         "initComplete": function(settings, json) {
+            $(".loading_table").remove()
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -63,9 +66,7 @@ $(document).ready(function() {
 
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
-            $(".loading_div").addClass('d-none')
             $(".number_order").removeClass('d-none')
-            $("#example").removeClass('d-none')
         },
         "drawCallback": function( settings  ) {
             var order_prepared = 0

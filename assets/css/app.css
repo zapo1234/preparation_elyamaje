@@ -7759,6 +7759,7 @@ select option[disabled] {
 	100% { transform: rotate(0deg); }
 }
 
+
 .loading_chart{
 	height: 110px;
 	width: 100%;
