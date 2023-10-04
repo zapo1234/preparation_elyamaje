@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-    $(".pace").remove()
-
     // Affiche la moyenne de préparation de chaque users
     $.ajax({
         url: "getAverage",
