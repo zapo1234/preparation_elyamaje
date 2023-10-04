@@ -815,8 +815,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllHistory(){
-
-
       $list_orders = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
@@ -833,7 +831,7 @@ class OrderRepository implements OrderInterface
          ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
-         ->orderBy('orders.date', 'ASC')
+         ->orderBy('orders.updated_at', 'DESC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
