@@ -33,8 +33,8 @@
 							<h1 class="data_number mb-0 font-weight-bold text-primary d-flex justify-content-center"><span style="margin-right:5px" class="order_prepared"></span> / <span style="margin-left:5px" class="order_finished"></span></h1>
 							
 							<div class="d-none loading_data w-100">
-								<div class="spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div> / 
-								<div class="spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+								<div class="spinner-border spinner-border2 text-dark" role="status"> <span class="visually-hidden">Loading...</span></div> / 
+								<div class="spinner-border spinner-border2 text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
 							</div>
 							
 						
