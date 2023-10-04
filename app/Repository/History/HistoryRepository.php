@@ -51,7 +51,7 @@ class HistoryRepository implements HistoryInterface
    }
 
    public function getAllHistoryAdmin(){
-      $data = Cache::remember('histories', 600, function () {
+      $data = Cache::remember('histories', 3600, function () {
          return  $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
             DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
             'products_order.product_woocommerce_id', 'histories.created_at')
