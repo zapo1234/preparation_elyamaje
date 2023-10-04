@@ -28,7 +28,11 @@ $(".validate_order").on("click", function(){
             var is_distributor = JSON.parse(data).is_distributor;
             var country = getCountry(order[0]);
             var order_shipping_method = order[0].shipping_method ? order[0].shipping_method : [];
-            
+           
+            // Type de commande, devis, transfers ou commande from_dolibarr à false et transfers à false
+            var from_dolibarr = JSON.parse(data).from_dolibarr
+            var transfers = JSON.parse(data).transfers
+
             // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
@@ -41,54 +45,58 @@ $(".validate_order").on("click", function(){
                 <div class="to_hide detail_shipping_billing_div">
                     <div class="d-flex w-100 justify-content-around mb-3">
 
-                    
-                    ${order_shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
-                        <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
-                    </div>
+                        ${order_shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
+                            <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
+                        </div>
 
-                    ${country ?  `<div class="d-flex w-100 justify-content-center">
-                        <span style="width: fit-content" class="mb-3 badge bg-default">${country}</span>
-                    </div>`: ''} 
+                        ${country ?  `<div class="d-flex w-100 justify-content-center">
+                            <span style="width: fit-content" class="mb-3 badge bg-default">${country}</span>
+                        </div>`: ''} 
                    
+                        ${!transfers ?
+                            `<div class="d-flex w-100 justify-content-center">
+                                <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
+                            </div>`
+                        : ''}
 
-                    <div class="d-flex w-100 justify-content-center">
-                        <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
-                    </div>
-
-                    <div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
-                        <div class="d-flex flex-column justify-content-between billing_block align-items-center">
-                            <strong>Facturation :</strong>
-                            <div class="d-flex flex-column align-items-center">
-                                <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
-                                <span class="customer_email">${order[0].billing_customer_email}</span>
-                                <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
-                                <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column justify-content-between shipping_block align-items-center">
-                            <strong>Expédition :</strong>
-                            <div class="d-flex flex-column align-items-center">
-                                <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
-                                <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ''}</span>
-                                <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
-                                <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
-                                <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `)
+                        ${!transfers ?
+                            `<div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
+                                <div class="d-flex flex-column justify-content-between billing_block align-items-center">
+                                    <strong>Facturation :</strong>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span class="customer_name">${order[0].billing_customer_last_name+' '+order[0].billing_customer_first_name}</span>
+                                        <span class="customer_email">${order[0].billing_customer_email}</span>
+                                        <span class="customer_billing_adresss1">${order[0].billing_customer_address_1 ?? ''}</span>
+                                        <span class="customer_billing_adresss2">${order[0].billing_customer_address_2 ?? ''}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column justify-content-between shipping_block align-items-center">
+                                    <strong>Expédition :</strong>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span class="customer_shipping_name">${order[0].shipping_customer_last_name+' '+order[0].shipping_customer_first_name}</span>
+                                        <span class="customer_shipping_company">${order[0].shipping_customer_company ?? ``}</span>
+                                        <span class="customer_shipping_adresss1">${order[0].shipping_customer_address_1}</span>
+                                        <span class="customer_shipping_adresss2">${order[0].shipping_customer_address_2}</span>
+                                        <span class="customer_shipping_country">${order[0].shipping_customer_city+' '+order[0].shipping_customer_postcode}</span>
+                                    </div>
+                                </div>
+                            </div>`
+                    : ``}
+                </div>`
+            )
 
             // Afficher les informations de la commande, total, numéro et préparateur
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total :')
-            $(".amount_total_order").text(order[0].total_order+'€ (TTC)')
+
+            if(!transfers){
+                $(".amount_total_order").text(order[0].total_order+'€ (TTC)')
+            }
 
             $(".total_order_details").append(`
                 <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                   
-                    <button type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
+                    <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
                 </div>
             `)
             
@@ -234,7 +242,9 @@ function validWrapOrder(label){
     $(".loading_detail_order").removeClass('d-none')
     
     var order_id = $("#order_id").val()
-
+    var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
+    var transfers = $("#validWrapper").attr('transfers')
+    
     if(localStorage.getItem('barcode_verif_wrapper')){
         var pick_items = JSON.parse(localStorage.getItem('barcode_verif_wrapper'))
 
@@ -258,7 +268,8 @@ function validWrapOrder(label){
     $.ajax({
         url: "validWrapOrder",
         metho: 'POST',
-        data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, pick_items_quantity: pick_items_quantity},
+        data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, 
+        pick_items_quantity: pick_items_quantity, transfers: transfers, from_dolibarr: from_dolibarr},
         dataType: 'html' 
     }).done(function(data) {
         $(".action_button button").attr('disabled', false)

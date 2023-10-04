@@ -19,6 +19,7 @@ use App\Repository\Categorie\CategoriesRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Repository\Tiers\TiersRepository;
 
 class Controller extends BaseController
 {
@@ -43,7 +44,8 @@ class Controller extends BaseController
         ProductRepository $products,
         PrinterRepository $printer,
         Api $api,
-        ReassortRepository $reassort
+        ReassortRepository $reassort,
+        TiersRepository $tiersRepository
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -54,6 +56,7 @@ class Controller extends BaseController
         $this->printer = $printer;
         $this->api = $api;
         $this->reassort = $reassort;
+        $this->tiersRepository = $tiersRepository;
     }
 
     // INDEX ADMIN
@@ -117,12 +120,7 @@ class Controller extends BaseController
     public function orderPreparateur()
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-       
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
-        $count_rea = [];
-        foreach($reassort as $rea){
-            $count_rea[$rea->identifiant_reassort] = $rea;
-        }
 
         $orders = $this->orderController->getOrder();
         $order_process = [];
@@ -137,7 +135,7 @@ class Controller extends BaseController
             } else {
                 $order_process[] = $order;
             }
-        }
+        }   
 
         return view('preparateur.index_preparateur', [
             'user' => Auth()->user()->name,
@@ -149,7 +147,7 @@ class Controller extends BaseController
             'number_orders_validate' =>  count($orders_validate),
             'printer' => $printer[0] ?? false,
             'count_orders' => $orders['count'],
-            'count_rea' => count($count_rea)
+            'count_rea' => count($reassort)
         ]);
     }
 
@@ -158,12 +156,7 @@ class Controller extends BaseController
     {
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $orders = $this->orderController->getOrderDistributeur();
-
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
-        $count_rea = [];
-        foreach($reassort as $rea){
-            $count_rea[$rea->identifiant_reassort] = $rea;
-        }
 
         $order_process = [];
         $orders_waiting_to_validate = [];
@@ -189,61 +182,42 @@ class Controller extends BaseController
             'number_orders_validate' =>  count($orders_validate),
             'printer' => $printer[0] ?? false,
             'count_orders' => $orders['count'],
-            'count_rea' => count($count_rea)
+            'count_rea' => count($reassort)
         ]);
     }
 
     // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
     public function ordersTransfers(){
-        $transfers = [];
-        $transfers_progress = [];
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
 
         // Compte les autres commandes à faire
         $orders = $this->orderController->getOrder();
+        $transfers_progress = [];
+        $transfers_waiting_to_validate = [];
+        $transfers_validate = [];
 
-        foreach($reassort as $key => $rea){
-
-            if($rea->id_reassort == 0){
-                $transfers[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
-                $transfers[$rea->identifiant_reassort]['date'] = $rea->datem;
-                $transfers[$rea->identifiant_reassort]['products'][] = [
-                    'product_id' => $rea->product_id,
-                    'name' => $rea->name,
-                    'qty' => $rea->qty,
-                    'price' => $rea->price,
-                    'barcode' => $rea->barcode,
-                    'location' => $rea->location
-                ];
-            } else if($rea->id_reassort == -1){
-                $transfers_progress[$rea->identifiant_reassort]['id'] = $rea->identifiant_reassort;
-                $transfers_progress[$rea->identifiant_reassort]['date'] = $rea->datem;
-                $transfers_progress[$rea->identifiant_reassort]['products'][] = [
-                    'product_id' => $rea->product_id,
-                    'name' => $rea->name,
-                    'qty' => $rea->qty,
-                    'price' => $rea->price,
-                    'barcode' => $rea->barcode,
-                    'location' => $rea->location
-                ];
+        foreach ($reassort as $rea) {
+            if ($rea['details']['status'] == "waiting_to_validate") {
+                $transfers_waiting_to_validate[] = $rea;
+            } else if ($rea['details']['status'] == "waiting_validate") {
+                $transfers_validate[] = $rea;
+            } else {
+                $transfers_progress[] = $rea;
             }
         }
 
-        // Récupère le premier réassort
-        $total_transfers = count($transfers);
-        $total_transfers_progress = count($transfers_progress);
-        $transfers = $total_transfers > 0 ? $transfers[array_key_first($transfers)] : [];
-        $transfers_progress = $total_transfers_progress > 0 ? $transfers_progress[array_key_first($transfers_progress)] : [];
-
+  
         return view('preparateur.transfers.index_preparateur', 
         [
-            'transfers' => $transfers, 
-            'transfers_progress' => $transfers_progress,
-            'total_transfers' => $total_transfers, 
-            'total_transfers_progress' => $total_transfers_progress, 
+            'transfers_waiting_to_validate' => $transfers_waiting_to_validate,
+            'transfers_validate' => $transfers_validate,
+            'transfers' => isset($transfers_progress[0]) ? $transfers_progress[0] : [] /* Show only first order */,
+            'number_transfers' =>  count($transfers_progress),
+            'number_transfers_waiting_to_validate' =>  count($transfers_waiting_to_validate),
+            'number_transfers_validate' =>  count($transfers_validate),
             'user' => Auth()->user()->name,
             'count_orders' => $orders['count'],
-            'count_rea' => $total_transfers + $total_transfers_progress
+            'count_rea' => count($reassort)
         ]);
     }
 
@@ -659,7 +633,7 @@ class Controller extends BaseController
 
             foreach ($tabProduitReassort1 as $key => $lineR) {
 
-                if ($lineR["qte_transfere"]) {           
+                if ($lineR["qte_transfere"] != 0) {           
                     $data1 = array(
                         'product_id' => $lineR["product_id"],
                         'warehouse_id' => $entrepot_source, 
@@ -723,32 +697,66 @@ class Controller extends BaseController
     }
 
 
-    function executerTransfere($datas){
+    function executerTransfere($identifiant_reassort){
+
 
         try {
-            $nbr_line = 0;
+            $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
+
+            if (!$tabProduitReassort) {
+                return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+            }
+            $apiKey = env('KEY_API_DOLIBAR');   
             $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
+          
+            $data_save = array();
+            $incrementation = 0;
+            $decrementation = 0;
+            $i = 1;
+            $ids="";
+            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+            foreach ($tabProduitReassort as $key => $line) {
 
-
-            foreach ($datas as $key => $data) {
-                $stockmovements1 = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
-                $nbr_line++;
-            }
-
-            // ne pas oublier de destocker de woocomerce
-
-            if ($nbr_line%2 !=0) {
                 
-                return redirect()->back()->with('error',  "Aucun transfère trouvé ou le nombrebre de ligne est inpaire");
+
+                if ($line["qty"] != 0) {           
+                    $data = array(
+                        'product_id' => $line["product_id"],
+                        'warehouse_id' => $line["warehouse_id"], 
+                        'qty' => $line["qty"]*-1, 
+                        'type' => $line["type"], 
+                        'movementcode' => $line["movementcode"], 
+                        'movementlabel' => $line["movementlabel"], 
+                        'price' => $line["price"], 
+                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                    );
+                    // on execute le réassort
+                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+
+                    if ($stockmovements) {
+                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                        if (count($tabProduitReassort) != $i) {
+                            $ids .= $line['id'] . ",";
+                        }else{
+                            $ids .= $line['id'];
+                        }
+                        $i++;  
+                        $incrementation++;
+                    }
+                }
             }
+            $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
 
-            return redirect()->back()->with('success', 'transfère réussit');
-           
+            $response = DB::update($updateQuery);
 
+            return true;
+        
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error',  "Une érreur s'est produite");
-        }
+            dd($th);
+            return ["response" => false, "error" => $th->getMessage()];
+        } 
 
     }
 
@@ -832,30 +840,38 @@ class Controller extends BaseController
 
     function preparationCommandeByToken(Request $request){
 
+
         try {
-            $id = request('id');
-            $token = request('token');
 
-            // return $id;
-            // $id = "6";
-            // $token = "lyestoken";
-
-            if ($token == "lyestoken" && $id) {
-
+            
             // $apiUrl = env('KEY_API_URL');
             // $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
 
-         
+            
+            
+            $id = request('id');
+            $token = request('tokenPrepa');
+            $server_name = request('server_name');
 
-                $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
-                $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
-
+            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
 
-                $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
-                $tier = json_decode($tier, true);
+                    $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
+                    $tier = json_decode($tier, true);
+
+                    $name = $tier["name"];
+                    $pname = $tier["name"];
+                    $adresse = $tier["address"];
+                    $city = $tier["town"];
+                    $company = $tier["name_alias"];
+                    $code_postal = $tier["zip"];
+                    $contry = $tier["country_code"];
+                    $email = $tier["email"];
+                    $phone = $tier["phone"];
 
                 if ($order["statut"] == 1) {
 
@@ -866,21 +882,24 @@ class Controller extends BaseController
                             $product_no_bc = $line["libelle"];
                         }
                     }
+
                     if ($product_no_bc == "") {
                         $detail_facture = [
 
                             "ref_order" => $order["ref"],
                             "fk_commande" => $order["id"],
                             "socid" => $order["socid"],
-                            "name" => $tier["name"],
-                            "pname" => $tier["name"],
-                            "adresse" => $tier["address"],
-                            "city" => $tier["town"],
-                            "company" => $tier["name_alias"],
-                            "code_postal" => $tier["zip"],
-                            "contry" => $tier["country_code"],
-                            "email" => $tier["email"],
-                            "phone" => $tier["phone"],
+
+                            "name" => $name,
+                            "pname" => $pname,
+                            "adresse" => $adresse,
+                            "city" => $city,
+                            "company" => $company,
+                            "code_postal" => $code_postal,
+                            "contry" => $contry,
+                            "email" => $email,
+                            "phone" => $phone,
+
                             "date" => date('Y-m-d H:i:s'),
                             "total_tax" => $order["total_tva"],
                             "total_order_ttc" => $order["total_ttc"],
@@ -889,13 +908,12 @@ class Controller extends BaseController
                             "statut" => "processing"
                         ];
 
-                    
-                        $id = DB::table('orders_doli')->insertGetId($detail_facture);
+                        $id_f = DB::table('orders_doli')->insertGetId($detail_facture);
                         $lines = array();
                         foreach ($order["lines"] as $key => $line) {
                             array_push($lines,
                             $data_line = [
-                                "id_commande" => $id,
+                                "id_commande" => $id_f,
                                 "libelle" => $line["libelle"],
                                 "id_product" => $line["fk_product"],
                                 "barcode" => $line["product_barcode"],
@@ -912,29 +930,53 @@ class Controller extends BaseController
                         }
 
                         $res = DB::table('lines_commande_doli')->insert($lines);
+                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> "2"]));
 
-                        // changer le statut de la commande CU2305-13591  CU2304-12158
-                        $data = [
-                            "statut"	=> 2,
-                        ];
-            
-                        $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode($data));
-                        $order_put = json_decode($order_put, true);
+                        // 3760324816721  4669
 
-                    // return json_encode(["response" => true, "message" => "Le devis à bien été envoyé en préparation"]);
-                        return redirect('https://www.transfertx.elyamaje.com/commande/list.php');
+                        // "linkedObjectsIds" => [ "commande" => ["76": "7"]]
+
+
+
+                        return redirect('https://'.$server_name.'/commande/list.php?leftmenu=orders&&action=successOrderToPreparation');
 
                     }else {
-                        return json_encode(["response" => false, "message" => "le produit (". $product_no_bc.") n'a pas de code barre"]);
+
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorCodebare');
+
+                       // return "le produit (". $product_no_bc.") n'a pas de code barre";  
                     }
                 }else {
-                    return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
+
+                    // $message = "Le devis n'a pas été validé";
+                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=devisIvalide');
                 }
             }else {
-                return json_encode(["response" => false, "message" => "Le devis n'a pas été validé"]);
+                // $message = "pas le droit";
+                return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&&leftmenu=orders&&action=errorDroit');
+
             }
         } catch (Throwable $th) {
             return $th->getMessage();
         }
     }
+
+    function changeStatutOfOrder($id_order,$id_statut){
+
+        try {
+        
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
+            $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+
+            $order_put = $this->api->CallAPI("PUT", $apiKey, $apiUrl."orders/".$id,json_encode(["statut"=> $id_statut]));
+            return true;
+
+        } catch (\Throwable $th) {
+
+            return false;
+        }
+    }
 }
+    

@@ -125,17 +125,19 @@ class TransferOrder
       public function Transferorder($orders)
       {
               
-            
-        
+              // Si commande dolibarr ajouter cet attribut fk_commande
+              // if(isset($orders['fk_commande'])){
+
+              // }
+
                   $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
                  $apiUrl = env('KEY_API_URL');
 
 
-                 $produitParam = ["limit" => 1010, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 1050, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-                
 
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
@@ -512,7 +514,7 @@ class TransferOrder
                          }
                         */
                          
-                      //   dump($data_tiers);
+                  
 
                       // echo json_encode($data_lines);
 
@@ -521,7 +523,6 @@ class TransferOrder
                         
                          // Create le client via Api...
 
-                    
                         foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));

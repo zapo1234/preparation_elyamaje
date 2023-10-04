@@ -535,6 +535,11 @@ a {
     background: rgb(0 0 0 / 12%);
 }
 
+
+.sidebar-wrapper .metismenu a:hover i{
+	animation: shakeCustom 0.3s linear;
+}
+
 .menu-label {
 	padding: 20px 15px 5px 5px;
 	color: #b0afaf;
@@ -7383,7 +7388,7 @@ textarea:focus{
 
 #orderno {
     padding: 1vh 2vh 0;
-    font-size: smaller
+    font-size: 18px;
 }
 
 .qrcode_background{
@@ -7746,3 +7751,10 @@ select option[disabled] {
 	position: relative;
 }
 
+@keyframes shakeCustom {
+	0% { transform: rotate(0deg); }
+	25% { transform: rotate(20deg); }
+	50% { transform: rotate(0eg); }
+	75% { transform: rotate(-20deg); }
+	100% { transform: rotate(0deg); }
+  }

@@ -24,110 +24,115 @@ class OrderRepository implements OrderInterface
 
      // Parcourir les données des utilisateurs
       foreach ($array_user as $userId => $userOrders) {
-         $ordersToInsert = [];
-         $productsToInsert = [];
-    
-         // Construire un tableau des données d'insertion pour l'utilisateur actuel
-         foreach ($userOrders as $orderData) {
+            $ordersToInsert = [];
+            $productsToInsert = [];
+       
+            // Construire un tableau des données d'insertion pour l'utilisateur actuel
+            foreach ($userOrders as $orderData) {
 
-            
-            // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
-            $coupons = [];
-            $discount = [];
-            $amount = [];
-
-            if(isset($orderData['coupon_lines'])){
-               foreach($orderData['coupon_lines'] as $coupon){
-                  $coupons[] = $coupon['code'];
-                  $discount[] = $coupon['discount'];
-                  $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+               if(!isset($orderData['from_dolibarr'])){
+   
+                  // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
+                  $coupons = [];
+                  $discount = [];
+                  $amount = [];
+      
+                  if(isset($orderData['coupon_lines'])){
+                     foreach($orderData['coupon_lines'] as $coupon){
+                        $coupons[] = $coupon['code'];
+                        $discount[] = $coupon['discount'];
+                        $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+                     }
+                  }
+      
+                  // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
+                  $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
+                  $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+   
+   
+                  if(isset($orderData['cart_hash'])){
+                     $ordersToInsert[] = [
+                        'order_woocommerce_id' => $orderData['id'],
+                        'customer_id' => $orderData['customer_id'],
+                        'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
+                        'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
+                        'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
+                        'billing_customer_first_name' => $orderData['billing']['first_name'] ?? null,
+                        'billing_customer_last_name' => $orderData['billing']['last_name'] ?? null,
+                        'billing_customer_company' => $orderData['billing']['company'] ?? null,
+                        'billing_customer_address_1' => $orderData['billing']['address_1'] ?? null,
+                        'billing_customer_address_2' => $orderData['billing']['address_2'] ?? null,
+                        'billing_customer_city' => $orderData['billing']['city'] ?? null,
+                        'billing_customer_state' => $orderData['billing']['state'] ?? null,
+                        'billing_customer_postcode' => $orderData['billing']['postcode'] ?? null,
+                        'billing_customer_country' => $orderData['billing']['country'] ?? null,
+                        'billing_customer_email' => $orderData['billing']['email'] ?? null,
+                        'billing_customer_phone' => $orderData['billing']['phone'] ?? null,
+      
+                        'shipping_customer_first_name' => $orderData['shipping']['first_name'] ?? null,
+                        'shipping_customer_last_name' => $orderData['shipping']['last_name'] ?? null,
+                        'shipping_customer_company' => $orderData['shipping']['company'] ?? null,
+                        'shipping_customer_address_1' => $orderData['shipping']['address_1'] ?? null,
+                        'shipping_customer_address_2' => $orderData['shipping']['address_2'] ?? null,
+                        'shipping_customer_city' => $orderData['shipping']['city'] ?? null,
+                        'shipping_customer_state' => $orderData['shipping']['state'] ?? null,
+                        'shipping_customer_postcode' => $orderData['shipping']['postcode'] ?? null,
+                        'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
+                        'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
+      
+                        'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+                        'payment_method_title' => $orderData['payment_method_title'] ? $orderData['payment_method_title'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+                        'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
+      
+                        'date' => $orderData['date_created'],
+                        'total_tax_order' => $orderData['total_tax'],
+                        'total_order' => $orderData['total'],
+                        'user_id' => $userId,
+                        'status' => $orderData['status'],
+                        'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
+                        'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
+                        'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? $orderData['shipping_lines'][0]['total'] : null,
+      
+                        'product_code' => $productCode,
+                        'pick_up_location_id' => $pickUpLocationId,
+                        'customer_note' => $orderData['customer_note']
+                     ];
+                     
+      
+                     foreach($orderData['line_items'] as $value){
+      
+                        $productsToInsert[] = [
+                           'order_id' => $orderData['id'],
+                           'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                           'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                           'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                           'quantity' => $value['quantity'],
+                           'cost' => $value['subtotal'] / $value['quantity'],
+                           'subtotal_tax' =>  $value['subtotal_tax'],
+                           'total_tax' =>  $value['total_tax'],
+                           'total_price' => $value['total'],
+                           'pick' => 0,
+                           'line_item_id' => $value['id'],
+                           'pick_control' => 0
+                        ];
+                     }
+                  }
+               } else {
+                  DB::table('orders_doli')->where('id', $orderData['id'])->update(['user_id' => $userId]);
                }
+            } 
+   
+           // Insérer les données dans la base de données par lot
+           try{
+               DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
+                  DB::table('orders')->insertOrIgnore($ordersToInsert);
+                  DB::table('products_order')->insertOrIgnore($productsToInsert);
+               });
+            } catch(Exception $e){ 
+               echo json_encode(['success' => false]);
             }
-
-            // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-            $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
-            $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
-
-
-            if(isset($orderData['cart_hash'])){
-               $ordersToInsert[] = [
-                  'order_woocommerce_id' => $orderData['id'],
-                  'customer_id' => $orderData['customer_id'],
-                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
-                  'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
-                  'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
-                  'billing_customer_first_name' => $orderData['billing']['first_name'] ?? null,
-                  'billing_customer_last_name' => $orderData['billing']['last_name'] ?? null,
-                  'billing_customer_company' => $orderData['billing']['company'] ?? null,
-                  'billing_customer_address_1' => $orderData['billing']['address_1'] ?? null,
-                  'billing_customer_address_2' => $orderData['billing']['address_2'] ?? null,
-                  'billing_customer_city' => $orderData['billing']['city'] ?? null,
-                  'billing_customer_state' => $orderData['billing']['state'] ?? null,
-                  'billing_customer_postcode' => $orderData['billing']['postcode'] ?? null,
-                  'billing_customer_country' => $orderData['billing']['country'] ?? null,
-                  'billing_customer_email' => $orderData['billing']['email'] ?? null,
-                  'billing_customer_phone' => $orderData['billing']['phone'] ?? null,
-
-                  'shipping_customer_first_name' => $orderData['shipping']['first_name'] ?? null,
-                  'shipping_customer_last_name' => $orderData['shipping']['last_name'] ?? null,
-                  'shipping_customer_company' => $orderData['shipping']['company'] ?? null,
-                  'shipping_customer_address_1' => $orderData['shipping']['address_1'] ?? null,
-                  'shipping_customer_address_2' => $orderData['shipping']['address_2'] ?? null,
-                  'shipping_customer_city' => $orderData['shipping']['city'] ?? null,
-                  'shipping_customer_state' => $orderData['shipping']['state'] ?? null,
-                  'shipping_customer_postcode' => $orderData['shipping']['postcode'] ?? null,
-                  'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
-                  'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
-
-                  'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
-                  'payment_method_title' => $orderData['payment_method_title'] ? $orderData['payment_method_title'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
-                  'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
-
-                  'date' => $orderData['date_created'],
-                  'total_tax_order' => $orderData['total_tax'],
-                  'total_order' => $orderData['total'],
-                  'user_id' => $userId,
-                  'status' => $orderData['status'],
-                  'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
-                  'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
-                  'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? $orderData['shipping_lines'][0]['total'] : null,
-
-                  'product_code' => $productCode,
-                  'pick_up_location_id' => $pickUpLocationId,
-                  'customer_note' => $orderData['customer_note']
-               ];
-               
-
-               foreach($orderData['line_items'] as $value){
-
-                  $productsToInsert[] = [
-                     'order_id' => $orderData['id'],
-                     'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                     'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                     'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                     'quantity' => $value['quantity'],
-                     'cost' => $value['subtotal'] / $value['quantity'],
-                     'subtotal_tax' =>  $value['subtotal_tax'],
-                     'total_tax' =>  $value['total_tax'],
-                     'total_price' => $value['total'],
-                     'pick' => 0,
-                     'line_item_id' => $value['id'],
-                     'pick_control' => 0
-                  ];
-               }
-            }
-         }
-
-        
-        // Insérer les données dans la base de données par lot
-        try{
-            DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
-               DB::table('orders')->insertOrIgnore($ordersToInsert);
-               DB::table('products_order')->insertOrIgnore($productsToInsert);
-            });
-         } catch(Exception $e){ 
-            echo json_encode(['success' => false]);
-         }
+         
+       
       }
       echo json_encode(['success' => true]);
    }
@@ -303,15 +308,52 @@ class OrderRepository implements OrderInterface
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
       $list_product_orders = DB::table('products')
-      ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
-      ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
-      ->where('products_order.order_id', $order_id)
-      ->get()
-      ->toArray();
+         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
+         ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
+         ->where('products_order.order_id', $order_id)
+         ->where('products_order.pick', 0)
+         ->get()
+         ->toArray();
 
-
-      
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
+      
+    // Tout est bippé donc on valide
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
+
+      // Tout est bippé
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
 
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
@@ -352,15 +394,15 @@ class OrderRepository implements OrderInterface
       
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
-         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
-
-         $product_pick_in[] = [
-            'id' => $list_products[$clesRecherchees[0]]['id'],
-            'barcode' => $barcode,
-            'quantity' => intval($products_quantity[$key])
-         ];
+          if(count($clesRecherchees) > 0){
+             $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+             $product_pick_in[] = [
+                'id' => $list_products[$clesRecherchees[0]]['id'],
+                'barcode' => $barcode,
+                'quantity' => intval($products_quantity[$key])
+             ];
+          }
       }
-
 
 
       // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
@@ -378,6 +420,7 @@ class OrderRepository implements OrderInterface
             $diff_barcode = true;
          }
       }
+
 
       // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
       $cases = collect($product_pick_in)->map(function ($item) {
@@ -703,7 +746,7 @@ class OrderRepository implements OrderInterface
    
    public function getHistoryByUser($user_id){
   
-      $list = [];
+      $list_orders = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
@@ -725,10 +768,32 @@ class OrderRepository implements OrderInterface
          ->orderBy('products.menu_order', 'ASC')
          ->get();
 
-       $orders = json_decode(json_encode($orders), true);
+      $orders = json_decode(json_encode($orders), true);
 
-      foreach($orders as $key => $order){
-         $list[$order['order_woocommerce_id']]['details'] = [
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($orders as $key => $list){
+        
+         if(isset($product_double[$list['order_woocommerce_id']][$list["barcode"]])){
+            $quantity = $product_double[$list['order_woocommerce_id']][$list["barcode"]]['quantity'];
+            $key_barcode_to_remove = $product_double[$list['order_woocommerce_id']][$list["barcode"]]['key_barcode_to_remove'];
+   
+            unset($orders[$key_barcode_to_remove]);
+            $orders[$key]['quantity'] = $orders[$key]['quantity'] + $quantity;
+            $orders[$key]['pick'] = $orders[$key]['quantity'];
+         } else {
+            $product_double[$list['order_woocommerce_id']][$list["barcode"]] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key
+            ];
+             
+         }
+      }
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      foreach($orders as $order){
+   
+         $list_orders[$order['order_woocommerce_id']]['details'] = [
             'id' => $order['order_woocommerce_id'],
             'first_name' => $order['billing_customer_first_name'],
             'last_name' => $order['billing_customer_last_name'],
@@ -742,15 +807,17 @@ class OrderRepository implements OrderInterface
             'gift_card_amount' => $order['gift_card_amount'],
             'shipping_amount' => $order['shipping_amount'],
          ];
-         $list[$order['order_woocommerce_id']]['items'][] = $order;
+         $list_orders[$order['order_woocommerce_id']]['items'][] = $order;
       }
- 
-      $list = array_values($list);
-      return $list;
+
+      $list_orders = array_values($list_orders);
+      return $list_orders;
    }
 
    public function getAllHistory(){
-      $list = [];
+
+
+      $list_orders = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
       $queryOrder = "CASE WHEN prepa_products.name LIKE '%20ml%' THEN prepa_categories.order_display ";
@@ -772,29 +839,50 @@ class OrderRepository implements OrderInterface
          ->orderBy('products.menu_order', 'ASC')
          ->get();
 
-       $orders = json_decode(json_encode($orders), true);
+      $orders = json_decode(json_encode($orders), true);
 
-       foreach($orders as $key => $order){
-            $list[$order['order_woocommerce_id']]['preparateur'] =  $order['preparateur'];
-            $list[$order['order_woocommerce_id']]['details'] = [
-               'id' => $order['order_woocommerce_id'],
-               'first_name' => $order['billing_customer_first_name'],
-               'last_name' => $order['billing_customer_last_name'],
-               'date' => $order['date'],
-               'total' => $order['total_order'],
-               'total_tax' => $order['total_tax_order'],
-               'status' => $order['status'],
-               'coupons' => $order['coupons'],
-               'discount' => $order['discount'],
-               'discount_amount' => $order['discount_amount'],
-               'gift_card_amount' => $order['gift_card_amount'],
-               'shipping_amount' => $order['shipping_amount'],
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($orders as $key => $list){
+        
+         if(isset($product_double[$list['order_woocommerce_id']][$list["barcode"]])){
+            $quantity = $product_double[$list['order_woocommerce_id']][$list["barcode"]]['quantity'];
+            $key_barcode_to_remove = $product_double[$list['order_woocommerce_id']][$list["barcode"]]['key_barcode_to_remove'];
+   
+            unset($orders[$key_barcode_to_remove]);
+            $orders[$key]['quantity'] = $orders[$key]['quantity'] + $quantity;
+            $orders[$key]['pick'] = $orders[$key]['quantity'];
+         } else {
+            $product_double[$list['order_woocommerce_id']][$list["barcode"]] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key
             ];
-            $list[$order['order_woocommerce_id']]['items'][] = $order;
+             
+         }
       }
- 
-      $list = array_values($list);
-      return $list;
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      foreach($orders as $order){
+         $list_orders[$order['order_woocommerce_id']]['preparateur'] =  $order['preparateur'];
+         $list_orders[$order['order_woocommerce_id']]['details'] = [
+            'id' => $order['order_woocommerce_id'],
+            'first_name' => $order['billing_customer_first_name'],
+            'last_name' => $order['billing_customer_last_name'],
+            'date' => $order['date'],
+            'total' => $order['total_order'],
+            'total_tax' => $order['total_tax_order'],
+            'status' => $order['status'],
+            'coupons' => $order['coupons'],
+            'discount' => $order['discount'],
+            'discount_amount' => $order['discount_amount'],
+            'gift_card_amount' => $order['gift_card_amount'],
+            'shipping_amount' => $order['shipping_amount'],
+         ];
+         $list_orders[$order['order_woocommerce_id']]['items'][] = $order;
+      }
+
+      $list_orders = array_values($list_orders);
+      return $list_orders;
    }
 
 

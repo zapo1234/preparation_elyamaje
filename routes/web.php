@@ -75,6 +75,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
 
+    Route::get("/executerTransfere/{identifiant_reassort}", [Controller::class, "executerTransfere"])->name('executerTransfere');
+
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
 
@@ -86,6 +88,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
+    Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
 
     // CRUD Role
     Route::get("/roles", [Admin::class, "roles"])->name('roles');
