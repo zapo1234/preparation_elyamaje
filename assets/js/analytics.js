@@ -86,6 +86,8 @@ $(document).ready(function() {
 
             })
 
+            $(".loading_data").addClass('d-none')
+            $(".data_number").removeClass('d-none')
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
         }
@@ -110,6 +112,8 @@ $(document).ready(function() {
 
 
 $('.date_dropdown').on('change', function(e){
+    $(".data_number").addClass('d-none')
+    $(".loading_data").removeClass('d-none')
     $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
