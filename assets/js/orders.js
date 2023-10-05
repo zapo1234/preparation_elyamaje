@@ -367,7 +367,7 @@ $(document).ready(function() {
                 data.status == "processing" || data.status == "waiting_validate" || data.status == "order-new-distrib" || data.status == "en-attente-de-pai" ? order_progress = order_progress + 1 : order_progress = order_progress 
             } );
             
-            $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' en cours</span>')
+            $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
             $(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
             $(".allocation_of_orders").attr('disabled', false)
             $(".dataTables_paginate").parent().removeClass("col-md-7")
