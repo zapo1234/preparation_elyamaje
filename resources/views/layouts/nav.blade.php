@@ -18,7 +18,7 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
             <li>
                 <a href="{{ url('dashboard') }}">
-                    <div class="parent-icon"><i class='bx bx-home'></i>
+                    <div class="parent-icon"><i class='bx bx-grid-alt'></i>
                     </div>
                     <div class="menu-title">Dashboard</div>
                 </a>
@@ -51,7 +51,7 @@
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-transfer"></i>
                     </div>
                     <div class="menu-title">Approvisionnements</div>
                 </a>
@@ -59,19 +59,19 @@
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
+                <a href="{{ url('indexAdmin') }}">
+                    <div class="parent-icon"><i class='bx bx-grid-alt'></i>
+                    </div>
+                    <div class="menu-title">Dashboard</div>
+                </a>
+            </li>
+            <li>
                 <a href="{{ url('analytics') }}">
-                    <div class="parent-icon"><i class='bx bx-data'></i>
+                    <div class="parent-icon"><i class='bx bx-line-chart-down'></i>
                     </div>
                     <div class="menu-title">Analytics</div>
                 </a>
             </li>    
-            <li>
-                <a href="{{ url('indexAdmin') }}">
-                    <div class="parent-icon"><i class='bx bx-box'></i>
-                    </div>
-                    <div class="menu-title">Commandes</div>
-                </a>
-            </li>
             <li>
                 <a href="{{ url('billing') }}">
                     <div class="parent-icon"><i class='bx bx-credit-card-front'></i>
@@ -102,7 +102,7 @@
             </li>
             <li>
                 <a href="{{ url('refreshtiers') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-import"></i>
                     </div>
                     <div class="menu-title">Import Api tiers</div>
                 </a>
@@ -132,7 +132,7 @@
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-transfer"></i>
                     </div>
                     <div class="menu-title">Approvisionnements</div>
                 </a>

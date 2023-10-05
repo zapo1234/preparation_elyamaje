@@ -138,7 +138,7 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersByUsers(){
-      return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
+      return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
    public function getAllOrdersByUsersNotFinished(){
@@ -146,7 +146,7 @@ class OrderRepository implements OrderInterface
    }
 
    public function getUsersWithOrder(){
-      return $this->model->select('users.*')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
+      return $this->model->select('users.*')->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
    public function getAllOrdersByIdUser($user_id){
@@ -176,7 +176,7 @@ class OrderRepository implements OrderInterface
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
-         ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
+         ->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
@@ -565,7 +565,7 @@ class OrderRepository implements OrderInterface
 
    public function updateOrderAttribution($from_user, $to_user){
       try{
-         $update_order_attribution =  $this->model::where('user_id', $from_user)->where('status', 'processing')->update(['user_id' => $to_user]);
+         $update_order_attribution =  $this->model::where('user_id', $from_user)->whereIn('status', ['processing', 'en-attente-de-pai', 'order-new-distrib'])->update(['user_id' => $to_user]);
          return true;
       } catch(Exception $e){
          return false;
@@ -717,7 +717,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-   
       $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
@@ -738,6 +737,7 @@ class OrderRepository implements OrderInterface
          $date = date('Y-m-d');
          $query->where("labels.created_at","LIKE",  "%".$date."%");
       }
+      $query->groupBy('labels.tracking_number');
       $query->orderBy('labels.created_at', 'DESC');
       $query->limit(500);
       $results = $query->get();
@@ -815,8 +815,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllHistory(){
-
-
       $list_orders = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
@@ -833,7 +831,7 @@ class OrderRepository implements OrderInterface
          ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
-         ->orderBy('orders.date', 'ASC')
+         ->orderBy('orders.updated_at', 'DESC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
@@ -923,7 +921,7 @@ class OrderRepository implements OrderInterface
       try{
          $this->model
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->whereIn('orders.status', ['processing', 'order-new-distrib'])
+         ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
          ->delete();
 
          echo json_encode(['success' => true]);

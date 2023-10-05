@@ -19,7 +19,7 @@ class PrinterRepository implements PrinterInterface
 
    public function getPrinters(){
       return $this->model->select('printers.*', 'users.name as userName')
-      ->join('users', 'users.id', '=', 'printers.user_id')
+      ->leftJoin('users', 'users.id', '=', 'printers.user_id')
       ->get();
    }
 
@@ -37,6 +37,10 @@ class PrinterRepository implements PrinterInterface
 
    public function getPrinterByUser($user_id){
       return $this->model->where('user_id', $user_id)->get();
+   }
+
+   public function updatePrinterAttributionByUser($from_user, $to_user){
+      return $this->model->where('user_id', $from_user)->update(['user_id' => $to_user]);
    }
 }
 

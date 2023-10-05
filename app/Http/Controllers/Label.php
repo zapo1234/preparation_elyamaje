@@ -448,28 +448,26 @@ class Label extends BaseController
         // }
 
     }
-
+    
     public function getTrackingLabelStatus($token){
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
-
-            // Get all orders labels -10 jours
-            $rangeDate = 10;
-            $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
-            $colissimo = [];
-            $chronopost = [];
-
-
-            foreach($labels as $label){
-                if($label->origin == "colissimo"){
-                    $colissimo[] = $label;
-                } else if($label->origin == "chronopost"){
-                    $chronopost[] = $label;
-                }
-            }
-
             try{
+
+                // Get all orders labels -10 jours
+                $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+                $colissimo = [];
+                $chronopost = [];
+                
+                foreach($labels as $label){
+                    if($label->origin == "colissimo"){
+                        $colissimo[] = $label;
+                    } else if($label->origin == "chronopost"){
+                        $chronopost[] = $label;
+                    }
+                }
+
                 // Récupère les status de chaque commande
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);

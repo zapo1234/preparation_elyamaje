@@ -109,6 +109,14 @@ class WoocommerceService
         $order_new_array['line_items'] = $products['line_items'];
         $order_new_array['billing'] = $billing;
         $order_new_array['shipping'] = $shipping;
+
+        if(isset($order[0]['is_distributor'])){
+          $distributor = $order[0]['is_distributor'] ? true : false;
+        } else {
+          $distributor = false;
+        }
+        
+        $order_new_array['is_distributor'] = $distributor;
         $orders[] = $order_new_array;
 
         return $orders;
@@ -134,10 +142,12 @@ class WoocommerceService
     $transformOrder['order_id'] = $orderDolibarr[0]['orderDoliId'];
     $transformOrder['id'] = $orderDolibarr[0]['orderDoliId'];
     $transformOrder['discount_total'] = 0;
+    $transformOrder['coupons'] = "";
     $transformOrder['shipping_amount'] = 0;
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
+    $transformOrder['preparateur'] = isset($orderDolibarr[0]['preparateur']) ? $orderDolibarr[0]['preparateur'] : '';
 
 
     // On force la méthode d'expédition en livraison à domicile avec signature

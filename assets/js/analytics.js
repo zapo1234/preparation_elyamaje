@@ -1,8 +1,25 @@
 $(document).ready(function() {
+
+    // Affiche la moyenne de préparation de chaque users
+    $.ajax({
+        url: "getAverage",
+        method: "GET",
+        async: true,
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data = JSON.parse(data)
+            $(".loading_chart").remove()
+
+            // Créer le chart js
+            chartAverage(data.average_by_name)
+        }
+    });
+
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
         "ajax": {
             url: 'getAnalytics',
+            async: true,
             dataSrc: function(json) {
                 var data = []
                 Object.keys(json.histories).forEach(function(k, v){
@@ -10,9 +27,6 @@ $(document).ready(function() {
                         data.push(json.histories[k][a])
                     })
                 });
-
-                // Créer le chart js
-                chartAverage(json.average_by_name)
                 return data;
             }
         },
@@ -44,7 +58,11 @@ $(document).ready(function() {
                 }
             }
         ],
+        "language": {
+            loadingRecords: ""
+        },
         "initComplete": function(settings, json) {
+            $(".loading_table").remove()
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -64,9 +82,7 @@ $(document).ready(function() {
 
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
-            $(".loading_div").addClass('d-none')
             $(".number_order").removeClass('d-none')
-            $("#example").removeClass('d-none')
         },
         "drawCallback": function( settings  ) {
             var order_prepared = 0
@@ -86,6 +102,8 @@ $(document).ready(function() {
 
             })
 
+            $(".loading_data").addClass('d-none')
+            $(".data_number").removeClass('d-none')
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
         }
@@ -95,17 +113,9 @@ $(document).ready(function() {
 
 
 $('.date_dropdown').on('change', function(e){
-    var date_dropdown = $(this).val();
-
-    if(date_dropdown == ""){
-        date_dropdown = date_dropdown
-    } else {
-        date_dropdown = dateFormat(date_dropdown, 'dd/MM/yyyy')
-    }
-
-    $('#example').DataTable()
-    .column(4).search(date_dropdown, true, false)
-    .draw();
+    $(".data_number").addClass('d-none')
+    $(".loading_data").removeClass('d-none')
+    $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
 
@@ -133,7 +143,6 @@ $('.date_dropdown').on('change', function(e){
 
     return format;
 }
-
 
 function chartAverage(average){
     var average = average

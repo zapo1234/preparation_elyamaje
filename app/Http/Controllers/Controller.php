@@ -15,7 +15,7 @@ use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Categorie\CategoriesRepository;
-
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -34,6 +34,8 @@ class Controller extends BaseController
     private $printer;
     private $api;
     private $reassort;
+    private $tiersRepository;
+    private $orderDolibarr;
 
     public function __construct(
         Order $orderController,
@@ -45,7 +47,8 @@ class Controller extends BaseController
         PrinterRepository $printer,
         Api $api,
         ReassortRepository $reassort,
-        TiersRepository $tiersRepository
+        TiersRepository $tiersRepository,
+        OrderDolibarrRepository $orderDolibarr
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -57,6 +60,7 @@ class Controller extends BaseController
         $this->api = $api;
         $this->reassort = $reassort;
         $this->tiersRepository = $tiersRepository;
+        $this->orderDolibarr = $orderDolibarr;
     }
 
     // INDEX ADMIN
@@ -64,6 +68,23 @@ class Controller extends BaseController
     {
         $teams = $this->users->getUsersByRole([2, 3, 5]);
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
+        $teams_have_order_dolibarr = $this->orderDolibarr->getUsersWithOrderDolibarr()->toArray();
+
+        // Merge des préparateurs avec commandes dolibarr et woocomemrce et suppressions doublons
+        if(count($teams_have_order_dolibarr) > 0){
+            $teams_have_order = array_merge($teams_have_order, $teams_have_order_dolibarr);
+            $teams_have_order_array = [];
+            $doublon = [];
+            foreach($teams_have_order as $have_order){
+                if(!in_array($have_order['id'], $doublon)){
+                    $teams_have_order_array[] = $have_order;
+                }
+
+                $doublon[] = $have_order['id'];
+            }
+        } else {
+            $teams_have_order_array = $teams_have_order;
+        }
         $products =  $this->products->getAllProductsPublished();
         $number_preparateur = 0;
 
@@ -76,7 +97,7 @@ class Controller extends BaseController
         }
 
         $roles = $this->role->getRoles();
-        return view('index', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order, 'number_preparateur' => $number_preparateur]);
+        return view('index', ['teams' => $teams, 'products' => $products, 'roles' => $roles, 'teams_have_order' => $teams_have_order_array, 'number_preparateur' => $number_preparateur]);
     }
 
     // INDEX CHEF D'ÉQUIPE
@@ -292,7 +313,7 @@ class Controller extends BaseController
                     $etat = '<span class="badge bg-warning text-dark">En attente</span>';
                 }
                 if ($val_etat < 0) {
-                    $etat = '<span class="badge bg-info text-dark">En court</span>';
+                    $etat = '<span class="badge bg-info text-dark">En cours</span>';
                 }
                 if ($val_etat > 0) {
                     $etat = '<span class="badge bg-success">Validé</span>';
