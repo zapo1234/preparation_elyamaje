@@ -82,6 +82,8 @@ class Controller extends BaseController
 
                 $doublon[] = $have_order['id'];
             }
+        } else {
+            $teams_have_order_array = $teams_have_order;
         }
         $products =  $this->products->getAllProductsPublished();
         $number_preparateur = 0;
