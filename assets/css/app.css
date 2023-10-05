@@ -7119,9 +7119,9 @@ textarea:focus{
 }
 
 .prepared-order{
-	border: 1px solid #0dcaf0;
-    color: white;
-	background-color: #0dcaf0;
+	border: none;
+    color: #0dcaf0;
+    background-color: rgb(13 202 240 / 18%);
 }
 
 .en-attente-de-pai{
@@ -7131,7 +7131,7 @@ textarea:focus{
 }
 
 .waiting_validate, .waiting_to_validate{
-	border: 1px solid #ffc107;
+	border: 1px solid #f8dda7;
 	color: #94660c;
 	background-color: #f8dda7;
 }
