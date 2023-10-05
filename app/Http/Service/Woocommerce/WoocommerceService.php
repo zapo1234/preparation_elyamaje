@@ -115,6 +115,7 @@ class WoocommerceService
         } else {
           $distributor = false;
         }
+        
         $order_new_array['is_distributor'] = $distributor;
         $orders[] = $order_new_array;
 

@@ -921,7 +921,7 @@ class OrderRepository implements OrderInterface
       try{
          $this->model
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->whereIn('orders.status', ['processing', 'order-new-distrib'])
+         ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
          ->delete();
 
          echo json_encode(['success' => true]);
