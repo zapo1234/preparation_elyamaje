@@ -14,6 +14,8 @@ interface PrinterInterface
    public function deletePrinter($printer_id);
 
    public function getPrinterByUser($user_id);
+
+   public function updatePrinterAttributionByUser($from_user, $to_user); 
 }
 
 

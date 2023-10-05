@@ -465,15 +465,13 @@ class Admin extends BaseController
         ];
 
         try{
-            if($this->printer->getPrinterByUser($update_user_id)->count() == 0){
-                if($this->printer->updatePrinter($data, $printer_id)){
-                    return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
-                } else {
-                    return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
-                }
+            $this->printer->updatePrinterAttributionByUser($update_user_id, null); 
+            if($this->printer->updatePrinter($data, $printer_id)){
+                return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
             } else {
-                return redirect()->route('printers')->with('error', 'Le préparateur sélectionné à déjà une imprimante !');
+                return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
             }
+            
         } catch(Exception $e){
             if(str_contains($e->getMessage(), 'Duplicate')){
                 return redirect()->route('printers')->with('error', 'L\'adresse IP de l\'imprimante doit être unique !');
