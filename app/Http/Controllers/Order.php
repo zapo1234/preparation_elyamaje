@@ -432,7 +432,16 @@ class Order extends BaseController
       $to_user = $request->post('to_user');
 
       if($from_user && $to_user){
-        echo json_encode(["success" => $this->order->updateOrderAttribution($from_user, $to_user)]);
+        try{
+          // Update order woocommerce
+          $this->order->updateOrderAttribution($from_user, $to_user);
+          // Update order dolibarr
+          $this->orderDolibarr->updateOrderAttributionDolibarr($from_user, $to_user);
+
+          echo json_encode(["success" => $this->order->updateOrderAttribution($from_user, $to_user)]);
+        } catch(Exception $e){
+          echo json_encode(["success" => false, "message" => $e->getMessage()]);
+        }
       } else {
         echo json_encode(["success" => false]);
       }

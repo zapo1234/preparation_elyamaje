@@ -717,7 +717,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-   
       $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
@@ -738,6 +737,7 @@ class OrderRepository implements OrderInterface
          $date = date('Y-m-d');
          $query->where("labels.created_at","LIKE",  "%".$date."%");
       }
+      $query->groupBy('labels.tracking_number');
       $query->orderBy('labels.created_at', 'DESC');
       $query->limit(500);
       $results = $query->get();

@@ -82,6 +82,14 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       return $this->model::where('id', $order_id)->update(['user_id' => $user_id]);
    }
 
+   public function updateOrderAttributionDolibarr($from_user, $to_user){
+      return $this->model::where('user_id', $from_user)->update(['user_id' => $to_user]);
+   }
+
+   public function getUsersWithOrderDolibarr(){
+      return $this->model->select('users.*')->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders_doli.user_id')->groupBy('users.id')->get();
+   }
+
    public function updateOneOrderStatus($status, $order_id){
       return $this->model::where('id', $order_id)->update(['statut' => $status]);
    }

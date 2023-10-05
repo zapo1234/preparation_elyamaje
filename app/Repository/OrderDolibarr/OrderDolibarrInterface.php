@@ -11,6 +11,10 @@ interface OrderDolibarrInterface
 
     public function updateOneOrderAttributionDolibarr($order_id, $user_id);
 
+    public function updateOrderAttributionDolibarr($from_user, $to_user);
+
+    public function getUsersWithOrderDolibarr();
+
     public function updateOneOrderStatus($status, $order_id);
 
     public function unassignOrdersDolibarr();
