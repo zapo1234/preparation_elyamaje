@@ -313,7 +313,7 @@ class Controller extends BaseController
                     $etat = '<span class="badge bg-warning text-dark">En attente</span>';
                 }
                 if ($val_etat < 0) {
-                    $etat = '<span class="badge bg-info text-dark">En court</span>';
+                    $etat = '<span class="badge bg-info text-dark">En cours</span>';
                 }
                 if ($val_etat > 0) {
                     $etat = '<span class="badge bg-success">Validé</span>';

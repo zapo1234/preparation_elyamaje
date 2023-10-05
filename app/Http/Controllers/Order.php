@@ -114,7 +114,7 @@ class Order extends BaseController
 
         return $orders_user;
       } else {
-        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
+        $status = "processing,order-new-distrib,prepared-order,en-attente-de-pai"; // Commande en préparation
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
@@ -158,7 +158,7 @@ class Order extends BaseController
                   $take_order = false;
                 }
               } 
-            }
+            } 
             
             if($take_order == true){
               $clesRecherchees = array_keys($ids,  $order['id']);
@@ -565,7 +565,7 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-        if($order[0]['status'] != "prepared-order" && $order[0]['status'] != "processing"){
+        if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;
         }

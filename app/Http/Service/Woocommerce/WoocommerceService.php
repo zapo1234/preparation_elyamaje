@@ -109,6 +109,7 @@ class WoocommerceService
         $order_new_array['line_items'] = $products['line_items'];
         $order_new_array['billing'] = $billing;
         $order_new_array['shipping'] = $shipping;
+        $order_new_array['is_distributor'] = $order[0]['is_distributor'] ? true : false;
         $orders[] = $order_new_array;
 
         return $orders;

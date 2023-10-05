@@ -51,7 +51,7 @@
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-transfer"></i>
                     </div>
                     <div class="menu-title">Approvisionnements</div>
                 </a>
@@ -102,7 +102,7 @@
             </li>
             <li>
                 <a href="{{ url('refreshtiers') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-import"></i>
                     </div>
                     <div class="menu-title">Import Api tiers</div>
                 </a>
@@ -132,7 +132,7 @@
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-lock-open"></i>
+                    <div class="parent-icon"><i class="bx bx-transfer"></i>
                     </div>
                     <div class="menu-title">Approvisionnements</div>
                 </a>
