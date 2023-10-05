@@ -465,10 +465,14 @@ class Admin extends BaseController
         ];
 
         try{
-            if($this->printer->updatePrinter($data, $printer_id)){
-                return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+            if($this->printer->getPrinterByUser($update_user_id)->count() == 0){
+                if($this->printer->updatePrinter($data, $printer_id)){
+                    return redirect()->route('printers')->with('success', 'Imprimante modifié avec succès !');
+                } else {
+                    return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+                }
             } else {
-                return redirect()->route('printers')->with('error', 'L\'imprimante n\'a pas pu être modifié');
+                return redirect()->route('printers')->with('error', 'Le préparateur sélectionné à déjà une imprimante !');
             }
         } catch(Exception $e){
             if(str_contains($e->getMessage(), 'Duplicate')){
