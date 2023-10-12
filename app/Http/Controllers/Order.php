@@ -568,10 +568,13 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
 
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
-      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-      $transfers = $request->post('transfers') == "false" ? 0 : 1;
-      $order_id = explode(',', $request->post('order_id'))[0];
-
+      // $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+     //  $transfers = $request->post('transfers') == "false" ? 0 : 1;
+     //  $order_id = explode(',', $request->post('order_id'))[0];
+        
+       $from_dolibarr=false;
+        $transfers = false;
+      $order_id =102010;
       if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
