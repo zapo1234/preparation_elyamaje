@@ -41,7 +41,7 @@ class WoocommerceService
         foreach($order as $key => $or){
 
           if(in_array(100, explode(',', $or['discount_amount'])) && str_contains($or['coupons'], 'fem')){
-            $order[$key]['coupons'] = "";
+            $order[$key]['coupons'] = $or['coupons'] ?? '';
             $order[$key]['discount'] = 0;
             $order[$key]['discount_amount'] = 0;
           }
@@ -115,7 +115,7 @@ class WoocommerceService
         } else {
           $distributor = false;
         }
-        
+
         $order_new_array['is_distributor'] = $distributor;
         $orders[] = $order_new_array;
 

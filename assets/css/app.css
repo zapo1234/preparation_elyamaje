@@ -6110,6 +6110,10 @@ input::placeholder {
 		height: 25px !important;
 	}
 
+	.table-responsive{
+		white-space: inherit;
+	}
+
 	.generate_label_button{
 		border-radius: 5px !important;
 		background: black !important;
@@ -7126,7 +7130,7 @@ textarea:focus{
 
 .en-attente-de-pai{
 	border: 1px solid #039fe2;
-    color: white;
+    color: rgba(255,255,255,0.7);
 	background-color: #039fe2;
 }
 
@@ -7740,7 +7744,7 @@ select option[disabled] {
 
 .no_empty_select option[disabled],
 .empty_select option[disabled]{
-	color: rgba(0, 0, 0, 0.3);
+	color: rgba(0, 0, 0, 0.2);
 }
 
 

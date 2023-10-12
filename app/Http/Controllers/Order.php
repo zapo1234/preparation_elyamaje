@@ -592,7 +592,6 @@ class Order extends BaseController
         }
 
         $orders[0]['emballeur'] = Auth()->user()->name;
-
         // envoi des données pour créer des facture via api dolibar....
         try{
           $this->factorder->Transferorder($orders);
@@ -611,9 +610,16 @@ class Order extends BaseController
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {
+              // Status différent selon type de commande
+              $status_finished = "lpc_ready_to_ship";
+              if(isset($orders[0]['shipping_method'])){
+                if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
+                  $status_finished = "commande-distribu";
+                } 
+              }
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
-              $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+              $this->api->updateOrdersWoocommerce($status_finished, $order_id);
             }
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
