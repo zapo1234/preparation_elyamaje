@@ -28,6 +28,7 @@ class TransferOrder
       private $countd = []; // les clients distributeur
       private $countc = [];// les clients non distributeur.
       private $accountpay;
+      private $distristatus;
     
        public function __construct(
         Api $api,
@@ -69,9 +70,7 @@ class TransferOrder
     return $this;
    }
    
-   
-   
-        /**
+   /**
    * @return array
     */
    public function getCountd(): array
@@ -115,6 +114,31 @@ class TransferOrder
       $this->accountpay = $accountpay;
       return $this;
    }
+
+
+   public function getDistristatus()
+   {
+      return $this->distristatus;
+   }
+   
+   
+   public function setDistristatus($distristatus)
+   {
+      $this->distristatus = $distristatus;
+      return $this;
+   }
+
+
+    public  function createtiers($donnees)
+    {
+        //
+         $apiKey = env('KEY_API_DOLIBAR'); 
+         $apiUrl = env('KEY_API_URL');
+         $socid = $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($donnees));
+         return $socid;
+         
+    }
+     
      
    
 
@@ -124,7 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-               dd($orders);
+            
              // Si commande dolibarr ajouter cet attribut fk_commande
              $fk_commande="";
              $linkedObjectsIds =[];
@@ -299,9 +323,7 @@ class TransferOrder
                                 // recupérer dans la bdd en fonction du socid 
                             }
 
-                            
-
-                           if($socid!=""){
+                            if($socid!=""){
                                  $data =  $this->tiers->gettiersid($socid);
                               if(count($data)==0){
                               $data_infos_user =[];
@@ -372,9 +394,7 @@ class TransferOrder
                               }
 
                               
-                              
-                           
-                               foreach($donnees['line_items'] as $key => $values){
+                                foreach($donnees['line_items'] as $key => $values){
 
                                   foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
@@ -462,7 +482,7 @@ class TransferOrder
                                         "paye"=>"1",
                                         "lines" =>$data_product,
                                         'array_options'=> $data_options,
-                                       'linkedObjectsIds' => $linkedObjectsIds, // ajouter cette ligne si la facture d'une commande
+                                        'linkedObjectsIds' => $linkedObjectsIds, // ajouter cette ligne si la facture d'une commande
                                     
                                       ];
 
@@ -476,6 +496,14 @@ class TransferOrder
                                       
                                         // recupérer le moyen de paiment dans la variable accountpay
                                         $this->setAccountpay($donnees['payment_method']);
+                                        // recupérer le status si c'est un distributeur 
+                                        if(isset($donnees['is_distributor'])){
+                                            $status_distributeur = $donnees['is_distributor'];
+                                        }
+                                        else{
+                                            $status_distributeur="no";
+                                        }
+                                        $this->setDistristatus($status_distributeur);
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
                                         $historique = new Commandeid();
@@ -525,14 +553,14 @@ class TransferOrder
                          }
                         */
                          
-                  
+                      
 
                       // echo json_encode($data_lines);
 
                         // Create le client via Api...
+                       
 
-
-                        foreach($data_tiers as $data) {
+                       foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
 
@@ -543,8 +571,7 @@ class TransferOrder
                           // insérer les details des données de la facture dans dolibarr
                           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                         }
-                       
-                        // dd('dddddddddddddddd');
+                     
 
                           // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
@@ -579,12 +606,10 @@ class TransferOrder
         public function invoicespay($orders)
         {
            
-              $method = "GET";
-                 $apiKey = env('KEY_API_DOLIBAR'); 
-                 $apiUrl = env('KEY_API_URL');
-
-
-              //appelle de la fonction  Api
+             $method = "GET";
+             $apiKey = env('KEY_API_DOLIBAR'); 
+             $apiUrl = env('KEY_API_URL');
+             //appelle de la fonction  Api
               // $data = $this->api->getDatadolibar($apikey,$url);
              // domp affichage test 
               // recupérer le dernière id des facture 
@@ -616,8 +641,6 @@ class TransferOrder
 		      )
         	), true);
 
-              
-               
                $inv="";
               foreach($invoices_id as $vk) {
                 $inv = $vk['id'];
@@ -686,6 +709,9 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
+                  // recupérer le status
+                  $status_dist = $this->getDistristatus();
+
                  
                   if($account_name==""){
                     $account_name="vir_card";
@@ -709,6 +735,10 @@ class TransferOrder
                         $mode_reglement_id =6;
                    }
 
+                   elseif($account_name=="cod"){
+                      $mode_reglement_id =6;
+                    }
+
                    elseif($account_name=="CB"){
                       $mode_reglement_id =6;
                    }
@@ -729,10 +759,10 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
+                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
 
-                   if(in_array($account_name,$array_paiment)){
+                   if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
@@ -745,15 +775,42 @@ class TransferOrder
                        $account_id=6; // PROD
                        $paimentid =6;// PROD
                     }
-                    // $mode reglement de la facture ....
-                    $newCommandepaye = [
-                    "paye"	=> 1,
-                    "statut"	=> 2,
-                    "mode_reglement_id"=>$mode_reglement_id,
-                    "idwarehouse"=>6,
-                    "notrigger"=>0,
-                ];
+
+                    // si c'est un distributeur
+                    if($status_dist=="true" && $account_name=="bacs"){
+                        $newCommandepaye = [
+                        "paye"	=> 0,
+                        "statut"	=> 1,
+                        "mode_reglement_id"=>$mode_reglement_id,
+                        "idwarehouse"=>6,
+                        "notrigger"=>0,
+                       ];
+
+                    }
+                     if($status_dist=="true" && $account_name!="bacs"){
+                         $newCommandepaye = [
+                         "paye"	=> 1,
+                         "statut"	=> 2,
+                         "mode_reglement_id"=>$mode_reglement_id,
+                        "idwarehouse"=>6,
+                        "notrigger"=>0,
+                         ];
+    
+                       }
+
+                      if($status_dist!="true"){
+                       // $mode reglement de la facture ....
+                        $newCommandepaye = [
+                        "paye"	=> 1,
+                       "statut"	=> 2,
+                        "mode_reglement_id"=>$mode_reglement_id,
+                        "idwarehouse"=>6,
+                         "notrigger"=>0,
+                       ];
+  
+                    }
         
+
                   // recupérer la datetime et la convertir timestamp
                   // liée la facture à un mode de rélgement
                   // convertir la date en datetime en timestamp.....
