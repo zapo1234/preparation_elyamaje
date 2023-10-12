@@ -249,7 +249,7 @@ class Api
   }
 
   public function CallAPI($method, $key, $url, $data = false){
-      
+    
         $curl = curl_init();
         $httpheader = ['DOLAPIKEY: '.$key];
 
@@ -280,6 +280,7 @@ class Api
     curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
 
     $result = curl_exec($curl);
+
     
     if (curl_errno($curl)) {
       switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {

@@ -218,3 +218,7 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 
+// Route::get("test", function(){
+//     event(New App\Events\NotificationPusher('Test'));
+//     return "Event has been sent !";
+// });

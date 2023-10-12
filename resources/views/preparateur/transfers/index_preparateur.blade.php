@@ -121,10 +121,12 @@
 														@else
 															<span class="text-danger">Produit manquant</span>
 														@endif
-													
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $transfers['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfers['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['price']),2) }}</span>
@@ -206,9 +208,12 @@
 																	<span class="text-danger">Produit manquant</span>
 																@endif
 															
-																<div class="mt-1 d-flex align-items-center">
+																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																	<div class="d-flex">
+																		<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																		<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																	</div>
 																</div>
 															</div>
 															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
@@ -292,9 +297,12 @@
 																	<span class="text-danger">Produit manquant</span>
 																@endif
 															
-																<div class="mt-1 d-flex align-items-center">
+																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																	<div class="d-flex">
+																		<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																		<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																	</div>
 																</div>
 															</div>
 															<span class="column22">{{ round(floatval($item['price']),2) }}</span>

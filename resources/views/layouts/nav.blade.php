@@ -7,8 +7,7 @@
             <!-- <span class="header_name_logo">Préparation</span> -->
         </div>
 
-        <div class="toggle-icon ms-auto"><i class='bx bx-first-page'></i>
-        </div>
+        <div class="toggle-icon ms-auto"><i class='bx bx-first-page'></i></div>
     </div>
 
     <!--navigation-->

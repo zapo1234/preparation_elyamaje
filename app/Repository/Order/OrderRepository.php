@@ -174,11 +174,11 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
          ->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
+         'products.name', 'products_order.product_woocommerce_id as productID', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderByRaw("CASE WHEN prepa_orders.shipping_method LIKE '%chrono%' THEN 0 ELSE 1 END")
          ->orderBy('orders.date', 'ASC')

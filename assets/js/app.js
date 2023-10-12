@@ -220,3 +220,76 @@ $( document ).ready(function() {
 	})
 });
 
+// Notification Pusher
+function notificationsListener(user_role_logged){
+	var roles = [];
+
+	if(user_role_logged){
+		user_role_logged = JSON.parse(user_role_logged)
+		Object.entries(user_role_logged).forEach(([key, value]) => {
+			roles.push(value.pivot.role_id);
+		});
+	}
+
+	var pusher = new Pusher('1095a816bf393d278517', {
+		cluster: 'eu',
+		forceTLS: true
+	});
+
+	var channel = pusher.subscribe('preparation');
+	channel.bind('notification', function(data) {
+		if(roles.includes(data.message.role)){
+			// Notification for leader when order is partially completed
+			if(data.message.type == "partial_order"){
+				$(".alert-count").removeClass('animation_zoom')
+				$(".alert-count").addClass('animation_zoom')
+				$(".empty_notification").remove()
+				$(".alert-count").text(parseInt($(".alert-count").text()) + 1)
+				$(".header-notifications-list").append(`
+					<a class="dropdown-item notification_list" href="javascript:;">
+						<div class="d-flex align-items-center">
+							<div class="notify bg-warning text-primary"><i class="text-light bx bx-box"></i>
+							</div>
+							<div class="flex-grow-1">
+								<h6 class="msg-name">Commande partielle `+data.message.order_id+`</h6>
+								<span class="msg-info">`+data.message.data+`</span>
+							</div>
+						</div>
+						<div class="w-100 d-flex justify-content-end">
+							<span class="msg-time float-end">1s</span>
+						</div>
+					</a>
+				`)
+			// Notification for preparateur if one of his orders is no longer assigned to him
+			} else if(data.message.type == "order_attribution_updated"){
+				// Checks if the user has this command
+				$( ".tab-pane .show_order" ).each(function( index ) {
+					if(data.message.order_id == $( this ).attr('id')){
+						$("#modalInfo").remove()
+						$("body").append(`
+							<div class="modal_reset_order modal fade" id="modalInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+										<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+											<h2 class="text-center">Attention, la commande ${data.message.order_id} à été réatribuée </h2>
+											<div class="mt-3 w-100 d-flex justify-content-center">
+												<button onClick="window.location.reload();" type="button" class="btn btn-dark px-5">Fermer</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						`)
+
+						$('#modalInfo').modal({
+							backdrop: 'static',
+							keyboard: false
+						})
+						$("#modalInfo").modal('show')
+					}
+				});
+			}
+		}
+	});
+}
+

@@ -102,7 +102,7 @@ class Controller extends BaseController
 
     // INDEX CHEF D'ÉQUIPE
     public function dashboard()
-    {
+    {   
         $teams = $this->users->getUsersByRole([2, 3, 5]);
         $teams_have_order = $this->orders->getUsersWithOrder()->toArray();
         $products =  $this->products->getAllProductsPublished();
@@ -272,15 +272,10 @@ class Controller extends BaseController
 
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
-
         $data_reassort = DB::table('hist_reassort')->groupBy('identifiant_reassort')->get()->toArray();
-      
-        
-      
         $wh_id_name = array();
 
-        
-
+    
         foreach ($listWarehouses as $key => $value) {
            foreach ($value as $k => $val) {
             if ($k == "id") {
@@ -715,70 +710,6 @@ class Controller extends BaseController
         } catch (\Throwable $th) {
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
         } 
-    }
-
-
-    function executerTransfere($identifiant_reassort){
-
-
-        try {
-            $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-
-            if (!$tabProduitReassort) {
-                return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
-            }
-            $apiKey = env('KEY_API_DOLIBAR');   
-            $apiUrl = env('KEY_API_URL');
-          
-            $data_save = array();
-            $incrementation = 0;
-            $decrementation = 0;
-            $i = 1;
-            $ids="";
-            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
-            foreach ($tabProduitReassort as $key => $line) {
-
-                
-
-                if ($line["qty"] != 0) {           
-                    $data = array(
-                        'product_id' => $line["product_id"],
-                        'warehouse_id' => $line["warehouse_id"], 
-                        'qty' => $line["qty"]*-1, 
-                        'type' => $line["type"], 
-                        'movementcode' => $line["movementcode"], 
-                        'movementlabel' => $line["movementlabel"], 
-                        'price' => $line["price"], 
-                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
-                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
-                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
-                    );
-                    // on execute le réassort
-                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
-
-                    if ($stockmovements) {
-                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                        if (count($tabProduitReassort) != $i) {
-                            $ids .= $line['id'] . ",";
-                        }else{
-                            $ids .= $line['id'];
-                        }
-                        $i++;  
-                        $incrementation++;
-                    }
-                }
-            }
-            $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
-
-            $response = DB::update($updateQuery);
-
-            return true;
-        
-        } catch (\Throwable $th) {
-            dd($th);
-            return ["response" => false, "error" => $th->getMessage()];
-        } 
-
     }
 
 

@@ -1,4 +1,13 @@
 $(document).ready(function() {
+
+    if($("#cn23ToDownload").val() == "true"){
+        $('#warningCn23Download').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+        $("#warningCn23Download").modal('show')
+    }
+
     $('#example').DataTable({
         "order": [[0, 'desc']],
         "columnDefs" : [       

@@ -121,7 +121,8 @@
 
                     <div class="text-end amount_total_order col d-flex justify-content-end"> <b></b> </div>
                 </div>
-                <button disabled type="button" class="empty_order validate_order btn btn-primary d-flex mx-auto"> Valider </button>
+            
+                <button disabled type="button" class="empty_order validate_order btn btn-primary d-flex mx-auto">Valider </button>
             </div>
         </div>
     </div>
@@ -197,7 +198,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button onclick="validWrapOrder(false)" type="button" class="btn btn-primary">Valider</button> 
+                <button style="max-height: 50px;" onclick="validWrapOrder(false)" type="button" class="confirm_valid_order btn btn-primary">
+                    <span>Valider</span>
+                    <div style="height:1rem; width:1rem" class="d-none loading_valid_wrapper spinner-border text-light" role="status"> <span class="visually-hidden">Loading...</span></div>
+                </button> 
             </div>
         </div>
     </div>
@@ -214,6 +218,51 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+ <!-- Modal generate label -->
+ <div data-bs-keyboard="false" data-bs-backdrop="static" class="generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">	
+                <div class="d-none flex-column loading_generate_label w-100 h-100 d-flex align-items-center justify-content-center">
+                    <div class="spinner-grow text-dark" role="status"></div>
+                    <span class="loading_text"><span>Génération d'étiquette(s)...</span></span>
+                </div>
+                
+                <form class="h-100 labelProductsInfo" method="POST">
+                    <input id="order_id_label" type="hidden" name="order_id" value="">
+                    <div class="h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column">
+                            <div class="mb-2 d-flex w-100 justify-content-between">
+                                <span style="width: 50px"><input data-id="" class="form-check-input check_all" type="checkbox" value="" aria-label="Checkbox for product order"></span>
+                                <span class="head_1 w-50">Article</span>
+                                <span class="head_2 w-25">P.U (€)</span>
+                                <span class="head_3 w-25">Quantité</span>
+                                <span class="head_4 w-25">Poids (kg)</span>
+                            </div>
+                            <div class="body_line_items_label">
+                            
+                            </div>
+                        </div>
+
+                        <div class="button_validate_modal_label d-flex justify-content-center mt-3 w-100">
+                            <div class="back_labels">
+                                <button type="button" disabled class="border-danger bg-danger cancel_label_created btn btn-dark px-5"><i class="fadeIn animated bx bx-arrow-back"></i></button>
+                            </div>
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+                                <button style="margin-left:15px" type="button" class="valid_generate_label btn btn-dark px-5">Suivant</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -87,7 +87,7 @@
                                             </a>
                                         @endforeach
                                         @if($count_notif == 0)
-                                            <span class="mt-3 msg-time d-flex justify-content-center w-100">Aucune notification non lue</span>
+                                            <span class="empty_notification mt-3 msg-time d-flex justify-content-center w-100">Aucune notification non lue</span>
                                         @endif
                                     </div>
                                     <a href="{{ route('notifications.all') }}">

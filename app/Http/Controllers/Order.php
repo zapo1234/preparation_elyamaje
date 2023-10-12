@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Events\NotificationPusher;
+use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-// use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
@@ -17,6 +19,8 @@ use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Service\Api\Chronopost\Chronopost;
+use App\Repository\LogError\LogErrorRepository;
+use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
@@ -24,11 +28,9 @@ use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-use App\Repository\LogError\LogErrorRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
-use App\Repository\Reassort\ReassortRepository;
 
 class Order extends BaseController
 {
@@ -101,7 +103,6 @@ class Order extends BaseController
 
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-
         $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id);
         if(count($orderDolibarr['orders']) > 0){
           if(!$distributeur){
@@ -370,9 +371,6 @@ class Order extends BaseController
           $leader = $this->user->getUsersByRole([4]);
           $from_user = Auth()->user()->id;
           foreach($leader as $lead){
-              $email = $lead['email'];
-              $name = $lead['name'];
-
               // Insert dans notification
               $data = [
                 'from_user' => $from_user,
@@ -382,8 +380,19 @@ class Order extends BaseController
                 'detail' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
               ];
 
+             
+
               $this->notification->insert($data);
           }
+
+          // Pusher notification partial order  
+          $notification_push = [
+            'role' => 4,
+            'order_id' => $order_id,
+            'type' => 'partial_order',
+            'data' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
+          ];
+          event(New NotificationPusher($notification_push));
         }
         echo json_encode(["success" => $check_if_order_done]);
       } else {
@@ -461,6 +470,15 @@ class Order extends BaseController
         }
 
         $number_order_attributed = $this->order->getOrdersByUsers();
+
+         // Pusher notification order attribution updated  
+         $notification_push = [
+          'role' => 2,
+          'order_id' => $order_id,
+          'type' => 'order_attribution_updated',
+        ];
+        event(New NotificationPusher($notification_push));
+
         echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
       } else {
         echo json_encode(["success" => false]);
@@ -558,17 +576,18 @@ class Order extends BaseController
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
       } else if($transfers){
-        // Si transfert, envoyé les données à Lyes pour le valider
-        $order = $this->reassort->getReassortById($order_id);
+        // Si transfert, envoyé les données à Lyes pour le valider (id transfert)
+        return $this->executerTransfere($order_id);
       } else {
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
 
+
       if($order && count($order) > 0){
-        if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
-          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-          return;
-        }
+        // if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        //   return;
+        // }
 
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         if($is_distributor && !$from_dolibarr){
@@ -620,15 +639,9 @@ class Order extends BaseController
             }
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
-          echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
-
-        // Génère l'étiquette ou non
-        if($request->post('label') == "true"){
-          return $this->generateLabel($orders);
-        } else {
           echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
-        }
       } else {
           echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
       }
@@ -642,62 +655,62 @@ class Order extends BaseController
     }
 
     // Fonction à appelé après validation d'une commande
-    private function generateLabel($order){
+    // private function generateLabel($order){
 
-      $colissimo = $this->colissimoConfiguration->getConfiguration();
-      $product_to_add_label = [];
-      $quantity_product = [];
+    //   $colissimo = $this->colissimoConfiguration->getConfiguration();
+    //   $product_to_add_label = [];
+    //   $quantity_product = [];
 
-      if($order){
-        $weight = 0; // Kg
+    //   if($order){
+    //     $weight = 0; // Kg
 
-        foreach($order[0]['line_items'] as $or){
-          $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
-          $product_to_add_label[] = $or['product_id'];
-          $quantity_product[$or['product_id']] = $or['quantity'];
-        } 
+    //     foreach($order[0]['line_items'] as $or){
+    //       $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
+    //       $product_to_add_label[] = $or['product_id'];
+    //       $quantity_product[$or['product_id']] = $or['quantity'];
+    //     } 
 
 
-        if(str_contains($order[0]['shipping_method'], 'chrono')){
-          $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
-          if(isset($labelChrono['success'])){
-              $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
-              $insert_label = $this->label->save($labelChrono);
-              $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
-          } else {
-              return redirect()->route('labels')->with('error', $labelChrono);
-          }
-        } else {
-          $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+    //     if(str_contains($order[0]['shipping_method'], 'chrono')){
+    //       $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+    //       if(isset($labelChrono['success'])){
+    //           $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+    //           $insert_label = $this->label->save($labelChrono);
+    //           $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+    //       } else {
+    //           return redirect()->route('labels')->with('error', $labelChrono);
+    //       }
+    //     } else {
+    //       $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
 
-          if(isset($label['success'])){
-            $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-            $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
-            $insert_label = $this->label->save($label);
-            $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+    //       if(isset($label['success'])){
+    //         $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+    //         $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
+    //         $insert_label = $this->label->save($label);
+    //         $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
   
-            if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+    //         if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
   
-              // ----- Print label to printer Datamax -----
-              if($label['label_format'] == "ZPL"){
-                echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-              } else if($label['label_format'] == "PDF"){
-                return base64_encode($label['label']);
-              } else {
-                echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-              }
-              // ----- Print label to printer Datamax -----
+    //           // ----- Print label to printer Datamax -----
+    //           if($label['label_format'] == "ZPL"){
+    //             echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+    //           } else if($label['label_format'] == "PDF"){
+    //             return base64_encode($label['label']);
+    //           } else {
+    //             echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+    //           }
+    //           // ----- Print label to printer Datamax -----
   
-            } else {
-              echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
-            }
-          } else {
-            echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
-          }
-        }
+    //         } else {
+    //           echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
+    //         }
+    //       } else {
+    //         echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
+    //       }
+    //     }
   
-      }
-    }
+    //   }
+    // }
 
     public function leaderHistory(){
       $histories = $this->history->getAllHistory();
@@ -880,6 +893,79 @@ class Order extends BaseController
         echo json_encode(['success' => false]);
       }
     }
+
+    public function executerTransfere($identifiant_reassort){
+
+      try {
+          $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
+
+          if (!$tabProduitReassort) {
+              return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+          }
+          $apiKey = env('KEY_API_DOLIBAR');   
+          $apiUrl = env('KEY_API_URL');
+        
+          $data_save = array();
+          $incrementation = 0;
+          $decrementation = 0;
+          $i = 1;
+          $ids="";
+          $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+          foreach ($tabProduitReassort as $key => $line) {
+
+              
+
+              if ($line["qty"] != 0) {           
+                  $data = array(
+                      'product_id' => $line["product_id"],
+                      'warehouse_id' => $line["warehouse_id"], 
+                      'qty' => $line["qty"]*-1, 
+                      'type' => $line["type"], 
+                      'movementcode' => $line["movementcode"], 
+                      'movementlabel' => $line["movementlabel"], 
+                      'price' => $line["price"], 
+                      'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                      'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                      'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                  );
+                  // on execute le réassort
+                  $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+
+                  if ($stockmovements) {
+                      $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                      if (count($tabProduitReassort) != $i) {
+                          $ids .= $line['id'] . ",";
+                      }else{
+                          $ids .= $line['id'];
+                      }
+                      $i++;  
+                      $incrementation++;
+                  }
+              }
+          }
+          $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
+          $response = DB::update($updateQuery);
+
+          // Insert la commande dans histories
+          $data = [
+            'order_id' => $identifiant_reassort,
+            'user_id' => Auth()->user()->id,
+            'status' => 'finished',
+            'poste' => Auth()->user()->poste,
+            'created_at' => date('Y-m-d H:i:s')
+          ];
+
+          $this->history->save($data);
+
+          echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
+      } catch (\Throwable $th) {
+          // dd($th);
+          echo json_encode(['success' => false, 'message' => $th->getMessage()]);
+          // return ["response" => false, "error" => $th->getMessage()];
+      } 
+
+  }
+
 }
 
 

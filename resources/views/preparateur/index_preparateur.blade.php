@@ -149,12 +149,15 @@
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>
 															@else
-																<span class="text-danger">Produit manquant</span>
+																<span class="text-danger">Produit manquant ({{ $item['productID'] }})</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $orders['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $orders['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -278,9 +281,12 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -404,9 +410,12 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>

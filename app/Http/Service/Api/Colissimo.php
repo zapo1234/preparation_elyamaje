@@ -20,18 +20,17 @@ class Colissimo
         $this->bordereau = $bordereau;
     }
 
-    public function generateLabel($order, $weight, $order_id, $colissimo){
+    public function generateLabel($order, $weight, $order_id, $colissimo, $items){
         $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
-        $customsArticle = $this->customsArticle($order);
+        $customsArticle = $this->customsArticle($order, $items);
 
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
-        
         if($productCode){
             try {
                 $requestParameter = [
@@ -423,20 +422,23 @@ class Colissimo
     //     }
     // }
     // XC2F000423
-    protected function customsArticle($order){
+    protected function customsArticle($order, $items){
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
-            $customsArticle[] = [
-                'description'   => $item['name'],
-                'quantity'      => $item['quantity'],
-                'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
-                'currency'      => config('app.currency'),
-                'artref'        => $item['ref'] ?? '',
-                'originalIdent' => 'A',
-                'originCountry' => 'FR',
-                'hsCode'        => '33049900', // code pour produits esthétique, beauté
-                'weight'        => $item['weight']
-            ];
+            if(in_array($item['product_id'], $items)){
+                $customsArticle[] = [
+                    'description'   => $item['name'],
+                    'quantity'      => $item['quantity'],
+                    'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
+                    'currency'      => config('app.currency'),
+                    'artref'        => $item['ref'] ?? '',
+                    'originalIdent' => 'A',
+                    'originCountry' => 'FR',
+                    'hsCode'        => '33049900', // code pour produits esthétique, beauté
+                    'weight'        => $item['weight']
+                ];
+            }
+           
         }   
         return $customsArticle;
     }
