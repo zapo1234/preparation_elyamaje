@@ -4,14 +4,20 @@ namespace App\Repository\Reassort;
 
 use Exception;
 use App\Models\Reassort;
+use App\Models\products_categories;
+use App\Models\Categorie_dolibarr;
+use App\Models\Products_association;
 use Illuminate\Support\Facades\DB;
 
 class ReassortRepository implements ReassortInterface 
 {   
     private $model;
 
-    public function __construct(Reassort $model){
+    public function __construct(Reassort $model,products_categories $products_categories,Categorie_dolibarr $categories_dolibarr,Products_association $products_association){
         $this->model = $model;
+        $this->products_categories = $products_categories;
+        $this->categories_dolibarr = $categories_dolibarr;
+        $this->products_association = $products_association;
     }
 
     public function getReassortByUser($user_id){
@@ -156,7 +162,65 @@ class ReassortRepository implements ReassortInterface
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['id_reassort' => $status]);
     }
 
-    public function updateStatusTextReassort($transfer_id, $status){
+
+    public function getAllCategoriesAndProducts(){
+
+        return  $this->products_categories::select()
+        ->get()
+        ->pluck(null, 'fk_product')
+        ->toArray();
+        ;
+    }
+
+    public function getAllCategoriesLabel(){
+
+       // dd($this->categories_dolibarr);
+
+        return  $this->categories_dolibarr::select()
+        ->get()
+        ->pluck(null, 'id')
+        ->toArray();
+       
+    }
+
+    public function getKits(){
+
+        $all_table = $this->products_association::select()
+        ->get()
+        ->toArray();
+        
+
+
+
+        $all_id_pere_kits = array();
+        $composition_by_pere = array();
+
+        foreach ($all_table as $key => $value) {
+
+
+            $id_pere = $value["fk_product_pere"];
+            $id_fils = $value["fk_product_fils"];
+            $qty = $value["qty"];
+
+            if (!in_array($id_pere, $all_id_pere_kits)) {
+                array_push($all_id_pere_kits,$id_pere);
+            }
+
+            if (!isset($composition_by_pere[$id_pere])) {
+
+                $composition_by_pere[$id_pere][] = [$id_fils,$qty];
+
+            }else {
+                array_push($composition_by_pere[$id_pere], [$id_fils,$qty]);
+            }
+        }
+        return [
+            "all_id_pere_kits" => $all_id_pere_kits,
+            "composition_by_pere" => $composition_by_pere
+        ];
+     }
+
+     public function updateStatusTextReassort($transfer_id, $status){
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['status' => $status]);
     }
 
@@ -214,9 +278,11 @@ class ReassortRepository implements ReassortInterface
                 }
             } else {
                 $diff_barcode = true;
+
             }
         }
 
+    
 
         // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
         $cases = collect($product_pick_in)->map(function ($item) {

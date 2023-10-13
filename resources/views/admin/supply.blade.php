@@ -7,6 +7,12 @@
     <link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
     <link href="assets/css/style_reassort.css" rel="stylesheet" />
 
+    <link href="{{asset('assets/plugins/datetimepicker/css/classic.css')}}" rel="stylesheet" />
+    <link href="{{asset('assets/plugins/datetimepicker/css/classic.time.css')}}" rel="stylesheet" />
+    <link href="{{asset('assets/plugins/datetimepicker/css/classic.date.css')}}" rel="stylesheet" />
+    <link href="{{asset('assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css')}}" rel="stylesheet" />
+
+
    
 @endsection
 
@@ -88,7 +94,7 @@
                                 <option value="0" selected="">Selectionner l'entrepot à déstoquer</option>
                                     @foreach ($listWarehouses as $listWarehouse)
                                         @if ($listWarehouse["id"] == "6")
-                                            @if (isset($products_reassort))
+                                            @if (isset($entrepot_source))
                                                 @if ($listWarehouse["id"] == $entrepot_source)
                                                     <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
                                                 @else
@@ -114,8 +120,8 @@
                             <select id="entrepot_destination" name="entrepot_destination" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à approvisionner</option>
                                 @foreach ($listWarehouses as $listWarehouse)
-                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11" || $listWarehouse["id"] == "12")
-                                        @if (isset($products_reassort))
+                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11")
+                                        @if (isset($entrepot_destination))
                                             @if ($listWarehouse["id"] == $entrepot_destination)
                                                 <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
                                             @else
@@ -132,14 +138,86 @@
                             </select>
                         </div>
 
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="first_transfert" name="first_transfert">
+                                <label class="form-check-label" for="first_transfert">Premier réassort</label>
+                            </div>
+                        </div>
+
+                        <div class="date_interval row">
+
+                            <div class="mb-3 col-md-3"></div>
+                           
+                            <div class="mb-3 col-md-2">
+                                <label id="start_date" class="form-label">Date de début</label>
+                                <input name="start_date" type="text" class="form-control datepicker picker__input" readonly="" aria-haspopup="true" aria-readonly="false" aria-owns="P1662151982_root"><div class="picker" id="P1662151982_root" aria-hidden="true"><div class="picker__holder" tabindex="-1"><div class="picker__frame"><div class="picker__wrap"><div class="picker__box"><div class="picker__header"><select class="picker__select--year" aria-controls="P1662151982_table" title="Select a year" disabled="disabled"><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected="">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select><select class="picker__select--month" aria-controls="P1662151982_table" title="Select a month" disabled="disabled"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected="">October</option><option value="10">November</option><option value="11">December</option></select><div class="picker__nav--prev" data-nav="-1" tabindex="0" role="button" aria-controls="P1662151982_table" title="Previous month"> </div><div class="picker__nav--next" data-nav="1" tabindex="0" role="button" aria-controls="P1662151982_table" title="Next month"> </div></div><table class="picker__table" id="P1662151982_table" role="grid" aria-controls="P1662151982" aria-readonly="true"><thead><tr><th class="picker__weekday" scope="col" title="Sunday">Sun</th><th class="picker__weekday" scope="col" title="Monday">Mon</th><th class="picker__weekday" scope="col" title="Tuesday">Tue</th><th class="picker__weekday" scope="col" title="Wednesday">Wed</th><th class="picker__weekday" scope="col" title="Thursday">Thu</th><th class="picker__weekday" scope="col" title="Friday">Fri</th><th class="picker__weekday" scope="col" title="Saturday">Sat</th></tr></thead><tbody><tr><td><div class="picker__day picker__day--infocus" data-pick="1696111200000" id="P1662151982_1696111200000" tabindex="0" role="gridcell" aria-label="1 October, 2023">1</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696197600000" id="P1662151982_1696197600000" tabindex="0" role="gridcell" aria-label="2 October, 2023">2</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696284000000" id="P1662151982_1696284000000" tabindex="0" role="gridcell" aria-label="3 October, 2023">3</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696370400000" id="P1662151982_1696370400000" tabindex="0" role="gridcell" aria-label="4 October, 2023">4</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696456800000" id="P1662151982_1696456800000" tabindex="0" role="gridcell" aria-label="5 October, 2023">5</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696543200000" id="P1662151982_1696543200000" tabindex="0" role="gridcell" aria-label="6 October, 2023">6</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696629600000" id="P1662151982_1696629600000" tabindex="0" role="gridcell" aria-label="7 October, 2023">7</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1696716000000" id="P1662151982_1696716000000" tabindex="0" role="gridcell" aria-label="8 October, 2023">8</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696802400000" id="P1662151982_1696802400000" tabindex="0" role="gridcell" aria-label="9 October, 2023">9</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696888800000" id="P1662151982_1696888800000" tabindex="0" role="gridcell" aria-label="10 October, 2023">10</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696975200000" id="P1662151982_1696975200000" tabindex="0" role="gridcell" aria-label="11 October, 2023">11</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697061600000" id="P1662151982_1697061600000" tabindex="0" role="gridcell" aria-label="12 October, 2023">12</div></td><td><div class="picker__day picker__day--infocus picker__day--today" data-pick="1697148000000" id="P1662151982_1697148000000" tabindex="0" role="gridcell" aria-label="13 October, 2023">13</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697234400000" id="P1662151982_1697234400000" tabindex="0" role="gridcell" aria-label="14 October, 2023">14</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1697320800000" id="P1662151982_1697320800000" tabindex="0" role="gridcell" aria-label="15 October, 2023">15</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697407200000" id="P1662151982_1697407200000" tabindex="0" role="gridcell" aria-label="16 October, 2023">16</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697493600000" id="P1662151982_1697493600000" tabindex="0" role="gridcell" aria-label="17 October, 2023">17</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697580000000" id="P1662151982_1697580000000" tabindex="0" role="gridcell" aria-label="18 October, 2023">18</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697666400000" id="P1662151982_1697666400000" tabindex="0" role="gridcell" aria-label="19 October, 2023">19</div></td><td><div class="picker__day picker__day--infocus picker__day--selected picker__day--highlighted" data-pick="1697752800000" id="P1662151982_1697752800000" tabindex="0" role="gridcell" aria-label="20 October, 2023" aria-selected="true" aria-activedescendant="1697752800000">20</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697839200000" id="P1662151982_1697839200000" tabindex="0" role="gridcell" aria-label="21 October, 2023">21</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1697925600000" id="P1662151982_1697925600000" tabindex="0" role="gridcell" aria-label="22 October, 2023">22</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698012000000" id="P1662151982_1698012000000" tabindex="0" role="gridcell" aria-label="23 October, 2023">23</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698098400000" id="P1662151982_1698098400000" tabindex="0" role="gridcell" aria-label="24 October, 2023">24</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698184800000" id="P1662151982_1698184800000" tabindex="0" role="gridcell" aria-label="25 October, 2023">25</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698271200000" id="P1662151982_1698271200000" tabindex="0" role="gridcell" aria-label="26 October, 2023">26</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698357600000" id="P1662151982_1698357600000" tabindex="0" role="gridcell" aria-label="27 October, 2023">27</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698444000000" id="P1662151982_1698444000000" tabindex="0" role="gridcell" aria-label="28 October, 2023">28</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1698530400000" id="P1662151982_1698530400000" tabindex="0" role="gridcell" aria-label="29 October, 2023">29</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698620400000" id="P1662151982_1698620400000" tabindex="0" role="gridcell" aria-label="30 October, 2023">30</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698706800000" id="P1662151982_1698706800000" tabindex="0" role="gridcell" aria-label="31 October, 2023">31</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698793200000" id="P1662151982_1698793200000" tabindex="0" role="gridcell" aria-label="1 November, 2023">1</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698879600000" id="P1662151982_1698879600000" tabindex="0" role="gridcell" aria-label="2 November, 2023">2</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698966000000" id="P1662151982_1698966000000" tabindex="0" role="gridcell" aria-label="3 November, 2023">3</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699052400000" id="P1662151982_1699052400000" tabindex="0" role="gridcell" aria-label="4 November, 2023">4</div></td></tr><tr><td><div class="picker__day picker__day--outfocus" data-pick="1699138800000" id="P1662151982_1699138800000" tabindex="0" role="gridcell" aria-label="5 November, 2023">5</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699225200000" id="P1662151982_1699225200000" tabindex="0" role="gridcell" aria-label="6 November, 2023">6</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699311600000" id="P1662151982_1699311600000" tabindex="0" role="gridcell" aria-label="7 November, 2023">7</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699398000000" id="P1662151982_1699398000000" tabindex="0" role="gridcell" aria-label="8 November, 2023">8</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699484400000" id="P1662151982_1699484400000" tabindex="0" role="gridcell" aria-label="9 November, 2023">9</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699570800000" id="P1662151982_1699570800000" tabindex="0" role="gridcell" aria-label="10 November, 2023">10</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699657200000" id="P1662151982_1699657200000" tabindex="0" role="gridcell" aria-label="11 November, 2023">11</div></td></tr></tbody></table><div class="picker__footer"><button class="picker__button--today" type="button" data-pick="1697148000000" aria-controls="P1662151982" disabled="disabled">Today</button><button class="picker__button--clear" type="button" data-clear="1" aria-controls="P1662151982" disabled="disabled">Clear</button><button class="picker__button--close" type="button" data-close="true" aria-controls="P1662151982" disabled="disabled">Close</button></div></div></div></div></div></div>
+                            </div>
+
+                            <div class="mb-3 col-md-2"></div>
+
+                            <div class="mb-3 col-md-2">
+                                <label id="end_date" class="form-label">Date de fin</label>
+                                <input name="end_date" type="text" class="form-control datepicker picker__input" readonly="" aria-haspopup="true" aria-readonly="false" aria-owns="P1662151982_root"><div class="picker" id="P1662151982_root" aria-hidden="true"><div class="picker__holder" tabindex="-1"><div class="picker__frame"><div class="picker__wrap"><div class="picker__box"><div class="picker__header"><select class="picker__select--year" aria-controls="P1662151982_table" title="Select a year" disabled="disabled"><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023" selected="">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option><option value="2028">2028</option></select><select class="picker__select--month" aria-controls="P1662151982_table" title="Select a month" disabled="disabled"><option value="0">January</option><option value="1">February</option><option value="2">March</option><option value="3">April</option><option value="4">May</option><option value="5">June</option><option value="6">July</option><option value="7">August</option><option value="8">September</option><option value="9" selected="">October</option><option value="10">November</option><option value="11">December</option></select><div class="picker__nav--prev" data-nav="-1" tabindex="0" role="button" aria-controls="P1662151982_table" title="Previous month"> </div><div class="picker__nav--next" data-nav="1" tabindex="0" role="button" aria-controls="P1662151982_table" title="Next month"> </div></div><table class="picker__table" id="P1662151982_table" role="grid" aria-controls="P1662151982" aria-readonly="true"><thead><tr><th class="picker__weekday" scope="col" title="Sunday">Sun</th><th class="picker__weekday" scope="col" title="Monday">Mon</th><th class="picker__weekday" scope="col" title="Tuesday">Tue</th><th class="picker__weekday" scope="col" title="Wednesday">Wed</th><th class="picker__weekday" scope="col" title="Thursday">Thu</th><th class="picker__weekday" scope="col" title="Friday">Fri</th><th class="picker__weekday" scope="col" title="Saturday">Sat</th></tr></thead><tbody><tr><td><div class="picker__day picker__day--infocus" data-pick="1696111200000" id="P1662151982_1696111200000" tabindex="0" role="gridcell" aria-label="1 October, 2023">1</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696197600000" id="P1662151982_1696197600000" tabindex="0" role="gridcell" aria-label="2 October, 2023">2</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696284000000" id="P1662151982_1696284000000" tabindex="0" role="gridcell" aria-label="3 October, 2023">3</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696370400000" id="P1662151982_1696370400000" tabindex="0" role="gridcell" aria-label="4 October, 2023">4</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696456800000" id="P1662151982_1696456800000" tabindex="0" role="gridcell" aria-label="5 October, 2023">5</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696543200000" id="P1662151982_1696543200000" tabindex="0" role="gridcell" aria-label="6 October, 2023">6</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696629600000" id="P1662151982_1696629600000" tabindex="0" role="gridcell" aria-label="7 October, 2023">7</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1696716000000" id="P1662151982_1696716000000" tabindex="0" role="gridcell" aria-label="8 October, 2023">8</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696802400000" id="P1662151982_1696802400000" tabindex="0" role="gridcell" aria-label="9 October, 2023">9</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696888800000" id="P1662151982_1696888800000" tabindex="0" role="gridcell" aria-label="10 October, 2023">10</div></td><td><div class="picker__day picker__day--infocus" data-pick="1696975200000" id="P1662151982_1696975200000" tabindex="0" role="gridcell" aria-label="11 October, 2023">11</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697061600000" id="P1662151982_1697061600000" tabindex="0" role="gridcell" aria-label="12 October, 2023">12</div></td><td><div class="picker__day picker__day--infocus picker__day--today" data-pick="1697148000000" id="P1662151982_1697148000000" tabindex="0" role="gridcell" aria-label="13 October, 2023">13</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697234400000" id="P1662151982_1697234400000" tabindex="0" role="gridcell" aria-label="14 October, 2023">14</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1697320800000" id="P1662151982_1697320800000" tabindex="0" role="gridcell" aria-label="15 October, 2023">15</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697407200000" id="P1662151982_1697407200000" tabindex="0" role="gridcell" aria-label="16 October, 2023">16</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697493600000" id="P1662151982_1697493600000" tabindex="0" role="gridcell" aria-label="17 October, 2023">17</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697580000000" id="P1662151982_1697580000000" tabindex="0" role="gridcell" aria-label="18 October, 2023">18</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697666400000" id="P1662151982_1697666400000" tabindex="0" role="gridcell" aria-label="19 October, 2023">19</div></td><td><div class="picker__day picker__day--infocus picker__day--selected picker__day--highlighted" data-pick="1697752800000" id="P1662151982_1697752800000" tabindex="0" role="gridcell" aria-label="20 October, 2023" aria-selected="true" aria-activedescendant="1697752800000">20</div></td><td><div class="picker__day picker__day--infocus" data-pick="1697839200000" id="P1662151982_1697839200000" tabindex="0" role="gridcell" aria-label="21 October, 2023">21</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1697925600000" id="P1662151982_1697925600000" tabindex="0" role="gridcell" aria-label="22 October, 2023">22</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698012000000" id="P1662151982_1698012000000" tabindex="0" role="gridcell" aria-label="23 October, 2023">23</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698098400000" id="P1662151982_1698098400000" tabindex="0" role="gridcell" aria-label="24 October, 2023">24</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698184800000" id="P1662151982_1698184800000" tabindex="0" role="gridcell" aria-label="25 October, 2023">25</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698271200000" id="P1662151982_1698271200000" tabindex="0" role="gridcell" aria-label="26 October, 2023">26</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698357600000" id="P1662151982_1698357600000" tabindex="0" role="gridcell" aria-label="27 October, 2023">27</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698444000000" id="P1662151982_1698444000000" tabindex="0" role="gridcell" aria-label="28 October, 2023">28</div></td></tr><tr><td><div class="picker__day picker__day--infocus" data-pick="1698530400000" id="P1662151982_1698530400000" tabindex="0" role="gridcell" aria-label="29 October, 2023">29</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698620400000" id="P1662151982_1698620400000" tabindex="0" role="gridcell" aria-label="30 October, 2023">30</div></td><td><div class="picker__day picker__day--infocus" data-pick="1698706800000" id="P1662151982_1698706800000" tabindex="0" role="gridcell" aria-label="31 October, 2023">31</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698793200000" id="P1662151982_1698793200000" tabindex="0" role="gridcell" aria-label="1 November, 2023">1</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698879600000" id="P1662151982_1698879600000" tabindex="0" role="gridcell" aria-label="2 November, 2023">2</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1698966000000" id="P1662151982_1698966000000" tabindex="0" role="gridcell" aria-label="3 November, 2023">3</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699052400000" id="P1662151982_1699052400000" tabindex="0" role="gridcell" aria-label="4 November, 2023">4</div></td></tr><tr><td><div class="picker__day picker__day--outfocus" data-pick="1699138800000" id="P1662151982_1699138800000" tabindex="0" role="gridcell" aria-label="5 November, 2023">5</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699225200000" id="P1662151982_1699225200000" tabindex="0" role="gridcell" aria-label="6 November, 2023">6</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699311600000" id="P1662151982_1699311600000" tabindex="0" role="gridcell" aria-label="7 November, 2023">7</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699398000000" id="P1662151982_1699398000000" tabindex="0" role="gridcell" aria-label="8 November, 2023">8</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699484400000" id="P1662151982_1699484400000" tabindex="0" role="gridcell" aria-label="9 November, 2023">9</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699570800000" id="P1662151982_1699570800000" tabindex="0" role="gridcell" aria-label="10 November, 2023">10</div></td><td><div class="picker__day picker__day--outfocus" data-pick="1699657200000" id="P1662151982_1699657200000" tabindex="0" role="gridcell" aria-label="11 November, 2023">11</div></td></tr></tbody></table><div class="picker__footer"><button class="picker__button--today" type="button" data-pick="1697148000000" aria-controls="P1662151982" disabled="disabled">Today</button><button class="picker__button--clear" type="button" data-clear="1" aria-controls="P1662151982" disabled="disabled">Clear</button><button class="picker__button--close" type="button" data-close="true" aria-controls="P1662151982" disabled="disabled">Close</button></div></div></div></div></div></div>
+                            </div>
+
+                            <div class="mb-3 col-md-3"></div>
+
+                        </div>
+
                         <div class="col-12 d-flex justify-content-center mt-5">
                             <button id="id_sub_calcul_reassort" onclick="this.disabled=true;this.form.submit();" class="btn btn-primary" type="submit">Générer le réassort</button>
                         </div>
+
+                        
+
                     </div>
 
                 </form>
                
             </div>
+
+
+            @if (isset($vente_by_product) && $first_transfert)
+               
+                {{-- {{dd($first_transfert)}} --}}
+
+                <div id="id_first_reassort" class="card card_product_commande">
+                    <div class="table-responsive p-3">
+                        <table id="example5" class="table mb-0 dataTable">
+                            <thead>
+                                <tr>
+                                    <th title="L'entrepôt qui va être décrémenté">ID</th>
+                                    <th title="L'entrepôt qui va être décrémenté">Libelle</th>
+                                    <th title="L'entrepôt qui va être décrémenté">Quantité vendu</th>
+                                    <th title="L'entrepôt qui va être décrémenté">Catégorie</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_id_1">
+                                @foreach ($vente_by_product as $id_product => $value)
+                            
+                                    <tr class="class_line1">
+                                        
+                                        
+                                        <td data-key="product_id" data-value="{{$id_product}}" id="{{$id_product}}_product_id" style="text-align: left !important;">{{$id_product}}</td>
+                                        <td data-key="libelle" data-value="{{$value["libelle"]}}" id="{{$id_product}}_libelle" style="text-align: left !important;">{{$value["libelle"]}}</td>
+                                        <td data-key="qty" data-value="{{$value["qty"]}}" id="{{$id_product}}_qty" style="text-align: left !important;">{{$value["qty"]}}</td>
+                                        <td data-key="label_cat" data-value="{{$value["label_cat"]}}" id="{{$id_product}}_label_cat" style="text-align: left !important;">{{$value["label_cat"]}}</td>
+                                        
+                                    </tr>
+                                
+                                @endforeach
+    
+                            </tbody>
+    
+                        
+    
+                        </table>
+                    </div>
+    
+                </div>
+            @endif
+
 
             @if (isset($products_reassort))
 
@@ -194,7 +272,13 @@
                                     @if ($value["qte_act"] < 0 || $value["qte_en_stock_in_source"] <= 0)
                                         <td data-key="qte_transfere" data-value="0" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="0" disabled></td>
                                     @else
-                                        <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
+                                        @if ((($value["qte_optimale"] - $value["qte_act"])/($value["qte_en_stock_in_source"]))>0.2)
+                                        {{-- Quantité demandée trop elevée on donne juste 20% de la reserve --}}
+                                        <td data-key="qte_transfere" data-value="{{($value["qte_en_stock_in_source"])*0.2}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{($value["qte_optimale"] - $value["qte_act"])*0.2}}" disabled></td>
+                                        @else
+                                        <td data-key="qte_transfere" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
+                                        @endif
+
                                     @endif
 
 
@@ -451,6 +535,16 @@
 <script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 <script src="assets/plugins/select2/js/select2.min.js"></script>
 
+<script src="{{asset('assets/plugins/datetimepicker/js/legacy.js')}}"></script>
+<script src="{{asset('assets/plugins/datetimepicker/js/picker.js')}}"></script>
+
+<script src="{{asset('assets/plugins/datetimepicker/js/picker.time.js')}}"></script>
+<script src="{{asset('assets/plugins/datetimepicker/js/picker.date.js')}}"></script>
+
+<script src="{{asset('assets/plugins/bootstrap-material-datetimepicker/js/moment.min.js')}}"></script>
+<script src="{{asset('assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js')}}"></script>
+
+
 <script>
 
     $('#product_add').select2({
@@ -462,7 +556,7 @@
 
     csrfToken = $('input[name=_token]').val();
     
-    $('#example2, #example3').DataTable({
+    $('#example2, #example3, #example5').DataTable({
     language: {
         info: "_TOTAL_ lignes",
         infoEmpty: "Aucun utlisateur à afficher",
@@ -763,10 +857,59 @@
     $('#confirmCancel').on('click', function() {
         $('#cancelForm').submit();
     });
+
+    if ($(this).is(':checked')) {
+        $(".date_interval").removeClass('d-none');
+    } else {
+
+        $(".date_interval").addClass('d-none');
+    }
+
+    $("#first_transfert").on('change', function(){
+
+        if ($(this).is(':checked')) {
+            $(".date_interval").removeClass('d-none');
+        } else {
+
+            $(".date_interval").addClass('d-none');
+        }
+    });
+
+
+   
+
+
+    
     
 
 
 </script>
+
+
+<script>
+    $('.datepicker').pickadate({
+        selectMonths: true,
+        selectYears: true
+    }),
+    $('.timepicker').pickatime()
+</script>
+
+
+{{-- <script>
+    $(function () {
+        $('#date-time').bootstrapMaterialDatePicker({
+            format: 'YYYY-MM-DD HH:mm'
+        });
+        $('#date').bootstrapMaterialDatePicker({
+            time: false
+        });
+        $('#time').bootstrapMaterialDatePicker({
+            date: false,
+            format: 'HH:mm'
+        });
+    });
+</script> --}}
+
 
 @endsection
 

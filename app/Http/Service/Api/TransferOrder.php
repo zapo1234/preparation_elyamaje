@@ -747,7 +747,7 @@ class TransferOrder
                       $mode_reglement_id=108; // payplug 4x..
                    }
                     elseif($account_name=="bacs"){
-                      $mode_reglement_id=3; // ordre de prelevement....
+                      $mode_reglement_id=3; // ordre de prelevement......
                    }
 
                    elseif($account_name=="gift_card"){
@@ -776,17 +776,19 @@ class TransferOrder
                        $paimentid =6;// PROD
                     }
 
-                    // si c'est un distributeur
+                     
+                    // si c'est un distributeur (mettre la facture impayé)
                     if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
-                        "paye"	=> 0,
-                        "statut"	=> 1,
+                        "paye"	=> 1,
+                        "statut"	=> 2,
                         "mode_reglement_id"=>$mode_reglement_id,
                         "idwarehouse"=>6,
                         "notrigger"=>0,
                        ];
 
-                    }
+                         
+                      }
                      if($status_dist=="true" && $account_name!="bacs"){
                          $newCommandepaye = [
                          "paye"	=> 1,

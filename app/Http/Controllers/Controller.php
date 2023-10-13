@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Throwable;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
+use App\Repository\Tiers\TiersRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -19,7 +21,6 @@ use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Repository\Tiers\TiersRepository;
 
 class Controller extends BaseController
 {
@@ -343,12 +344,100 @@ class Controller extends BaseController
 
     function createReassort(Request $request){
 
+
+/*
+
+        $data = [
+            ["id_product" => 16750, 'qte' => 5],
+            ["id_product" => 13867, 'qte' => 10],    
+            ["id_product" => 8875, 'qte' => 15],
+            ["id_product" => 8507, 'qte' => 20]  
+        ];
+
+       // $tabProduitReassort = $this->reassort->destockInWoocommerce($data);
+
+
+        $customer_key = config('app.woocommerce_customer_key');
+        $customer_secret = config('app.woocommerce_customer_secret');
+        // $id ="8507";
+
+        try {
+
+            $temps_debut = microtime(true);
+
+
+            for ($i=0; $i <15 ; $i++) { 
+                foreach ($data as $key => $value) {
+                    $id = $value["id_product"];
+                    $qte = $value["qte"];
+        
+                    $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$id, [
+                        'stock_quantity' => $qte,
+                      ]);
+                }
+            }
+
+
+            $temps_fin = microtime(true);
+            $temps_execution = $temps_fin - $temps_debut;
+
+            dd("Le script a pris ". $temps_execution ." secondes pour s'exécuter.");
+
+
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+
+        
+
+      
+
+       
+
+        dd("dddddd");
+
+
+        
+        
+
+        $per_page = 100;
+        $page = 1;
+
+       
+
+
+
+        try{
+        $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/74423?per_page=".$per_page."&page=".$page);
+       
+       dd($response->json());
+       
+        return $response->json();
+
+        } catch(Exception $e){
+        return $e->getMessage();
+        }
+
+        dd("fin");
+
+        */
+
+        $start_date = $request->post('start_date');
+        $end_date = $request->post('end_date');
+
+      
+       
+
+
         $entrepot_source = $request->post('entrepot_source');
         $entrepot_destination = $request->post('entrepot_destination');
+        $first_transfert = $request->post('first_transfert');
 
+        
         if (!$entrepot_source || !$entrepot_destination) {
             dd("selectionnez les entrepots");
         }
+
 
      
         $method = "GET";
@@ -356,6 +445,7 @@ class Controller extends BaseController
         // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
 
        $apiUrl = env('KEY_API_URL');
+
 
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
@@ -365,124 +455,383 @@ class Controller extends BaseController
         // 1- On récupère toute les facture de la semaine -7 jours pour vour les vente
         // puis on calcule la moyen hebdomadaire de vente pour chaque produit
 
-        $mois = 1; // nombre de mois
-        $jours = $mois*28;
-        $interval = date("Y-m-d", strtotime("-$jours days")); 
-        
-        $coef = (1.10)/($jours/7);
-        $limite = 100;
+            $limite = 8000;
 
-        // boutique elyamaje
-        if ($entrepot_destination== "1") {
-            $produitParam = array(
-                'apikey' => $apiKey,
-                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC1%'",
-                'limit' => $limite,
-                'page' => 0,
-                'sortfield' => 'rowid',
-                'sortorder' => 'DESC',
-            );
+           // boutique elyamaje
+           if ($entrepot_destination== "1") {
+                $produitParam = array(
+                    'apikey' => $apiKey,
+                    'sqlfilters' => "t.ref LIKE '%TC1%'",
+                    'limit' => $limite,
+                );
 
-        }
-
-        // boutique nice
-        if ($entrepot_destination== "11") {
-            $produitParam = array(
-                'apikey' => $apiKey,
-                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC4%'",
-                'limit' => $limite,
-                'page' => 0,
-                'sortfield' => 'rowid',
-                'sortorder' => 'DESC',
-            );
-        }
-
-        // boutique nice
-        if ($entrepot_destination== "12") {
-            $produitParam = array(
-                'apikey' => $apiKey,
-                'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
-                'limit' => $limite,
-                'page' => 0,
-                'sortfield' => 'rowid',
-                'sortorder' => 'DESC',
-            );
-        }
-
-        $array_factures_total = array();
-        $page = $produitParam['page'];
-
-        $condition = true;
-        do {
-            $page++;
-            $produitParam['page'] = $page;
-
-            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-            $factures = json_decode($listinvoice,true); 
-
-            array_push($array_factures_total,$factures);
-            // dd($array_factures_total);
-
-
-            if (count($factures) < $limite) {
-                $condition = false;
             }
-        } while ($condition); 
 
-        // dd($array_factures_total);
+
+            // boutique nice
+            if ($entrepot_destination== "11") {
+                $produitParam = array(
+                    'apikey' => $apiKey,
+                    'sqlfilters' => "t.ref LIKE '%TC4%'",
+                    'limit' => $limite,
+                );
+            }
+
+            //'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59' AND t.ref LIKE '%TC4%'",
+
+            // boutique beauty prof
+            if ($entrepot_destination== "12") {
+
+                $produitParam = array(
+                    'apikey' => $apiKey,
+                    'sqlfilters' => "t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                    'limit' => $limite,
+                );
+            }
+
+
+        if ($first_transfert) {
+            if ($start_date && $end_date) {
+
+            $start_date = $request->post('start_date');
+            $end_date = $request->post('end_date');
+
+            $year_start = explode(", ",$start_date)[1];
+            $year_end = explode(", ",$end_date)[1];
+
+            $start_date = date("$year_start-m-d", strtotime($start_date));
+            $end_date = date("$year_end-m-d", strtotime($end_date));
+            $coef = 1;
+
+            $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+
+                
+            }else {
+                dd("selectionner les deux date");
+            }
+        }else {
+            $mois = 12; // nombre de mois
+            $jours = $mois*28;
+            $interval = date("Y-m-d", strtotime("-$jours days")); 
+            $coef = (1.10)/($jours/7);
+
+            $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+        }      
+       
+
+        // Récupérer le couple categories - produits
+        $all_categories = $this->reassort->getAllCategoriesAndProducts();
+        // dd($all_categories);
+        // récuperer les label de la categories
+        $cat_lab = $this->reassort->getAllCategoriesLabel();
+
+        $cat_no_exist = array();
+        $product_no_cat = array();
+        $array_factures_total = array();
+
+
+        // dd($produitParam);
+
+
+        // code commun pour calculer des ventes
+
+        $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+        $factures = json_decode($listinvoice,true);
+        
+        //  dd($factures);
+
+        // on pousse le premiers resultat
+        array_push($array_factures_total,$factures);
+        
+        foreach ($array_factures_total as $xx => $factures) {           
+            foreach ($factures as $kf => $fac) {
+                foreach ($fac["lines"] as $kl => $product) {
+                    $fk_product = $product["fk_product"];
+                    if ($fk_product) {
+
+                        if (isset($all_categories[$fk_product])) {
+                            $fk_cat = $all_categories[$fk_product]["fk_categorie"];
+                            if (isset($cat_lab[$fk_cat])) {
+                                $label = $cat_lab[$fk_cat]['label'];
+                                $fk_parent = $cat_lab[$fk_cat]['fk_parent'];
+                            }else{
+
+                                $label = "label cat inconnu";
+                                $fk_parent = "parents inconnu";
+                            }
+                        }else {
+                            $fk_cat = "inconnu";
+                            $label = "label cat inconnu";
+                            $fk_parent = "parents inconnu";
+
+                            // array_push($product_no_cat,$fk_product);
+                        // dd("produit (".$fk_product. ") n'apartien a aucune categorie actualiser la table all_categories");
+                        }                      
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["fk_cat"] = $fk_cat;
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["label_cat"] = $label;
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["fk_parent"] = $fk_parent;
+                    }else {
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["fk_cat"] = "inconnu";
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["label_cat"] = "label cat inconnu";
+                        $array_factures_total[$xx][$kf]["lines"][$kl]["fk_parent"] = "parents inconnu";
+                    }                        
+                }
+
+            }
+        }
+       
+        $do_boucle = false;
+       
+        if (count($factures) == $limite) {
+            $do_boucle = true;
+        }
+
+     
+
+        if ($do_boucle) {
+            $produitParam['page'] = 1;
+            $page = $produitParam['page'];
+            $condition = true;
+            do {
+                $page++;
+                $produitParam['page'] = $page;
+                $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                $factures = json_decode($listinvoice,true); 
+
+                 // on pousse les autres resultats
+                array_push($array_factures_total,$factures);
+
+                foreach ($array_factures_total as $xx => $factures) {        
+                    if ($xx != 0) {                         
+                        foreach ($factures as $kf => $fac) {
+                            foreach ($fac["lines"] as $kl => $product) {
+                                $fk_product = $product["fk_product"];
+                                if ($fk_product) {
+            
+                                    if (isset($all_categories[$fk_product])) {
+                                        $fk_cat = $all_categories[$fk_product]["fk_categorie"];
+                                        if (isset($cat_lab[$fk_cat])) {
+                                            $label = $cat_lab[$fk_cat]['label'];
+                                            $fk_parent = $cat_lab[$fk_cat]['fk_parent'];
+                                        }else{
+            
+                                            $label = "label cat inconnu";
+                                            $fk_parent = "parents inconnu";
+                                        }
+                                    }else {
+                                        $fk_cat = "inconnu";
+                                        $label = "label cat inconnu";
+                                        $fk_parent = "parents inconnu";
+            
+                                        // array_push($product_no_cat,$fk_product);
+                                    // dd("produit (".$fk_product. ") n'apartien a aucune categorie actualiser la table all_categories");
+                                    }                      
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["fk_cat"] = $fk_cat;
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["label_cat"] = $label;
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["fk_parent"] = $fk_parent;
+                                }else {
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["fk_cat"] = "inconnu";
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["label_cat"] = "label cat inconnu";
+                                    $array_factures_total[$xx][$kf]["lines"][$kl]["fk_parent"] = "parents inconnu";
+                                }                        
+                            }
+            
+                        }
+
+
+                    } 
+                }
+
+                if (count($factures) < $limite) {
+                    $condition = false;
+                }
+            
+
+            } while ($condition); 
+        }
+
+    
+        // 2- on recupere les produit et leurs stock dans les différents entropot
+
+        $produitParamProduct = array(
+            'apikey' => $apiKey,
+            'limit' => $limite,
+        );
+
+        $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
+        $all_products = json_decode($all_products,true); 
+    
+        $products_dolibarrs = array();
+        array_push($products_dolibarrs,$all_products);
+
+        // $page = 0;
+        // $condition = true;
+        // do {
+        //     $page++;
+        //     $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products?page=".$page);   
+             
+        //     $all_products = json_decode($all_products,true); 
+
+        //    // dd($all_products);
+
+        //     array_push($products_dolibarrs,$all_products);
+
+        //     if (count($all_products) != 100) {
+        //         $condition = false;
+        //     }
+        // } while ($condition);
+
+      //  dd($products_dolibarrs);
+
+        // on ajoute la categorie, le label de la categorie et le parent_categorie au produits
+
+        foreach ($products_dolibarrs as $elm => $element) {
+            foreach ($element as $kkp => $product) {
+                
+                $fk_product = $product["id"];
+                if ($fk_product) {
+
+                    if (isset($all_categories[$fk_product])) {
+                        $fk_cat = $all_categories[$fk_product]["fk_categorie"];
+                        if (isset($cat_lab[$fk_cat])) {
+                            $label = $cat_lab[$fk_cat]['label'];
+                            $fk_parent = $cat_lab[$fk_cat]['fk_parent'];
+                        }else{
+                            $label = "label cat inconnu";
+                            $fk_parent = "parents inconnu";
+                        }
+                    }else {
+                        $fk_cat = "inconnu";
+                        $label = "label cat inconnu";
+                        $fk_parent = "parents inconnu";
+                    }     
+
+                    $products_dolibarrs[$elm][$kkp]["fk_cat"] = $fk_cat;
+                    $products_dolibarrs[$elm][$kkp]["label_cat"] = $label;
+                    $products_dolibarrs[$elm][$kkp]["fk_parent"] = $fk_parent;
+                }else {
+                    $products_dolibarrs[$elm][$kkp]["fk_cat"] = "inconnu";
+                    $products_dolibarrs[$elm][$kkp]["label_cat"] = "label cat inconnu";
+                    $products_dolibarrs[$elm][$kkp]["fk_parent"] = "parents inconnu";
+                }
+
+            }
+        }
+
+
+
+        $products_dolibarrs_first_tr = array();
+
+
+        foreach ($products_dolibarrs as $key => $value) {
+            foreach ($value as $k => $val) {
+
+                $products_dolibarrs_first_tr[$val["id"]] = [
+
+                    "desc" => $val["description"],
+                    "libelle" => $val["label"],
+                    "total_ttc"=>$val["price_ttc"],
+                    "subprice" => $val["price_autogen"], // a revoir
+                    
+                    "fk_cat" => $val["fk_cat"],
+                    "label_cat" => $val["label_cat"],
+                    "fk_parent" => $val["fk_parent"],
+
+
+                ];
+            }
+        }
+
 
         $vente_by_product = array();
 
-       
+
+
+
+
+
+        $kit = $this->reassort->getKits();
+        $lot_de_limes_ids = $kit["all_id_pere_kits"];
+        $lot_de_limes_vs_corresp = $kit["composition_by_pere"];
+
         foreach ($array_factures_total as $ktotal => $factures) {
             foreach ($factures as $key => $facture) {
                 $lines = $facture["lines"];
                 foreach ($lines as $kline => $line) {
-
                     if ($line["fk_product"] !="") {
-                        if (!isset($vente_by_product[$line["fk_product"]])) {
-                            $vente_by_product[$line["fk_product"]] = 
-                            [
-                                "qty" => $line["qty"]*$coef,
-                                "desc" => $line["desc"],
-                                "libelle" => $line["libelle"],
-                                "total_ttc"=>$line["total_ttc"],
-                                "subprice" => $line["subprice"]
-                            ];
+                        $id_product = $line["fk_product"];
+                        $qty = $line["qty"];  
+                        
+                        // if ($id_product == 5619) {
+                        //     dump($kline);
+                        //     dump($facture);
+                        // }
+
+                        if (in_array($id_product,$lot_de_limes_ids)) {
+
+                            // on coverti le kit en unité dont il est composé
+                            $tab_cores = $lot_de_limes_vs_corresp[$id_product];
+                            foreach ($tab_cores as $xx => $comp) {
+                                $id_product = $comp[0];
+                                $qty = $qty*$comp[1]; 
+
+                                if (!isset($vente_by_product[$id_product])) {
+                                    $vente_by_product[$id_product] = 
+                                    [
+                                        "qty" => $qty*$coef,
+                                        "desc" => $products_dolibarrs_first_tr[$id_product]["desc"],
+                                        "libelle" => $products_dolibarrs_first_tr[$id_product]["libelle"],
+                                        "total_ttc"=>$products_dolibarrs_first_tr[$id_product]["total_ttc"],
+                                        "subprice" => $products_dolibarrs_first_tr[$id_product]["subprice"],
+                                        
+                                        "fk_cat" => $products_dolibarrs_first_tr[$id_product]["fk_cat"],
+                                        "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
+                                        "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
+                                    ];
+                                }else {
+                                    $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
+                                }
+
+                            }
                         }else {
-                            $vente_by_product[$line["fk_product"]]["qty"] = $vente_by_product[$line["fk_product"]]["qty"] + $line["qty"]*$coef;
+                            if (!isset($vente_by_product[$id_product])) {
+                                $vente_by_product[$id_product] = 
+                                [
+                                    "qty" => $qty*$coef,
+                                    "desc" => $line["desc"],
+                                    "libelle" => $line["libelle"],
+                                    "total_ttc"=>$line["total_ttc"],
+                                    "subprice" => $line["subprice"],
+
+                                    "fk_cat" => $line["fk_cat"],
+                                    "label_cat" => $line["label_cat"],
+                                    "fk_parent" => $line["fk_parent"],
+                                ];
+                            }else {
+                                $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
+                            }
                         }
+
+                            
+
                     }
                 }
             }
         }
-
-        // 2- on recupere les produit et leurs stock dans les différents entropot
-        
-        $products_dolibarrs = array();
-        $page = 0;
-        $condition = true;
-        do {
-            $page++;
-            $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products?page=".$page);   
-            $all_products = json_decode($all_products,true);  
-            array_push($products_dolibarrs,$all_products);
-
-            if (count($all_products) != 100) {
-                $condition = false;
-            }
-        } while ($condition);
-
-        // dd($products_dolibarrs);
-
         // 3- on récupère les entrepots existant 
         $warehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");  
-        $warehouses = json_decode($warehouses,true);  
+        $warehouses = json_decode($warehouses,true);
+         
 
         $warehouses_product_stock = array();
+        $liste_warehouse = array();
 
         foreach ($warehouses as $key_wh => $warehouse) {
+            
             if (!isset($warehouses_product_stock[$warehouse["label"]])) {
+
+                // recuperer la liste des entrepots sans doublon
+                array_push($liste_warehouse,$warehouse["label"]);
                 $warehouses_product_stock[$warehouse["label"]] = [
                     "id" => $warehouse["id"],
                     "label" => $warehouse["label"],
@@ -492,33 +841,132 @@ class Controller extends BaseController
             }
         }
 
-        // on détermine l'entrepot a alimenter
-        $name_entrepot_a_alimenter = "";
-        $name_entrepot_a_destocker = "";
+          // on détermine l'entrepot a alimenter
+          $name_entrepot_a_alimenter = "";
+          $name_entrepot_a_destocker = "";
+  
+          foreach ($warehouses_product_stock as $key => $value) {
+  
+              if ($value["id"] == $entrepot_destination) {
+                  $name_entrepot_a_alimenter = $key;
+              }
+              if ($value["id"] == $entrepot_source) {
+                  $name_entrepot_a_destocker = $key;
+              }
+          }
+  
+          if ($name_entrepot_a_alimenter == "" || $name_entrepot_a_destocker == "") {
+              dd("entrepot n'a pas pu etre determine");
+          }
 
-        foreach ($warehouses_product_stock as $key => $value) {
 
-            if ($value["id"] == $entrepot_destination) {
-                $name_entrepot_a_alimenter = $key;
-            }
-            if ($value["id"] == $entrepot_source) {
-                $name_entrepot_a_destocker = $key;
-            }
-        }
+        if ($first_transfert) {
 
-        if ($name_entrepot_a_alimenter == "" || $name_entrepot_a_destocker == "") {
-            dd("entrepot n'a pas pu etre determine");
-        }
+            return view('admin.supply',
+            [
+                "listWarehouses" => $listWarehouses,
+                "vente_by_product" => $vente_by_product, 
+                "first_transfert" => $first_transfert,
+
+                "entrepot_source" => $entrepot_source,
+                "entrepot_destination" => $entrepot_destination,
+                "name_entrepot_a_alimenter" => $name_entrepot_a_alimenter,
+                "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+            ]);
+        }       
+
+        // 2- on recupere les produit et leurs stock dans les différents entropot
+        
+        // $products_dolibarrs = array();
+        // $page = 0;
+        // $condition = true;
+        // do {
+        //     $page++;
+        //     $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products?page=".$page);   
+        //     $all_products = json_decode($all_products,true);  
+        //     array_push($products_dolibarrs,$all_products);
+
+        //     if (count($all_products) != 100) {
+        //         $condition = false;
+        //     }
+        // } while ($condition);
+
+        // on ajoute la categorie, le label de la categorie et le parent_categorie au produits
+
+        // foreach ($products_dolibarrs as $elm => $element) {
+        //     foreach ($element as $kkp => $product) {
+                
+        //         $fk_product = $product["id"];
+        //         if ($fk_product) {
+
+        //             if (isset($all_categories[$fk_product])) {
+        //                 $fk_cat = $all_categories[$fk_product]["fk_categorie"];
+        //                 if (isset($cat_lab[$fk_cat])) {
+        //                     $label = $cat_lab[$fk_cat]['label'];
+        //                     $fk_parent = $cat_lab[$fk_cat]['fk_parent'];
+        //                 }else{
+        //                     $label = "label cat inconnu";
+        //                     $fk_parent = "parents inconnu";
+        //                 }
+        //             }else {
+        //                 $fk_cat = "inconnu";
+        //                 $label = "label cat inconnu";
+        //                 $fk_parent = "parents inconnu";
+        //             }     
+
+        //             $products_dolibarrs[$elm][$kkp]["fk_cat"] = $fk_cat;
+        //             $products_dolibarrs[$elm][$kkp]["label_cat"] = $label;
+        //             $products_dolibarrs[$elm][$kkp]["fk_parent"] = $fk_parent;
+        //         }else {
+        //             $products_dolibarrs[$elm][$kkp]["fk_cat"] = "inconnu";
+        //             $products_dolibarrs[$elm][$kkp]["label_cat"] = "label cat inconnu";
+        //             $products_dolibarrs[$elm][$kkp]["fk_parent"] = "parents inconnu";
+        //         }
+
+        //     }
+        // }
+
+
+
+        // dd($products_dolibarrs);
+
+   
+
+      
 
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
 
        // dd($products_dolibarrs[5][12]);
 
+       //dump($liste_warehouse);
+
+       // ajout des produit a zero dans les entrepot ou il n'existe pas
+       foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
+            foreach ($product_dolibarr as $k_p => $product) {
+                if ($product["warehouse_array_list"]) {
+                    foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
+                        foreach ($liste_warehouse as $k => $wah) {
+                            if (!in_array($wah, array_column($war_h_liste, 'warehouse'))) {
+                                $product["warehouse_array_list"][$k_whp][] = [
+                                    "warehouse" => $wah,
+                                    "stock" => "0"
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+       }
+
+      
+        // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
+
+        // on boucle sur tout les produits existants
+
         foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
             foreach ($product_dolibarr as $k_p => $product) {
 
-               // dd($product);
-
+                
                 if ($product["warehouse_array_list"]) {
                     if (count($product["warehouse_array_list"]) != 1) {
                         dump("produit en deux fois !");
@@ -526,14 +974,20 @@ class Controller extends BaseController
                     }
 
                     foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
-                        foreach ($war_h_liste as $ww => $pr_st_wh) {                        
+                        foreach ($war_h_liste as $ww => $pr_st_wh) {  
+                            // $warehouses_product_stock est le tableau qui contient list_product  vide
+                            // $pr_st_wh["warehouse"] nous permet de cibler le bon entrepot et on met la quantité du produit en question $product
                             $warehouses_product_stock[$pr_st_wh["warehouse"]]["list_product"][$product["id"]] = 
                             [
                                 "barcode" => $product["barcode"]?$product["barcode"]:"no_barcode",
                                 "product_id" => $product["id"],
                                 "price" => $product["price"]? $product["price"]:"0", 
                                 "stock" => $pr_st_wh["stock" ]?$pr_st_wh["stock" ]:0,
-                                "libelle" => $product["label"]
+                                "libelle" => $product["label"],
+
+                                "fk_cat" => $product["fk_cat"],
+                                "label_cat" => $product["label_cat"],
+                                "fk_parent" => $product["fk_parent"],
                             ];
                         }
                     }
@@ -541,14 +995,10 @@ class Controller extends BaseController
             }
         }       
 
-       // dd($warehouses_product_stock);
         $products_reassort = array();
         $products_non_vendu_in_last_month = array();
 
         $tab_stock_vs_demande = array();
-
-        // dump($name_entrepot_a_alimenter);       
-
         foreach ($warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"] as $kproduct => $stock_in_war) {
 
             // source data
@@ -561,7 +1011,7 @@ class Controller extends BaseController
 
             if (isset($vente_by_product[$kproduct])) {
 
-
+                // on compare les vente par semaine et la quantité dont on dispose dans l'entrepot
                 if ($stock_in_war["stock"] < $vente_by_product[$kproduct]["qty"]) {
                     array_push($products_reassort,[
                         "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
@@ -573,7 +1023,12 @@ class Controller extends BaseController
                         "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                         "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
                         "demande" => ceil($vente_by_product[$kproduct]["qty"]),
-                        "qte_optimale" => ceil($vente_by_product[$kproduct]["qty"])*3
+                        "qte_optimale" => ceil($vente_by_product[$kproduct]["qty"])*3,
+
+                        "fk_cat" => $stock_in_war["fk_cat"],
+                        "label_cat" => $stock_in_war["label_cat"],
+                        "fk_parent" => $stock_in_war["fk_parent"],
+
                     ]);
                 }
             }else {
@@ -588,7 +1043,11 @@ class Controller extends BaseController
                     "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                     "price" => $stock_in_war["price"]? $stock_in_war["price"]:"0",
                     "demande" => "inconnue",
-                    "qte_optimale" => "inconnue"
+                    "qte_optimale" => "inconnue",
+
+                    "fk_cat" => $stock_in_war["fk_cat"],
+                    "label_cat" => $stock_in_war["label_cat"],
+                    "fk_parent" => $stock_in_war["fk_parent"],
                 ]);
             }
         }
@@ -611,6 +1070,7 @@ class Controller extends BaseController
             }
         }
 
+
         // récupérer les user 
         $users = $this->users->getUsers()->toArray();
 
@@ -624,7 +1084,8 @@ class Controller extends BaseController
                 "entrepot_source_product" => $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"],
                 "name_entrepot_a_alimenter" => $name_entrepot_a_alimenter,
                 "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
-                "users" => $users
+                "users" => $users,
+                "first_transfert" => $first_transfert,
             ]);
     }
 
@@ -710,6 +1171,70 @@ class Controller extends BaseController
         } catch (\Throwable $th) {
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
         } 
+    }
+
+
+    function executerTransfere($identifiant_reassort){
+
+        try {
+            $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
+
+            if (!$tabProduitReassort) {
+                return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+            }
+            $apiKey = env('KEY_API_DOLIBAR');   
+            $apiUrl = env('KEY_API_URL');
+          
+            $data_save = array();
+            $incrementation = 0;
+            $decrementation = 0;
+            $i = 1;
+            $ids="";
+            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+            foreach ($tabProduitReassort as $key => $line) {
+
+                
+
+                if ($line["qty"] != 0) {           
+                    $data = array(
+                        'product_id' => $line["product_id"],
+                        'warehouse_id' => $line["warehouse_id"], 
+                        'qty' => $line["qty"]*-1, 
+                        'type' => $line["type"], 
+                        'movementcode' => $line["movementcode"], 
+                        'movementlabel' => $line["movementlabel"], 
+                        'price' => $line["price"], 
+                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                    );
+                    // appliquer le transfert
+                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+                    // mettre a jour woocommerce 
+
+
+                    if ($stockmovements) {
+                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                        if (count($tabProduitReassort) != $i) {
+                            $ids .= $line['id'] . ",";
+                        }else{
+                            $ids .= $line['id'];
+                        }
+                        $i++;  
+                        $incrementation++;
+                    }
+                }
+            }
+            $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
+
+            $response = DB::update($updateQuery);
+            return true;
+        
+        } catch (\Throwable $th) {
+            dd($th);
+            return ["response" => false, "error" => $th->getMessage()];
+        } 
+
     }
 
 
