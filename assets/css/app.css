@@ -5878,6 +5878,11 @@ input::placeholder {
 		display: none;
 	}
 
+	.show_messages:has(> .alert){
+		margin-bottom: 25px !important;
+	}
+
+
 	.col-md-6:has(.dataTables_filter){
 		width: 100% !important;
 	}
@@ -7924,11 +7929,26 @@ select option[disabled] {
 	margin-bottom: 1rem;
 }
 
-
 .download_cn23 {
-	border: 1px solid red;
-	padding: 10px;
-	font-weight: bold;
+	color: #fff;
+	background-color: #fd3550;
+    border-color: #fd3550;
+	padding: 5px;
+	font-size: 12px;
+	border-radius: 50rem;
+	transition: 0.3s;
+	align-items: center;
+}
+
+.download_cn23_status{
+	width: 25px;
+	height: 25px;
+	font-size: 22px;
+}
+
+.download_cn23:hover{
+	background-color: #C82227;
+	color: white;
 }
 
 .loading_text span{
@@ -7947,4 +7967,10 @@ select option[disabled] {
 	50% { opacity: 0.3; }
 	75% { opacity: 0.5; }
 	100% { opacity: 0.8; }
+}
+
+.response_detail_type{
+	font-weight: bold;
+	font-size: 14px;
+	text-decoration: underline;
 }

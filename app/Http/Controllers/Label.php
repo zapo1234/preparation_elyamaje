@@ -65,22 +65,23 @@ class Label extends BaseController
     }
 
     public function getlabels(Request $request){
-
-
         if(count($request->all()) > 0){
             $filters = $request->all();
             $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders_dolibarr = $this->orderDolibarr->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders = array_merge($orders, $orders_dolibarr);
             $orders = json_encode($orders);
             $orders = json_decode($orders, true);
         } else {
             $orders = $this->order->getAllOrdersAndLabel()->toArray();
+            $orders_dolibarr = $this->orderDolibarr->getAllOrdersAndLabel()->toArray();
+            $orders = array_merge($orders, $orders_dolibarr);
         }
        
         $labels = $this->label->getAllLabels()->toArray();
         $array_order = [];
 
         foreach($orders as $order){
-
             if(!isset($array_order[$order['order_woocommerce_id']])){
                 $array_order[$order['order_woocommerce_id']][] = $order;
             }
@@ -95,6 +96,7 @@ class Label extends BaseController
                     'label_created_at' => $order['label_created_at'],
                     'label_format' => $order['label_format'],
                     'cn23' => $order['cn23'],
+                    'download_cn23' => $order['download_cn23']
                 ];
             } else if(count($clesRecherchees) > 0){
                 $array_order[$order['order_woocommerce_id']]['labels'][$labels[$clesRecherchees[0]]['id']]= [
@@ -103,6 +105,7 @@ class Label extends BaseController
                     'label_created_at' => $labels[$clesRecherchees[0]]['created_at'], 
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                     'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
+                    'download_cn23' => $order['download_cn23']
                 ];
             }
         }
@@ -134,20 +137,28 @@ class Label extends BaseController
     public function labelDownloadCn23(Request $request){
        
         $order_id = $request->post('order_id');
-        $blob = $this->label->getLabelById($request->post('label_id'));
-        // $fileContent = $blob[0]->cn23;
+        $label_id = $request->post('label_id');
 
-        $fileContent = mb_convert_encoding($blob[0]->cn23, 'ISO-8859-1');
+        if($order_id && $label_id){
+            $blob = $this->label->getLabelById($label_id);
+            $fileContent = mb_convert_encoding($blob[0]->cn23, 'ISO-8859-1');
 
-        $fileName = 'declaration_'.$order_id.'.pdf';
-        $headers = [
-            'Content-Type' => 'application/pdf',
-        ];
-    
-        return Response::make($fileContent, 200, $headers)
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+            // Le document à été téléchargé
+            if($blob[0]->download_cn23 == 0){
+                $this->label->updateLabel(['download_cn23' => 1], $label_id);
+            }
+
+            $fileName = 'declaration_'.$order_id.'.pdf';
+            $headers = [
+                'Content-Type' => 'application/pdf',
+            ];
+        
+            return Response::make($fileContent, 200, $headers)
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        } else {
+            return redirect()->route('labels')->with('error', 'Aucun numéro de commande sélectionnée !');
+        }    
     }
-
 
     public function labelPrintZPL(Request $request){
         $label_id = $request->post('label_id');
@@ -337,7 +348,7 @@ class Label extends BaseController
 
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
         $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-        $transfers = $request->post('transfers') == "false" ? 0 : 1;
+        // $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
@@ -353,7 +364,12 @@ class Label extends BaseController
 
         if($order_by_id && $product_to_add_label){
 
-            $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+            if($from_dolibarr){
+                $order = $this->woocommerce->transformArrayOrderDolibarr($order_by_id, $product_to_add_label);
+            } else {
+                $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+            }
+
             if($from_dolibarr){
                 $order[0]['shipping_method'] = "lpc_sign";
             }

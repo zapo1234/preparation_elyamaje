@@ -248,6 +248,57 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->where('orders_doli.id', $order_id)
          ->get();
    }
+
+   public function getAllOrdersAndLabelByFilter($filters){
+         $query = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+         'labels.cn23', 'labels.download_cn23')
+         ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
+         ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
+      
+         $haveFilter = false;
+         foreach($filters as $key => $filter){
+
+            switch ($key) {
+               case "status":
+                  $key = "statut";
+                  break;
+               case "order_woocommerce_id":
+                  $key = "id";
+                  break;
+           }
+
+            if($filter){
+               $haveFilter = true;
+               if($key == "created_at"){
+                  $query->where("labels.".$key."","LIKE",  "%".$filter."%");
+               } else {
+                  $query->where("orders_doli.".$key."", $filter);
+               }
+            }
+         }
+   
+         if(!$haveFilter){
+            $date = date('Y-m-d');
+            $query->where("labels.created_at","LIKE",  "%".$date."%");
+         }
+         $query->groupBy('labels.tracking_number');
+         $query->orderBy('labels.created_at', 'DESC');
+         $query->limit(500);
+         $results = $query->get();
+         return $results;
+   }
+
+   public function getAllOrdersAndLabel(){
+      $date = date('Y-m-d');
+      return $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      'labels.cn23', 'labels.download_cn23')
+      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
+      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
+      ->orderBy('labels.created_at', 'DESC')
+      // ->limit(50)
+      ->get();
+   }
 }
 
 

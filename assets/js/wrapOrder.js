@@ -418,22 +418,27 @@ function validWrapOrder(label, redirection = false, error = false){
             $(".confirm_valid_order .loading_valid_wrapper").addClass('d-none')
             $(".confirm_valid_order ").attr('disabled', false)
 
+            if(!error){
+                $(".back_labels").attr('disabled', true)
+            }
+
             try {
                 if(JSON.parse(data).success){
-
-                    var message = error ? JSON.parse(data).message+' - '+error : JSON.parse(data).message
-
+                    
                     if(error){
                         $(".show_messages").prepend(`
                             <div class="success_message alert alert-warning border-0 bg-warning alert-dismissible fade show">
-                                <div class="text-center text-white">`+message+`</div>
+                                <div class="text-center text-white">
+                                    <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
+                                    ${error ? '<br><span class="response_detail_type">Étiquette </span>: '+error+'' : ''}
+                                </div>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         `)
                     } else {
                         $(".show_messages").prepend(`
                         <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
-                            <div class="text-center text-white">`+message+`</div>
+                            <div class="text-center text-white">`+JSON.parse(data).message+`</div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     `)
@@ -450,16 +455,20 @@ function validWrapOrder(label, redirection = false, error = false){
                     $(".valid_order_and_generate_label").show()
     
                     show_empty_order()
+
                     // Si commande bien facturée et étiquette générée mais de type chronopost ou nécessite documents douane, redirections vers labels
                     if(redirection && !error){
                         document.location.href = "http://localhost/preparation.elyamaje.com/labels?status=&created_at=&order_woocommerce_id="+order_id; 
                     }
                     
                 } else {
-                    var message = error ? JSON.parse(data).message+' - '+error : JSON.parse(data).message
+                    // var message = error ? JSON.parse(data).message+' - '+error : JSON.parse(data).message
                     $(".show_messages").prepend(`
                         <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
-                            <div class="text-center text-white">`+message+`</div>
+                            <div class="text-center text-white">
+                                <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
+                                ${error ? '<br><span class="response_detail_type">Étiquette </span>: '+error+'' : ''}
+                            </div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     `)
