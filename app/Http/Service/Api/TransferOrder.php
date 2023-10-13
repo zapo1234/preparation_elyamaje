@@ -148,7 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+            dd($orders);
              // Si commande dolibarr ajouter cet attribut fk_commande
              $fk_commande="";
              $linkedObjectsIds =[];
@@ -776,11 +776,14 @@ class TransferOrder
                        $paimentid =6;// PROD
                     }
 
-                    // si c'est un distributeur
+                     
+                    
+
+                    // si c'est un distributeur (mettre la facture impayé)
                     if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
-                        "paye"	=> 0,
-                        "statut"	=> 1,
+                        "paye"	=> 1,
+                        "statut"	=> 2,
                         "mode_reglement_id"=>$mode_reglement_id,
                         "idwarehouse"=>6,
                         "notrigger"=>0,
