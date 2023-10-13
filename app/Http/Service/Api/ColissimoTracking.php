@@ -30,6 +30,7 @@ class ColissimoTracking
             }
             
             try {
+
                 if ($response->status() === 200) {
                     $responseData = $response->json();
                     $orders_status[] = [
@@ -40,6 +41,11 @@ class ColissimoTracking
                     if(isset($responseData['parcel'])){
                         foreach($responseData['parcel']['step'] as $step){
                             if($step['status'] == "STEP_STATUS_ACTIVE"){
+                                if(isset($step['labelShort']) && $step['stepId'] == 4){
+                                    if($step['labelShort'] == "Votre colis vous attend dans votre point de retrait"){
+                                        $step['stepId'] = 5;
+                                    }
+                                }
                                 $orders_status[$key]['step'] = $step['stepId'];
                                 $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
                             }
@@ -51,7 +57,7 @@ class ColissimoTracking
                 // dd($e->getMessage());
             }
         }
-
+       
         return $orders_status;
     }
 }

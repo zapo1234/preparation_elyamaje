@@ -138,7 +138,7 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersByUsers(){
-      return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
+      return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
    public function getAllOrdersByUsersNotFinished(){
@@ -146,7 +146,7 @@ class OrderRepository implements OrderInterface
    }
 
    public function getUsersWithOrder(){
-      return $this->model->select('users.*')->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
+      return $this->model->select('users.*')->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->groupBy('users.id')->get();
    }
 
    public function getAllOrdersByIdUser($user_id){
@@ -176,7 +176,7 @@ class OrderRepository implements OrderInterface
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
-         ->whereIn('orders.status', ['processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
+         ->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
@@ -308,13 +308,52 @@ class OrderRepository implements OrderInterface
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
       $list_product_orders = DB::table('products')
-      ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
-      ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
-      ->where('products_order.order_id', $order_id)
-      ->get()
-      ->toArray();
+         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
+         ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
+         ->where('products_order.order_id', $order_id)
+         ->where('products_order.pick', 0)
+         ->get()
+         ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
+      
+    // Tout est bippé donc on valide
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
+
+      // Tout est bippé
+      if(count($list_product_orders) == 0){
+         try{
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+               'order_id' => $order_id,
+               'user_id' => Auth()->user()->id,
+               'status' => 'prepared',
+               'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $this->updateOrdersById([$order_id], "prepared-order");
+            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+            return true;
+         } catch(Exception $e){
+            return $e->getMessage();
+         }
+      }
 
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
@@ -355,14 +394,16 @@ class OrderRepository implements OrderInterface
       
       foreach($barcode_array as $key => $barcode){
          $clesRecherchees = array_keys($barcode_research, $barcode);
-         $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
-
-         $product_pick_in[] = [
-            'id' => $list_products[$clesRecherchees[0]]['id'],
-            'barcode' => $barcode,
-            'quantity' => intval($products_quantity[$key])
-         ];
+          if(count($clesRecherchees) > 0){
+             $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
+             $product_pick_in[] = [
+                'id' => $list_products[$clesRecherchees[0]]['id'],
+                'barcode' => $barcode,
+                'quantity' => intval($products_quantity[$key])
+             ];
+          }
       }
+
 
       // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
       $barcode = array_column($product_pick_in, "barcode");
@@ -379,6 +420,7 @@ class OrderRepository implements OrderInterface
             $diff_barcode = true;
          }
       }
+
 
       // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
       $cases = collect($product_pick_in)->map(function ($item) {
@@ -523,7 +565,7 @@ class OrderRepository implements OrderInterface
 
    public function updateOrderAttribution($from_user, $to_user){
       try{
-         $update_order_attribution =  $this->model::where('user_id', $from_user)->where('status', 'processing')->update(['user_id' => $to_user]);
+         $update_order_attribution =  $this->model::where('user_id', $from_user)->whereIn('status', ['processing', 'en-attente-de-pai', 'order-new-distrib'])->update(['user_id' => $to_user]);
          return true;
       } catch(Exception $e){
          return false;
@@ -675,7 +717,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-   
       $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
@@ -696,6 +737,7 @@ class OrderRepository implements OrderInterface
          $date = date('Y-m-d');
          $query->where("labels.created_at","LIKE",  "%".$date."%");
       }
+      $query->groupBy('labels.tracking_number');
       $query->orderBy('labels.created_at', 'DESC');
       $query->limit(500);
       $results = $query->get();
@@ -773,8 +815,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllHistory(){
-
-
       $list_orders = [];
 
       // Pour filtrer les gels par leurs attributs les 20 puis les 50 après
@@ -791,7 +831,7 @@ class OrderRepository implements OrderInterface
          ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
-         ->orderBy('orders.date', 'ASC')
+         ->orderBy('orders.updated_at', 'DESC')
          ->orderByRaw($queryOrder)
          ->orderBy('categories.order_display', 'ASC')
          ->orderBy('products.menu_order', 'ASC')
@@ -881,7 +921,7 @@ class OrderRepository implements OrderInterface
       try{
          $this->model
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->whereIn('orders.status', ['processing', 'order-new-distrib'])
+         ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
          ->delete();
 
          echo json_encode(['success' => true]);

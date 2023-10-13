@@ -95,9 +95,6 @@ class TiersController extends BaseController
                    
                    ];
            }
-           
-           
-          
 
         return view('tiers.orderfacturer',['list_result'=>$list_result]);
     }

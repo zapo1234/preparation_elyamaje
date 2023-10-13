@@ -88,6 +88,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
+    Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
+    Route::get("/getAverage", [Admin::class, "getAverage"])->name('admin.getAverage');
 
     // CRUD Role
     Route::get("/roles", [Admin::class, "roles"])->name('roles');

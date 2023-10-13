@@ -330,7 +330,7 @@
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													<button type="button" class="reset_order btn btn-dark px-5"><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>
-													<button from_dolibarr="{{ isset($orders['details']['from_dolibarr']) ? true : false }}" type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
+													<button from_dolibarr="{{ isset($order['details']['from_dolibarr']) ? true : false }}" type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
 												</div>
 
 											</div>
@@ -455,7 +455,7 @@
 												<div class="w-100 d-flex justify-content-between">
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													<button type="button" class="reset_order btn btn-dark px-5"><i class="d-none responsive-icon lni lni-reload"></i><span class="responsive-text">Recommencer la commande</span></button>
-													<button from_dolibarr="{{ isset($orders['details']['from_dolibarr']) ? true : false }}" type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
+													<button from_dolibarr="{{ isset($order['details']['from_dolibarr']) ? true : false }}" type="button" class="validate_pick_in btn btn-dark px-5"><i class="d-none responsive-icon lni lni-checkmark"></i><span class="responsive-text">Valider</button>
 												</div>
 
 											</div>

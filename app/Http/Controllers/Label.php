@@ -226,26 +226,28 @@ class Label extends BaseController
     }
 
     public function bordereaux(){
-        $bordereaux = $this->bordereau->getBordereaux()->toArray();
-        $bordereaux_array = [];
+        try{
+            $bordereaux_array = [];
+            $bordereaux = $this->bordereau->getBordereaux()->toArray();
 
-        $ids = array_column($bordereaux, "parcel_number");
-        foreach($bordereaux as $bordereau){
-            $clesRecherchees = array_keys($ids,  $bordereau['parcel_number']);
-            $newDate = date("d/m/Y", strtotime($bordereau['bordereau_created_at']));
-            $newDateLabel = date("d/m/Y", strtotime($bordereau['label_date']));  
-            
-            $bordereaux_array[$bordereau['parcel_number']] = [
-                'parcel_number' => $bordereau['parcel_number'],
-                'created_at' => $newDate,
-                'label_date' => $newDateLabel,
-                'number_order' => count($clesRecherchees)
-            ];
+            foreach($bordereaux as $bordereau){
+                $newDate = date("d/m/Y", strtotime($bordereau['bordereau_created_at']));
+                $newDateLabel = date("d/m/Y", strtotime($bordereau['label_date']));  
+                $bordereaux_array[$bordereau['parcel_number']] = [
+                    'parcel_number' => $bordereau['parcel_number'],
+                    'created_at' => $newDate,
+                    'label_date' => $newDateLabel,
+                    'number_order' => $bordereau['number_order'],
+                    'bordereauId' => $bordereau['bordereauId']
+                ];
+            }
+            return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);
+        } catch(Exception $e){
+            return redirect()->route('bordereaux')->with('error', $e->getMessage());
         }
-        return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);
     }
 
-    public function generateBordereau(Request $request){
+     public function generateBordereau(Request $request){
 
         $date = $request->post('date');
         // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
@@ -259,21 +261,9 @@ class Label extends BaseController
         if(count($parcelNumbers_array) == 0){
             return redirect()->route('bordereaux')->with('error', 'Bordereau déjà généré ou aucune étiquette pour cette date !');
         } else {
-            $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array);
-
+            $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array, $date);
             
             if($bordereau['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
-                // Enregistre le bordereau_id dans la table labels liés aux parcelNumber
-                $bordereau_id = $bordereau['<jsonInfos>']['bordereauHeader']['bordereauNumber'];
-                $this->label->saveBordereau($bordereau_id, $parcelNumbers_array);
-                $this->bordereau->save($bordereau_id, $bordereau['<deliveryPaper>'], $date);
-    
-                // $pdf = $bordereau['<deliveryPaper>'];
-                // $headers = [
-                //     'Content-Type' => 'application/pdf',
-                // ];
-            
-                // Renvoyer le contenu en tant que réponse
                 return redirect()->route('bordereaux')->with('success', 'Borderau généré avec succès !');
                 // return Response::make($pdf, 200, $headers);
             } else {
@@ -458,28 +448,26 @@ class Label extends BaseController
         // }
 
     }
-
+    
     public function getTrackingLabelStatus($token){
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
-
-            // Get all orders labels -10 jours
-            $rangeDate = 10;
-            $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
-            $colissimo = [];
-            $chronopost = [];
-
-
-            foreach($labels as $label){
-                if($label->origin == "colissimo"){
-                    $colissimo[] = $label;
-                } else if($label->origin == "chronopost"){
-                    $chronopost[] = $label;
-                }
-            }
-
             try{
+
+                // Get all orders labels -10 jours
+                $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+                $colissimo = [];
+                $chronopost = [];
+                
+                foreach($labels as $label){
+                    if($label->origin == "colissimo"){
+                        $colissimo[] = $label;
+                    } else if($label->origin == "chronopost"){
+                        $chronopost[] = $label;
+                    }
+                }
+
                 // Récupère les status de chaque commande
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);

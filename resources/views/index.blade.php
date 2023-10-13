@@ -4,6 +4,7 @@
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
+			<link href="assets/css/pace.min.css" rel="stylesheet" />
 
 		@endsection 
 
@@ -162,6 +163,7 @@
 												<option value="waiting_to_validate">En attente de validation</option>
 												<option value="waiting_validate">En attente validée</option>
 												<option value="order-new-distrib">Commande futur distributeur</option>
+												<option value="en-attente-de-pai">En attente de paiement distributeur</option>
 											</select>
 
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
@@ -285,7 +287,7 @@
 
 	
 	@section("script")
-
+		<script src="assets/js/pace.min.js"></script>
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>

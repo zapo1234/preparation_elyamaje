@@ -21,6 +21,7 @@ return [
     "partial_prepared_order" => "Commande partielle",
     "partial_prepared_order_validate" => "Commande validée",
     "order-new-distrib" => "Commmande futur distibuteur",
+    "en-attente-de-pai" => "En attente de paiement distributeur",
     "lpc_delivered"     => "Colis livré",
     "lpc_transit"     => "Colis en transit",
     "lpc_ready_to_ship"     => "Colis prêt à être expédier",

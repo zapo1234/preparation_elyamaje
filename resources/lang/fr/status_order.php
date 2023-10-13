@@ -18,5 +18,6 @@ return [
     'waiting_validate' => 'En attente validée',
     'prepared-order' => 'Commande préparée',
     'finished' => 'Terminée',
-    "order-new-distrib" => "Commmande futur distibuteur"
+    "order-new-distrib" => "Commmande futur distibuteur",
+    "en-attente-de-pai" => "En attente de paiement distributeur"
 ];

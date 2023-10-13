@@ -16,4 +16,6 @@ return [
     'processing' => 'Processing',
     'waiting_to_validate' => 'Waiting to validate',
     'waiting_validate' => 'Waiting validate',
+    'order-new-distrib' => 'Commande nouveau distributeur',
+    'en-attente-de-pai' => 'En attente de paiement distributeur'
 ];

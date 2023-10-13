@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldLineCommandeDoli extends Migration
+class AddFieldPickHistReassort extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddFieldLineCommandeDoli extends Migration
      */
     public function up()
     {
-        Schema::table('lines_commande_doli', function (Blueprint $table) {
-            $table->integer('pick')->after('total_ttc')->default(0);
+        Schema::table('hist_reassort', function (Blueprint $table) {
+            $table->integer('pick')->after('qty')->default(0);
+            $table->string('status')->after('pick')->default("processing");
         });
     }
 
@@ -25,7 +26,7 @@ class AddFieldLineCommandeDoli extends Migration
      */
     public function down()
     {
-        Schema::table('lines_commande_doli', function (Blueprint $table) {
+        Schema::table('hist_reassort', function (Blueprint $table) {
             //
         });
     }

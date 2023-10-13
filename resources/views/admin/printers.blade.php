@@ -56,7 +56,13 @@
 												<td data-label="Nom">{{  $printer->name }}</td>
 												<td data-label="Adresse IP">{{  $printer->address_ip }}</td>
 												<td data-label="Port">{{  $printer->port }}</td>
-												<td data-label="Préparateur">{{  $printer->userName }}</td>
+												<td data-label="Préparateur">
+													@if($printer->userName)
+														{{ $printer->userName }}
+													@else 
+														<span class="text-warning">Non attribuée</span>
+													@endif
+												</td>
 												<td class="d-flex justify-content-between" data-label="Action" >
 													<div class="d-flex">
 														<div data-id="{{ $printer->id }}" class="update_action action_table font-22 text-primary">	

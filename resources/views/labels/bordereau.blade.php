@@ -86,8 +86,9 @@
                             <tr>
                                 <th>Généré le</th>
                                 <th>Date</th>
-                                <th class="col-md-2">Nombre de commandes</th>
+                                <th class="col-md-2">Nombre de colis</th>
                                 <th class="col-md-3">Bordereau</th>
+                                <th class="col-md-3">ID</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,6 +110,7 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td data-label="Généré le">{{ $bordereau['bordereauId'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -148,9 +150,12 @@
     <script src="assets/plugins/select2/js/select2.min.js"></script>
     <script>
 
-
         $(document).ready(function() {
             $('#example').DataTable({
+                "order": [[4, 'DESC']],
+                "columnDefs": [
+                    { "visible": false, "targets": 4 }
+                ],
                 "initComplete": function(settings, json) {
                     $(".loading").hide()
                     $("#example").removeClass('d-none')
