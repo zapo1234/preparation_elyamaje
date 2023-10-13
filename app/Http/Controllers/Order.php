@@ -555,9 +555,6 @@ class Order extends BaseController
         $order_id = explode(',', $request->post('order_id'))[0];
         
     
-      // $from_dolibarr=false;
-      //  $transfers = false;
-      // $order_id =102010;
       if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);

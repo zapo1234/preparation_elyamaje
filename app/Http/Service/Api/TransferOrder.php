@@ -148,7 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            dd($orders);
+            
              // Si commande dolibarr ajouter cet attribut fk_commande
              $fk_commande="";
              $linkedObjectsIds =[];
@@ -786,9 +786,9 @@ class TransferOrder
                         "idwarehouse"=>6,
                         "notrigger"=>0,
                        ];
-                         
 
-                    }
+                         
+                      }
                      if($status_dist=="true" && $account_name!="bacs"){
                          $newCommandepaye = [
                          "paye"	=> 1,
