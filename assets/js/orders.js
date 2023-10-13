@@ -112,8 +112,13 @@ $(document).ready(function() {
             { 
             data: null, 
                 render: function(data, type, row) {
-                    return `<div class="d-flex flex-column"> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
-                                ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                    var country = row.shipping ? row.shipping.country : false
+                    return `<div class="align-items-center d-flex w-100">
+                                ${country ? '<img class="country_flag" src="assets/images/icons/'+country+'.png"/>' : ''}
+                                <div class="d-flex flex-column">
+                                    #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
+                                    ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                                </div>
                             </div>`
                 }
             },

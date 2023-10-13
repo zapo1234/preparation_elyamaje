@@ -633,7 +633,7 @@ $(".valid_manually_barcode").on('click', function(){
     var barcode = $("#barcode_manually").val()
     var order_id = $("#product_id_barcode_order_id").val()
   
-    // Update en base de données
+    // check en base de données
     $.ajax({
         url: "checkProductBarcode",
         method: 'POST',
@@ -666,7 +666,7 @@ $(".valid_manually_barcode_transfert").on('click', function(){
     var barcode = $("#barcode_manually").val()
     var order_id = $("#product_id_barcode_order_id").val()
 
-    // Update en base de données
+    // check en base de données
     $.ajax({
         url: "checkProductBarcodeForTransfers",
         method: 'POST',

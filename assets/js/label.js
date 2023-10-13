@@ -212,6 +212,7 @@ document.addEventListener("keydown", function(e) {
             $("#order_id").val(array[0])
             $(".custom_input").val(array[0])
             $(".research_label_order").click()
+            $(".custom_input").val('')
         }
     }
 })
