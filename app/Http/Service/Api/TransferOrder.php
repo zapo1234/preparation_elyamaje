@@ -777,8 +777,6 @@ class TransferOrder
                     }
 
                      
-                    
-
                     // si c'est un distributeur (mettre la facture impayé)
                     if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
@@ -788,6 +786,7 @@ class TransferOrder
                         "idwarehouse"=>6,
                         "notrigger"=>0,
                        ];
+                         
 
                     }
                      if($status_dist=="true" && $account_name!="bacs"){
