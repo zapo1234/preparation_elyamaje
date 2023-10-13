@@ -747,7 +747,7 @@ class TransferOrder
                       $mode_reglement_id=108; // payplug 4x..
                    }
                     elseif($account_name=="bacs"){
-                      $mode_reglement_id=3; // ordre de prelevement....
+                      $mode_reglement_id=3; // ordre de prelevement......
                    }
 
                    elseif($account_name=="gift_card"){
