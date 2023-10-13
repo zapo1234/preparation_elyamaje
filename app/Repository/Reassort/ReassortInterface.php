@@ -17,6 +17,11 @@ interface ReassortInterface
     public function checkIfDone($order_id, $barcode_array, $products_quantity);
 
     public function updateStatusReassort($transfer_id, $status);
+
+    public function getAllCategoriesAndProducts();
+    public function getAllCategoriesLabel();
+    public function getKits();
+    
 }
 
 
