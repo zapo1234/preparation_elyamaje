@@ -458,7 +458,7 @@ class Controller extends BaseController
             $limite = 8000;
 
            // boutique elyamaje
-           if ($entrepot_destination== "1") {
+           if ($entrepot_destination== "1" || $entrepot_destination== "15") {
                 $produitParam = array(
                     'apikey' => $apiKey,
                     'sqlfilters' => "t.ref LIKE '%TC1%'",
@@ -1173,7 +1173,7 @@ class Controller extends BaseController
         } 
     }
 
-
+/*
     function executerTransfere($identifiant_reassort){
 
         try {
@@ -1236,7 +1236,7 @@ class Controller extends BaseController
         } 
 
     }
-
+*/
 
     function delete_transfert($identifiant){
 

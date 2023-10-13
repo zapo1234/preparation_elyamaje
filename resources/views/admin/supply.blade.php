@@ -120,7 +120,7 @@
                             <select id="entrepot_destination" name="entrepot_destination" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à approvisionner</option>
                                 @foreach ($listWarehouses as $listWarehouse)
-                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11")
+                                    @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11" || $listWarehouse["id"] == "15")
                                         @if (isset($entrepot_destination))
                                             @if ($listWarehouse["id"] == $entrepot_destination)
                                                 <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
