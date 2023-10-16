@@ -163,13 +163,38 @@ class ReassortRepository implements ReassortInterface
     }
 
 
-    public function getAllCategoriesAndProducts(){
+    public function getAllCategoriesAndProducts($cat_lab){
 
-        return  $this->products_categories::select()
+        $res =  $this->products_categories::select()
         ->get()
-        ->pluck(null, 'fk_product')
         ->toArray();
         ;
+
+        $product_catIds = array();
+        foreach ($res as $key => $value) {
+            if (!isset($product_catIds[$value["fk_product"]])) {
+                $value["fk_categorie"] = [
+                    "cat" => [$value["fk_categorie"]],
+                    "cat_parent" => [$cat_lab[$value["fk_categorie"]]["fk_parent"]],
+                ];
+                $product_catIds[$value["fk_product"]] = $value;
+            }else {
+                array_push($product_catIds[$value["fk_product"]]["fk_categorie"]["cat"], $value["fk_categorie"]);
+                array_push($product_catIds[$value["fk_product"]]["fk_categorie"]["cat_parent"], $cat_lab[$value["fk_categorie"]]["fk_parent"]);
+            }
+        }
+
+
+        foreach ($product_catIds as $key => $value) {
+
+            $cat = $value["fk_categorie"]["cat"];
+            $catParent = $value["fk_categorie"]["cat_parent"];
+            $product_catIds[$key]["fk_categorie"] = $this->getLastCategorie($cat, $catParent);
+
+        }
+
+
+        return $product_catIds;
     }
 
     public function getAllCategoriesLabel(){
@@ -319,6 +344,23 @@ class ReassortRepository implements ReassortInterface
                 return $e->getMessage();
             }
         }
+    }
+
+    public function getLastCategorie($cat, $catParent){
+
+
+        if (count($cat) == 1) {
+            return $cat[0];
+        }
+        else {
+            foreach ($cat as $key => $value) {
+                if (!in_array($value,$catParent)) {
+                    return $value;
+                }
+            }
+            return "inconue";
+        }
+        
     }
 }
 

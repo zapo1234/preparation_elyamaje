@@ -510,7 +510,7 @@ class Controller extends BaseController
                 dd("selectionner les deux date");
             }
         }else {
-            $mois = 12; // nombre de mois
+            $mois = 1; // nombre de mois
             $jours = $mois*28;
             $interval = date("Y-m-d", strtotime("-$jours days")); 
             $coef = (1.10)/($jours/7);
@@ -519,11 +519,12 @@ class Controller extends BaseController
         }      
        
 
-        // Récupérer le couple categories - produits
-        $all_categories = $this->reassort->getAllCategoriesAndProducts();
-        // dd($all_categories);
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
+
+        // Récupérer le couple categories - produits
+        $all_categories = $this->reassort->getAllCategoriesAndProducts($cat_lab);
+        // dd($all_categories);
 
         $cat_no_exist = array();
         $product_no_cat = array();

@@ -20,7 +20,7 @@ interface ReassortInterface
 
     public function updateStatusReassort($transfer_id, $status);
 
-    public function getAllCategoriesAndProducts();
+    public function getAllCategoriesAndProducts($cat_lab);
     public function getAllCategoriesLabel();
     public function getKits();
     
