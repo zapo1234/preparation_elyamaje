@@ -688,7 +688,7 @@ function checkProductOnLabel(data){
 }
 
 document.addEventListener("keydown", function(e) {
-    if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
+    if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
 
