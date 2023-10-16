@@ -1,6 +1,14 @@
 $(document).ready(function() {
 
-    if($("#cn23ToDownload").val() == "true"){
+    var cn23_not_download = false
+    $(".cn23_label").each(function(index){
+        console.log($(this).val())
+       if($(this).val() == "0"){
+        cn23_not_download = true
+       }
+    });
+
+    if(cn23_not_download){
         $('#warningCn23Download').modal({
             backdrop: 'static',
             keyboard: false

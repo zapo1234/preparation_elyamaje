@@ -300,7 +300,7 @@ function validWrapOrder(label, redirection = false, error = false){
     var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
     var transfers = $("#validWrapper").attr('transfers')
     // Affiche les infos pour générer l'étiquette
-
+    
     if(label){
         $.ajax({
             url: "getProductOrderLabel",
@@ -595,7 +595,6 @@ $(".valid_generate_label").on('click', function(){
                                         
                                     },
                                     error : function(xhr){
-                                    if(xhr.status == 404){
                                         $.ajax({
                                             url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label,
                                             metho: 'GET',
@@ -603,8 +602,10 @@ $(".valid_generate_label").on('click', function(){
                                             success : function(data){
                                             
                                             },
+                                            error : function(xhr){
+                                                redirection = true;
+                                            }
                                         })
-                                    }
                                     }
                                 })
                             } else {
