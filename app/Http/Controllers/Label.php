@@ -296,15 +296,13 @@ class Label extends BaseController
 
     public function getProductOrderLabel(Request $request){
         $order_id = $request->post('order_id');
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+        $from_dolibarr = 0; //$request->post('from_dolibarr') == "false" ? 0 : 1;
         $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         if($from_dolibarr){
-            dd("a");
             $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
             $product_order[0]['shipping_method'] = "lpc_sign";
         } else {
-            dd("ddd");
             $product_order = $this->order->getProductOrder($order_id)->toArray();
         }
 
