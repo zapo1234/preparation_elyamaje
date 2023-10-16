@@ -6,10 +6,21 @@ $(".order_input").on('input', function(){
 
 // Action orsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    $("#order_id").val($(".order_id_input").val())
-    $(".validate_order").attr('disabled', false)
+    if(isInt(parseInt($(".order_id_input").val()))){
+        $("#order_id").val($(".order_id_input").val())
+        $(".validate_order").attr('disabled', false)
+    }
 })
 
+// Check if is int
+function isInt(x) {
+    if (isNaN(x)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+ 
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
@@ -284,11 +295,11 @@ function total_weight(){
 
 function validWrapOrder(label, redirection = false, error = false){
 
-  
     var order_id = $("#order_id").val()
     var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
     var transfers = $("#validWrapper").attr('transfers')
     // Affiche les infos pour générer l'étiquette
+
     if(label){
         $.ajax({
             url: "getProductOrderLabel",
@@ -852,12 +863,12 @@ function clean_scan(){
 }
 
 function getCountry(order){
-    if(typeof order['billing_customer_country'] != "undefined"){
-        if(order['billing_customer_country'] == 'CH'){
+    if(typeof order['shipping_customer_country'] != "undefined"){
+        if(order['shipping_customer_country'] == 'CH'){
             return "Suisse"
-        } else if(order['billing_customer_country'] == 'FR'){
+        } else if(order['shipping_customer_country'] == 'FR'){
             return "France"
-        } else if(order['billing_customer_country'] == 'BE'){
+        } else if(order['shipping_customer_country'] == 'BE'){
             return "Belgique"
         } else {
             return false
