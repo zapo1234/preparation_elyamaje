@@ -300,9 +300,11 @@ class Label extends BaseController
         $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         if($from_dolibarr){
+            dd("a");
             $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
             $product_order[0]['shipping_method'] = "lpc_sign";
         } else {
+            dd("ddd");
             $product_order = $this->order->getProductOrder($order_id)->toArray();
         }
 
