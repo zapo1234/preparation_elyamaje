@@ -358,7 +358,6 @@ class Label extends BaseController
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 
-
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
         } else {
@@ -400,7 +399,7 @@ class Label extends BaseController
                     }
                 }
             } 
-            
+
             $order[0]['total_order'] = $subtotal;
             if(count($items) > 0){
                 // Étiquette Chronopost

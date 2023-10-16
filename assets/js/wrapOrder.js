@@ -99,6 +99,7 @@ $(".validate_order").on("click", function(){
 
             // Afficher les informations de la commande, total, numéro et préparateur
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
+            $("#order_id").val(order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total :')
 
@@ -687,13 +688,11 @@ function checkProductOnLabel(data){
 }
 
 document.addEventListener("keydown", function(e) {
-    
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
         var array = $("#detail_order").val().split(',')
 
-        if(array.length == 4 && $("#validWrapper").length == 0){
-        
+        if(array.length == 3 && $("#validWrapper").length == 0){
             $("#order_id").val(array[0].split(',')[0])
             $(".order_id_input").val(array[0].split(',')[0])
             $("#product_count").val(array[1])
