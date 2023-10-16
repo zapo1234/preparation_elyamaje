@@ -354,6 +354,7 @@ class Label extends BaseController
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 
+        dd($from_dolibarr);
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
         } else {
