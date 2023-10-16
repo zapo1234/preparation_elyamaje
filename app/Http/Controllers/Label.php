@@ -309,7 +309,7 @@ class Label extends BaseController
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
 
         if(isset($product_order[0])){
-            dd($product_order[0]);
+            // dd($product_order[0]);
             if($product_order[0]['status'] != "finished" && !$from_validWraper){
                 echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
                 return;
