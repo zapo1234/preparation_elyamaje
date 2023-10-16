@@ -32,6 +32,7 @@ class Colissimo
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
+
         if($productCode){
             try {
                 $requestParameter = [
@@ -94,7 +95,7 @@ class Colissimo
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
-
+                
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -346,7 +347,7 @@ class Colissimo
                     'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1'].' '.$order['shipping']['address_2']) ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -360,7 +361,7 @@ class Colissimo
                     'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1'].' '.$order['shipping']['address_2']) ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -375,7 +376,7 @@ class Colissimo
                 'companyName' =>$order['shipping']['company'] ?? '',
                 'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                 'firstName' => $order['shipping']['first_name'],
-                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1'].' '.$order['shipping']['address_2']) ?? '',
                 'countryCode' => $order['shipping']['country'],
                 'city' => $order['shipping']['city'],
                 'zipCode' => $order['shipping']['postcode'],
@@ -436,7 +437,7 @@ class Colissimo
                     'originalIdent' => 'A',
                     'originCountry' => 'FR',
                     'hsCode'        => '33049900', // code pour produits esthétique, beauté
-                    'weight'        => $item['weight']
+                    'weight'        => is_numeric($item['weight']) ? $item['weight'] : 0
                 ];
             }
            

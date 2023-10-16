@@ -400,7 +400,7 @@ class Label extends BaseController
                     }
                 }
             } 
-
+            
             $order[0]['total_order'] = $subtotal;
             if(count($items) > 0){
                 // Étiquette Chronopost
