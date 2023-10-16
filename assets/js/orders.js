@@ -112,8 +112,13 @@ $(document).ready(function() {
             { 
             data: null, 
                 render: function(data, type, row) {
-                    return `<div class="d-flex flex-column"> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
-                                ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                    var country = row.shipping ? row.shipping.country : false
+                    return `<div class="align-items-center d-flex w-100">
+                                ${country ? '<img class="country_flag" src="assets/images/icons/'+country+'.png"/>' : ''}
+                                <div class="d-flex flex-column">
+                                    #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
+                                    ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                                </div>
                             </div>`
                 }
             },
@@ -308,24 +313,34 @@ $(document).ready(function() {
                     return '<span>'+preparateur+'</span>';
                 }
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    var country = row.shipping ? row.shipping.country : false
+                    return country
+                }
+            },
         ],
 
         "columnDefs": [
             { "visible": false, "targets": 6 },
             { "visible": false, "targets": 7 },
-            { "visible": false, "targets": 8 }
+            { "visible": false, "targets": 8 },
+            { "visible": false, "targets": 9 },
         ],
         "initComplete": function(settings, json) {
             // $("#example_length select").css('margin-right', '10px')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
             $(".preparateur_dropdown").appendTo('.dataTables_length')
+            $(".country_dropdown").appendTo('.dataTables_length')
+
 
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").removeClass('d-none')
             $(".status_dropdown").removeClass('d-none')
             $(".preparateur_dropdown").removeClass('d-none')
+            $(".country_dropdown").removeClass('d-none')
 
             $(".preparateur_dropdown").select2({
                 width: '130px',
@@ -339,8 +354,11 @@ $(document).ready(function() {
                 width: '150px',
             });
 
-            $(".select2-container").css('margin-left', '10px')
+            $(".country_dropdown").select2({
+                width: '130px',
+            });
 
+            $(".select2-container").css('margin-left', '10px')
 
             $(".percent").remove()
             $(".loading_table").remove()
@@ -418,6 +436,12 @@ $(document).ready(function() {
         .draw();
     })
 
+    $('.country_dropdown').on('change', function(e){
+        var preparateur_dropdown = $(this).val();
+        $('#example').DataTable()
+        .column(9).search(preparateur_dropdown, true, false)
+        .draw();
+    })
 })
 
 if($(window).width() < 650){

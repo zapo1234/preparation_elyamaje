@@ -7935,7 +7935,7 @@ select option[disabled] {
     border-color: #fd3550;
 	padding: 5px;
 	font-size: 12px;
-	border-radius: 50rem;
+	border-radius: .25rem;
 	transition: 0.3s;
 	align-items: center;
 }
@@ -7973,4 +7973,10 @@ select option[disabled] {
 	font-weight: bold;
 	font-size: 14px;
 	text-decoration: underline;
+}
+
+.country_flag{
+	width: 18px;
+	height: 18px;
+	margin-right: 8px;
 }

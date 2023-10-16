@@ -77,11 +77,14 @@ class Label extends BaseController
             $orders_dolibarr = $this->orderDolibarr->getAllOrdersAndLabel()->toArray();
             $orders = array_merge($orders, $orders_dolibarr);
         }
-       
+
+
+        
         $labels = $this->label->getAllLabels()->toArray();
         $array_order = [];
 
         foreach($orders as $order){
+
             if(!isset($array_order[$order['order_woocommerce_id']])){
                 $array_order[$order['order_woocommerce_id']][] = $order;
             }
@@ -90,13 +93,14 @@ class Label extends BaseController
             $clesRecherchees = array_keys($ids,  $order['order_woocommerce_id']);
             
             if(!isset($array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]) && $order['label_id']){
-                $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]= [
+                $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']] = [
                     'label_id' => $order['label_id'],
                     'tracking_number' => $order['tracking_number'],
                     'label_created_at' => $order['label_created_at'],
                     'label_format' => $order['label_format'],
                     'cn23' => $order['cn23'],
-                    'download_cn23' => $order['download_cn23']
+                    'download_cn23' => $order['download_cn23'],
+                    // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             } else if(count($clesRecherchees) > 0){
                 $array_order[$order['order_woocommerce_id']]['labels'][$labels[$clesRecherchees[0]]['id']]= [
@@ -105,11 +109,11 @@ class Label extends BaseController
                     'label_created_at' => $labels[$clesRecherchees[0]]['created_at'], 
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                     'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
-                    'download_cn23' => $order['download_cn23']
+                    'download_cn23' => $order['download_cn23'],
+                    // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             }
         }
-
 
         // Liste des status commandes
         $status_list = __('status_order');
@@ -296,7 +300,7 @@ class Label extends BaseController
 
     public function getProductOrderLabel(Request $request){
         $order_id = $request->post('order_id');
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+        $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
         $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         if($from_dolibarr){
@@ -309,6 +313,7 @@ class Label extends BaseController
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
 
         if(isset($product_order[0])){
+            // dd($product_order[0]);
             if($product_order[0]['status'] != "finished" && !$from_validWraper){
                 echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
                 return;
@@ -347,11 +352,12 @@ class Label extends BaseController
     public function generateLabel(Request $request){
 
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+        $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
         // $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
+
 
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
@@ -394,7 +400,7 @@ class Label extends BaseController
                     }
                 }
             } 
-
+            
             $order[0]['total_order'] = $subtotal;
             if(count($items) > 0){
                 // Étiquette Chronopost
