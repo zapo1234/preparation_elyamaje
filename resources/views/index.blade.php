@@ -156,6 +156,15 @@
 												@endforeach
 											</select>
 
+											<!-- country -->
+											<select class="d-none select2_custom country_dropdown input_form_type">
+												<option value="">Expédition</option>
+												<option value="CH">Suisse</option>
+												<option value="BE">Belgique</option>
+												<option value="FR">France</option>
+												<option value="LU">Luxembourg</option>
+											</select>
+
 											<select class="d-none select2_custom status_dropdown input_form_type">
 												<option value="">Status</option>
 												<option value="processing">En cours</option>

@@ -56,10 +56,12 @@ $(".delete_label").on('click', function(){
 
 $(".generate_label_button").on('click', function(){
         var order_id = $(this).attr('data-order')
+        var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
+
         $.ajax({
             url: "getProductOrderLabel",
             method: 'POST',
-            data : {_token: $('input[name=_token]').val(), order_id: order_id}
+            data : {_token: $('input[name=_token]').val(), order_id: order_id, from_dolibarr: from_dolibarr}
         }).done(function(data) {
             if(JSON.parse(data).success){
                 $(".line_items_label").remove()
@@ -103,6 +105,9 @@ $(".generate_label_button").on('click', function(){
                 } else {
                     $(".button_validate_modal_label").children('button').last().attr('disabled', false)
                 }
+
+                // If is dolibarr order
+                $("#from_dolibarr").val(from_dolibarr)
 
                 $(".body_line_items_label").append(innerHtml)
                 $(".generate_label_modal").modal('show')

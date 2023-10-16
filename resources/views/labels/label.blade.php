@@ -143,11 +143,11 @@
 														</div>
 													@endforeach
 													<div class="w-100 d-flex justify-center">
-														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" from_dolibarr="{{ isset($order[0]['fk_commande']) ? true : false }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
 													</div>
 												@else 
 													<div class="w-100 d-flex justify-center">
-														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" from_dolibarr="{{ isset($order[0]['fk_commande']) ? 1 : 0 }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
 													</div>
 												@endif
 											</td>
@@ -272,6 +272,7 @@
 								<form class="h-100" method="POST" action="{{ route('label.generate') }}">
 									@csrf
 									<input id="order_id_label" type="hidden" name="order_id" value="">
+									<input id="from_dolibarr" type="hidden" name="from_dolibarr" value="">
 									<div class="h-100 d-flex flex-column justify-content-between">
 										<div class="d-flex flex-column">
 											<div class="mb-2 d-flex w-100 justify-content-between">
