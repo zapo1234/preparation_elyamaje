@@ -505,8 +505,6 @@ class Label extends BaseController
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
 
-                dd($trackingLabelChronopost);
-
                 // Update status sur Wordpress pour les colis livré
                 $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
                 $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
