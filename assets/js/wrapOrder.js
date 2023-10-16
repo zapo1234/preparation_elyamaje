@@ -689,10 +689,10 @@ function checkProductOnLabel(data){
 document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
         $("#detail_order").val($("#detail_order").val()+e.key)
+        $("#detail_order").val( $("#detail_order").val().replace(' ', ''))
         var array = $("#detail_order").val().split(',')
 
         if(array.length == 4 && $("#order_id").val() == ""){
-            console.log(array[0].split(',')[0])
             $("#order_id").val(array[0].split(',')[0])
             $(".order_id_input").val(array[0].split(',')[0])
             $("#product_count").val(array[1])
