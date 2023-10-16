@@ -348,13 +348,13 @@ class Label extends BaseController
     public function generateLabel(Request $request){
 
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+        $from_dolibarr = 0; //$request->post('from_dolibarr') == "false" ? 0 : 1;
         // $transfers = $request->post('transfers') == "false" ? 0 : 1;
 
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 
-        dd($from_dolibarr);
+       
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
         } else {
