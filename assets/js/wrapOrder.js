@@ -316,7 +316,8 @@ function validWrapOrder(label, redirection = false, error = false){
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        total_weight = value.weight ? parseFloat(total_weight) + (parseFloat(value.weight) * value.quantity) : parseFloat(total_weight)
+                        weight_product = value.weight != "" ? value.weight : 0
+                        total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 
                     innerHtml +=

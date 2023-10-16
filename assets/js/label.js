@@ -80,10 +80,12 @@ $(".generate_label_button").on('click', function(){
                 Object.entries(product_order).forEach(([key, value]) => {
                     product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1;
 
+
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        total_weight = parseFloat(total_weight) + (parseFloat(value.weight) * value.quantity);
+                        weight_product = value.weight != "" ? value.weight : 0
+                        total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 
                     innerHtml +=
@@ -94,7 +96,7 @@ $(".generate_label_button").on('click', function(){
                             <span class="w-50">${value.name}</span>
                             <span class="w-25">${value.cost}</span>
                             <span class="w-25" ><input class="quantity_product_label" ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
-                            <span class="weight w-25">${value.weight}</span>
+                            <span class="weight w-25">${value.weight != "" ? value.weight : 0}</span>
                         </div>`
                 });
                 

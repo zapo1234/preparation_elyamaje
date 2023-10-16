@@ -95,7 +95,7 @@ class Colissimo
 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
-                
+
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -424,6 +424,7 @@ class Colissimo
     //     }
     // }
     // XC2F000423
+    
     protected function customsArticle($order, $items){
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
