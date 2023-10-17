@@ -25,11 +25,11 @@ class ReassortRepository implements ReassortInterface
         $list = [];
         $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+        ->whereIn('id_reassort', [0, -1])
         ->where([
             ['user_id', $user_id],
             ['type', 0]
         ])
-        ->whereIn('id_reassort', [0, -1])
         ->whereIn('hist_reassort.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
         ->get();
 
