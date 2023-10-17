@@ -365,6 +365,18 @@ class ReassortRepository implements ReassortInterface
         
     }
 
+    public function updateUserReassort($id_user,$identifiant_reassort){
+
+        try {
+
+            Reassort::where('identifiant_reassort', $identifiant_reassort)
+            ->update(['user_id' => $id_user]);
+            return true;
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
     public function orderResetTransfers($order_id){
         try{
             $update_products = $this->model::where('identifiant_reassort', $order_id)->update(['pick' => 0]);

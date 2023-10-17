@@ -311,15 +311,19 @@ class Controller extends BaseController
             if (!$value->origin_id_reassort) {          
                 if ($val_etat == 0) {
                     $etat = '<span class="badge bg-warning text-dark">En attente</span>';
+                    $disabled = "";
                 }
                 if ($val_etat < 0) {
                     $etat = '<span class="badge bg-info text-dark">En cours</span>';
+                    $disabled = "disabled";
                 }
                 if ($val_etat > 0) {
                     $etat = '<span class="badge bg-success">Validé</span>';
+                    $disabled = "disabled";
                 }
             }else {
                 $etat = '<span class="badge bg-secondary">Annulé ('.$value->origin_id_reassort.')</span>';
+                $disabled = "disabled";
             } 
 
             array_push($liste_reassort,[
@@ -330,7 +334,8 @@ class Controller extends BaseController
                 "etat" => $etat,
                 "val_etat" => $value->id_reassort,
                 "origin_id_reassort" => $value->origin_id_reassort,
-                "attribue_a" => $value->user_id
+                "attribue_a" => $value->user_id,
+                "disabled" => $disabled,
             ]);
         }
 
@@ -1478,6 +1483,36 @@ class Controller extends BaseController
 
             return false;
         }
+    }
+
+    function changeUserForReassort(){
+        // Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
+
+        try {
+
+            $value = request('value');
+
+            $id_user = explode(',',$value)[0];
+            $id_reassort = explode(',',$value)[1];
+
+
+            $res = $this->reassort->updateUserReassort($id_user,$id_reassort);
+
+            if ($res == true) {
+                return ["response" => true];
+            }else {
+                return ["response" => false, "message"=> $res];
+            }
+
+    
+            
+        } catch (\Throwable $th) {
+
+            return ["response" => false, "message"=> $th->getMessage()];
+        }
+      
+
+
     }
 }
     
