@@ -28,6 +28,8 @@ interface OrderDolibarrInterface
     public function getAllOrdersAndLabelByFilter($filters);
 
     public function getAllOrdersAndLabel();
+
+    public function orderResetDolibarr($order_id);
 }
 
 

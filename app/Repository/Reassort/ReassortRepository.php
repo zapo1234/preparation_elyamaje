@@ -255,8 +255,7 @@ class ReassortRepository implements ReassortInterface
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['identifiant_reassort', $order_id],
-            ['type', 0],
-            ['pick', 0],
+            ['type', 0]
         ])
         ->get();
 
@@ -264,11 +263,13 @@ class ReassortRepository implements ReassortInterface
 
         $list_products = [];
         foreach($transfer as $list){
-            $list_products[] = [
-                "barcode" => $list['barcode'],
-                "quantity" =>  $list['qty'],
-                "id" =>  $list['id'],
-            ];
+            if($list['qty'] != $list['pick']){
+                $list_products[] = [
+                    "barcode" => $list['barcode'],
+                    "quantity" =>  $list['qty'],
+                    "id" =>  $list['id'],
+                ];
+            }
         }
 
         $product_pick_in = [];
@@ -309,16 +310,16 @@ class ReassortRepository implements ReassortInterface
         }
 
     
+        if(count($product_pick_in) > 0){
+            // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+            $cases = collect($product_pick_in)->map(function ($item) {
+                return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
+            })->implode(' ');
 
-        // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
-        $cases = collect($product_pick_in)->map(function ($item) {
-            return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
-        })->implode(' ');
 
-
-        $query = "UPDATE prepa_hist_reassort SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-        DB::statement($query);
-
+            $query = "UPDATE prepa_hist_reassort SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
+            DB::statement($query);
+        }
 
         if(!$partial){
             if(!$diff_quantity && !$diff_barcode){
@@ -362,6 +363,15 @@ class ReassortRepository implements ReassortInterface
             return "inconue";
         }
         
+    }
+
+    public function orderResetTransfers($order_id){
+        try{
+            $update_products = $this->model::where('identifiant_reassort', $order_id)->update(['pick' => 0]);
+            return true;
+         } catch(Exception $e){
+            return false;
+         }
     }
 }
 

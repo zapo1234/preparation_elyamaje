@@ -364,7 +364,6 @@ class Order extends BaseController
           }
         }
 
-
         if($check_if_order_done && $partial == "1"){
           
           // Récupère les chefs d'équipes
@@ -379,8 +378,6 @@ class Order extends BaseController
                 'order_id' => $order_id,
                 'detail' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
               ];
-
-             
 
               $this->notification->insert($data);
           }
@@ -397,44 +394,69 @@ class Order extends BaseController
         echo json_encode(["success" => $check_if_order_done]);
       } else {
         // Check if all products are picked
-        $products = $this->productOrder->getProductsByOrderId($order_id);
         $picked = true;
-        foreach($products as $p){
-          if($p->pick != 1){
-            $picked = false;
+        if($from_transfers){
+          $products = $this->reassort->getReassortById($order_id);
+          foreach($products as $p){
+            if($p->qty != $p->pick){
+              $picked = false;
+            }
+          }
+        } else {
+          $products = $this->productOrder->getProductsByOrderId($order_id);
+          foreach($products as $p){
+            if($p->quantity != $p->pick){
+              $picked = false;
+            }
           }
         }
 
-        if($picked){
+        if($picked && $from_dolibarr){
+            $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
+            echo json_encode(["success" => true]);
+            return;
+        } else if($picked && $from_transfers){
+            $this->reassort->updateStatusTextReassort($order_id ,"finished");
+            echo json_encode(["success" => true]);
+            return;
+        } else if($picked && !$from_transfers && !$from_dolibarr){
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
           echo json_encode(["success" => true]);
+          return;
         }
 
         echo json_encode(["success" => $picked]);
       }
     }
     
+    // public function transfersPrepared(Request $request){
+    //   $barcode_array = $request->post('pick_items');
+    //   $products_quantity = $request->post('pick_items_quantity');
+    //   $order_id = $request->post('order_id');
 
-    public function transfersPrepared(Request $request){
-      $barcode_array = $request->post('pick_items');
-      $products_quantity = $request->post('pick_items_quantity');
-      $order_id = $request->post('order_id');
-
-      if($barcode_array != null){
-        $check = $this->reassort->checkIfDone($order_id, $barcode_array, $products_quantity);
-      }
+    //   if($barcode_array != null){
+    //     $check = $this->reassort->checkIfDone($order_id, $barcode_array, $products_quantity);
+    //   }
      
-      echo json_encode(["success" => $check]);
-
-    }
+    //   echo json_encode(["success" => $check]);
+    // }
 
     public function ordersReset(Request $request){
       $order_id = $request->post('order_id');
-      $orderReset = $this->order->orderReset($order_id);
+      $from_dolibarr = $request->post('from_dolibarr') == "true" ? true : false;
+      $from_transfers = $request->post('from_transfers') == "true" ? true : false;
+
+      if($from_dolibarr){
+        $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+      } else if($from_transfers){
+        $orderReset = $this->reassort->orderResetTransfers($order_id);
+      } else {
+        $orderReset = $this->order->orderReset($order_id);
+      }
+
       echo json_encode(["success" => $orderReset]);
     }
-
 
     public function updateAttributionOrder(Request $request){
       $from_user = $request->post('from_user');

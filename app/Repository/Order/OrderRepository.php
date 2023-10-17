@@ -308,35 +308,16 @@ class OrderRepository implements OrderInterface
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
       $list_product_orders = DB::table('products')
-         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
+         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id', 'products_order.pick')
          ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
          ->where('products_order.order_id', $order_id)
-         ->where('products_order.pick', 0)
          ->get()
          ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
       
-    // Tout est bippé donc on valide
-      if(count($list_product_orders) == 0){
-         try{
-            // Insert la commande dans histories
-            DB::table('histories')->insert([
-               'order_id' => $order_id,
-               'user_id' => Auth()->user()->id,
-               'status' => 'prepared',
-               'created_at' => date('Y-m-d H:i:s')
-            ]);
 
-            $this->updateOrdersById([$order_id], "prepared-order");
-            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
-            return true;
-         } catch(Exception $e){
-            return $e->getMessage();
-         }
-      }
-
-      // Tout est bippé
+      // Tout est bippé donc on valide
       if(count($list_product_orders) == 0){
          try{
             // Insert la commande dans histories
@@ -379,13 +360,15 @@ class OrderRepository implements OrderInterface
       // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       $list_products = [];
       foreach($list_product_orders as $list){
-         $list_products[] = [
-            "barcode" => $list['barcode'],
-            "quantity" =>  $list['quantity'],
-            "id" =>  $list['id'],
-         ];
+         // Ignore les produits bippés
+         if($list['quantity'] != $list['pick']){
+            $list_products[] = [
+               "barcode" => $list['barcode'],
+               "quantity" =>  $list['quantity'],
+               "id" =>  $list['id'],
+            ];
+         }
       }
-
 
       $product_pick_in = [];
       $lits_id = [];
@@ -427,9 +410,10 @@ class OrderRepository implements OrderInterface
          return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
       })->implode(' ');
 
-
-      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-      DB::statement($query);
+      if(count($product_pick_in) > 0){
+         $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
+         DB::statement($query);
+      }
 
       if(!$partial){
          if(!$diff_quantity && !$diff_barcode){
@@ -560,7 +544,6 @@ class OrderRepository implements OrderInterface
       } catch(Exception $e){
          return false;
       }
-
    }
 
    public function updateOrderAttribution($from_user, $to_user){

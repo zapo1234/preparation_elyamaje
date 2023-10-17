@@ -40,7 +40,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    // Pour l'emballage d'une commande
    public function getOrdersDolibarrById($order_id){
       $order_lines = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
-      'lines_commande_doli.qte as quantity', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
+      'lines_commande_doli.qte as quantity', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'users.name as preparateur')
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
@@ -100,7 +100,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersDolibarrByIdUser($user_id){
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
-      'lines_commande_doli.qte', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
+      'lines_commande_doli.qte', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
@@ -141,7 +141,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                'total' => $order['priceDolibarr'] * $order['qte'],
                "cost" => $order['priceDolibarr'],
                "weight" =>  $order['weight'],
-               'pick' => 0,
+               'pick' => $order['pick'],
                'product_woocommerce_id' => $order['product_woocommerce_id'],
             ];
          }
@@ -150,7 +150,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, $partial){
-      $list_product_orders = $this->model::select(DB::raw('REPLACE(prepa_products.barcode, " ", "") AS barcode'), 'lines_commande_doli.qte', 'lines_commande_doli.id')
+      $list_product_orders = $this->model::select(DB::raw('REPLACE(prepa_products.barcode, " ", "") AS barcode'), 'lines_commande_doli.qte', 
+         'lines_commande_doli.id', 'lines_commande_doli.pick')
             ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
             ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
             ->where('orders_doli.id', $order_id)
@@ -161,11 +162,14 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       $list_products = [];
       foreach($list_product_orders as $list){
-         $list_products[] = [
-            "barcode" => $list['barcode'],
-            "quantity" =>  $list['qte'],
-            "id" =>  $list['id'],
-         ];
+         // Ne prend pas en compte les produits déjà bippé
+         if($list['qte'] != $list['pick']){
+            $list_products[] = [
+               "barcode" => $list['barcode'],
+               "quantity" =>  $list['qte'],
+               "id" =>  $list['id'],
+            ];
+         }
       }
 
       $product_pick_in = [];
@@ -204,14 +208,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          }
       }
 
-    
-      // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
-      $cases = collect($product_pick_in)->map(function ($item) {
-         return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
-      })->implode(' ');
+      if(count($product_pick_in) > 0){
+         // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+         $cases = collect($product_pick_in)->map(function ($item) {
+            return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
+         })->implode(' ');
 
-      $query = "UPDATE prepa_lines_commande_doli SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-      DB::statement($query);
+         $query = "UPDATE prepa_lines_commande_doli SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
+         DB::statement($query);
+      }
 
       if(!$partial){
          if(!$diff_quantity && !$diff_barcode){
@@ -298,6 +303,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       ->orderBy('labels.created_at', 'DESC')
       // ->limit(50)
       ->get();
+   }
+
+   public function orderResetDolibarr($order_id){
+      try{
+         $update_products = DB::table('lines_commande_doli')->where('id_commande', $order_id)->update(['pick' => 0]);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
    }
 }
 

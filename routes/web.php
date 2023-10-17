@@ -67,19 +67,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
     // ajax verification des commandes api dolibar factures.
     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
-
-    // Route pour approvisionnement
-    Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
-    Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
-
     Route::get("/executerTransfere/{identifiant_reassort}", [Controller::class, "executerTransfere"])->name('executerTransfere');
-
-
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
-
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
@@ -119,7 +111,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
     Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
-    Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
+    // Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
@@ -163,6 +155,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
     Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
     Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
+    // Route pour approvisionnement
+    Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
+    Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR

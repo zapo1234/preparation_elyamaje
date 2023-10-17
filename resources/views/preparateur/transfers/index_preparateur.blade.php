@@ -199,7 +199,7 @@
 
 													<div class="body_detail_product_order">
 														@foreach($transfer['items'] as $item)
-														<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+														<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['qty'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 																
 																@if($item['name'])
@@ -217,7 +217,7 @@
 																</div>
 															</div>
 															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
-															<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
+															<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 															<span class="column44">{{ $item['location'] }}</span>
 														</div>
 														@endforeach

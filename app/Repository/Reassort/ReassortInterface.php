@@ -21,12 +21,16 @@ interface ReassortInterface
     public function updateStatusReassort($transfer_id, $status);
 
     public function getAllCategoriesAndProducts($cat_lab);
+
     public function getAllCategoriesLabel();
+
     public function getKits();
     
     public function updateStatusTextReassort($transfer_id, $status);
 
     public function checkIfDoneTransfersDolibarr($order_id, $barcode_array, $products_quantity, $partial);
+
+    public function orderResetTransfers($order_id);
 }
 
 

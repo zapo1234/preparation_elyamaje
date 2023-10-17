@@ -572,7 +572,7 @@
 						<textarea style="resize:none" class="mb-3 form-control" id="note_partial_order" placeholder="Note..." rows="3"></textarea>
 						<div class="w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
-							<button from_dolibarr="{{ isset($orders['details']['from_dolibarr']) ? true : false }}" style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
+							<button style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
 						</div>
 					</div>
 				</div>
