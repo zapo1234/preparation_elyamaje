@@ -158,6 +158,8 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     // Route pour approvisionnement
     Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+
+    Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR

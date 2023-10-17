@@ -1486,7 +1486,6 @@ class Controller extends BaseController
     }
 
     function changeUserForReassort(){
-        // Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
 
         try {
 
