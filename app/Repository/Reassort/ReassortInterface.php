@@ -21,7 +21,9 @@ interface ReassortInterface
     public function updateStatusReassort($transfer_id, $status);
 
     public function getAllCategoriesAndProducts($cat_lab);
+
     public function getAllCategoriesLabel();
+
     public function getKits();
     
     public function updateStatusTextReassort($transfer_id, $status);
@@ -30,6 +32,7 @@ interface ReassortInterface
 
     public function getLastCategorie($cat, $catParent);
     public function updateUserReassort($id_user,$id_reassort);
+    public function orderResetTransfers($order_id);
 }
 
 
