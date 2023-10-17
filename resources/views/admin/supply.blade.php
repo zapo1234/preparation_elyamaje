@@ -534,14 +534,19 @@
                                         <td id="{{$value["identifiant"]}}_attribue_a" style="text-align: left !important;">
 
                                             <div class="list-inline d-flex align-items-center customers-contacts">	
-                                                <select class="select_userApprovisionnement">
+                                                <select class="select_userApprovisionnement" {{$value["disabled"]}}>
 
                                                     @foreach($users as $key => $user)
                                                         @if ($user["id"] == $value["attribue_a"])
-                                                            <option value="{{$user["id"]}}" selected>{{$user["name"]}}</option>
+                                                            <option value="{{$user["id"]}}" selected>
+                                                                {{$user["name"]}}
+                                                            </option>
                                                         @else
-                                                            <option value="{{$user["id"]}}">{{$user["name"]}}</option>
+                                                            <option value="{{$user["id"].",".$value["identifiant"]}}">
+                                                                {{$user["name"]}}
+                                                            </option>
                                                         @endif
+                                                        
                                                         
                                                     @endforeach
 
@@ -581,6 +586,57 @@
 
 
 <script>
+     csrfToken = $('input[name=_token]').val();
+
+    $(".select_userApprovisionnement").on("change", function(){
+
+        value = $(this).val();
+
+        urlChangeUserForReassort = "{{route('changeUserForReassort')}}";
+
+        $.ajax({
+            url: urlChangeUserForReassort,
+            method: 'POST',
+            data : {
+                value:value                    
+            },
+
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },                       
+            success: function(response) {
+
+                console.log(response);
+
+                if (response.response == true) {
+                    $(".alert-succes-calcul").find('.text_alert').html("Utilisateur attribué avec succée");
+                    $(".alert-succes-calcul").show();
+                    setTimeout(() => {
+                        $(".alert-succes-calcul").hide();
+                    }, 3000);   
+
+                }else{
+                    $(".alert-danger-calcul").find('.text_alert').html("L'attribution n'a pas été faite");
+					$(".alert-danger-calcul").show();
+					setTimeout(() => {
+						$(".alert-danger-calcul").hide();
+					}, 10000);
+                }
+
+            },
+            error: function(xhr, status, error) {
+                $(".alert-danger-calcul").find('.text_alert').html("Erreu générale");
+                $(".alert-danger-calcul").show();
+					setTimeout(() => {
+						$(".alert-danger-calcul").hide();
+					}, 3000);
+					
+					console.error(error);
+
+            }
+        });
+
+    })
 
     $('#product_add').select2({
         width: '100%'
@@ -589,7 +645,7 @@
         width: '100%'
     });
 
-    csrfToken = $('input[name=_token]').val();
+   
     
     $('#example2, #example3, #example5').DataTable({
     language: {

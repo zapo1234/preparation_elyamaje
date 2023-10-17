@@ -363,6 +363,19 @@ class ReassortRepository implements ReassortInterface
         }
         
     }
+
+    public function updateUserReassort($id_user,$identifiant_reassort){
+
+        try {
+
+            Reassort::where('identifiant_reassort', $identifiant_reassort)
+            ->update(['user_id' => $id_user]);
+            return true;
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
 }
 
 
