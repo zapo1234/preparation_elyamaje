@@ -920,7 +920,7 @@ class Order extends BaseController
                   $data = array(
                       'product_id' => $line["product_id"],
                       'warehouse_id' => $line["warehouse_id"], 
-                      'qty' => $line["qty"]*-1, 
+                      'qty' => $line["qty"]*1, 
                       'type' => $line["type"], 
                       'movementcode' => $line["movementcode"], 
                       'movementlabel' => $line["movementlabel"], 
