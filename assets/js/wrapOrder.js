@@ -688,19 +688,22 @@ function checkProductOnLabel(data){
     }   
 }
 
+var scan = false
 document.addEventListener("keydown", function(e) {
-    if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
-        $("#detail_order").val($("#detail_order").val()+e.key)
-        var array = $("#detail_order").val().split(',')
 
-        if(array.length == 3 && $("#validWrapper").length == 0){
-            $("#order_id").val(array[0].split(',')[0])
-            $(".order_id_input").val(array[0].split(',')[0])
-            $("#product_count").val(array[1])
-            $("#customer").val(array[2])
-            $(".validate_order").attr('disabled', false)
-            $(".validate_order").click()
-        }
+    if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
+            $("#detail_order").val($("#detail_order").val()+e.key)
+            var array = $("#detail_order").val().split(',')
+
+            if(array.length == 3 && !scan){
+                scan = true
+                $("#order_id").val(array[0].split(',')[0])
+                $(".order_id_input").val(array[0].split(',')[0])
+                $("#product_count").val(array[1])
+                $("#customer").val(array[2])
+                $(".validate_order").attr('disabled', false)
+                $(".validate_order").click()
+            }
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()
         if (!isNaN(parseInt(e.key))) {
