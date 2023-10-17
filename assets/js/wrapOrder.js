@@ -6,10 +6,21 @@ $(".order_input").on('input', function(){
 
 // Action orsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    $("#order_id").val($(".order_id_input").val())
-    $(".validate_order").attr('disabled', false)
+    if(isInt(parseInt($(".order_id_input").val()))){
+        $("#order_id").val($(".order_id_input").val())
+        $(".validate_order").attr('disabled', false)
+    }
 })
 
+// Check if is int
+function isInt(x) {
+    if (isNaN(x)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+ 
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
@@ -88,6 +99,7 @@ $(".validate_order").on("click", function(){
 
             // Afficher les informations de la commande, total, numéro et préparateur
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
+            $("#order_id").val(order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total :')
 
@@ -284,11 +296,11 @@ function total_weight(){
 
 function validWrapOrder(label, redirection = false, error = false){
 
-  
     var order_id = $("#order_id").val()
     var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
     var transfers = $("#validWrapper").attr('transfers')
     // Affiche les infos pour générer l'étiquette
+    
     if(label){
         $.ajax({
             url: "getProductOrderLabel",
@@ -316,7 +328,8 @@ function validWrapOrder(label, redirection = false, error = false){
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        total_weight = value.weight ? parseFloat(total_weight) + (parseFloat(value.weight) * value.quantity) : parseFloat(total_weight)
+                        weight_product = value.weight != "" ? value.weight : 0
+                        total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 
                     innerHtml +=
@@ -582,7 +595,6 @@ $(".valid_generate_label").on('click', function(){
                                         
                                     },
                                     error : function(xhr){
-                                    if(xhr.status == 404){
                                         $.ajax({
                                             url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label,
                                             metho: 'GET',
@@ -590,8 +602,10 @@ $(".valid_generate_label").on('click', function(){
                                             success : function(data){
                                             
                                             },
+                                            error : function(xhr){
+                                                redirection = true;
+                                            }
                                         })
-                                    }
                                     }
                                 })
                             } else {
@@ -674,18 +688,22 @@ function checkProductOnLabel(data){
     }   
 }
 
+var scan = false
 document.addEventListener("keydown", function(e) {
-    if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
-        $("#detail_order").val($("#detail_order").val()+e.key)
-        var array = $("#detail_order").val().split(',')
-        if(array.length == 4 && $("#order_id").val() == ""){
-            $("#order_id").val(array[0].split(',')[0])
-            $(".order_id_input").val(array[0].split(',')[0])
-            $("#product_count").val(array[1])
-            $("#customer").val(array[2])
-            $(".validate_order").attr('disabled', false)
-            $(".validate_order").click()
-        }
+
+    if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
+            $("#detail_order").val($("#detail_order").val()+e.key)
+            var array = $("#detail_order").val().split(',')
+
+            if(array.length == 3 && !scan){
+                scan = true
+                $("#order_id").val(array[0].split(',')[0])
+                $(".order_id_input").val(array[0].split(',')[0])
+                $("#product_count").val(array[1])
+                $("#customer").val(array[2])
+                $(".validate_order").attr('disabled', false)
+                $(".validate_order").click()
+            }
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()
         if (!isNaN(parseInt(e.key))) {
@@ -851,12 +869,12 @@ function clean_scan(){
 }
 
 function getCountry(order){
-    if(typeof order['billing_customer_country'] != "undefined"){
-        if(order['billing_customer_country'] == 'CH'){
+    if(typeof order['shipping_customer_country'] != "undefined"){
+        if(order['shipping_customer_country'] == 'CH'){
             return "Suisse"
-        } else if(order['billing_customer_country'] == 'FR'){
+        } else if(order['shipping_customer_country'] == 'FR'){
             return "France"
-        } else if(order['billing_customer_country'] == 'BE'){
+        } else if(order['shipping_customer_country'] == 'BE'){
             return "Belgique"
         } else {
             return false

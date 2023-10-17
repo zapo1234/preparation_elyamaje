@@ -213,7 +213,7 @@ class Controller extends BaseController
     // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
     public function ordersTransfers(){
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
-
+        
         // Compte les autres commandes à faire
         $orders = $this->orderController->getOrder();
         $transfers_progress = [];

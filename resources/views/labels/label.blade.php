@@ -184,25 +184,26 @@
 														<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
 															<div class="w-100">	
 																@if($result == 1 && $label['cn23'])
-																	<input id="cn23ToDownload" type="hidden" value="true">
+																	<input class="cn23_label" type="hidden" value="{{ $label['download_cn23'] }}">
 																@endif
 																@if($label['cn23'])
-																<div class="d-flex align-items-center w-100 justify-content-between flex-wrap">
-																	<form class="d-flex" method="POST" action="{{ route('label.download_cn23') }}">
-																		@csrf
-																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
-																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																		<button type="submit" class="download_cn23 d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
-																	</form>
+																	
+																	<div class="d-flex align-items-center w-100 justify-content-between flex-wrap">
+																		<form class="d-flex" method="POST" action="{{ route('label.download_cn23') }}">
+																			@csrf
+																			<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
+																			<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
+																			<button type="submit" class="download_cn23 d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
+																		</form>
 
-																	<div class="download_cn23_status icon-badge position-relative bg-{{ $label['download_cn23'] ? 'success' : 'danger' }} me-lg-2"> 
-																		@if($label['download_cn23'])
-																			<i title="Déjà téléchargé" class="text-white bx bx-check"></i>
-																		@else 
-																			<i title="Pas encore téléchargé" class="text-white bx bx-x"></i>
-																		@endif
-                                           							 </div>
-																</div>
+																		<div class="download_cn23_status icon-badge position-relative bg-{{ $label['download_cn23'] ? 'success' : 'danger' }} me-lg-2"> 
+																			@if($label['download_cn23'])
+																				<i title="Déjà téléchargé" class="text-white bx bx-check"></i>
+																			@else 
+																				<i title="Pas encore téléchargé" class="text-white bx bx-x"></i>
+																			@endif
+																		</div>
+																	</div>
 																@else 
 																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
 																@endif
