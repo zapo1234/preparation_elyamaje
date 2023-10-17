@@ -25,6 +25,7 @@ class ReassortRepository implements ReassortInterface
         $list = [];
         $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+        ->where('products.status', 'publish')
         ->whereIn('id_reassort', [0, -1])
         ->where([
             ['user_id', $user_id],
