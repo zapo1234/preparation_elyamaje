@@ -213,7 +213,7 @@ class Controller extends BaseController
     // PRÉPARATEUR COMMANDES TRANSFERTS DE STOCKS
     public function ordersTransfers(){
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
-        
+
         // Compte les autres commandes à faire
         $orders = $this->orderController->getOrder();
         $transfers_progress = [];
@@ -941,72 +941,39 @@ class Controller extends BaseController
        // ajout des produit a zero dans les entrepot ou il n'existe pas
 
       // dd($products_dolibarrs);
-       $u =0;
-       
+      // dump($products_dolibarrs[0][55]);
+
        foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
             foreach ($product_dolibarr as $k_p => $product) {
-
-
-                dd($product["warehouse_array_list"]);
-                
-                foreach ($liste_warehouse as $ww => $warhouse) {
-                    if (!in_array($warhouse, $product["warehouse_array_list"])) {
-                        $products_dolibarrs[$key_pr_do]["warehouse_array_list"][$k_whp][] = [
-                            "warehouse" => $wah,
-                            "stock" => "0"
-                        ];
-                    }
-                }
-
-
-                dd($liste_warehouse);
-
+                    
                 if ($product["warehouse_array_list"]) {
-
-
-
-
-
-
-
+                
                     foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
-                        foreach ($liste_warehouse as $k => $wah) {
 
-                            dump($product);
-
-                            dump($wah);
-                            dd(array_column($war_h_liste, 'warehouse'));
-
-
-                            if (!in_array($wah, array_column($war_h_liste, 'warehouse'))) {
-
-                               
-                                
-                                $products_dolibarrs[$key_pr_do]["warehouse_array_list"][$k_whp][] = [
-                                    "warehouse" => $wah,
-                                    "stock" => "0"
+                        foreach ($liste_warehouse as $wk => $warehouse) {
+                            if (!in_array($warehouse, array_column($war_h_liste, 'warehouse'))) {
+                                    $products_dolibarrs[$key_pr_do][$k_p]["warehouse_array_list"][$k_whp][] = [
+                                        "warehouse" => $warehouse,
+                                        "stock" => "0"
                                 ];
                             }
                         }
                     }
+                }else {
 
+                    $products_dolibarrs[$key_pr_do][$k_p]["warehouse_array_list"][$product["id"]] = [];
 
-
-
-
-
-                }
-                
-                
-                else {
-                   // $products_dolibarrs[$key_pr_do]["warehouse_array_list"][$k_whp][] = 
+                    foreach ($liste_warehouse as $key => $warehouse) {
+                        array_push($products_dolibarrs[$key_pr_do][$k_p]["warehouse_array_list"][$product["id"]],[
+                            "warehouse" => $warehouse,
+                            "stock" => "0"
+                        ]);
+                    }
                 }
             }
        }
 
        
-
-       dd($products_dolibarrs[0][55]);
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
 
         // on boucle sur tout les produits existants
@@ -1020,9 +987,6 @@ class Controller extends BaseController
                         dump("produit en deux fois !");
                         dd($product);
                     }
-
-                    dd($product["warehouse_array_list"]);
-
                     foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
                         foreach ($war_h_liste as $ww => $pr_st_wh) {  
                             // $warehouses_product_stock est le tableau qui contient list_product  vide
@@ -1043,7 +1007,8 @@ class Controller extends BaseController
                     }
                 }
             }
-        }       
+        }   
+        
 
         $products_reassort = array();
         $products_non_vendu_in_last_month = array();
@@ -1127,7 +1092,7 @@ class Controller extends BaseController
         $start_date_origin = "";
         $end_date_origin = "";
 
-        dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
+       // dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
         return view('admin.supply',
             [
