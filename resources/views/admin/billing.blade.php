@@ -34,7 +34,7 @@
 									<div>
 										<i class="bx bx-box me-1 font-22 text-primary"></i>
 									</div>
-									<h5 class="mb-0 text-primary">Commande</h5>
+									<h5 class="mb-0 text-primary">Commande <span class="text-danger">(WooCommerce seulement)</span></h5>
 								</div>
 								<hr>
 								<form method="post" action="{{ route('admin.billingOrder') }}">

@@ -430,7 +430,7 @@ class OrderRepository implements OrderInterface
             
             // Modifie le status de la commande sur Woocommerce en "Commande préparée"
             try{
-               $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+               // $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
                return true;
             } catch(Exception $e){
                return $e->getMessage();
