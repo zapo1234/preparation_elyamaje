@@ -33,6 +33,7 @@
                                     <tr>
                                         <th>Commandes</th>
                                         <th>Date</th>
+                                        <td data-label="Status">Status</td>
                                     </tr>
                                 </thead>
 
@@ -41,6 +42,27 @@
                                         <tr>
                                             <td data-label="Commandes">{{ $label_order }}</td>
                                             <td data-label="Commandes">{{ $orders_with_date[$label_order] }}</td>
+                                            <td data-label="Status">
+                                                @if(isset($labelMissingStatusArray[$label_order]))
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <i class="text-success font-30 bx bx-check"></i>
+                                                        <form method="POST" action="{{ route('cancelLabelMissing') }}">
+                                                            @csrf
+                                                            <input type="hidden" name="order_id" value="{{ $label_order }}">
+                                                            <button type="submit" class="btn btn-danger px-2">Annuler</button>
+                                                        </form>
+                                                    </div>
+                                                @else 
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <i class="text-danger font-30 bx bx-x"></i>
+                                                        <form method="POST" action="{{ route('validLabelMissing') }}">
+                                                            @csrf
+                                                            <input type="hidden" name="order_id" value="{{ $label_order }}">
+                                                            <button type="submit" class="btn btn-success px-2">Valider</button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

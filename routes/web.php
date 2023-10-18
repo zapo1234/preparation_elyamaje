@@ -98,6 +98,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
 
     Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
+    Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
+    Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
 
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
