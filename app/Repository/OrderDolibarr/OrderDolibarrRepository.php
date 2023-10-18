@@ -25,6 +25,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         ->where('orders_doli.statut', '!=', 'finished')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
