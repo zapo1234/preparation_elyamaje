@@ -7771,6 +7771,7 @@ tr:has(.chronopost_shipping){
     border-radius: 5px;
     padding: 8px;
 	cursor: pointer;
+	width: 43px;
 }
 
 .remove_product{
@@ -7785,7 +7786,6 @@ tr:has(.chronopost_shipping){
 	color: red !important;
 	font-weight: bold !important;
 }
-
 
 .manually_barcode i{
 	font-size: 25px;

@@ -107,7 +107,10 @@ class Order extends BaseController
         if(count($orderDolibarr['orders']) > 0){
           if(!$distributeur){
             foreach($orderDolibarr['orders'] as $ord){
-              $orders_user['orders'][] = $ord;
+              // $orders_user['orders'][] = $ord;
+
+              // Met en première position
+              array_unshift($orders_user['orders'], $ord);
             }
           }
           $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
