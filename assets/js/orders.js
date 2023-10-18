@@ -328,12 +328,19 @@ $(document).ready(function() {
             { "visible": false, "targets": 9 },
         ],
         "initComplete": function(settings, json) {
-            // $("#example_length select").css('margin-right', '10px')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
             $(".preparateur_dropdown").appendTo('.dataTables_length')
             $(".country_dropdown").appendTo('.dataTables_length')
 
+            // Design
+            $("#example_length").parent().css('width', '70%')
+            $("#example_length").parent().css('margin-bottom', '5px')
+            $("#example_filter").parent().css('width', '30%')
+            $("#example_filter").parent().css('margin-bottom', '5px')
+            $("#example_filter").parent().parent().css('justify-content', 'space-between')
+            $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
+            $("#example_filter").parent().css('min-width', '210px')
 
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
