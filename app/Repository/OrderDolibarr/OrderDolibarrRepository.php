@@ -24,7 +24,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'users.name as preparateur')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
-         ->join('users', 'users.id', '=', 'orders_doli.user_id')
+         ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
