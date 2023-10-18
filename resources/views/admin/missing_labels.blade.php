@@ -43,6 +43,16 @@
                                             <td data-label="Commandes">{{ $label_order }}</td>
                                             <td data-label="Commandes">{{ $orders_with_date[$label_order] }}</td>
                                             <td data-label="Status">
+                                                <select data-order="{{ $label_order }}" class="changeStatusLabelMissing {{ isset($labelMissingStatusArray[$label_order]) ? 'option-success' : 'option-danger' }}">
+                                                    @if(isset($labelMissingStatusArray[$label_order]))
+                                                        <option value="valid" selected>Validée</option>
+                                                        <option value="novalid">Non Validée</option>
+                                                    @else 
+                                                        <option value="novalid" selected>Non Validée</option>
+                                                        <option value="valid">Validée</option>
+                                                    @endif
+                                                </select>
+                                                <!-- </select>
                                                 @if(isset($labelMissingStatusArray[$label_order]))
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <i class="text-success font-30 bx bx-check"></i>
@@ -61,7 +71,7 @@
                                                             <button type="submit" class="btn btn-success px-2">Valider</button>
                                                         </form>
                                                     </div>
-                                                @endif
+                                                @endif -->
                                             </td>
                                         </tr>
                                     @endforeach
@@ -86,6 +96,33 @@
                     $(".loading").hide()
                     $("#example").removeClass('d-none')
                 }
+            })
+
+            $(".changeStatusLabelMissing").on('change', function(){
+                var status = $(this).val()
+                var order_id = $(this).attr('data-order')
+
+                if(status == "valid"){
+                    var url = "validLabelMissing"
+                    $(this).removeClass('option-danger')
+                    $(this).addClass('option-success')
+                } else {
+                    var url = "cancelLabelMissing"
+                    $(this).addClass('option-danger')
+                    $(this).removeClass('option-success')
+                }
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: { _token: $('input[name=_token]').val(), order_id: order_id}
+                }).done(function (data) {
+                    if (JSON.parse(data).success) {
+                     
+                    } else {
+                       
+                    }
+                });
             })
         })
 

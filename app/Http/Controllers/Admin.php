@@ -644,15 +644,11 @@ class Admin extends BaseController
 
     public function validLabelMissing(Request $request){
         $order_id = $request->post('order_id');
-        $this->labelMissing->insert(1, $order_id);
-
-        return redirect()->route('missingLabels');
+        echo json_encode(['success' => $this->labelMissing->insert(1, $order_id)]);
     }
 
     public function cancelLabelMissing(Request $request){
         $order_id = $request->post('order_id');
-        $this->labelMissing->delete($order_id);
-
-        return redirect()->route('missingLabels');
+        echo json_encode(['success' => $this->labelMissing->delete($order_id)]);
     }
 }
