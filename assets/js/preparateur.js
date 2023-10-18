@@ -319,7 +319,7 @@ $(".validate_pick_in").on('click', function () {
                 }
               
             } else {
-                $(".info_message").text("Produits manquants !")
+                $(".info_message").text("Produits manquants ou incorrects !")
                 $("#infoMessageModal").modal('show')
                 $(".error_prepared_command").removeClass('d-none')
             }

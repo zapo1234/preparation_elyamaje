@@ -972,6 +972,10 @@ class Order extends BaseController
           $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
           $response = DB::update($updateQuery);
 
+          // Update status transfers
+          $colonnes_values = ['status' => "finished"];
+          $res = $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
+
           // Insert la commande dans histories
           $data = [
             'order_id' => $identifiant_reassort,

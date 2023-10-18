@@ -97,11 +97,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
     Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
 
-    // Missing Labels
-    Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
-    Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
-    Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
-
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
 
@@ -163,7 +158,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     // Route pour approvisionnement
     Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
-
+    // Missing Labels
+    Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
+    Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
+    Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
+    
     Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
 });
 

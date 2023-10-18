@@ -98,7 +98,7 @@
                 }
             })
 
-            $(".changeStatusLabelMissing").on('change', function(){
+            $('body').on('change', '.changeStatusLabelMissing', function () {
                 var status = $(this).val()
                 var order_id = $(this).attr('data-order')
 
@@ -120,7 +120,7 @@
                     if (JSON.parse(data).success) {
                      
                     } else {
-                       
+                       alert('Erreur !')
                     }
                 });
             })
