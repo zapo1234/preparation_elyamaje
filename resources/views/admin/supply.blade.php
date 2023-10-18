@@ -79,8 +79,6 @@
                 </div>
             </div>
         </div>
-
-
             
             <div class="card">
                 <form method="POST" action="{{route('createReassort')}}">
@@ -234,16 +232,15 @@
 
             @if (isset($products_reassort))
 
-
             <div id="id_reassor1" class="card card_product_commande">
                 <div class="table-responsive p-3">
                     <table id="example2" class="table mb-0 dataTable">
                         <thead>
                             <tr>
                                 <th title="L'entrepôt qui va être décrémenté">ID</th>
-                                <th title="L'entrepôt qui va être décrémenté">Code barre</th>
+                                {{-- <th title="L'entrepôt qui va être décrémenté">Code barre</th> --}}
                                 <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
-                                <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th>
+                                {{-- <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th> --}}
                                 <th title="L'entrepôt qui va être décrémenté">Entrepôt source (Qté)</th>
                                 <th title="Points actuellement valide de l'utilisateur">Demande/sem</th>
                                 <th title="L'entrepôt qui va être alimenter">Entrepôt de destination (Qté)</th>
@@ -251,6 +248,15 @@
 
                                 <th title="Points actuellement valide de l'utilisateur">Qté a transférer</th>
                                 <th title="Points actuellement valide de l'utilisateur">Actions</th>
+                                <th title="Points actuellement valide de l'utilisateur">
+                                    <input onclick="checkAll()" class="form-check-input" style="margin-top: 0.5em;" type="checkbox" value="" id="check_all">
+                                                                     
+                                    <button id="delete_all_id" data-lines-deleted="" onclick='delete_selected_line()' type="button" class="btn d-none" title="Supprimer l'offre" style="margin: 0;padding: 0;">
+                                        <a class="" title="Supprimer les lignes" href="javascript:void(0)">
+                                            <i class="fadeIn animated bx bx-trash"></i>
+                                        </a>
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tbody_id_1">
@@ -258,10 +264,10 @@
                         
                                 <tr data_id_product="{{$value["product_id"]}}" id="{{$value["product_id"]}}_line" class="class_line1">
                                     <td data-key="product_id" data-value="{{$value["product_id"]}}" id="{{$value["product_id"]}}_product_id" style="text-align: left !important;">{{$value["product_id"]}}</td>
-                                    <td data-key="barcode" data-value="{{$value["barcode"]}}" id="{{$value["barcode"]}}_product_id" style="text-align: left !important;">{{$value["barcode"]}}</td>
+                                    {{-- <td data-key="barcode" data-value="{{$value["barcode"]}}" id="{{$value["barcode"]}}_product_id" style="text-align: left !important;">{{$value["barcode"]}}</td> --}}
 
                                     <td data-key="libelle" data-value="{{$value["libelle"]}}" id="{{$value["product_id"]}}_libelle" style="text-align: left !important;">{{$value["libelle"]}}</td>
-                                    <td data-key="price" data-value="{{$value["price"]}}" id="{{$value["price"]}}_price" style="text-align: left !important;">{{round($value["price"],2)}}</td>
+                                    {{-- <td data-key="price" data-value="{{$value["price"]}}" id="{{$value["price"]}}_price" style="text-align: left !important;">{{round($value["price"],2)}}</td> --}}
 
                                     @if ($value["qte_en_stock_in_source"] <= 0)
                                         <td class="error_stock" title="Il semble y avoir une erreur dans ce stock" data-key="qte_en_stock_in_source" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_en_stock_in_source" style="text-align: left !important;">{{$value["name_entrepot_a_destocker"]}} ({{$value["qte_en_stock_in_source"]}})</td>
@@ -314,7 +320,10 @@
                                         </button>
                                     </td>
 
-                                    
+                                    <td data-key="check_line" data-value="{{$value["product_id"]}}" id="{{$value["product_id"]}}_check_line_td" style="text-align: left !important;">
+                                        <input value='{{$value["product_id"]}}' onclick="check_line('{{$value['product_id']}}')" class="form-check-input ckeck_class" type="checkbox" value="" id="{{$value["product_id"]}}_check_line_input" style="margin-top: 0.5em;">
+                                    </td>
+
                                     
                                 </tr>
                             
@@ -447,6 +456,81 @@
 
             @if (isset($liste_reassort))
 
+            {{-- Modal de visualisation des reassort --}}
+
+            <div class="modal fade" id="exampleFullScreenModal" tabindex="-1" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+
+                            <div class="modal-body">
+
+
+
+
+
+
+                                
+                                <div id="id_reassor1" class="card card_product_commande">
+                                    <div class="table-responsive p-3">
+                                        <table id="example6" class="table mb-0 dataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th title="L'entrepôt qui va être décrémenté">ID</th>
+                                                    <th title="L'entrepôt qui va être décrémenté">Code barre</th>
+                                                    <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
+                                                    <th title="L'entrepôt qui va être décrémenté">Entrepôt source</th>
+                                                    <th title="L'entrepôt qui va être alimenter">Entrepôt de destination</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="">
+                                            
+                                                    <tr class="class_line1">
+                                                        <td data-key="product_id" data-value="" id="_product_id" style="text-align: left !important;">product_id</td>
+                                                        <td data-key="barcode" data-value="" id="_barcode" style="text-align: left !important;">barcode</td>
+
+                                                        <td data-key="nom_produit" data-value="" id="_nom_produit" style="text-align: left !important;">nom_produit</td>
+                                                        <td data-key="entrepot_source" data-value="" id="_entrepot_source" style="text-align: left !important;">entrepot_source</td>
+
+                                                        <td data-key="entrepot_destination" data-value="" id="_entrepot_destination" style="text-align: left !important;">entrepot_destination</td>
+                                                                                                                                                                
+                                                    </tr>                                         
+                    
+                                            </tbody>
+                    
+                                        
+                    
+                                        </table>
+                                    </div>                   
+                                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                            </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
                 <div id="id_reassor1" class="card card_product_commande">
                     <div class="table-responsive p-3">
                         <table id="example4" class="table mb-0 dataTable">
@@ -527,9 +611,16 @@
 
                                             @endif
 
-                                        </td>
 
-                                        {{-- {{dd($value)}} --}}
+                                            
+                                            <div>
+                                                <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
+                                                    <i class="lni lni-eye"></i>
+                                                </button>
+                                            </div>
+
+
+                                        </td>
 
                                         <td id="{{$value["identifiant"]}}_attribue_a" style="text-align: left !important;">
 
@@ -587,6 +678,49 @@
 
 <script>
      csrfToken = $('input[name=_token]').val();
+
+
+     function checkAll(){
+
+        var ids_lines_deleted = "";
+
+        var etat = $("#check_all").is(':checked');
+        if (etat) {
+            $('.ckeck_class').prop('checked', true);
+
+            $(".ckeck_class").each(function(index, row) {
+                ids_lines_deleted = ids_lines_deleted + row.value +"|";
+
+        });
+
+        $("#delete_all_id").removeClass('d-none');
+
+        } else {
+            $('.ckeck_class').prop('checked', false);
+            ids_lines_deleted = "";
+            $("#delete_all_id").addClass('d-none');
+        }
+        ids_lines_deleted = ids_lines_deleted.slice(0, -1);
+        $("#delete_all_id").attr("data-lines-deleted",ids_lines_deleted);
+
+    }
+
+    function delete_selected_line(){
+
+        var value_line = $("#delete_all_id").attr("data-lines-deleted");
+
+        if (value_line) {
+            var tab_line = value_line.split('|');
+
+            $.each(tab_line, function(index, valeur) {
+
+                delete_line(valeur)
+
+            });
+
+        }
+        
+    }
 
     $(".select_userApprovisionnement").on("change", function(){
 
@@ -689,7 +823,7 @@
 
     // 
 
-    $('#example4').DataTable({
+    $('#example4, #example6').DataTable({
     language: {
         info: "_TOTAL_ lignes",
         infoEmpty: "Aucun utlisateur à afficher",

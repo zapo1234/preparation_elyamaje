@@ -322,8 +322,14 @@ class Controller extends BaseController
                     $disabled = "disabled";
                 }
             }else {
-                $etat = '<span class="badge bg-secondary">Annulé ('.$value->origin_id_reassort.')</span>';
-                $disabled = "disabled";
+                if ($value->origin_id_reassort == "Valide_annule") {
+                    $etat = '<span class="badge bg-secondary">Validé => Annulé</span>';
+                    $disabled = "disabled";
+                }else {
+                    $etat = '<span class="badge bg-secondary">Annulation ('.$value->origin_id_reassort.')</span>';
+                    $disabled = "disabled";
+                }
+                
             } 
 
             array_push($liste_reassort,[
@@ -1285,6 +1291,7 @@ class Controller extends BaseController
       //  $cles = ['product_id','warehouse_id','qty','type','movementcode','movementlabel','price','datem','dlc','dluo','sense'];
         $transfert = $this->reassort->findByIdentifiantReassort($identifiant);
 
+
         if ($transfert != -1) {
 
             if (count($transfert) && count($transfert)%2 == 0) {
@@ -1294,6 +1301,8 @@ class Controller extends BaseController
                 $identifiant_reassort = time();
 
                 foreach ($transfert as $key => $line) {
+
+                  
                     unset($transfert[$key]['id']);
                     $sense = $line["sense"];
                     $wh_id_source = explode("to",$sense)[0];
@@ -1303,13 +1312,14 @@ class Controller extends BaseController
 
 
                     $transfert[$key]["libelle_reassort"] = "Annulation réassort du ".date('Y-m-d H:i:s');
-                    $transfert[$key]["id_reassort"] = 0;
+                    
                     $transfert[$key]["movementlabel"] = "Annulation transfert (".$line["id_reassort"].")";
 
                     $transfert[$key]["datem"] = $date;
                     $transfert[$key]["dlc"] = $date;
                     $transfert[$key]["dluo"] = $date;
                     $transfert[$key]["identifiant_reassort"] = $identifiant_reassort;
+                    $transfert[$key]["pick"] = $line["qty"]? $line["qty"]:0;
                     
                    
                     if ($line[ "warehouse_id"] == $wh_id_source) {
@@ -1322,16 +1332,35 @@ class Controller extends BaseController
 
                     $transfert[$key]["sense"] = $new_sense;
 
+                    $data_reassort_annule = [
+                        'product_id' => $line["product_id"],
+                        'warehouse_id' => ($line["warehouse_id"]==$wh_id_source)? $wh_id_destination:$wh_id_source, 
+                        'qty' => $line["qty"], 
+                        'type' => $line["type"], 
+                        'movementcode' => $line["movementcode"], 
+                        'movementlabel' => "Annulation transfert via prep (".$identifiant.")", 
+                        'price' => $line["price"], 
+                        'datem' => date("Y-m-d"), 
+                        'dlc' => date("Y-m-d"),
+                        'dluo' => date("Y-m-d"),
+                    ];
+
+                   $id_reassort_cancel = $this->executReassortInverse($data_reassort_annule);
+
+                    $transfert[$key]["id_reassort"] = $id_reassort_cancel;
+                    $transfert[$key]["origin_id_reassort"] = $identifiant;
+
                 }
 
-            $resDB = DB::table('hist_reassort')->insert($transfert);
-            // mettre en annule le identifiant
+                // dd($transfert);
+                $resDB = DB::table('hist_reassort')->insert($transfert);
+                // mettre en annule le identifiant
 
-            $colonnes_values = ['origin_id_reassort' => $identifiant];
-            $res = $this->reassort->update_in_hist_reassort($identifiant, $colonnes_values);
+                $colonnes_values = ['origin_id_reassort' => "Valide_annule"];
+                $res = $this->reassort->update_in_hist_reassort($identifiant, $colonnes_values);
 
-            return redirect()->back()->with('success', 'Transfère annulé');
-               
+                return redirect()->back()->with('success', 'Transfère annulé');
+                
                 
             }else {
                 return redirect()->back()->with('error',  "Aucun transfère trouvé ou le nombrebre de ligne est inpaire");
@@ -1513,5 +1542,17 @@ class Controller extends BaseController
 
 
     }
+
+    function executReassortInverse($data){
+  
+        $apiUrl = env('KEY_API_URL');
+        $apiKey = env('KEY_API_DOLIBAR');
+        // $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+        // $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+       
+        return $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+    }
+
+
 }
     
