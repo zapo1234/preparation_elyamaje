@@ -97,6 +97,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
     Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
 
+    Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
+
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
 

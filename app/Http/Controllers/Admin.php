@@ -609,4 +609,26 @@ class Admin extends BaseController
 
         return $list_histories;
     }
+
+    public function missingLabels(){
+
+        $missingLabels = $this->order->getOrdersWithoutLabels();
+        $orders = [];
+        $orders_with_date = [];
+
+        foreach($missingLabels as $order){
+            $orders[] = $order->order_woocommerce_id;
+            $orders_with_date[$order->order_woocommerce_id] = date('d/m/Y', strtotime($order->date));
+        }
+
+        $checkWoocommerceOrders= [];
+        $checkWoocommerce = $this->api->getLabelsfromOrder($orders); 
+
+        foreach($checkWoocommerce as $check){
+            $checkWoocommerceOrders[] = intval($check['order_id']);
+        }
+
+        $missingLabels = array_diff($orders, $checkWoocommerceOrders);
+        return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date]);
+    }
 }

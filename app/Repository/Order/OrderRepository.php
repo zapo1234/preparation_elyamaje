@@ -914,6 +914,21 @@ class OrderRepository implements OrderInterface
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       }
    }
+
+   public function getOrdersWithoutLabels(){
+      return $this->model::select('orders.order_woocommerce_id', 'orders.date')
+      ->leftJoin('labels', 'orders.order_woocommerce_id', 'labels.order_id')
+      ->leftJoin('distributors', 'distributors.customer_id', 'orders.customer_id')
+      ->where('labels.label', NULL)
+      ->where([
+         ['labels.label', NULL],
+         ['orders.status', 'finished'],
+         ['orders.shipping_method', '!=', 'local_pickup'],
+         ['distributors.role', NULL]
+     ])
+      ->orderBy('orders.updated_at', 'DESC')
+      ->get();
+   }
 }
 
 
