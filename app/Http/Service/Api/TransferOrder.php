@@ -313,7 +313,7 @@ class TransferOrder
                                 $socid = $fk_tiers;
                              }
 
-                              if($fk_tiers_phone!=""){
+                              if($fk_tiers_phone !="" && $fk_tiers == ""){
                                 $socid = $fk_tiers_phone;
                              }
                             
