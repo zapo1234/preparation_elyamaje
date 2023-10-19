@@ -331,7 +331,7 @@ class Api
     $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
-      $response = Cache::remember('labelsMiss', 3600, function () use ($customer_key, $customer_secret, $orders) {
+      $response = Cache::remember('labelsMissing', 60, function () use ($customer_key, $customer_secret, $orders) {
         $resp = Http::withBasicAuth($customer_key, $customer_secret)
           ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/labels/getAllLabelsByOrderId", [
             "order_id" => $orders
