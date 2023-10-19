@@ -7181,6 +7181,12 @@ textarea:focus{
     background-color: rgb(13 202 240 / 18%);
 }
 
+.finished{
+	border: none;
+    color: white;
+    background-color: #cdc9c9 !important
+}
+
 .option-success{
 	border-radius: 4px;
 	padding: 5px;
