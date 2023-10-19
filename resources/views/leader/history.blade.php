@@ -48,10 +48,10 @@
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 										<thead>
 											<tr>
-												<th scope="col-md-1">Commande</th>
-												<th scope="col">Préparée</th>
-												<th scope="col">Emballée</th>
-												<th scope="col">Status</th>
+												<th class="col-md-1" scope="col">Commande</th>
+												<th class="col-md-4"scope="col">Préparée</th>
+												<th class="col-md-4" scope="col">Emballée</th>
+												<th class="col-md-1" scope="col">Status</th>
 											</tr>
 										</thead>
 										<tbody>
