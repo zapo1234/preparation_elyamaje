@@ -49,6 +49,8 @@ interface OrderInterface
    public function getProductOrder($order_id);
 
    public function unassignOrders();
+
+   public function getOrdersWithoutLabels();
 }
 
 

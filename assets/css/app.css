@@ -7181,6 +7181,23 @@ textarea:focus{
     background-color: rgb(13 202 240 / 18%);
 }
 
+.option-success{
+	border-radius: 4px;
+	padding: 5px;
+	border: none;
+    color: white ;
+    background-color: #29cc39;
+}
+
+.option-danger{
+	border-radius: 4px;
+	padding: 5px;
+	border: none;
+    color: white;
+    background-color: #fd3550;
+}
+
+
 .en-attente-de-pai{
 	border: 1px solid #039fe2;
     color: rgba(255,255,255,0.7);

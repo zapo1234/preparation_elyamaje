@@ -19,6 +19,7 @@ use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
+use App\Repository\Label\LabelMissingRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -38,6 +39,7 @@ class Admin extends BaseController
     private $order;
     private $woocommerce;
     private $factorder;
+    private $labelMissing;
 
     public function __construct(
         Api $api, 
@@ -51,7 +53,8 @@ class Admin extends BaseController
         ColissimoRepository $colissimoConfiguration,
         OrderRepository $order,
         WoocommerceService $woocommerce,
-        TransferOrder $factorder
+        TransferOrder $factorder,
+        LabelMissingRepository $labelMissing
     ){
         $this->api = $api;
         $this->category = $category;
@@ -65,6 +68,7 @@ class Admin extends BaseController
         $this->order = $order;
         $this->woocommerce = $woocommerce;
         $this->factorder = $factorder;
+        $this->labelMissing = $labelMissing;
     }
 
     public function syncCategories(){
@@ -608,5 +612,43 @@ class Admin extends BaseController
         }
 
         return $list_histories;
+    }
+
+    public function missingLabels(){
+        // Get list of lables with status ok
+        $labelMissingStatusArray = [];
+        $labelMissingStatus = $this->labelMissing->getAllLabelsMissingStatusValid();
+        foreach($labelMissingStatus as $l){
+            $labelMissingStatusArray[$l->order_id] = true;
+        }
+
+        $missingLabels = $this->order->getOrdersWithoutLabels();
+        $orders = [];
+        $orders_with_date = [];
+
+        foreach($missingLabels as $order){
+            $orders[] = $order->order_woocommerce_id;
+            $orders_with_date[$order->order_woocommerce_id] = date('d/m/Y', strtotime($order->date));
+        }
+
+        $checkWoocommerceOrders= [];
+        $checkWoocommerce = $this->api->getLabelsfromOrder($orders); 
+
+        foreach($checkWoocommerce as $check){
+            $checkWoocommerceOrders[] = intval($check['order_id']);
+        }
+
+        $missingLabels = array_diff($orders, $checkWoocommerceOrders);
+        return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date, 'labelMissingStatusArray' => $labelMissingStatusArray]);
+    }
+
+    public function validLabelMissing(Request $request){
+        $order_id = $request->post('order_id');
+        echo json_encode(['success' => $this->labelMissing->insert(1, $order_id)]);
+    }
+
+    public function cancelLabelMissing(Request $request){
+        $order_id = $request->post('order_id');
+        echo json_encode(['success' => $this->labelMissing->delete($order_id)]);
     }
 }

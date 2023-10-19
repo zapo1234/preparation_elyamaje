@@ -17,7 +17,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrders(){
-
       $array_order = [];
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
@@ -25,6 +24,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         ->where('orders_doli.statut', '!=', 'finished')
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -105,7 +105,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.user_id', $user_id)
-         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->where('orders_doli.statut', '!=', 'finished')
          ->get();
 
          $orders = json_decode(json_encode($orders), true);

@@ -4,6 +4,7 @@ namespace App\Http\Service\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class Api
 {
@@ -322,6 +323,30 @@ class Api
        return $apiUrl;
 
    }
+
+  public function getLabelsfromOrder($orders){
+    
+    // keys authentification API data woocomerce dev copie;
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Cache::remember('labelsMiss', 3600, function () use ($customer_key, $customer_secret, $orders) {
+        $resp = Http::withBasicAuth($customer_key, $customer_secret)
+          ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/labels/getAllLabelsByOrderId", [
+            "order_id" => $orders
+        ]);
+
+        return $resp->json();
+      });
+
+      return $response;
+
+    } catch (Exception $e){
+      return $e->getMessage();
+    }
+  }
+
 
 }
 

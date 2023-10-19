@@ -178,6 +178,11 @@
                 <ul>
                     <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
                     </li>
+                        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
+                        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
+                            <li> <a href="{{ url('missingLabels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes Manquantes</a>
+                            </li>
+                        @endif
                     <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
                     </li>
                 </ul>

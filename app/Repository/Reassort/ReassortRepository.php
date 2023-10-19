@@ -57,6 +57,45 @@ class ReassortRepository implements ReassortInterface
             $list[$rea['identifiant_reassort']]['items'][] = $rea;
         }
 
+        // Cas de produits double si par exemple 1 en cadeau et 1 normal
+        $product_double = [];
+        foreach($list as $key1 => $li){
+            foreach($li['items'] as $key2 => $item){
+                if(isset($product_double[$key1])){
+
+                    $id_product = array_column($product_double[$key1], "id");
+                    $clesRecherchees = array_keys($id_product,  $item['product_id']);
+
+                    if(count($clesRecherchees) > 0){
+                        $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
+                        unset($list[$key1]['items'][$key2]);
+
+                        // Merge quantity
+                        $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['qty'] = $item['qty'] + $detail_doublon['qty'];
+                    
+                        // Merge pick product
+                        $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
+                    } else {
+                        $product_double[$key1][] = [
+                            'id' => $item['product_id'],
+                            'qty' => $item['qty'], 
+                            'key1' => $key1,
+                            'key2' => $key2,
+                            'pick' => $item['pick']
+                        ];
+                    }
+                } else {
+                    $product_double[$key1][] = [
+                        'id' => $item['product_id'],
+                        'qty' => $item['qty'], 
+                        'key1' => $key1,
+                        'key2' => $key2,
+                        'pick' => $item['pick']
+                    ];
+                }
+            }
+        }
+
         return $list;
     }
 
@@ -260,6 +299,27 @@ class ReassortRepository implements ReassortInterface
         ->get();
 
         $transfer = json_decode(json_encode($transfer), true);
+
+        // Cas de produits double si par exemple 1 en cadeau et 1 normal
+        $product_double = [];
+        foreach($transfer as $key_barcode => $list){
+
+            if(isset($product_double[$list["barcode"]])){
+                if(isset($product_double[$list["barcode"]][0])){
+
+                $quantity = $product_double[$list["barcode"]][0]['qty'];
+                $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+
+                unset($transfer[$key_barcode_to_remove]);
+                $transfer[$key_barcode]['qty'] = $transfer[$key_barcode]['qty'] + $quantity;
+                }
+            } else {
+                $product_double[$list["barcode"]][] = [
+                'qty' => $list['qty'],
+                'key_barcode_to_remove' => $key_barcode
+                ];
+            }
+        }
 
         $list_products = [];
         foreach($transfer as $list){
