@@ -275,7 +275,22 @@ class Controller extends BaseController
 
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
-        $data_reassort = DB::table('hist_reassort')->groupBy('identifiant_reassort')->get()->toArray();
+      //  $data_reassortaa = DB::table('hist_reassort')->groupBy('identifiant_reassort')->get()->toArray();
+
+        $hist_reassort = DB::table('hist_reassort')->get()->toArray();
+
+        $identifiant_unique = array();
+        $data_reassort = array();
+
+        foreach ($hist_reassort as $key => $reasort) {
+            $identif = $reasort->identifiant_reassort;
+
+            if (!in_array($identif, $identifiant_unique)) {
+                array_push($data_reassort,$reasort);
+                array_push($identifiant_unique,$identif);
+            }
+        }
+
         $wh_id_name = array();
 
     
@@ -332,7 +347,8 @@ class Controller extends BaseController
                 
             } 
 
-            array_push($liste_reassort,[
+
+            $liste_reassort[$value->identifiant_reassort] = [
                 "identifiant" => $value->identifiant_reassort,
                 "date" => date('d/m/Y H:i:s', $value->identifiant_reassort),
                 "entrepot_source" => $wh_id_name[$id_etrepot_source],
@@ -342,12 +358,52 @@ class Controller extends BaseController
                 "origin_id_reassort" => $value->origin_id_reassort,
                 "attribue_a" => $value->user_id,
                 "disabled" => $disabled,
-            ]);
+                "detail_reassort" => [],
+            ];
         }
 
-        //   dd($listWarehouses);
+        $limite = 10000;
+        // Récupérer les produits 
+        $produitParamProduct = array(
+            'apikey' => $apiKey,
+            'limit' => $limite,
+        );
+
+        $product_detail = array();
+        $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
+        $all_products = json_decode($all_products,true);
+
+        foreach ($all_products as $key => $product) {
+            if (!isset($product_detail[$product["id"]])) {
+                $product_detail[$product["id"]] = [
+                   "label" => $product["label"],
+                   "barcode" => $product["barcode"],
+                ];
+            }
+        }
+
+        foreach ($hist_reassort as $key => $reassort) {
+
+            if ($reassort->qty > 0) {
+                
+
+                
+                $id_product = $reassort->product_id;
+               // dump($id_product);
+                if (isset($product_detail[$id_product])) {
+                    $hist_reassort[$key]->label = $product_detail[$id_product]["label"];
+                }else {
+                    $hist_reassort[$key]->label = "label inconnu";
+                }
+                array_push($liste_reassort[$reassort->identifiant_reassort]["detail_reassort"],$reassort);
+            }
+
+        }      
 
         $users = $this->users->getUsers()->toArray();  
+
+        // on libère de la mémoire
+        unset($all_products);
 
         // dd($users);
 
@@ -480,6 +536,21 @@ class Controller extends BaseController
 
             $limite = 10000;
 
+            // boutique elyamaje
+           if ($entrepot_destination== "all") {
+
+                $filterHowTC = "t.ref LIKE '%TC1%'";
+                $produitParam = array(
+                    'apikey' => $apiKey,
+                    // 'sqlfilters' => "t.ref LIKE '%TC1%'",
+                    'limit' => $limite,
+                );
+
+                dd("ssssssssssss");
+
+            }
+
+
            // boutique elyamaje
            if ($entrepot_destination== "1" || $entrepot_destination== "15") {
 
@@ -516,117 +587,117 @@ class Controller extends BaseController
                 );
             }
 
-        $array_factures_total = array();
-        
-        if ($first_transfert) {
-            if ($start_date && $end_date) {
+            $array_factures_total = array();
+            
+            if ($first_transfert) {
+                if ($start_date && $end_date) {
 
-            $start_date = $request->post('start_date');
-            $end_date = $request->post('end_date');
+                $start_date = $request->post('start_date');
+                $end_date = $request->post('end_date');
 
-            $year_start = explode(", ",$start_date)[1];
-            $year_end = explode(", ",$end_date)[1];
+                $year_start = explode(", ",$start_date)[1];
+                $year_end = explode(", ",$end_date)[1];
 
-            $start_date = date("$year_start-m-d", strtotime($start_date));
-            $end_date = date("$year_end-m-d", strtotime($end_date));
+                $start_date = date("$year_start-m-d", strtotime($start_date));
+                $end_date = date("$year_end-m-d", strtotime($end_date));
 
-            $date1 = new DateTime($start_date);
-            $date2 = new DateTime($end_date);
+                $date1 = new DateTime($start_date);
+                $date2 = new DateTime($end_date);
 
-            $diff = $date2->diff($date1)->days;
+                $diff = $date2->diff($date1)->days;
 
-            if ($diff>91) {
-                $resultat = [];
+                if ($diff>91) {
+                    $resultat = [];
 
-                while ($date2 >= $date1) {
+                    while ($date2 >= $date1) {
 
-                    $dateDebut = $date2->format('Y-m-d');
-                    $dateFin = $date2->modify('-3 month')->format('Y-m-d');
-                    $resultat[] = ["debut" => $dateFin, "fin" => $dateDebut];
-         
-                }
+                        $dateDebut = $date2->format('Y-m-d');
+                        $dateFin = $date2->modify('-3 month')->format('Y-m-d');
+                        $resultat[] = ["debut" => $dateFin, "fin" => $dateDebut];
+            
+                    }
 
-                $resultat = array_reverse($resultat);
+                    $resultat = array_reverse($resultat);
 
-                // dd($resultat);
-            }else {
-                $resultat = [
-                    [
-                        "debut" => $start_date,
-                        "fin" => $end_date
-                    ]
-                ];
-            }
-
-
-            $coef = 1;
-
-             // ajustement des intervale si la periode dépasse un an
-
-            for ($i=1; $i < count($resultat) ; $i++) { 
-                if ($i == count($resultat)-1) {
-                    $date = new DateTime($resultat[$i]["debut"]);
-                    $date->modify("+$i day");
-                    $nouvelleDate = $date->format('Y-m-d');
-                    $resultat[$i]["debut"] = $nouvelleDate;
-
+                    // dd($resultat);
                 }else {
-                    $date = new DateTime($resultat[$i]["debut"]);
-                    $date->modify("+$i day");
-                    $nouvelleDate = $date->format('Y-m-d');
-                    $resultat[$i]["debut"] = $nouvelleDate;
-
-                    $date2 = new DateTime($resultat[$i]["fin"]);
-                    $date2->modify("+$i day");
-                    $nouvelleDate = $date2->format('Y-m-d');
-                    $resultat[$i]["fin"] = $nouvelleDate;
+                    $resultat = [
+                        [
+                            "debut" => $start_date,
+                            "fin" => $end_date
+                        ]
+                    ];
                 }
-            }
 
 
-            foreach ($resultat as $key => $value) {
+                $coef = 1;
 
-                $start_date = $value["debut"];
-                $end_date = $value["fin"];
-    
-                $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
-    
+                // ajustement des intervale si la periode dépasse un an
+
+                for ($i=1; $i < count($resultat) ; $i++) { 
+                    if ($i == count($resultat)-1) {
+                        $date = new DateTime($resultat[$i]["debut"]);
+                        $date->modify("+$i day");
+                        $nouvelleDate = $date->format('Y-m-d');
+                        $resultat[$i]["debut"] = $nouvelleDate;
+
+                    }else {
+                        $date = new DateTime($resultat[$i]["debut"]);
+                        $date->modify("+$i day");
+                        $nouvelleDate = $date->format('Y-m-d');
+                        $resultat[$i]["debut"] = $nouvelleDate;
+
+                        $date2 = new DateTime($resultat[$i]["fin"]);
+                        $date2->modify("+$i day");
+                        $nouvelleDate = $date2->format('Y-m-d');
+                        $resultat[$i]["fin"] = $nouvelleDate;
+                    }
+                }
+
+
+                foreach ($resultat as $key => $value) {
+
+                    $start_date = $value["debut"];
+                    $end_date = $value["fin"];
+        
+                    $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+        
+                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    $factures = json_decode($listinvoice,true); 
+        
+                    sleep(5);
+        
+                    if (isset($factures["error"]) || !$factures) {
+                        continue;
+                    }else {
+                        array_push($array_factures_total,$factures);
+                    }
+        
+                    unset($factures);
+                
+                }
+
+
+            // $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+
+                    
+                }else {
+                    dd("selectionner les deux date");
+                }
+            }else {
+                $mois = 1; // nombre de mois
+                $jours = $mois*28;
+                $interval = date("Y-m-d", strtotime("-$jours days")); 
+                $coef = (1.10)/($jours/7);
+
+                $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+
                 $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
                 $factures = json_decode($listinvoice,true); 
-    
-                sleep(5);
-    
-                if (isset($factures["error"]) || !$factures) {
-                    continue;
-                }else {
-                    array_push($array_factures_total,$factures);
-                }
-    
-                unset($factures);
-            
-            }
 
+                array_push($array_factures_total,$factures);
 
-           // $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
-
-                
-            }else {
-                dd("selectionner les deux date");
-            }
-        }else {
-            $mois = 1; // nombre de mois
-            $jours = $mois*28;
-            $interval = date("Y-m-d", strtotime("-$jours days")); 
-            $coef = (1.10)/($jours/7);
-
-            $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-
-            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-            $factures = json_decode($listinvoice,true); 
-
-            array_push($array_factures_total,$factures);
-
-        }      
+            }      
        
 
         // récuperer les label de la categories
@@ -1079,15 +1150,15 @@ class Controller extends BaseController
         }
 
         // Dans les produit qui n'ont pas été vendu dans le moi on sort ceux dont la qté est inférieur a 5
-        $products_non_vendu_in_last_month_inf_5 = array();
+        // $products_non_vendu_in_last_month_inf_5 = array();
 
       //  dd($products_reassort);
 
-        foreach ($products_non_vendu_in_last_month as $key => $value_) {
-            if ($value_["qte_act"] < 5) {
-                array_push($products_non_vendu_in_last_month_inf_5,$value_);
-            }
-        }
+        // foreach ($products_non_vendu_in_last_month as $key => $value_) {
+        //     if ($value_["qte_act"] < 5) {
+        //         array_push($products_non_vendu_in_last_month_inf_5,$value_);
+        //     }
+        // }
 
         foreach ($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"] as $key => $value) {
             if (isset($warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key])) {
@@ -1103,13 +1174,13 @@ class Controller extends BaseController
         $start_date_origin = "";
         $end_date_origin = "";
 
-       // dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
+    //    dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
         return view('admin.supply',
             [
                 "listWarehouses" => $listWarehouses,
                 "products_reassort" => $products_reassort, 
-                "products_non_vendu_in_last_month_inf_5" => $products_non_vendu_in_last_month_inf_5,
+                // "products_non_vendu_in_last_month_inf_5" => $products_non_vendu_in_last_month_inf_5,
                 "entrepot_source" => $entrepot_source,
                 "entrepot_destination" => $entrepot_destination,
                 "entrepot_source_product" => $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"],
@@ -1349,6 +1420,7 @@ class Controller extends BaseController
 
                     $transfert[$key]["id_reassort"] = $id_reassort_cancel;
                     $transfert[$key]["origin_id_reassort"] = $identifiant;
+                    $transfert[$key]["status"] = "cancelling";
 
                 }
 
@@ -1356,8 +1428,9 @@ class Controller extends BaseController
                 $resDB = DB::table('hist_reassort')->insert($transfert);
                 // mettre en annule le identifiant
 
-                $colonnes_values = ['origin_id_reassort' => "Valide_annule"];
+                $colonnes_values = ['origin_id_reassort' => "Valide_annule",'status' => "canceled"];
                 $res = $this->reassort->update_in_hist_reassort($identifiant, $colonnes_values);
+
 
                 return redirect()->back()->with('success', 'Transfère annulé');
                 
