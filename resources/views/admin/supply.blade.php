@@ -133,6 +133,7 @@
                                     @endif
                                     
                                 @endforeach
+                                
                             </select>
                         </div>
 
@@ -207,7 +208,7 @@
                             <tbody id="tbody_id_1">
                                 @foreach ($vente_by_product as $id_product => $value)
                             
-                                    <tr class="class_line1">
+                                    <tr class="class_line3">
                                         
                                         
                                         <td data-key="product_id" data-value="{{$id_product}}" id="{{$id_product}}_product_id" style="text-align: left !important;">{{$id_product}}</td>
@@ -238,9 +239,9 @@
                         <thead>
                             <tr>
                                 <th title="L'entrepôt qui va être décrémenté">ID</th>
-                                {{-- <th title="L'entrepôt qui va être décrémenté">Code barre</th> --}}
+                                <th title="L'entrepôt qui va être décrémenté">Code barre</th>
                                 <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
-                                {{-- <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th> --}}
+                                <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th>
                                 <th title="L'entrepôt qui va être décrémenté">Entrepôt source (Qté)</th>
                                 <th title="Points actuellement valide de l'utilisateur">Demande/sem</th>
                                 <th title="L'entrepôt qui va être alimenter">Entrepôt de destination (Qté)</th>
@@ -264,10 +265,10 @@
                         
                                 <tr data_id_product="{{$value["product_id"]}}" id="{{$value["product_id"]}}_line" class="class_line1">
                                     <td data-key="product_id" data-value="{{$value["product_id"]}}" id="{{$value["product_id"]}}_product_id" style="text-align: left !important;">{{$value["product_id"]}}</td>
-                                    {{-- <td data-key="barcode" data-value="{{$value["barcode"]}}" id="{{$value["barcode"]}}_product_id" style="text-align: left !important;">{{$value["barcode"]}}</td> --}}
+                                    <td data-key="barcode" data-value="{{$value["barcode"]}}" id="{{$value["barcode"]}}_product_id" style="text-align: left !important;">{{$value["barcode"]}}</td>
 
                                     <td data-key="libelle" data-value="{{$value["libelle"]}}" id="{{$value["product_id"]}}_libelle" style="text-align: left !important;">{{$value["libelle"]}}</td>
-                                    {{-- <td data-key="price" data-value="{{$value["price"]}}" id="{{$value["price"]}}_price" style="text-align: left !important;">{{round($value["price"],2)}}</td> --}}
+                                    <td data-key="price" data-value="{{$value["price"]}}" id="{{$value["price"]}}_price" style="text-align: left !important;">{{round($value["price"],2)}}</td>
 
                                     @if ($value["qte_en_stock_in_source"] <= 0)
                                         <td class="error_stock" title="Il semble y avoir une erreur dans ce stock" data-key="qte_en_stock_in_source" data-value="{{$value["qte_en_stock_in_source"]}}" id="{{$value["product_id"]}}_qte_en_stock_in_source" style="text-align: left !important;">{{$value["name_entrepot_a_destocker"]}} ({{$value["qte_en_stock_in_source"]}})</td>
@@ -321,7 +322,7 @@
                                     </td>
 
                                     <td data-key="check_line" data-value="{{$value["product_id"]}}" id="{{$value["product_id"]}}_check_line_td" style="text-align: left !important;">
-                                        <input value='{{$value["product_id"]}}' onclick="check_line('{{$value['product_id']}}')" class="form-check-input ckeck_class" type="checkbox" value="" id="{{$value["product_id"]}}_check_line_input" style="margin-top: 0.5em;">
+                                        <input value='{{$value["product_id"]}}' class="form-check-input ckeck_class" type="checkbox" value="" id="{{$value["product_id"]}}_check_line_input" style="margin-top: 0.5em;">
                                     </td>
 
                                     
@@ -456,80 +457,6 @@
 
             @if (isset($liste_reassort))
 
-            {{-- Modal de visualisation des reassort --}}
-
-            <div class="modal fade" id="exampleFullScreenModal" tabindex="-1" style="display: none;" aria-hidden="true">
-                <div class="modal-dialog modal-fullscreen">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Modal title</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-
-                            <div class="modal-body">
-
-
-
-
-
-
-                                
-                                <div id="id_reassor1" class="card card_product_commande">
-                                    <div class="table-responsive p-3">
-                                        <table id="example6" class="table mb-0 dataTable">
-                                            <thead>
-                                                <tr>
-                                                    <th title="L'entrepôt qui va être décrémenté">ID</th>
-                                                    <th title="L'entrepôt qui va être décrémenté">Code barre</th>
-                                                    <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
-                                                    <th title="L'entrepôt qui va être décrémenté">Entrepôt source</th>
-                                                    <th title="L'entrepôt qui va être alimenter">Entrepôt de destination</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="">
-                                            
-                                                    <tr class="class_line1">
-                                                        <td data-key="product_id" data-value="" id="_product_id" style="text-align: left !important;">product_id</td>
-                                                        <td data-key="barcode" data-value="" id="_barcode" style="text-align: left !important;">barcode</td>
-
-                                                        <td data-key="nom_produit" data-value="" id="_nom_produit" style="text-align: left !important;">nom_produit</td>
-                                                        <td data-key="entrepot_source" data-value="" id="_entrepot_source" style="text-align: left !important;">entrepot_source</td>
-
-                                                        <td data-key="entrepot_destination" data-value="" id="_entrepot_destination" style="text-align: left !important;">entrepot_destination</td>
-                                                                                                                                                                
-                                                    </tr>                                         
-                    
-                                            </tbody>
-                    
-                                        
-                    
-                                        </table>
-                                    </div>                   
-                                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-                            </div>
-
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
 
                 <div id="id_reassor1" class="card card_product_commande">
                     <div class="table-responsive p-3">
@@ -614,9 +541,24 @@
 
                                             
                                             <div>
-                                                <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
+                                                <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
                                                     <i class="lni lni-eye"></i>
                                                 </button>
+
+                                                {{-- @dump($value["detail_reassort"]); --}}
+
+                                                <div class="modal fade" id="exampleFullScreenModal_{{$value["identifiant"]}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                    @include('layouts.transfert.reassorVisualisation', 
+                                                    [
+                                                        'identifiant' => $value["identifiant"],
+                                                        'detail_reassort' => $value["detail_reassort"],
+
+                                                        'entrepot_source' => $value["entrepot_source"],
+                                                        'entrepot_destination' => $value["entrepot_destination"],
+                                                    ])
+                                                </div>
+
+
                                             </div>
 
 
@@ -686,17 +628,18 @@
 
         var etat = $("#check_all").is(':checked');
         if (etat) {
-            $('.ckeck_class').prop('checked', true);
 
-            $(".ckeck_class").each(function(index, row) {
+            $("#tbody_id_1").find('.ckeck_class').prop('checked', true);
+            // $('.ckeck_class').prop('checked', true);
+
+            $("#tbody_id_1").find('.ckeck_class').each(function(index, row) {
                 ids_lines_deleted = ids_lines_deleted + row.value +"|";
-
-        });
+            });
 
         $("#delete_all_id").removeClass('d-none');
 
         } else {
-            $('.ckeck_class').prop('checked', false);
+            $("#tbody_id_1").find('.ckeck_class').prop('checked', false);
             ids_lines_deleted = "";
             $("#delete_all_id").addClass('d-none');
         }
@@ -706,20 +649,20 @@
     }
 
     function delete_selected_line(){
-
         var value_line = $("#delete_all_id").attr("data-lines-deleted");
-
         if (value_line) {
             var tab_line = value_line.split('|');
 
             $.each(tab_line, function(index, valeur) {
-
-                delete_line(valeur)
+                // setTimeout(() => {
+                    delete_line(valeur);
+                // }, 2000);
 
             });
-
+        $("#delete_all_id").attr("data-lines-deleted","");
+        $('#check_all').prop('checked', false);
+        $("#delete_all_id").addClass('d-none');
         }
-        
     }
 
     $(".select_userApprovisionnement").on("change", function(){
@@ -864,10 +807,18 @@
     function delete_line(id_line){
 
         var line =  '#'+id_line+'_line';
-        console.log(line);
-        $(line).fadeOut(600, function() {
-            $(this).remove();
-        });
+
+        var table = $('#example2').DataTable();
+        var ligneASupprimer = table.row(line);
+        ligneASupprimer.remove().draw();
+
+
+
+        
+        // $(id_line+"_check_line_input").removeClass(".ckeck_class");
+        // $(line).remove();
+
+
 
     }
     
@@ -887,10 +838,14 @@
 
     // validation du reassort 1 et 2 
 
+  
+
+
+
 
 
     urlCreateReassort = "{{route('postReassort')}}";
-    console.log(urlCreateReassort);
+    // console.log(urlCreateReassort);
     function valide_reassort1(){
 
 
@@ -908,8 +863,6 @@
             });
             tabProduitReassort1.push(rowAssociatif);
         });
-
-      //  console.log(tabProduitReassort1);
 
         var urlCreateReassort = "{{route('postReassort')}}";
         var urlRedirection = "{{route('getVieuxSplay')}}";
@@ -1056,9 +1009,17 @@
                     </a>
                 </button>
             </td>
+            <td data-key="check_line" data-value="${product_id}" id="${product_id}_check_line_td" style="text-align: left !important;">
+                <input value='${product_id}' onclick="check_line('${product_id}')" class="form-check-input ckeck_class" type="checkbox" value="" id="${product_id}_check_line_input" style="margin-top: 0.5em;">
+            </td>
         </tr>
-        `
-        $("#tbody_id_1").append(line_add);
+        `;
+
+        var table = $('#example2').DataTable();
+        table.row.add($(line_add)).draw();
+
+
+        // $("#tbody_id_1").append(line_add);
 
         $('#product_add').val([""]).trigger('change');
         $("#qte_id").val("");
