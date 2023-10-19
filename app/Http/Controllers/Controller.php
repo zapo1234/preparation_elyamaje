@@ -402,6 +402,9 @@ class Controller extends BaseController
 
         $users = $this->users->getUsers()->toArray();  
 
+        // on libère de la mémoire
+        unset($all_products);
+
         // dd($users);
 
         return view('admin.supply',
@@ -1147,15 +1150,15 @@ class Controller extends BaseController
         }
 
         // Dans les produit qui n'ont pas été vendu dans le moi on sort ceux dont la qté est inférieur a 5
-        $products_non_vendu_in_last_month_inf_5 = array();
+        // $products_non_vendu_in_last_month_inf_5 = array();
 
       //  dd($products_reassort);
 
-        foreach ($products_non_vendu_in_last_month as $key => $value_) {
-            if ($value_["qte_act"] < 5) {
-                array_push($products_non_vendu_in_last_month_inf_5,$value_);
-            }
-        }
+        // foreach ($products_non_vendu_in_last_month as $key => $value_) {
+        //     if ($value_["qte_act"] < 5) {
+        //         array_push($products_non_vendu_in_last_month_inf_5,$value_);
+        //     }
+        // }
 
         foreach ($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"] as $key => $value) {
             if (isset($warehouses_product_stock[$name_entrepot_a_alimenter]["list_product"][$key])) {
@@ -1171,13 +1174,13 @@ class Controller extends BaseController
         $start_date_origin = "";
         $end_date_origin = "";
 
-       // dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
+    //    dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
         return view('admin.supply',
             [
                 "listWarehouses" => $listWarehouses,
                 "products_reassort" => $products_reassort, 
-                "products_non_vendu_in_last_month_inf_5" => $products_non_vendu_in_last_month_inf_5,
+                // "products_non_vendu_in_last_month_inf_5" => $products_non_vendu_in_last_month_inf_5,
                 "entrepot_source" => $entrepot_source,
                 "entrepot_destination" => $entrepot_destination,
                 "entrepot_source_product" => $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"],

@@ -366,13 +366,13 @@
                         <select id="product_add" class="js-states form-control" name="email">
                             <option style="width:100%" value="" selected>Selectionnez le produit</option>
                             @foreach($entrepot_source_product as $k => $val) 
-                                <option value="{{json_encode($val)}}"> {{$val["libelle"]}} </option>
+                                <option value="{{json_encode($val)}}"> {{$val["libelle"] .' ('.$val["product_id"].')'}} </option>
                             @endforeach
                         </select>
 
                     </div>
                     <div class="col-md-2">
-                        <input id="qte_id" class="qte_class" type="text" placeholder="Quantité">
+                        <input id="qte_id" class="qte_class" type="text" placeholder="Quantité" required>
                     </div>
                     
                     <div class="font-22 text-primary col-md-2">	
@@ -384,7 +384,7 @@
 
             </div>
 
-            <div id="id_reassor2" class="card card_product_no_commande d-none">
+            {{-- <div id="id_reassor2" class="card card_product_no_commande d-none">
                 <div class="table-responsive p-3">
 
                     <div>--------------------------------------------------------------------------------------</div>
@@ -451,7 +451,7 @@
                     <button onclick="valide_reassort2()" class="btn btn-primary mb-4" type="submit">Valider le reassort 2</button>
                 </div>
 
-            </div>
+            </div> --}}
 
             @endif
 
@@ -963,67 +963,78 @@
             $('.dataTables_empty').closest('tr').remove();
         }
 
+        qte = $("#qte_id").val();
+        if (!qte || qte=="0") {
+            alert("Merci de saisir une quantité à transférer");
+            return;
+        }
+        if ($("#product_add").val()) {
+            var data_product = JSON.parse($("#product_add").val())
+       
+            product_id = data_product['product_id'];
+
+            if($("#"+product_id+"_line").length){
+                alert("Le produit existe déja dans la liste");
+                return;
+            }
+                    
+            barcode = data_product['barcode'];
+            price = (parseFloat(data_product['price'])).toFixed(2);
+            stock = data_product['stock'];
+            libelle = data_product['libelle'];
+            var entrepot_source = $("#entrepot_source").val();
+            var entrepot_destination = $("#entrepot_destination").val();
+            qte_in_destination = data_product['qte_in_destination'];
+
+            
         
-        var data_product = JSON.parse($("#product_add").val())
-        qte =$("#qte_id").val() ;
-        product_id = data_product['product_id'];
-        barcode = data_product['barcode'];
-        price = (parseFloat(data_product['price'])).toFixed(2);
-        stock = data_product['stock'];
-        libelle = data_product['libelle'];
-        var entrepot_source = $("#entrepot_source").val();
-        var entrepot_destination = $("#entrepot_destination").val();
-        qte_in_destination = data_product['qte_in_destination'];
-
-        
-      
-        name_entrepot_a_alimenter = "{{$name_entrepot_a_alimenter}}";
-        name_entrepot_a_destocker = "{{$name_entrepot_a_destocker}}";
+            name_entrepot_a_alimenter = "{{$name_entrepot_a_alimenter}}";
+            name_entrepot_a_destocker = "{{$name_entrepot_a_destocker}}";
 
 
 
-        // console.log(data_product);
-        
+            // console.log(data_product);
+            
 
-        var line_add = `
-        <tr data_id_product="${product_id}" id="${product_id}_line" class="class_line1 odd" role="row">
-            <td data-key="product_id" data-value="${product_id}" id="${product_id}_product_id" style="text-align: left !important;">${product_id}</td>
-            <td data-key="barcode" data-value="${barcode}" id="${barcode}_product_id" style="text-align: left !important;">${barcode}</td>
-            <td data-key="libelle" data-value="${libelle}" id="${product_id}_libelle" style="text-align: left !important;">${libelle}</td>
-            <td data-key="price" data-value="${price}" id="${product_id}_price" style="text-align: left !important;" class="sorting_1">${price}</td>
+            var line_add = `
+            <tr data_id_product="${product_id}" id="${product_id}_line" class="class_line1 odd" role="row">
+                <td data-key="product_id" data-value="${product_id}" id="${product_id}_product_id" style="text-align: left !important;">${product_id}</td>
+                <td data-key="barcode" data-value="${barcode}" id="${barcode}_product_id" style="text-align: left !important;">${barcode}</td>
+                <td data-key="libelle" data-value="${libelle}" id="${product_id}_libelle" style="text-align: left !important;">${libelle}</td>
+                <td data-key="price" data-value="${price}" id="${product_id}_price" style="text-align: left !important;" class="sorting_1">${price}</td>
 
-            <td data-key="qte_en_stock_in_source" data-value="${stock}" id="${product_id}_qte_en_stock_in_source" style="text-align: left !important;">${name_entrepot_a_destocker} (${stock})</td>
-            <td data-key="demande" data-value="/" id="${product_id}_demande">/</td>
-            <td data-key="qte_act" data-value="/" id="${product_id}_qte_act">${name_entrepot_a_alimenter} (${qte_in_destination})</td>
-            <td data-key="qte_optimale" data-value="/" id="${product_id}_qte_optimale">/</td>
-            <td data-key="qte_transfere" data-value="${qte}" id="${product_id}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="${qte}" disabled=""></td>
-            <td data-key="action" id="${product_id}_action">
-                <button onclick="delete_line(${product_id})" type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;">
-                    <a class="" title="Supprimer l'offre" href="javascript:void(0)">
-                        <i class="fadeIn animated bx bx-trash"></i>
-                    </a>
-                </button>
-                <button onclick="update_line(${product_id})" type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;">
-                    <a class="" title="Supprimer l'offre" href="javascript:void(0)">
-                        <i class="fadeIn animated bx bxs-edit"></i>
-                    </a>
-                </button>
-            </td>
-            <td data-key="check_line" data-value="${product_id}" id="${product_id}_check_line_td" style="text-align: left !important;">
-                <input value='${product_id}' onclick="check_line('${product_id}')" class="form-check-input ckeck_class" type="checkbox" value="" id="${product_id}_check_line_input" style="margin-top: 0.5em;">
-            </td>
-        </tr>
-        `;
+                <td data-key="qte_en_stock_in_source" data-value="${stock}" id="${product_id}_qte_en_stock_in_source" style="text-align: left !important;">${name_entrepot_a_destocker} (${stock})</td>
+                <td data-key="demande" data-value="/" id="${product_id}_demande">/</td>
+                <td data-key="qte_act" data-value="/" id="${product_id}_qte_act">${name_entrepot_a_alimenter} (${qte_in_destination})</td>
+                <td data-key="qte_optimale" data-value="/" id="${product_id}_qte_optimale">/</td>
+                <td data-key="qte_transfere" data-value="${qte}" id="${product_id}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="${qte}" disabled=""></td>
+                <td data-key="action" id="${product_id}_action">
+                    <button onclick="delete_line(${product_id})" type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;">
+                        <a class="" title="Supprimer l'offre" href="javascript:void(0)">
+                            <i class="fadeIn animated bx bx-trash"></i>
+                        </a>
+                    </button>
+                    <button onclick="update_line(${product_id})" type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;">
+                        <a class="" title="Supprimer l'offre" href="javascript:void(0)">
+                            <i class="fadeIn animated bx bxs-edit"></i>
+                        </a>
+                    </button>
+                </td>
+                <td data-key="check_line" data-value="${product_id}" id="${product_id}_check_line_td" style="text-align: left !important;">
+                    <input value='${product_id}' onclick="check_line('${product_id}')" class="form-check-input ckeck_class" type="checkbox" value="" id="${product_id}_check_line_input" style="margin-top: 0.5em;">
+                </td>
+            </tr>
+            `;
 
-        var table = $('#example2').DataTable();
-        table.row.add($(line_add)).draw();
+            var table = $('#example2').DataTable();
+            table.row.add($(line_add)).draw();
 
 
-        // $("#tbody_id_1").append(line_add);
+            // $("#tbody_id_1").append(line_add);
 
-        $('#product_add').val([""]).trigger('change');
-        $("#qte_id").val("");
-
+            $('#product_add').val([""]).trigger('change');
+            // $("#qte_id").val("");
+        }
 
     }
 
