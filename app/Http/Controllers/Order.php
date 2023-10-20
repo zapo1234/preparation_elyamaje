@@ -745,11 +745,13 @@ class Order extends BaseController
       foreach($histories as $history){
         if(isset($histories_order[$history['order_id']])){
           if($histories_order[$history['order_id']]['status'] == "prepared"){
+            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished'] = $history['name'];
             $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
           } else {
+            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $history['name'];
             $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
@@ -757,14 +759,15 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
+          $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
+          $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished_date'] = $history['status'] == 'finished' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
-
-      return view('leader.history', ['histories' => $histories_order]);
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
     public function generateHistory(Request $request){

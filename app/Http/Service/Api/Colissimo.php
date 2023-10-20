@@ -293,11 +293,13 @@ class Colissimo
     protected function parseMonoPartBody($body) {
         return json_decode($body, true);
     }
+    
 
     protected function getProductCode($order){
 
         $productCode_array = [
             'lpc_expert'     => 'DOS',
+            'lpc_expert_ddp'     => 'DOS',
             'lpc_nosign'     => 'DOM',
             'lpc_sign'       => 'DOS',
             'local_pickup'   => false
@@ -347,8 +349,8 @@ class Colissimo
                     'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1']),
-                    'line3' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_2'] ?? ''),
+                    'line2' => $order['shipping']['address_1'],
+                    'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -362,8 +364,8 @@ class Colissimo
                     'companyName' => $order['shipping']['company'] ?? '',
                     'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1']),
-                    'line3' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_2'] ?? ''),
+                    'line2' => $order['shipping']['address_1'],
+                    'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -378,8 +380,10 @@ class Colissimo
                 'companyName' =>$order['shipping']['company'] ?? '',
                 'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                 'firstName' => $order['shipping']['first_name'],
-                'line2' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_1']),
-                'line3' => preg_replace('/[^\p{L}\p{N}\s]/u', '', $order['shipping']['address_2'] ?? ''),
+                // 'line2' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_1']),
+                // 'line3' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_2'] ?? ''),
+                'line2' => $order['shipping']['address_1'],
+                'line3' => $order['shipping']['address_2'] ?? '',
                 'countryCode' => $order['shipping']['country'],
                 'city' => $order['shipping']['city'],
                 'zipCode' => $order['shipping']['postcode'],

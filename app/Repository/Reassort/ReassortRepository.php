@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 class ReassortRepository implements ReassortInterface 
 {   
     private $model;
+    private $products_categories;
+    private $categories_dolibarr;
+    private $products_association;
 
     public function __construct(Reassort $model,products_categories $products_categories,Categorie_dolibarr $categories_dolibarr,Products_association $products_association){
         $this->model = $model;
@@ -25,7 +28,8 @@ class ReassortRepository implements ReassortInterface
         $list = [];
         $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
-        ->where('products.status', 'publish')
+        // ->where('products.status', 'publish')
+        // ->where('products.is_variable', 0)
         ->whereIn('id_reassort', [0, -1])
         ->where([
             ['user_id', $user_id],
@@ -67,14 +71,14 @@ class ReassortRepository implements ReassortInterface
                     $clesRecherchees = array_keys($id_product,  $item['product_id']);
 
                     if(count($clesRecherchees) > 0){
-                        $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
+                        // $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
                         unset($list[$key1]['items'][$key2]);
 
                         // Merge quantity
-                        $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['qty'] = $item['qty'] + $detail_doublon['qty'];
+                        // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['qty'] = $item['qty'] + $detail_doublon['qty'];
                     
                         // Merge pick product
-                        $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
+                        // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
                     } else {
                         $product_double[$key1][] = [
                             'id' => $item['product_id'],

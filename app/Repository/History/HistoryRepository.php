@@ -29,8 +29,9 @@ class HistoryRepository implements HistoryInterface
 
    public function getAllHistory(){
       return $this->model::select('histories.id as histo', 'users.id', 'users.name', 'histories.poste', 'histories.created_at', 'histories.order_id',
-      'histories.status')
-         ->join('users', 'users.id', '=', 'histories.user_id')
+      'histories.status', 'orders.status as order_status')
+         ->Leftjoin('users', 'users.id', '=', 'histories.user_id')
+         ->Leftjoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
          ->groupBy('histories.id')
          ->orderBy('histories.created_at', 'DESC')
          ->get()
