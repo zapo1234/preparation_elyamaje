@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Exception;
 use Throwable;
 use Illuminate\Http\Request;
@@ -12,16 +13,16 @@ use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\Tiers\TiersRepository;
+use App\Http\Service\Api\PdoDolibarr;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Categorie\CategoriesRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use DateTime;
 
 
 class Controller extends BaseController
@@ -422,6 +423,7 @@ class Controller extends BaseController
     }
 
     function createReassort(Request $request){
+        
 
 
 /*
@@ -502,6 +504,11 @@ class Controller extends BaseController
         */
 
 
+     
+
+
+
+
         $start_date = $request->post('start_date');
         $end_date = $request->post('end_date');
 
@@ -536,20 +543,90 @@ class Controller extends BaseController
 
             $limite = 10000;
 
+           
             // boutique elyamaje
-           if ($entrepot_destination== "all") {
+            if ($entrepot_destination== "all") {
+                
 
-                $filterHowTC = "t.ref LIKE '%TC1%'";
-                $produitParam = array(
-                    'apikey' => $apiKey,
-                    // 'sqlfilters' => "t.ref LIKE '%TC1%'",
-                    'limit' => $limite,
-                );
+                $start_date = $request->post('start_date');
+                $end_date = $request->post('end_date');
 
-                dd("ssssssssssss");
+                if ($start_date && $end_date) {
+
+                    $year_start = explode(", ",$start_date)[1];
+                    $year_end = explode(", ",$end_date)[1];
+
+                    $start_date = '"'.date("$year_start-m-d", strtotime($start_date)).'"';
+                    $end_date = '"'.date("$year_end-m-d", strtotime($end_date)).'"';
+
+                    
+                    $with_dat = ' AND `fac`.`datef` >= '.$start_date.' AND `fac`.`datef` <= '.$end_date;
+                }else {
+                    $with_dat = '';
+                }
+
+                $pdoDolibarr = new PdoDolibarr();
+
+                // la categorie des gel = 7
+                // Récuperer tt les produit appartenant a cette categorie
+                $ids_gel = array();
+                $sql = 'SELECT `fk_product` FROM `llxyq_categorie_product` WHERE `fk_categorie` = 7';
+                $res = $pdoDolibarr->dolibarrDbSql($sql);
+
+                foreach ($res as $key => $value) {
+                    array_push($ids_gel,$value["fk_product"]);
+                }
+
+                // on récupère tout les lines cpntenant un des produits de la catégorie 7 (Gels) pui on fait un groupe by sur le 
+                // fk_facture pour savoir combien de facture on a qui contiennent au moins un gel dont la facture est en positive
+                // et payé paye = 1
+
+                $sql2 = 'SELECT `facdet`.`fk_facture` 
+                FROM `llxyq_facturedet` `facdet` LEFT JOIN `llxyq_facture` `fac` ON `facdet`.`fk_facture` = `fac`.`rowid` 
+                WHERE `fk_product` IN ('. implode(",",$ids_gel).') AND `fac`.`total_ttc` > 0 
+                AND `fac`.`paye` = 1';
+                $groupr_by2 = ' GROUP BY `facdet`.`fk_facture`';
+
+                $sql2 = $sql2 . $with_dat .$groupr_by2 ;
+
+                $sql3 = 'SELECT `facdet`.`fk_facture` 
+                FROM `llxyq_facturedet` `facdet` LEFT JOIN `llxyq_facture` `fac` ON `facdet`.`fk_facture` = `fac`.`rowid` 
+                WHERE `fac`.`total_ttc` > 0 AND `fac`.`paye` = 1' ;
+
+                $groupr_by3 = ' GROUP BY `facdet`.`fk_facture`';
+                $sql3 = $sql3 . $with_dat .$groupr_by3 ;
+
+                $res2 = $pdoDolibarr->dolibarrDbSql($sql2);
+                $nbr_facure_gel = count($res2);
+               
+                $res3 = $pdoDolibarr->dolibarrDbSql($sql3);
+
+                $nbr_facure_total = count($res3);
+
+                if ($nbr_facure_total) {
+                    $oercent_gel_fac = ($nbr_facure_gel/$nbr_facure_total)*100;
+                }else {
+                    dd("Aucune facture dans cet interval");
+                }
+                $rapport = ($nbr_facure_gel/$nbr_facure_total)*100;
+                
+                return view('admin.supply',
+                [
+                    "listWarehouses" => $listWarehouses,
+                    "first_transfert" => $first_transfert,
+                    "entrepot_source" => $entrepot_source,
+                    "entrepot_destination" => $entrepot_destination,
+                    "name_entrepot_a_alimenter" => "Tout les entrepots",
+                    "name_entrepot_a_destocker" => "Entrepôt Malpassé",
+                    "start_date_origin" => $start_date_origin,
+                    "end_date_origin" => $end_date_origin,
+                    "state" => true ,
+                    "nbr_facure_total" => $nbr_facure_total,
+                    "nbr_facure_gel" => $nbr_facure_gel,
+                    "rapport" => $rapport
+                ]);
 
             }
-
 
            // boutique elyamaje
            if ($entrepot_destination== "1" || $entrepot_destination== "15") {

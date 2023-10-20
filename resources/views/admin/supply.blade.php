@@ -133,6 +133,8 @@
                                     @endif
                                     
                                 @endforeach
+
+                                <option value="all">Tout les entrepots</option>
                                 
                             </select>
                         </div>
@@ -188,6 +190,34 @@
                 </form>
                
             </div>
+
+            @if (isset($state))
+
+                <div class="row">
+                    <div class="mb-3 col-md-3"></div>
+                    <div class="mb-6 col-md-6 card radius-10">
+                        <div class="card-body row">
+                            
+                            <div class="text-center mb-4 col-md">
+                                <p class="mb-0 text-secondary">Nombre total de facture</p>
+                                <h4 class="my-1">{{$nbr_facure_total}}</h4>
+                            </div>
+
+                            <div class="text-center mb-4 col-md-4">
+                                <p class="mb-0 text-secondary">Facture contenant un gel</p>
+                                <h4 class="my-1">{{$nbr_facure_gel}}</h4>
+                            </div>
+
+                            <div class="text-center mb-4 col-md-4">
+                                <p class="mb-0 text-secondary">Rapport</p>
+                                <h4 class="my-1">{{round($rapport,2)}} %</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 col-md-3"></div>
+                </div>
+                
+            @endif
 
 
             @if (isset($vente_by_product) && $first_transfert)
