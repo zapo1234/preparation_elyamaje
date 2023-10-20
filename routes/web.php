@@ -162,8 +162,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
     Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
     Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
-    
+
     Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
+
+    // Update details order billing and shipping
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR

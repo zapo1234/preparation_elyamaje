@@ -311,11 +311,10 @@ class ReassortRepository implements ReassortInterface
             if(isset($product_double[$list["barcode"]])){
                 if(isset($product_double[$list["barcode"]][0])){
 
-                $quantity = $product_double[$list["barcode"]][0]['qty'];
+                // $quantity = $product_double[$list["barcode"]][0]['qty'];
                 $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
-
                 unset($transfer[$key_barcode_to_remove]);
-                $transfer[$key_barcode]['qty'] = $transfer[$key_barcode]['qty'] + $quantity;
+                // $transfer[$key_barcode]['qty'] = $transfer[$key_barcode]['qty'] + $quantity;
                 }
             } else {
                 $product_double[$list["barcode"]][] = [

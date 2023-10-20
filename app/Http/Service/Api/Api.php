@@ -52,6 +52,19 @@ class Api
     }
   }
 
+  public function updateDataOrdersWoocommerce($data, $id){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, $data);
+      return $response->json() ? true : false;
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
   public function getOrderById($order_id){
 
     $customer_key = config('app.woocommerce_customer_key');
