@@ -6102,7 +6102,7 @@ input::placeholder {
 	
 	.dashboard_leader .dataTables_paginate{
 		position: absolute;
-		bottom: 10px;
+		bottom: 3px;
 		right: 10px;
 	}
 
