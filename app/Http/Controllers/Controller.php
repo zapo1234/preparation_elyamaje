@@ -558,49 +558,31 @@ class Controller extends BaseController
 
                     $start_date = '"'.date("$year_start-m-d", strtotime($start_date)).'"';
                     $end_date = '"'.date("$year_end-m-d", strtotime($end_date)).'"';
-
                     
                     $with_dat = ' AND `fac`.`datef` >= '.$start_date.' AND `fac`.`datef` <= '.$end_date;
                 }else {
                     $with_dat = '';
                 }
-
-                $pdoDolibarr = new PdoDolibarr();
+                $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
 
                 // la categorie des gel = 7
                 // Récuperer tt les produit appartenant a cette categorie
                 $ids_gel = array();
-                $sql = 'SELECT `fk_product` FROM `llxyq_categorie_product` WHERE `fk_categorie` = 7';
-                $res = $pdoDolibarr->dolibarrDbSql($sql);
+                $res = $pdoDolibarr->getCategories(7);
 
                 foreach ($res as $key => $value) {
                     array_push($ids_gel,$value["fk_product"]);
                 }
 
-                // on récupère tout les lines cpntenant un des produits de la catégorie 7 (Gels) pui on fait un groupe by sur le 
+                // on récupère tout les lines contenant un des produits de la catégorie 7 (Gels) puis on fait un groupe by sur le 
                 // fk_facture pour savoir combien de facture on a qui contiennent au moins un gel dont la facture est en positive
                 // et payé paye = 1
 
-                $sql2 = 'SELECT `facdet`.`fk_facture` 
-                FROM `llxyq_facturedet` `facdet` LEFT JOIN `llxyq_facture` `fac` ON `facdet`.`fk_facture` = `fac`.`rowid` 
-                WHERE `fk_product` IN ('. implode(",",$ids_gel).') AND `fac`.`total_ttc` > 0 
-                AND `fac`.`paye` = 1';
-                $groupr_by2 = ' GROUP BY `facdet`.`fk_facture`';
-
-                $sql2 = $sql2 . $with_dat .$groupr_by2 ;
-
-                $sql3 = 'SELECT `facdet`.`fk_facture` 
-                FROM `llxyq_facturedet` `facdet` LEFT JOIN `llxyq_facture` `fac` ON `facdet`.`fk_facture` = `fac`.`rowid` 
-                WHERE `fac`.`total_ttc` > 0 AND `fac`.`paye` = 1' ;
-
-                $groupr_by3 = ' GROUP BY `facdet`.`fk_facture`';
-                $sql3 = $sql3 . $with_dat .$groupr_by3 ;
-
-                $res2 = $pdoDolibarr->dolibarrDbSql($sql2);
+                $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
                 $nbr_facure_gel = count($res2);
-               
-                $res3 = $pdoDolibarr->dolibarrDbSql($sql3);
 
+
+                $res3 = $pdoDolibarr->getFk_facture($with_dat);
                 $nbr_facure_total = count($res3);
 
                 if ($nbr_facure_total) {
