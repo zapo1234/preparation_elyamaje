@@ -194,8 +194,12 @@
             @if (isset($state))
 
                 <div class="row">
+
+                    
+
                     <div class="mb-3 col-md-3"></div>
                     <div class="mb-6 col-md-6 card radius-10">
+                        <h6 class="mb-0 mt-3 text-center text-uppercase">State par rapport aux factures</h6>
                         <div class="card-body row">
                             
                             <div class="text-center mb-4 col-md">
@@ -211,6 +215,33 @@
                             <div class="text-center mb-4 col-md-4">
                                 <p class="mb-0 text-secondary">Rapport</p>
                                 <h4 class="my-1">{{round($rapport,2)}} %</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 col-md-3"></div>
+                </div>
+
+
+                <div class="row">
+                    <div class="mb-3 col-md-3"></div>
+                    <div class="mb-6 col-md-6 card radius-10">
+                        <h6 class="mb-0 mt-3 text-center text-uppercase">State par rapport aux clients</h6>
+
+                        <div class="card-body row">
+                            
+                            <div class="text-center mb-4 col-md">
+                                <p class="mb-0 text-secondary">Nombre total de clients</p>
+                                <h4 class="my-1">{{$nbr_clients}}</h4>
+                            </div>
+
+                            <div class="text-center mb-4 col-md-4">
+                                <p class="mb-0 text-secondary">Nombre dde clients pro</p>
+                                <h4 class="my-1">{{$nbr_clients_pros}}</h4>
+                            </div>
+
+                            <div class="text-center mb-4 col-md-4">
+                                <p class="mb-0 text-secondary">Rapport</p>
+                                <h4 class="my-1">{{round($rapportBySocid,2)}} %</h4>
                             </div>
                         </div>
                     </div>

@@ -80,6 +80,43 @@ class PdoDolibarr
 
     }
 
+    function getClientPros($fks_facture, $with_dat){
+
+        $sql = 'SELECT `fk_soc` 
+        FROM `llxyq_facture` `facdet`
+        WHERE `total_ttc` > 0 AND `paye` = 1 AND `rowid` IN  ('. implode(",",$fks_facture).')';
+        $groupr_by = ' GROUP BY `fk_soc`';
+        $sql = $sql . $with_dat .$groupr_by ;
+
+
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+ 
+        return $res;
+
+
+    }
+
+    function getAllClientInHavingFacture($with_dat){
+
+        $sql = 'SELECT `fk_soc` 
+        FROM `llxyq_facture` `facdet`
+        WHERE `total_ttc` > 0 AND `paye` = 1';
+        $groupr_by = ' GROUP BY `fk_soc`';
+        $sql = $sql . $with_dat .$groupr_by ;
+
+
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $res;
+
+
+    }
+
 
 
 }
