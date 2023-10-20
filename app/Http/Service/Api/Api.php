@@ -360,6 +360,59 @@ class Api
     }
   }
 
+  public function CallAPI2($method, $key, $url, $data = false){
+    
+    $curl = curl_init();
+    $httpheader = ['DOLAPIKEY: '.$key];
+
+    switch ($method){
+      case "POST":
+        curl_setopt($curl, CURLOPT_POST, 1);
+        $httpheader[] = "Content-Type:application/json";
+
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        break;
+    case "PUT":
+
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+        $httpheader[] = "Content-Type:application/json";
+
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+        break;
+    default:
+        if ($data)
+            $url = sprintf("%s?%s", $url, http_build_query($data));
+  }
+
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
+
+  $result = curl_exec($curl);
+
+
+
+  if (curl_errno($curl)) {
+    switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
+      case 200:  # OK
+        break;
+      default:
+      echo json_encode(['success' => false, 'message'=> 'Erreur code : '. $http_code.' !']);
+      exit;
+        
+    }
+  }
+
+  // curl_close($curl);
+  
+  // renvoi le resultat sous forme de json
+  return $result;   
+}
+
+
 
 }
 
