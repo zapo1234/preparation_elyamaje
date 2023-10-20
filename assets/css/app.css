@@ -7260,6 +7260,16 @@ textarea:focus{
 	align-items: flex-start;
 }
 
+.customer_billing span:not(.customer_detail_title ),
+.customer_shipping span:not(.customer_detail_title ){
+	width: 100%;
+}
+
+.customer_billing div,
+.customer_shipping div{
+	margin-bottom: 2px;
+}
+
 .customer_billing a{
 	color: #0d6efd !important
 }
@@ -7998,8 +8008,36 @@ select option[disabled] {
 	text-decoration: underline;
 }
 
+.billing_customer_first_name::before,
+.shipping_customer_first_name::before{
+	content: "(Prenom)";
+	font-size: 12px;
+	color: #999;
+	margin-right: 5px;
+}
+
+.billing_customer_last_name::before,
+.shipping_customer_last_name::before{
+	content: "(Nom)";
+	font-size: 12px;
+	color: #999;
+	margin-right: 5px;
+}
+
 .country_flag{
 	width: 18px;
 	height: 18px;
 	margin-right: 8px;
+}
+
+.edit_detail_order{
+	cursor: pointer;
+	font-size: 16px;
+	color: #999;
+	margin-left: 5px;
+}
+
+.editableContent{
+	border: 1px solid #999;
+	border-radius: 5px;
 }

@@ -929,6 +929,15 @@ class OrderRepository implements OrderInterface
       ->orderBy('orders.updated_at', 'DESC')
       ->get();
    }
+
+   public function update($data, $order_id){
+      try{
+         $this->model->where('order_woocommerce_id', $order_id)->update($data);
+         echo json_encode(['success' => true]);
+      } catch(Exception $e){
+         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+      }
+   }
 }
 
 

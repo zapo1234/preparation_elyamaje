@@ -179,6 +179,35 @@ class Order extends BaseController
                   $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
                   $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
                   $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+
+                  // Get shipping and billing detail from local data
+                  if(isset($orders[$key]['billing'])){
+                    $orders[$key]['billing']['first_name'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_first_name'];
+                    $orders[$key]['billing']['last_name'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_last_name'];
+                    $orders[$key]['billing']['company'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_company'];
+                    $orders[$key]['billing']['address_1'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_address_1'];
+                    $orders[$key]['billing']['address_2'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_address_2'];
+                    $orders[$key]['billing']['city'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_city'];
+                    $orders[$key]['billing']['state'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_state'];
+                    $orders[$key]['billing']['postcode'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_postcode'];
+                    $orders[$key]['billing']['country'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_country'];
+                    $orders[$key]['billing']['email'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_email'];
+                    $orders[$key]['billing']['phone'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_phone'];
+                  }
+
+                  if(isset($orders[$key]['shipping'])){
+                    $orders[$key]['shipping']['first_name'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_first_name'];
+                    $orders[$key]['shipping']['last_name'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_last_name'];
+                    $orders[$key]['shipping']['company'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_company'];
+                    $orders[$key]['shipping']['address_1'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_address_1'];
+                    $orders[$key]['shipping']['address_2'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_address_2'];
+                    $orders[$key]['shipping']['city'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_city'];
+                    $orders[$key]['shipping']['state'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_state'];
+                    $orders[$key]['shipping']['postcode'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_postcode'];
+                    $orders[$key]['shipping']['country'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_country'];
+                    $orders[$key]['shipping']['phone'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_phone'];
+                  }
+
                 } else {
                   $orders[$key]['user_id'] = null;
                   $orders[$key]['name'] = "Non attribuée";
@@ -996,14 +1025,24 @@ class Order extends BaseController
           echo json_encode(['success' => false, 'message' => $th->getMessage()]);
           // return ["response" => false, "error" => $th->getMessage()];
       } 
-
   }
 
+  public function updateDetailsOrders(Request $request){
+    $order_id = $request->post('order_id');
+    $field = $request->post('field');
+    $field_value = $request->post('field_value');
 
+    if($order_id && $field && $field_value){
+      $data = [
+        $field => $field_value
+      ];
 
+      $this->order->update($data, $order_id);
+    } else {
+      echo json_encode(['success' => false]);
+    }
 
-
-
+  }
 }
 
 
