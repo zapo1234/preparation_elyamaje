@@ -8,12 +8,13 @@ use Throwable;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Controllers\Order;
+use App\Models\ProductDolibarr;
 use Illuminate\Support\Facades\DB;
+use App\Http\Service\Api\PdoDolibarr;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\Tiers\TiersRepository;
-use App\Http\Service\Api\PdoDolibarr;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -326,15 +327,15 @@ class Controller extends BaseController
 
             if (!$value->origin_id_reassort) {          
                 if ($val_etat == 0) {
-                    $etat = '<span class="badge bg-warning text-dark">En attente</span>';
+                    $etat = '<span class="badge bg-warning text-dark">En attente de préparation</span>';
                     $disabled = "";
                 }
                 if ($val_etat < 0) {
-                    $etat = '<span class="badge bg-info text-dark">En cours</span>';
+                    $etat = '<span class="badge bg-info text-dark">En cours de préparation</span>';
                     $disabled = "disabled";
                 }
                 if ($val_etat > 0) {
-                    $etat = '<span class="badge bg-success">Validé</span>';
+                    $etat = '<span class="badge bg-success">Términé</span>';
                     $disabled = "disabled";
                 }
             }else {
@@ -348,9 +349,9 @@ class Controller extends BaseController
                 
             } 
 
-
             $liste_reassort[$value->identifiant_reassort] = [
                 "identifiant" => $value->identifiant_reassort,
+                "libelle_reassort" => $value->libelle_reassort,
                 "date" => date('d/m/Y H:i:s', $value->identifiant_reassort),
                 "entrepot_source" => $wh_id_name[$id_etrepot_source],
                 "entrepot_destination" => $wh_id_name[$id_etrepot_destination],
@@ -504,7 +505,7 @@ class Controller extends BaseController
         */
 
 
-     
+        
 
 
 
@@ -579,8 +580,9 @@ class Controller extends BaseController
                 // et payé paye = 1
                 
                 $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
-              
                 $nbr_facure_gel = count($res2);
+
+                dd($nbr_facure_gel);
                
                // traitement selon les clients
                 $fks_facture = array();
@@ -588,11 +590,18 @@ class Controller extends BaseController
                     array_push($fks_facture,$value["fk_facture"]);
                 }
 
+                
+
                 $res4 = $pdoDolibarr->getClientPros($fks_facture, $with_dat);
                 $nbr_clients_pros = count($res4);
 
+                
+
+
                 $res5 = $pdoDolibarr->getAllClientInHavingFacture($with_dat);
                 $nbr_clients = count($res5);
+
+              
 
                 $rapportBySocid = ($nbr_clients_pros/$nbr_clients)*100;
 
@@ -778,6 +787,8 @@ class Controller extends BaseController
             }      
        
 
+           // dd($array_factures_total);
+
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
 
@@ -786,6 +797,8 @@ class Controller extends BaseController
 
         $cat_no_exist = array();
         $product_no_cat = array();
+
+
 
 
         foreach ($array_factures_total as $xx => $factures) {           
@@ -900,11 +913,6 @@ class Controller extends BaseController
 
         $vente_by_product = array();
 
-
-
-
-
-
         $kit = $this->reassort->getKits();
         $lot_de_limes_ids = $kit["all_id_pere_kits"];
         $lot_de_limes_vs_corresp = $kit["composition_by_pere"];
@@ -914,6 +922,7 @@ class Controller extends BaseController
                 $lines = $facture["lines"];
                 foreach ($lines as $kline => $line) {
                     if ($line["fk_product"] !="") {
+
                         $id_product = $line["fk_product"];
                         $qty = $line["qty"];  
                         
@@ -1014,7 +1023,8 @@ class Controller extends BaseController
               dd("entrepot n'a pas pu etre determine");
           }
 
-
+        //   dump($vente_by_product);
+        //   dd($products_dolibarrs_first_tr);
         if ($first_transfert) {
 
             return view('admin.supply',
@@ -1288,7 +1298,7 @@ class Controller extends BaseController
             $tabProduitReassort1 = $request->post('tabProduitReassort1');
             $entrepot_source = $request->post('entrepot_source');
             $entrepot_destination = $request->post('entrepot_destination');
-            $name_date_reassort = "reassort_du_".date('Y-m-d H:i:s');
+            $name_date_reassort = $request->post('libele_reassort')? $request->post('libele_reassort'):"reassort_du_".date('Y-m-d H:i:s');
             $identifiant_reassort = time();
             $sense_transfert = $entrepot_source."to".$entrepot_destination;
 
@@ -1357,70 +1367,6 @@ class Controller extends BaseController
         } 
     }
 
-/*
-    function executerTransfere($identifiant_reassort){
-
-        try {
-            $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-
-            if (!$tabProduitReassort) {
-                return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
-            }
-            $apiKey = env('KEY_API_DOLIBAR');   
-            $apiUrl = env('KEY_API_URL');
-          
-            $data_save = array();
-            $incrementation = 0;
-            $decrementation = 0;
-            $i = 1;
-            $ids="";
-            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
-            foreach ($tabProduitReassort as $key => $line) {
-
-                
-
-                if ($line["qty"] != 0) {           
-                    $data = array(
-                        'product_id' => $line["product_id"],
-                        'warehouse_id' => $line["warehouse_id"], 
-                        'qty' => $line["qty"]*-1, 
-                        'type' => $line["type"], 
-                        'movementcode' => $line["movementcode"], 
-                        'movementlabel' => $line["movementlabel"], 
-                        'price' => $line["price"], 
-                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
-                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
-                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
-                    );
-                    // appliquer le transfert
-                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
-                    // mettre a jour woocommerce 
-
-
-                    if ($stockmovements) {
-                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                        if (count($tabProduitReassort) != $i) {
-                            $ids .= $line['id'] . ",";
-                        }else{
-                            $ids .= $line['id'];
-                        }
-                        $i++;  
-                        $incrementation++;
-                    }
-                }
-            }
-            $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
-
-            $response = DB::update($updateQuery);
-            return true;
-        
-        } catch (\Throwable $th) {
-            dd($th);
-            return ["response" => false, "error" => $th->getMessage()];
-        } 
-
-    }
-*/
 
     function delete_transfert($identifiant){
 
@@ -1704,6 +1650,57 @@ class Controller extends BaseController
         return $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
     }
 
+    function actualiseProductDolibarr(){
+
+        try {
+            $products_dolibarrs_save = array();
+            $apiUrl = env('KEY_API_URL');
+            $apiKey = env('KEY_API_DOLIBAR');
+
+            $produitParamProduct = array(
+                'apikey' => $apiKey,
+                'limit' => 10000,
+            );
+
+            $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
+            $all_products = json_decode($all_products,true); 
+
+            if ($all_products) {
+                foreach ($all_products as $key => $product) {
+                    array_push($products_dolibarrs_save, [
+                        "product_id" => $product["id"],
+                        "label" => $product["label"],
+                        "price_ttc" => $product["price_ttc"],
+                        "barcode" => $product["barcode"],
+                        "poids" => 0,
+                        "warehouse_array_list" => json_encode($product["warehouse_array_list"])
+                    ]);
+                }
+
+                $response = DB::transaction(function () use ($products_dolibarrs_save) {
+                    $original_data = DB::table('products_dolibarr')->get();
+                    DB::table('products_dolibarr')->truncate();
+                    try {
+                        DB::table('products_dolibarr')->insert($products_dolibarrs_save);
+                        return true;
+                    } catch (\Throwable $th) {
+                        // En cas d'erreur, réinsérez les données originales
+                        $tableau_php = json_decode(json_encode($original_data), true);
+                        DB::table('products_dolibarr')->insert($tableau_php);
+                        return false;
+                    }
+
+                });
+            }else {
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+     
+    }
+    
 
 }
     

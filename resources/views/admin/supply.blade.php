@@ -405,7 +405,7 @@
                         <button id="id_sub_validation_reassort" onclick="valide_reassort1()" class="btn btn-primary mb-4" type="submit">Valider le réassort</button>
                     </div>
 
-                    <div class="col-md-4 d-flex justify-content-center" style="margin-top: 3.3rem!important;">
+                    <div class="col-md-2 d-flex justify-content-center" style="margin-top: 3.3rem!important;">
                         <select id="user_selected" class="js-states form-control" name="user_selected">
                             <option style="width:100%" value="" selected>Selectionnez l'utilisateur</option>
                             @foreach($users as $u => $user) 
@@ -413,6 +413,14 @@
                             @endforeach
                         </select>
                     </div>
+                   
+                    <div class="col-md-2"  style="margin-top: 3.3rem!important;font-size: 0.73rem;">
+                        {{-- <input  class="libele_reassort" type="text" placeholder="Libelé du réassort" required=""> --}}
+                        <input id="libele_reassort" class="form-control form-control-sm mb-3" type="text" placeholder="Libelé du réassort" style="font-size: 0.73rem;">
+
+                    </div>
+
+                    
 
                     <div class="col-md-3"></div>
 
@@ -525,6 +533,7 @@
                             <thead>
                                 <tr>
                                     <th title="L'entrepôt qui va être décrémenté">Identifiant</th>
+                                    <th title="L'entrepôt qui va être décrémenté">Libelé du réassort</th>
                                     <th title="L'entrepôt qui va être décrémenté">Date</th>
                                     <th title="L'entrepôt qui va être décrémenté">Entrepot source</th>
                                     <th title="L'entrepôt qui va être décrémenté">Entrepôt de destination</th>
@@ -538,6 +547,9 @@
                             
                                     <tr id="{{$value["identifiant"]}}_transfert">
                                         <td id="{{$value["identifiant"]}}_identifiant" style="text-align: left !important;">{{$value["identifiant"]}}</td>
+
+                                        <td id="{{$value["identifiant"]}}_libelle_reassort" style="text-align: left !important;">{{$value["libelle_reassort"]}}</td>
+                                        
                                         <td id="{{$value["identifiant"]}}_date" style="text-align: left !important;">{{$value["date"]}}</td>
                                         <td id="{{$value["identifiant"]}}_entrepot_source" style="text-align: left !important;">{{$value["entrepot_source"]}}</td>
                                         <td id="{{$value["identifiant"]}}_entrepot_destination" style="text-align: left !important;">{{$value["entrepot_destination"]}}</td>
@@ -897,13 +909,6 @@
 
     }
 
-    // validation du reassort 1 et 2 
-
-  
-
-
-
-
 
     urlCreateReassort = "{{route('postReassort')}}";
     // console.log(urlCreateReassort);
@@ -930,6 +935,8 @@
         var entrepot_source = $("#entrepot_source").val();
         var entrepot_destination = $("#entrepot_destination").val();
         var user = $("#user_selected").val();
+        var libele_reassort = $("#libele_reassort").val();
+        
 
 
         $("#id_sub_validation_reassort").addClass("disabled-link");
@@ -945,7 +952,8 @@
                 tabProduitReassort1:tabProduitReassort1,
                 entrepot_source:entrepot_source,
                 entrepot_destination:entrepot_destination,
-                user:user
+                user:user,
+                libele_reassort:libele_reassort
                     
             },
 
