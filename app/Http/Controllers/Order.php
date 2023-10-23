@@ -627,7 +627,6 @@ class Order extends BaseController
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
-            
           } else {
             echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
           }
@@ -637,10 +636,10 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
       
-      $from_dolibarr = false;// $request->post('from_dolibarr') == "false" ? 0 : 1;
-      $transfers = false;//$request->post('transfers') == "false" ? 0 : 1;
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
-      $order_id = 94359;//explode(',', $request->post('order_id'))[0];
+      $order_id = explode(',', $request->post('order_id'))[0];
         
       if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -970,14 +969,14 @@ class Order extends BaseController
 
     public function executerTransfere($identifiant_reassort){
 
-  
-
       try {
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-          dd($tabProduitReassort);
           if (!$tabProduitReassort) {
-              return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+              echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
+              return;
+              // return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
           }
+          
           $apiKey = env('KEY_API_DOLIBAR');   
           $apiUrl = env('KEY_API_URL');
         

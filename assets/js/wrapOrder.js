@@ -129,7 +129,8 @@ $(".validate_order").on("click", function(){
                 listProduct += `
                     <div class="row row-main to_hide">
                         <div class="col-2"> 
-                            <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
+                            ${value.image ? '<img loading="lazy" class="img-fluid" src="'+value.image+'">' : '<img loading="lazy" class="img-fluid" src="assets/images/icons/default_image.png">'}
+                            </div>
                             <div class="col-8">
                                 <div class="row d-flex">
                                     <p><b>${gift ? '<span class="text-success">(Cadeau)</span>' : ''} ${value.name} (x${value.quantity})</b></p>

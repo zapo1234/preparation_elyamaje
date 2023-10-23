@@ -116,20 +116,23 @@
 												<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 														
-														@if($item['name'])
-															<span>{{ $item['name'] }}</span>
+														@if($item['label'])
+															<span>{{ $item['label'] }}</span>
 														@else
-															<span class="text-danger">Produit manquant</span>
+															<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 														@endif
 														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<div class="d-flex">
-																<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																<span class="remove_{{ $item['barcode'] }}_{{ $transfers['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfers['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
-															</div>
+
+															@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																<div class="d-flex">
+																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																	<span class="remove_{{ $item['barcode'] }}_{{ $transfers['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfers['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																</div>
+															@endif
 														</div>
 													</div>
-													<span class="column22">{{ round(floatval($item['price']),2) }}</span>
+													<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 													<span class="column44">{{ $item['location'] }}</span>
 												</div>
@@ -203,21 +206,24 @@
 														<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['qty'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 																
-																@if($item['name'])
-																	<span>{{ $item['name'] }}</span>
+																@if($item['label'])
+																	<span>{{ $item['label'] }}</span>
 																@else
-																	<span class="text-danger">Produit manquant</span>
+																	<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 																@endif
 															
 																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<div class="d-flex">
-																		<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																		<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
-																	</div>
+
+																	@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																		<div class="d-flex">
+																			<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																			<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																		</div>
+																	@endif
 																</div>
 															</div>
-															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
+															<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
 															<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 															<span class="column44">{{ $item['location'] }}</span>
 														</div>
@@ -293,21 +299,24 @@
 														<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 																
-																@if($item['name'])
-																	<span>{{ $item['name'] }}</span>
+																@if($item['label'])
+																	<span>{{ $item['label'] }}</span>
 																@else
-																	<span class="text-danger">Produit manquant</span>
+																	<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 																@endif
 															
 																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<div class="d-flex">
-																		<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																		<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
-																	</div>
+
+																	@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																		<div class="d-flex">
+																			<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																			<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																		</div>
+																	@endif
 																</div>
 															</div>
-															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
+															<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
 															<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 															<span class="column44">{{ $item['location'] }}</span>
 														</div>
