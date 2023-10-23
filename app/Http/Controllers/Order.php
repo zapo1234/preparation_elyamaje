@@ -157,8 +157,8 @@ class Order extends BaseController
             $take_order = true;
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100" 
-                  || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002"){
+                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $take_order = false;
                 }
               } 
