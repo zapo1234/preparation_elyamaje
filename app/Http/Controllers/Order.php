@@ -970,9 +970,11 @@ class Order extends BaseController
 
     public function executerTransfere($identifiant_reassort){
 
+  
+
       try {
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-
+          dd($tabProduitReassort);
           if (!$tabProduitReassort) {
               return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
           }

@@ -44,9 +44,10 @@ class PdoDolibarr
         FROM `llxyq_facturedet` `facdet` LEFT JOIN `llxyq_facture` `fac` ON `facdet`.`fk_facture` = `fac`.`rowid` 
         WHERE `fk_product` IN ('. implode(",",$ids_gel).') AND `fac`.`total_ttc` > 0 
         AND `fac`.`paye` = 1';
+
         $groupr_by = ' GROUP BY `facdet`.`fk_facture`';
         $sql = $sql . $with_dat .$groupr_by ;
-
+        
 
         $stmt = $this->pdo->prepare($sql);
         // Attribuer les valeurs aux paramètres pour eviter les injections sql
@@ -87,7 +88,6 @@ class PdoDolibarr
         WHERE `total_ttc` > 0 AND `paye` = 1 AND `rowid` IN  ('. implode(",",$fks_facture).')';
         $groupr_by = ' GROUP BY `fk_soc`';
         $sql = $sql . $with_dat .$groupr_by ;
-
 
 
         $stmt = $this->pdo->prepare($sql);
