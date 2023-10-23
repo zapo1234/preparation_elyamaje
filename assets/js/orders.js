@@ -312,7 +312,6 @@ $(document).ready(function() {
 
                                         ${row.billing.country ? `<div class="d-flex w-100 justify-content-between">
                                             <span class="billing_customer_country">`+row.billing.country+`</span>
-                                            <i data-edit="billing_customer_country" class="edit_detail_order bx bx-pencil"></i>
                                         </div>` : ``}
                                     </div>
 
@@ -361,7 +360,6 @@ $(document).ready(function() {
 
                                         ${row.shipping.country ? `<div class="d-flex w-100 justify-content-between">
                                             <span class="shipping_customer_country">`+row.shipping.country+`</span>
-                                            <i data-edit="shipping_customer_country" class="edit_detail_order bx bx-pencil"></i>
                                         </div>` : ``}
                                     </div>
                                 </div>
