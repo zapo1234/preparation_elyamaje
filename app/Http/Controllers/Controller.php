@@ -577,9 +577,24 @@ class Controller extends BaseController
                 // on récupère tout les lines contenant un des produits de la catégorie 7 (Gels) puis on fait un groupe by sur le 
                 // fk_facture pour savoir combien de facture on a qui contiennent au moins un gel dont la facture est en positive
                 // et payé paye = 1
-
+                
                 $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
+              
                 $nbr_facure_gel = count($res2);
+               
+               // traitement selon les clients
+                $fks_facture = array();
+                foreach ($res2 as $key => $value) {
+                    array_push($fks_facture,$value["fk_facture"]);
+                }
+
+                $res4 = $pdoDolibarr->getClientPros($fks_facture, $with_dat);
+                $nbr_clients_pros = count($res4);
+
+                $res5 = $pdoDolibarr->getAllClientInHavingFacture($with_dat);
+                $nbr_clients = count($res5);
+
+                $rapportBySocid = ($nbr_clients_pros/$nbr_clients)*100;
 
 
                 $res3 = $pdoDolibarr->getFk_facture($with_dat);
@@ -605,7 +620,11 @@ class Controller extends BaseController
                     "state" => true ,
                     "nbr_facure_total" => $nbr_facure_total,
                     "nbr_facure_gel" => $nbr_facure_gel,
-                    "rapport" => $rapport
+                    "rapport" => $rapport,
+
+                    "nbr_clients" => $nbr_clients,
+                    "nbr_clients_pros" => $nbr_clients_pros,
+                    "rapportBySocid" => $rapportBySocid
                 ]);
 
             }
