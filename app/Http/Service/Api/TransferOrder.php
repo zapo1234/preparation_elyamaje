@@ -830,10 +830,10 @@ class TransferOrder
                }
       
                $newbank = [
-              "datepaye"=>$date_finale,
-              "paymentid"=>6,
-              "closepaidinvoices"=> "yes",
-              "accountid"=> $account_id, // id du compte bancaire.
+                "datepaye"=>$date_finale,
+                "paymentid"=>6,
+                "closepaidinvoices"=> "yes",
+                "accountid"=> $account_id, // id du compte bancaire.
                ];
            
                // valider les facture dans dolibar....

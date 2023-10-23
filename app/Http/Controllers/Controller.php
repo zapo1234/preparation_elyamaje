@@ -246,6 +246,16 @@ class Controller extends BaseController
         ]);
     }
 
+    // INDEX EMBALLEUR 
+     public function wrapOrder(){
+        return view('emballeur.index');
+    }
+
+    // INDEX SAV
+    public function sav(){
+        return view('sav.index');
+    }
+
     // Mise à jour du status du transfers pour mettre en cours de traitement
     public function transfersProcesssing(Request $request){
         $transfer_id = $request->post('transfer_id');
@@ -255,12 +265,6 @@ class Controller extends BaseController
             return $this->reassort->updateStatusReassort($transfer_id, $status);
         }
         
-    }
-
-    // INDEX EMBALLEUR 
-    public function wrapOrder()
-    {
-        return view('emballeur.index');
     }
 
     function getVieuxSplay (){

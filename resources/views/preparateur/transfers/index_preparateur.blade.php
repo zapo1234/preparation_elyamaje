@@ -81,7 +81,7 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Transfert</h6>
-									<!-- <h2>{{ $transfers['details']['id'] }}</h2> -->
+									<h2 style="font-size:1.2rem !important">{{ $transfers['details']['id'] }}</h2>
 								</div>
 								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
@@ -168,6 +168,7 @@
 									<div class="course">
 										<div class="course-preview">
 											<h6>Transfert</h6>
+											<h2 style="font-size:1.2rem !important">{{ $transfer['details']['id'] }}</h2>
 										</div>
 										<div class="w-100 d-flex flex-column justify-content-between">
 											<div class="course-info d-flex justify-content-between align-items-center">
@@ -257,6 +258,7 @@
 									<div class="course">
 										<div class="course-preview">
 											<h6>Transfert</h6>
+											<h2 style="font-size:1.2rem !important">{{ $transfer['details']['id'] }}</h2>
 										</div>
 										<div class="w-100 d-flex flex-column justify-content-between">
 											<div class="course-info d-flex justify-content-between align-items-center">

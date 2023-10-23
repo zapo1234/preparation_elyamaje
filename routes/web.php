@@ -47,6 +47,9 @@ Route::group(['middleware' => ['auth']], function () {
             case 5 :
                 return redirect()->route('noRole');
                 break;
+            case 6 :
+                return redirect()->route('sav');
+                break;
             default:
                 return redirect()->route('logout');
                 break;
@@ -130,6 +133,12 @@ Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
 });
 
+// SAV
+Route::group(['middleware' => ['auth', 'role:6']], function () {
+    Route::get("/sav", [Controller::class, "sav"])->name('sav');
+});
+
+
 // ADMIN ET CHEF D'ÉQUIPE
 Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('getAllOrders');
@@ -137,6 +146,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
     Route::post("/updateOrderStatus", [Order::class, "updateOrderStatus"])->name('updateOrderStatus');
+    Route::post("/orderReInvoicing", [Order::class, "orderReInvoicing"])->name('orderReInvoicing');
     Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
     Route::get("/unassignOrders", [Order::class, "unassignOrders"])->name('unassignOrders');
     Route::get("/account", [Admin::class, "account"])->name('account');
