@@ -151,7 +151,7 @@
 													</div>
 												@endif
 											</td>
-											<td data-label="Imprimer">
+											<td style="vertical-align:baseline" data-label="Imprimer">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)
 														<div class="mb-3 flex-wrap d-flex w-100 align-items-center justify-content-between">

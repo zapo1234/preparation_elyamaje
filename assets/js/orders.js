@@ -40,7 +40,7 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '59vh',
+        scrollY: '63vh',
         scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
@@ -458,7 +458,6 @@ $(document).ready(function() {
             $(".loading_table_content").removeClass('loading_table_content')
 
             var info = $('#example').DataTable().page.info();
-            var total = 0
             var attribution = 0
             var order_progress = 0
 
@@ -466,7 +465,6 @@ $(document).ready(function() {
             $('#example').DataTable().rows().eq(0).each( function ( index ) {
                 var row = $('#example').DataTable().row( index );
                 var data = row.data();
-                total = parseFloat(total) + parseFloat(data.total)
             } );
 
             // Check nombre attribution
@@ -479,7 +477,6 @@ $(document).ready(function() {
             } );
             
             $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
-            $(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
             $(".allocation_of_orders").attr('disabled', false)
             $(".dataTables_paginate").parent().removeClass("col-md-7")
         },
@@ -507,6 +504,9 @@ $(document).ready(function() {
             return nRow;
         }
     })
+
+
+    $('thead').remove()
 
     $('.shipping_dropdown').on('change', function(e){
         var shipping_dropdown = $(this).val();
@@ -545,7 +545,7 @@ $(window).resize(function(){
     if($(window).width() < 650){
         $(".dataTables_scrollBody").css('max-height', '100%')
     } else {
-        $(".dataTables_scrollBody").css('max-height', '59vh')
+        $(".dataTables_scrollBody").css('max-height', '63vh')
     }
 })
 

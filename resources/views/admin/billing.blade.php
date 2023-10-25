@@ -28,15 +28,13 @@
 					@endif
 
 					<div class="w-100 d-flex justify-content-center">
-						<div class="billing_form w-75 card border-top border-0 border-4 border-dark">
-							<div class="card-body p-5">
-								<div class="card-title d-flex align-items-center">
-									<div>
-										<i class="bx bx-box me-1 font-22 text-primary"></i>
-									</div>
-									<h5 class="mb-0 text-primary">Commande <span class="text-danger">(WooCommerce seulement)</span></h5>
+						<div class="billing_form w-75 card radius-10">
+							<div class="header_title hide_mobile d-flex align-items-center">
+								<div class="w-100 d-flex justify-content-between">
+									<h5>Commande  <span class="text-danger">(WooCommerce seulement)</span></h5>
 								</div>
-								<hr>
+							</div>
+							<div class="card-body p-5">
 								<form method="post" action="{{ route('admin.billingOrder') }}">
 									@csrf
 									<div class="col-md-12 mt-3">

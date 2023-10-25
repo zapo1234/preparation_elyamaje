@@ -513,7 +513,6 @@ class Controller extends BaseController
 
 
 
-
         $start_date = $request->post('start_date');
         $end_date = $request->post('end_date');
 
