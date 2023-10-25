@@ -1098,8 +1098,8 @@ class Order extends BaseController
       // on fait l'actualisation sur woocommerce
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
-      dd($datas);
-
+      // dd($datas);
+      dump("Total = ". count($datas));
       foreach ($datas as $key => $data) {
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
