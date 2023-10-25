@@ -271,7 +271,6 @@
 												<div>
 													<h6>Le {{ \Carbon\Carbon::parse($transfer['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 												</div>
-
 												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="show_order btn">Préparer</button>
 											</div>
 											<div class="progress" id="progress_{{ $transfer['details']['id'] }}">
