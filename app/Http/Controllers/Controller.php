@@ -222,6 +222,7 @@ class Controller extends BaseController
         $transfers_waiting_to_validate = [];
         $transfers_validate = [];
 
+
         foreach ($reassort as $rea) {
             if ($rea['details']['status'] == "waiting_to_validate") {
                 $transfers_waiting_to_validate[] = $rea;
@@ -231,7 +232,6 @@ class Controller extends BaseController
                 $transfers_progress[] = $rea;
             }
         }
-
   
         return view('preparateur.transfers.index_preparateur', 
         [

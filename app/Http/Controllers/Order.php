@@ -254,6 +254,12 @@ class Order extends BaseController
       // Préparateur
       $users =  $this->user->getUsersAndRoles();
       $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
+      $products_pick_dolibarr =  $this->orderDolibarr->getAllProductsPickedDolibarr();
+
+      if(count($products_pick_dolibarr) > 0){
+        $products_pick = array_merge($products_pick, $products_pick_dolibarr);
+      }
+
       $status_list = __('status_order');
       echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick, 'status_list' => $status_list]);
     }

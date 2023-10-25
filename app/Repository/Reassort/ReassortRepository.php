@@ -26,7 +26,8 @@ class ReassortRepository implements ReassortInterface
     public function getReassortByUser($user_id){
 
         $list = [];
-        $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
+        $reassort = $this->model::select('products_dolibarr.label', 'products_dolibarr.price_ttc', 'products.location', 'hist_reassort.*')
+        ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         // ->where('products.status', 'publish')
         // ->where('products.is_variable', 0)
@@ -104,7 +105,9 @@ class ReassortRepository implements ReassortInterface
     }
 
     public function getReassortById($order_id){
-        $transfer = $this->model::select('products.name', 'products.image', 'products.price', 'products.location', 'hist_reassort.*')
+
+        $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
+        ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['identifiant_reassort', $order_id],
@@ -117,17 +120,15 @@ class ReassortRepository implements ReassortInterface
             $transfer[$key]['transfers'] = true;
             $transfer[$key]['cost'] = $order['price'];
             $transfer[$key]['quantity'] = $order['qty'];
-
             $transfer[$key]['shipping_method_detail'] = "Transfert";
         }
-
-     return $transfer;
+        
+        return $transfer;
     }
-
 
     public function checkProductBarcode($product_id, $barcode){
         return $this->model::where('product_id', $product_id)->where('barcode', $barcode)->count();
-     }
+    }
 
     public function findByIdentifiantReassort($identifiant, $cles = null){
         try {
