@@ -781,7 +781,7 @@ class Controller extends BaseController
                 $interval = date("Y-m-d", strtotime("-$jours days")); 
                 $coef = (1.10)/($jours/7);
 
-                if ($ignore_bp && $interval >= "2023-10-07") {
+                if ($ignore_bp && $interval <= "2023-10-07") {
                     $date_start_bp = "2023-10-07";
                     $date_end_bp = "2023-10-10";
                     $coef = $coef*(7/6.5);
