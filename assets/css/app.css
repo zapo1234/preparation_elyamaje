@@ -8193,3 +8193,7 @@ select option[disabled] {
 .product_location i{
 	color: #333333;
 }
+
+.error_stock{
+    color: red !important;
+}

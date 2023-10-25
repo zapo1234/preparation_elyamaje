@@ -394,7 +394,7 @@ class Label extends BaseController
                         }
 
                         if(is_numeric($or['weight'])){
-                            $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+                            $weight = $weight + number_format(($or['weight'] * $quantity), 4);
                         }
                     }
                 }

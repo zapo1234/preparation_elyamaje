@@ -108,7 +108,7 @@ $(".generate_label_button").on('click', function(){
                         </div>`
                 });
                 
-                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(2)+` Kg</div>`
+                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(3)+` Kg</div>`
                 // Si tous les produits sont déjà dans des étiquettes alors désactiver le button de génération
                 if(product == 0){
                     $(".button_validate_modal_label").children('button').last().attr('disabled', true)

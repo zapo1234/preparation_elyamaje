@@ -353,8 +353,6 @@ class Controller extends BaseController
                 
             } 
 
-         //   dd($value);
-
             $liste_reassort[$value->identifiant_reassort] = [
                 "identifiant" => $value->identifiant_reassort,
                 "libelle_reassort" => $value->libelle_reassort,
