@@ -483,10 +483,6 @@ a {
 
 @media (max-width: 990px) { 
 
-	.hide_mobile{
-		display: none !important;
-	}
-
 	.back_labels button{
 		height: 50px;
 	}
@@ -5928,6 +5924,11 @@ input::placeholder {
 }
 
 @media screen and (max-width: 950px) {
+
+	.hide_mobile{
+		display: none !important;
+	}
+	
 	.loading_table{
 		padding: 15px !important;
 	}
