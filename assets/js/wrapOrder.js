@@ -6,13 +6,25 @@ $(".order_input").on('input', function(){
 
 // Action orsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    $("#order_id").val($(".order_id_input").val())
-    $(".validate_order").attr('disabled', false)
+    if(isInt(parseInt($(".order_id_input").val()))){
+        $("#order_id").val($(".order_id_input").val())
+        $(".validate_order").attr('disabled', false)
+    }
 })
 
+// Check if is int
+function isInt(x) {
+    if (isNaN(x)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+ 
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
+
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
@@ -87,6 +99,7 @@ $(".validate_order").on("click", function(){
 
             // Afficher les informations de la commande, total, numéro et préparateur
             $("#orderno").text('Commande #'+order[0].order_woocommerce_id)
+            $("#order_id").val(order[0].order_woocommerce_id)
             $("#prepared").text(order[0].preparateur)
             $(".total_order").text('Total :')
 
@@ -95,8 +108,13 @@ $(".validate_order").on("click", function(){
             }
 
             $(".total_order_details").append(`
-                <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                    <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
+                <div class="d-flex">
+                    <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
+                        <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button" onclick="validWrapOrder(true)" class="btn btn-primary d-flex mx-auto"> Valider avec étiquette</button>
+                    </div>
+                    <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
+                        <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
+                    </div>
                 </div>
             `)
             
@@ -111,7 +129,8 @@ $(".validate_order").on("click", function(){
                 listProduct += `
                     <div class="row row-main to_hide">
                         <div class="col-2"> 
-                            <img loading="lazy" class="img-fluid" src="${value.image}"> </div>
+                            ${value.image ? '<img loading="lazy" class="img-fluid" src="'+value.image+'">' : '<img loading="lazy" class="img-fluid" src="assets/images/icons/default_image.png">'}
+                            </div>
                             <div class="col-8">
                                 <div class="row d-flex">
                                     <p><b>${gift ? '<span class="text-success">(Cadeau)</span>' : ''} ${value.name} (x${value.quantity})</b></p>
@@ -234,129 +253,460 @@ $(".validate_pick_in").on('click', function(){
     }
 })
 
+$('body').on('click', '.check_all', function() {
+    if($(this).prop('checked')){
+        $("#order_"+$(this).attr('data-id')+' .checkbox_label').each(function( index ) {
+            if($(this).attr('disabled') != "disabled"){
+                $(this).prop('checked', true)
+            }
+        });
+    } else {
+        $("#order_"+$(this).attr('data-id')+' .checkbox_label').prop('checked', false)
+    }
 
-function validWrapOrder(label){
-    $(".action_button button").attr('disabled', true)
-    $(".row-main").css('opacity', 0.5)
-    $(".detail_shipping_billing_div").css('opacity', 0.5)
-    $(".loading_detail_order").removeClass('d-none')
-    
+    total_weight()
+})
+
+$('body').on('click', '.checkbox_label', function() {
+    total_weight()
+})
+
+$('body').on('change', '.quantity_product_label', function(e) {
+    total_weight()
+})
+
+// Calcul du poids total de la commande
+function total_weight(){
+    var total_weight = 0;
+    $(".line_items_label").each(function( index ) {
+        // Si la valeur renseignée est supérieure à la quantité de produit, alors on force la quantité max du produit
+        var value = $(this).find('.quantity_product_label').val()
+        var max_value = $(this).find('.quantity_product_label').attr('max')
+
+        if(parseInt(value) > parseInt(max_value)){
+            $(this).find('.quantity_product_label').val(max_value)
+        }
+        
+        if($(this).find('.checkbox_label').prop('checked')){
+            total_weight = parseFloat(total_weight) + (parseFloat($( this ).find('.weight').text()) * $(this).find('.quantity_product_label').val())
+        }
+    }); 
+    $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
+}
+
+
+function validWrapOrder(label, redirection = false, error = false){
+
     var order_id = $("#order_id").val()
     var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
     var transfers = $("#validWrapper").attr('transfers')
+    // Affiche les infos pour générer l'étiquette
     
-    if(localStorage.getItem('barcode_verif_wrapper')){
-        var pick_items = JSON.parse(localStorage.getItem('barcode_verif_wrapper'))
-
-        // Récupère les produits de cette commande
-        const order_object = pick_items.find(
-            element => element.order_id == order_id
-        )
-
-        if(order_object){
-            pick_items = order_object.products
-            pick_items_quantity = order_object.quantity
-        } else {
-            pick_items = false
-            pick_items_quantity = false
-        }
-    } else {
-        pick_items = false
-        pick_items_quantity = false
-    }
-
-    $.ajax({
-        url: "validWrapOrder",
-        metho: 'POST',
-        data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, 
-        pick_items_quantity: pick_items_quantity, transfers: transfers, from_dolibarr: from_dolibarr},
-        dataType: 'html' 
-    }).done(function(data) {
-        $(".action_button button").attr('disabled', false)
-        $(".row-main").css('opacity', 1)
-        $(".detail_shipping_billing_div").css('opacity', 1)
-        $(".loading_detail_order").addClass('d-none')
-        $('.modal_no_label').modal('hide')
-
-        try {
+    if(label){
+        $.ajax({
+            url: "getProductOrderLabel",
+            method: 'POST',
+            data : {_token: $('input[name=_token]').val(), order_id: order_id, from_validWraper: true,
+            from_dolibarr: from_dolibarr, transfers: transfers}
+        }).done(function(data) {
             if(JSON.parse(data).success){
+                $(".line_items_label").remove()
+                $(".total_weight").remove()
 
-                $(".show_messages").prepend(`
-                    <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
-                        <div class="text-white">`+JSON.parse(data).message+`</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `)
+                $("#order_id_label").val(order_id)
+                $(".check_all").attr('data-id', order_id)
+                $(".check_all").prop('checked', true)
+                $(".body_line_items_label").attr('id', 'order_'+order_id)
 
-                $('.order_input').each(function(){
-                    $(this).val('');
+                var product_order = JSON.parse(data).products_order;
+                var innerHtml = '';
+                var product = 0;
+                var total_weight = 0;
+
+                Object.entries(product_order).forEach(([key, value]) => {
+                    product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1;
+
+                    if(value.quantity - value.total_quantity == 0){
+                        total_weight = parseFloat(total_weight)
+                    } else {
+                        weight_product = value.weight != "" ? value.weight : 0
+                        total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
+                    }
+
+                    innerHtml +=
+                        `<div class="line_${value.product_woocommerce_id} ${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
+                            <span style="width: 50px">
+                                <input name="label_product[]" ${value.quantity - value.total_quantity == 0 ? 'disabled' : 'checked' } class="checkbox_label form-check-input" type="checkbox" value="${value.product_woocommerce_id}" aria-label="Checkbox for product order">	
+                            </span>
+                            <span class="w-50">${value.name}</span>
+                            <span class="w-25">${value.cost}</span>
+                            <span class="w-25" ><input class="quantity_product_label" ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> 
+                            / <span class="total_quantity">${value.quantity}</span>
+                            <input class="base_total_quantity" type="hidden" value="${value.quantity}">
+                            
+                            </span>
+                            <span class="weight w-25">${value.weight ? value.weight : 0}</span>
+                        </div>`
                 });
                 
-                $(".order_id_input").val('')
 
-                localStorage.removeItem('barcode_verif_wrapper');
-                $(".valid_order_and_generate_label").show()
+                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(2)+` Kg</div>`
+                // Si tous les produits sont déjà dans des étiquettes alors désactiver le button de génération
+                if(product == 0){
+                    $(".button_validate_modal_label").children('button').last().attr('disabled', true)
+                    
+                } else {
+                    $(".button_validate_modal_label").children('button').last().attr('disabled', false)
+                }
 
-                show_empty_order()
-                
-                // Generate label colissimo
-                if(JSON.parse(data).file){
-                    var label_to_print = JSON.parse(data).file
-                    $.ajax({
-                        url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+label_to_print,
-                        metho: 'GET',
-                        async: false,
-                        success : function(data){
-                            
-                        },
-                        error : function(xhr){
-                          if(xhr.status == 404){
-                            $.ajax({
-                                url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label_to_print,
-                                metho: 'GET',
-                                async: false,
-                                success : function(data){
-                                   
-                                },
-                            })
-                          }
+                $(".body_line_items_label").append(innerHtml)
+
+                // Check si tous les produits ont été générées dans une étiquette
+                if(localStorage.getItem('labels')){
+                    data_labels = JSON.parse(localStorage.getItem('labels'))
+                    Object.keys(data_labels).forEach(function (k, v) {
+                        if(data_labels[k].order_id == order_id){
+                            // Désactive les lignes de produits qui vont être générées dans l'étiquette
+                            checkProductOnLabel(data_labels[k].data_array[0])
                         }
                     })
                 }
+
+                $(".generate_label_modal").modal('show')
             } else {
+                $(".alert").remove()
                 $(".show_messages").prepend(`
                     <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                         <div class=" text-white">`+JSON.parse(data).message+`</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `)
-
-                if(JSON.parse(data).verif){
-                    $(".verif_order").show()
-                    $(".modal_order").modal('show')
-                } else {
-                    show_empty_order()
-                }
             }
-        } catch (e) {
-            $(".embed_pdf").attr('src', "data:application/pdf;base64,"+data)
-            $(".modal_pdf_viewer").modal('show')
+        })
+    } else {
+        $(".generate_label_modal").modal('hide')
+        $(".action_button button").attr('disabled', true)
+        $(".row-main").css('opacity', 0.5)
+        $(".detail_shipping_billing_div").css('opacity', 0.5)
+        $(".loading_detail_order").removeClass('d-none')
+        $(".confirm_valid_order span").addClass('d-none')
+        $(".confirm_valid_order .loading_valid_wrapper").removeClass('d-none')
+        $(".confirm_valid_order ").attr('disabled', true)
+
+    
+        var order_id = $("#order_id").val()
+        var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
+        var transfers = $("#validWrapper").attr('transfers')
+        
+        if(localStorage.getItem('barcode_verif_wrapper')){
+            var pick_items = JSON.parse(localStorage.getItem('barcode_verif_wrapper'))
+    
+            // Récupère les produits de cette commande
+            const order_object = pick_items.find(
+                element => element.order_id == order_id
+            )
+    
+            if(order_object){
+                pick_items = order_object.products
+                pick_items_quantity = order_object.quantity
+            } else {
+                pick_items = false
+                pick_items_quantity = false
+            }
+        } else {
+            pick_items = false
+            pick_items_quantity = false
         }
-    })
+    
+        $.ajax({
+            url: "validWrapOrder",
+            metho: 'POST',
+            data : {_token: $('input[name=_token]').val(), order_id: order_id, label: label, pick_items: pick_items, 
+            pick_items_quantity: pick_items_quantity, transfers: transfers, from_dolibarr: from_dolibarr},
+            dataType: 'html' ,
+        }).done(function(data) {
+            $(".action_button button").attr('disabled', false)
+            $(".row-main").css('opacity', 1)
+            $(".detail_shipping_billing_div").css('opacity', 1)
+            $(".loading_detail_order").addClass('d-none')
+            $('.modal_no_label').modal('hide')    
+            $(".confirm_valid_order span").removeClass('d-none')
+            $(".confirm_valid_order .loading_valid_wrapper").addClass('d-none')
+            $(".confirm_valid_order ").attr('disabled', false)
+
+            if(!error){
+                $(".back_labels").attr('disabled', true)
+            }
+
+            try {
+                if(JSON.parse(data).success){
+                    
+                    if(error){
+                        $(".show_messages").prepend(`
+                            <div class="success_message alert alert-warning border-0 bg-warning alert-dismissible fade show">
+                                <div class="text-center text-white">
+                                    <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
+                                    ${error ? '<br><span class="response_detail_type">Étiquette </span>: '+error+'' : ''}
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `)
+                    } else {
+                        $(".show_messages").prepend(`
+                        <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
+                            <div class="text-center text-white">`+JSON.parse(data).message+`</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
+                    }
+                   
+    
+                    $('.order_input').each(function(){
+                        $(this).val('');
+                    });
+                    
+                    $(".order_id_input").val('')
+    
+                    localStorage.removeItem('barcode_verif_wrapper');
+                    $(".valid_order_and_generate_label").show()
+    
+                    show_empty_order()
+
+                    // Si commande bien facturée et étiquette générée mais de type chronopost ou nécessite documents douane, redirections vers labels
+                    if(redirection && !error){
+                        document.location.href = "http://localhost/preparation.elyamaje.com/labels?status=&created_at=&order_woocommerce_id="+order_id; 
+                    }
+                    
+                } else {
+                    // var message = error ? JSON.parse(data).message+' - '+error : JSON.parse(data).message
+                    $(".show_messages").prepend(`
+                        <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                            <div class="text-center text-white">
+                                <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
+                                ${error ? '<br><span class="response_detail_type">Étiquette </span>: '+error+'' : ''}
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
+    
+                    if(JSON.parse(data).verif){
+                        $(".verif_order").show()
+                        $(".modal_order").modal('show')
+                    } else {
+                        show_empty_order()
+                    }
+                }
+            } catch (e) {
+                $(".embed_pdf").attr('src', "data:application/pdf;base64,"+data)
+                $(".modal_pdf_viewer").modal('show')
+            }
+        })
+    }
+
 }
 
-document.addEventListener("keydown", function(e) {
-    if(e.key.length == 1 && !$(".modal_order").hasClass('show')){
-        $("#detail_order").val($("#detail_order").val()+e.key)
-        var array = $("#detail_order").val().split(',')
-        if(array.length == 4 && $("#order_id").val() == ""){
-            $("#order_id").val(array[0].split(',')[0])
-            $(".order_id_input").val(array[0].split(',')[0])
-            $("#product_count").val(array[1])
-            $("#customer").val(array[2])
-            $(".validate_order").attr('disabled', false)
-            $(".validate_order").click()
+$(".valid_generate_label").on('click', function(){
+
+    var order_id = $("#order_id_label").val()
+    var element_is_checked = false;
+    var number_element = 0
+    var number_element_checked = 0
+    var products_left = false;
+
+    // Check si tout est checké ou non
+    $('.line_items_label').each(function(){
+        if(!$(this).find('.checkbox_label').prop('disabled') && $(this).find('.checkbox_label').prop('checked')){
+            element_is_checked = true
+            number_element_checked = number_element_checked + 1
+        } 
+
+        if(!$(this).find('.checkbox_label').prop('disabled')){
+            number_element = number_element + 1
         }
+
+        if($(this).find('.quantity_product_label').val() != parseInt($(this).find('.total_quantity').text())){
+            products_left = true
+        }
+    })
+
+    // Passe dedans si au moins une modif dans le formulaire
+    if(element_is_checked){
+        if(!localStorage.getItem('labels')){
+            const data = [{
+                order_id: order_id,
+                data: [
+                    $(".labelProductsInfo").serialize()
+                ],
+                data_array: [
+                    $(".labelProductsInfo").serializeArray()
+                ],
+                num: 1
+            }]
+            localStorage.setItem('labels', JSON.stringify(data))
+        } else {
+            var labels_data = JSON.parse(localStorage.getItem('labels'))
+            const data = {
+                order_id: order_id,
+                data: [
+                    $(".labelProductsInfo").serialize()
+                ],
+                data_array: [
+                    $(".labelProductsInfo").serializeArray()
+                ],
+                num: labels_data.length + 1
+            }
+            labels_data.push(data)
+            localStorage.setItem('labels', JSON.stringify(labels_data)) 
+        }
+        // Désactive les lignes de produits qui vont être générées dans l'étiquette
+        checkProductOnLabel($(".labelProductsInfo").serializeArray())
+    }
+
+    // Si tout les produits on été ajouté à une étiquette, alors on génère et facture
+    if(number_element == number_element_checked && localStorage.getItem('labels') && !products_left){
+      
+        $(".loading_generate_label").removeClass('d-none')
+        $(".button_validate_modal_label").find('button').attr('disabled', true)
+        var labels_products = JSON.parse(localStorage.getItem('labels'));
+        var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
+        var transfers = $("#validWrapper").attr('transfers')
+        var error = false;
+        var redirection = false;
+
+        setTimeout(function(){
+            Object.keys(labels_products).forEach(function (k, v) {
+                if(order_id == labels_products[k].order_id){
+                    $.ajax({
+                        url: "generateLabel",
+                        method: 'POST',
+                        data : labels_products[k].data[0]+'&_token='+$('input[name=_token]').val()+'&from_js=true&from_dolibarr='+from_dolibarr+'&transfers='+transfers,
+                        async: false
+                    }).done(function(data) {
+                        $(".loading_generate_label").addClass('d-none')
+                        $(".button_validate_modal_label").find('button').attr('disabled', false)
+                        $(".cancel_label_created ").find('button').attr('disabled', true)
+
+                        if(JSON.parse(data).success){
+                            localStorage.removeItem('labels');
+                            if(JSON.parse(data).file){
+                                var label = JSON.parse(data).file
+                                $.ajax({
+                                    url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=DATAMAX&adresseIp=&etiquette="+label,
+                                    metho: 'GET',
+                                    async: false,
+                                    success : function(data){
+                                        
+                                    },
+                                    error : function(xhr){
+                                        $.ajax({
+                                            url: "http://localhost:8000/imprimerEtiquetteThermique?port=USB&protocole=ZEBRA&adresseIp=&etiquette="+label,
+                                            metho: 'GET',
+                                            async: false,
+                                            success : function(data){
+                                            
+                                            },
+                                            error : function(xhr){
+                                                redirection = true;
+                                            }
+                                        })
+                                    }
+                                })
+                            } else {
+                                redirection = true;
+                            }
+                            
+                            if(parseInt(k) + parseInt(1) == parseInt(labels_products.length)){
+                                // Facture la commande
+                                setTimeout(function(){
+                                    validWrapOrder(false, redirection, error)
+                                }, 200)
+                            }
+                        } else {
+                            if(parseInt(k) + parseInt(1) == parseInt(labels_products.length)){
+                                setTimeout(function(){
+                                    validWrapOrder(false, redirection, JSON.parse(data).message)
+                                }, 200)
+                            }
+                        }
+                    })
+                }
+            })
+        },100)  
+    }
+})
+
+$(".cancel_label_created").on('click', function(){
+    localStorage.removeItem('labels');
+    checkProductOnLabel(false)
+})
+
+function checkProductOnLabel(data){
+    var finished = true;
+
+    if(data){
+        var product_id = 0;
+        Object.keys(data).forEach(function (k, v) {
+            if(data[k].name.includes("label_product")){
+                product_id = data[k].value
+            } else if(data[k].name.includes("quantity") && data[k].name.includes(product_id)){
+                var base_quantity = parseInt($(".line_"+product_id+" .total_quantity").text())
+                if(base_quantity > 0){
+                    $(".line_"+product_id+" .quantity_product_label").val(base_quantity - data[k].value)
+                    $(".line_"+product_id+" .total_quantity").text(base_quantity - data[k].value)
+                    $(".line_"+product_id+" .quantity_product_label").attr('max', base_quantity - data[k].value)
+                }
+                if(base_quantity - data[k].value == 0 && data[k].value != 0){
+                    $(".line_"+product_id).addClass('disabled_text')
+                    $(".line_"+product_id+" .quantity_product_label ").attr('disabled', true)
+                    $(".line_"+product_id+" .checkbox_label ").attr('checked', false)
+                    $(".line_"+product_id+" .checkbox_label ").attr('disabled', true)
+                } else {
+                    finished = false
+                }
+            }
+        })
+    } else {
+        finished = false;
+
+        $('.line_items_label').each(function(){
+            $(this).removeClass('disabled_text')
+            $(this).find('.quantity_product_label').attr('disabled', false)
+            $(this).find('.checkbox_label').attr('disabled', false)
+            $(this).find('.checkbox_label').attr('checked', true)
+            $(this).find('.quantity_product_label').val(parseInt($(this).find(".total_quantity").text()))
+            $(this).find('.total_quantity').text($(this).find(".base_total_quantity").val())
+            $(this).find('.quantity_product_label').attr('max', $(this).find(".base_total_quantity").val())
+            $(this).find('.quantity_product_label').val($(this).find(".base_total_quantity").val())
+
+
+        });
+    }
+
+    if(finished){
+        $(".cancel_label_created").attr('disabled', false)
+    } else if(localStorage.getItem('labels') != null){
+        $(".cancel_label_created").attr('disabled', false)
+    } else {
+        $(".cancel_label_created").attr('disabled', true)
+    }   
+}
+
+var scan = false
+document.addEventListener("keydown", function(e) {
+
+    if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
+            $("#detail_order").val($("#detail_order").val()+e.key)
+            var array = $("#detail_order").val().split(',')
+
+            if(array.length == 3 && !scan){
+                scan = true
+                $("#order_id").val(array[0].split(',')[0])
+                $(".order_id_input").val(array[0].split(',')[0])
+                $("#product_count").val(array[1])
+                $("#customer").val(array[2])
+                $(".validate_order").attr('disabled', false)
+                $(".validate_order").click()
+            }
     } else if($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show')){
         var order_id = $("#order_id").val()
         if (!isNaN(parseInt(e.key))) {
@@ -416,9 +766,7 @@ document.addEventListener("keydown", function(e) {
         var order_id = $(".modal_verif_order").attr('data-order')
         localStorage.setItem('product_quantity_verif_wrapper', $("#product_to_verif").val());
         if (!isNaN(parseInt(e.key))) {
-            console.log($("#barcode_verif").val())
             $("#barcode_verif").val($("#barcode_verif").val()+e.key)
-           
             if($("#barcode_verif").val().length == 13){
                 if($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif_wrapper')){
                     $("#quantity_product_to_verif").text(parseInt($("#quantity_product_to_verif").text()) - 1)
@@ -507,6 +855,7 @@ function show_empty_order(){
     $(".row-main").remove()
     $(".total_order").text("")
     $(".amount_total_order").text("")
+    $(".total_product_order ").text("")
     $("#orderno").text("")
     $("#prepared").text("")
     $(".main_hr").addClass('d-none')
@@ -523,12 +872,12 @@ function clean_scan(){
 }
 
 function getCountry(order){
-    if(typeof order['billing_customer_country'] != "undefined"){
-        if(order['billing_customer_country'] == 'CH'){
+    if(typeof order['shipping_customer_country'] != "undefined"){
+        if(order['shipping_customer_country'] == 'CH'){
             return "Suisse"
-        } else if(order['billing_customer_country'] == 'FR'){
+        } else if(order['shipping_customer_country'] == 'FR'){
             return "France"
-        } else if(order['billing_customer_country'] == 'BE'){
+        } else if(order['shipping_customer_country'] == 'BE'){
             return "Belgique"
         } else {
             return false

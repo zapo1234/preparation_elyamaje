@@ -54,7 +54,7 @@
 													<label for="role" class="form-label">Rôle*</label>
 													<select required name="role[]" id="role" class="form-select">
 														@foreach($roles as $role)
-															@if( $role->id != 1 || $isAdmin)
+															@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																<option value="{{ $role->id }}">{{  $role->role }}</option>
 															@endif
 														@endforeach
@@ -118,7 +118,7 @@
 												@endforeach
 											</td>
 											<td class="d-flex justify-content-between" data-label="Action" >
-												@if(in_array('Admin', $user['role']) && !$isAdmin)
+												@if(!$isAdmin && count(array_intersect([2,3,4,5], $user['role_id'])) == 0)
 													<div class="d-flex">
 														<div class="action_table font-22 text-secondary">	
 															<i class="text-secondary fadeIn animated bx bx-edit"></i>
@@ -130,7 +130,7 @@
 															<i class="fadeIn animated bx bx-edit"></i>
 														</div>
 														@if($user['user_id'] != 1)
-															<div data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
+															<div data-user="{{ $user['name'] }}" data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
 																<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
 															</div>
 														@endif
@@ -169,7 +169,7 @@
 																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
 																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" id="update_role" class="form-select">
 																			@foreach($roles as $role)
-																				@if( $role->id != 1 || $isAdmin)
+																				@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																					<option value="{{ $role->id }}">{{  $role->role }}</option>
 																				@else 
 																					<option selected disabled value="{{ $role->id }}">{{  $role->role }}</option>
@@ -209,7 +209,7 @@
 						<form method="POST" action="{{ route('account.delete') }}">
 							@csrf
 							<div class="modal-body">
-								<h2 class="text-center">Supprimer le compte ?</h2>
+								<h2 class="text-center">Supprimer le compte <br><span class="font-bold account_to_delete"></span> ?</h2>
 								<input name="account_user" type="hidden" id="account_user" value="">
 							</div>
 							<div class="modal-footer">
@@ -274,7 +274,9 @@
 		// Supprimer compte
 		$(".delete_action").on('click', function(){
 			var id_account = $(this).attr('data-id')
+			var account_name = $(this).attr('data-user')
 			$("#account_user").val(id_account)
+			$(".account_to_delete").text(account_name)
 			$("#deleteAccount").modal('show')
 		})
 
@@ -283,6 +285,10 @@
 			var id_account = $(this).attr('data-id')
 			var roles = $("#updateAccount_user_"+id_account).find('#role_user').val()
 			$("#updateAccount_user_"+id_account).find('#update_role').val(roles.split(',')).trigger('change').select2();
+			$("#updateAccount_user_"+id_account).modal({
+				backdrop: 'static',
+				keyboard: false
+			})
 			$("#updateAccount_user_"+id_account).modal('show')
 		});
 

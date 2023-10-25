@@ -14,6 +14,7 @@ interface ProductOrderInterface
     public function getProductsByOrderId($order_id);
 
     public function getproductdolibar();// recupérer les products via dolibar..
+
 }
 
 

@@ -20,6 +20,9 @@ interface ProductInterface
     public function getbarcodeproduct();
 
     public function checkProductBarcode($product_id, $barcode);
+    
+    public function getProductsByBarcode($array_barcode);
+
 }
 
 

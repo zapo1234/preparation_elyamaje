@@ -10,4 +10,5 @@ interface CommandeidsInterface
    
    public function getAlldate($date);// recupérer toutes donnnées en fonction des dates.
 
+   public function deleteOrder($order_id); // Supprime une commande afin de pouvoir refacturer
 }

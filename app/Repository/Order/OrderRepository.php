@@ -174,11 +174,11 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $id)
          ->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
-         'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
+         'products.name', 'products_order.product_woocommerce_id as productID', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick','products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderByRaw("CASE WHEN prepa_orders.shipping_method LIKE '%chrono%' THEN 0 ELSE 1 END")
          ->orderBy('orders.date', 'ASC')
@@ -308,35 +308,16 @@ class OrderRepository implements OrderInterface
    public function checkIfDone($order_id, $barcode_array, $products_quantity, $partial = false) {
 
       $list_product_orders = DB::table('products')
-         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id')
+         ->select(DB::raw('REPLACE(barcode, " ", "") AS barcode'), 'products_order.quantity', 'products_order.id', 'products_order.pick')
          ->join('products_order', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id')
          ->where('products_order.order_id', $order_id)
-         ->where('products_order.pick', 0)
          ->get()
          ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
       
-    // Tout est bippé donc on valide
-      if(count($list_product_orders) == 0){
-         try{
-            // Insert la commande dans histories
-            DB::table('histories')->insert([
-               'order_id' => $order_id,
-               'user_id' => Auth()->user()->id,
-               'status' => 'prepared',
-               'created_at' => date('Y-m-d H:i:s')
-            ]);
 
-            $this->updateOrdersById([$order_id], "prepared-order");
-            $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
-            return true;
-         } catch(Exception $e){
-            return $e->getMessage();
-         }
-      }
-
-      // Tout est bippé
+      // Tout est bippé donc on valide
       if(count($list_product_orders) == 0){
          try{
             // Insert la commande dans histories
@@ -379,13 +360,15 @@ class OrderRepository implements OrderInterface
       // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       $list_products = [];
       foreach($list_product_orders as $list){
-         $list_products[] = [
-            "barcode" => $list['barcode'],
-            "quantity" =>  $list['quantity'],
-            "id" =>  $list['id'],
-         ];
+         // Ignore les produits bippés
+         if($list['quantity'] != $list['pick']){
+            $list_products[] = [
+               "barcode" => $list['barcode'],
+               "quantity" =>  $list['quantity'],
+               "id" =>  $list['id'],
+            ];
+         }
       }
-
 
       $product_pick_in = [];
       $lits_id = [];
@@ -427,9 +410,10 @@ class OrderRepository implements OrderInterface
          return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
       })->implode(' ');
 
-
-      $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-      DB::statement($query);
+      if(count($product_pick_in) > 0){
+         $query = "UPDATE prepa_products_order SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
+         DB::statement($query);
+      }
 
       if(!$partial){
          if(!$diff_quantity && !$diff_barcode){
@@ -560,7 +544,6 @@ class OrderRepository implements OrderInterface
       } catch(Exception $e){
          return false;
       }
-
    }
 
    public function updateOrderAttribution($from_user, $to_user){
@@ -707,7 +690,8 @@ class OrderRepository implements OrderInterface
    public function getAllOrdersAndLabel(){
 
       $date = date('Y-m-d');
-      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
+      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      'labels.cn23', 'labels.download_cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
@@ -717,7 +701,8 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-      $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 'labels.cn23')
+      $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      'labels.cn23', 'labels.download_cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
 
@@ -924,6 +909,30 @@ class OrderRepository implements OrderInterface
          ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
          ->delete();
 
+         echo json_encode(['success' => true]);
+      } catch(Exception $e){
+         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+      }
+   }
+
+   public function getOrdersWithoutLabels(){
+      return $this->model::select('orders.order_woocommerce_id', 'orders.date')
+      ->leftJoin('labels', 'orders.order_woocommerce_id', 'labels.order_id')
+      ->leftJoin('distributors', 'distributors.customer_id', 'orders.customer_id')
+      ->where('labels.label', NULL)
+      ->where([
+         ['labels.label', NULL],
+         ['orders.status', 'finished'],
+         ['orders.shipping_method', '!=', 'local_pickup'],
+         ['distributors.role', NULL]
+     ])
+      ->orderBy('orders.updated_at', 'DESC')
+      ->get();
+   }
+
+   public function update($data, $order_id){
+      try{
+         $this->model->where('order_woocommerce_id', $order_id)->update($data);
          echo json_encode(['success' => true]);
       } catch(Exception $e){
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);

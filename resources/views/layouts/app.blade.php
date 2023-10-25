@@ -61,8 +61,15 @@
 	<script src="assets/plugins/simplebar/js/simplebar.min.js"></script>
 	<script src="assets/plugins/metismenu/js/metisMenu.min.js"></script>
 	<script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+	<script src="assets/js/pusher/pusher.min.js"></script>
 	<!--app JS-->
 	<script src="assets/js/app.js"></script>
+	<script> 	
+		// Récupère les informations de l'utilisateur conencté
+		var user_role_logged = '<?php echo json_encode(Auth()->user()->roles, JSON_HEX_APOS); ?>'
+		// Notification Pusher
+		notificationsListener(user_role_logged)
+	</script>
 	@yield("script")
 </body>
 

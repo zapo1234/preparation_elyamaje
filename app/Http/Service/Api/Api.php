@@ -4,6 +4,7 @@ namespace App\Http\Service\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class Api
 {
@@ -45,6 +46,19 @@ class Api
       $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, [
         'status' => $status,
       ]);
+      return $response->json() ? true : false;
+    } catch(Exception $e){
+      return $e->getMessage();
+    }
+  }
+
+  public function updateDataOrdersWoocommerce($data, $id){
+
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/orders/".$id, $data);
       return $response->json() ? true : false;
     } catch(Exception $e){
       return $e->getMessage();
@@ -249,7 +263,7 @@ class Api
   }
 
   public function CallAPI($method, $key, $url, $data = false){
-      
+    
         $curl = curl_init();
         $httpheader = ['DOLAPIKEY: '.$key];
 
@@ -280,6 +294,7 @@ class Api
     curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
 
     $result = curl_exec($curl);
+
     
     
     if (curl_errno($curl)) {
@@ -321,6 +336,88 @@ class Api
        return $apiUrl;
 
    }
+
+  public function getLabelsfromOrder($orders){
+    
+    // keys authentification API data woocomerce dev copie;
+    $customer_key = config('app.woocommerce_customer_key');
+    $customer_secret = config('app.woocommerce_customer_secret');
+
+    try{
+      $response = Cache::remember('labelsMissing', 60, function () use ($customer_key, $customer_secret, $orders) {
+        $resp = Http::withBasicAuth($customer_key, $customer_secret)
+          ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/labels/getAllLabelsByOrderId", [
+            "order_id" => $orders
+        ]);
+
+        if($resp->successful()){
+          return $resp->json();
+        } else {
+          return false;
+        }
+        return $resp->json();
+      });
+
+      return $response;
+
+    } catch (Exception $e){
+      return $e->getMessage();
+    }
+  }
+
+  public function CallAPI2($method, $key, $url, $data = false){
+    
+    $curl = curl_init();
+    $httpheader = ['DOLAPIKEY: '.$key];
+
+    switch ($method){
+      case "POST":
+        curl_setopt($curl, CURLOPT_POST, 1);
+        $httpheader[] = "Content-Type:application/json";
+
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        break;
+    case "PUT":
+
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+        $httpheader[] = "Content-Type:application/json";
+
+        if ($data)
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+
+        break;
+    default:
+        if ($data)
+            $url = sprintf("%s?%s", $url, http_build_query($data));
+  }
+
+  curl_setopt($curl, CURLOPT_URL, $url);
+  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curl, CURLOPT_HTTPHEADER, $httpheader);
+
+  $result = curl_exec($curl);
+
+
+
+  if (curl_errno($curl)) {
+    switch ($http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
+      case 200:  # OK
+        break;
+      default:
+      echo json_encode(['success' => false, 'message'=> 'Erreur code : '. $http_code.' !']);
+      exit;
+        
+    }
+  }
+
+  // curl_close($curl);
+  
+  // renvoi le resultat sous forme de json
+  return $result;   
+}
+
+
 
 }
 

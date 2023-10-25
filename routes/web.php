@@ -47,6 +47,9 @@ Route::group(['middleware' => ['auth']], function () {
             case 5 :
                 return redirect()->route('noRole');
                 break;
+            case 6 :
+                return redirect()->route('sav');
+                break;
             default:
                 return redirect()->route('logout');
                 break;
@@ -67,19 +70,20 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
     // ajax verification des commandes api dolibar factures.
     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
-
-    // Route pour approvisionnement
-    Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
-    Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
+    Route::post("/updateStockWoocommerce/{identifiant}", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce'); 
     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
 
-    Route::get("/executerTransfere/{identifiant_reassort}", [Controller::class, "executerTransfere"])->name('executerTransfere');
+
+    Route::get("/executerTransfere/{identifiant_reassort}", [Order::class, "executerTransfere"])->name('executerTransfere');
+    // teste 
+    Route::get("/actualiseProductDolibarr", [Controller::class, "actualiseProductDolibarr"])->name('actualiseProductDolibarr');
+    
+    // Route::get("/updateStockWoocommerce", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce');
 
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
-
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
@@ -119,7 +123,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
     Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
-    Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
+    // Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
@@ -138,6 +142,12 @@ Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
 });
 
+// SAV
+Route::group(['middleware' => ['auth', 'role:6']], function () {
+    Route::get("/sav", [Controller::class, "sav"])->name('sav');
+});
+
+
 // ADMIN ET CHEF D'ÉQUIPE
 Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('getAllOrders');
@@ -145,6 +155,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
     Route::post("/updateOrderStatus", [Order::class, "updateOrderStatus"])->name('updateOrderStatus');
+    Route::post("/orderReInvoicing", [Order::class, "orderReInvoicing"])->name('orderReInvoicing');
     Route::get("/distributionOrders", [Order::class, "distributionOrders"])->name('distributionOrders');
     Route::get("/unassignOrders", [Order::class, "unassignOrders"])->name('unassignOrders');
     Route::get("/account", [Admin::class, "account"])->name('account');
@@ -163,6 +174,18 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
     Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
     Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
+    // Route pour approvisionnement
+    Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
+    Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+    // Missing Labels
+    Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
+    Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
+    Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
+
+    Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
+
+    // Update details order billing and shipping
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -218,3 +241,7 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 
+// Route::get("test", function(){
+//     event(New App\Events\NotificationPusher('Test'));
+//     return "Event has been sent !";
+// });

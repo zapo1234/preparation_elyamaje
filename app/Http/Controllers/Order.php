@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Events\NotificationPusher;
+use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-// use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
@@ -17,18 +19,19 @@ use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Service\Api\Chronopost\Chronopost;
+use App\Repository\LogError\LogErrorRepository;
+use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-use App\Repository\LogError\LogErrorRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
-use App\Repository\Reassort\ReassortRepository;
 
 class Order extends BaseController
 {
@@ -54,6 +57,7 @@ class Order extends BaseController
     private $logError;
     private $reassort;
     private $orderDolibarr;
+    private $commandeids;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -73,7 +77,8 @@ class Order extends BaseController
     Chronopost $chronopost,
     LogErrorRepository $logError,
     ReassortRepository $reassort,
-    OrderDolibarrRepository $orderDolibarr
+    OrderDolibarrRepository $orderDolibarr,
+    CommandeidsRepository $commandeids
     ){
       $this->api = $api;
       $this->user = $user;
@@ -95,18 +100,21 @@ class Order extends BaseController
       $this->logError = $logError;
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
+      $this->commandeids = $commandeids;
     }
   
     public function orders($id = null, $distributeur = false){
 
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
-
         $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id);
         if(count($orderDolibarr['orders']) > 0){
           if(!$distributeur){
             foreach($orderDolibarr['orders'] as $ord){
-              $orders_user['orders'][] = $ord;
+              // $orders_user['orders'][] = $ord;
+
+              // Met en première position
+              array_unshift($orders_user['orders'], $ord);
             }
           }
           $orders_user['count']['order'] = $orders_user['count']['order'] + count($orderDolibarr['orders']);
@@ -153,8 +161,8 @@ class Order extends BaseController
             $take_order = true;
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if($order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Nice 06100" 
-                  || $order['shipping_lines'][0]['method_title'] == "Retrait dans notre magasin à Marseille 13002"){
+                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $take_order = false;
                 }
               } 
@@ -175,6 +183,35 @@ class Order extends BaseController
                   $orders[$key]['name'] =  $orders_distributed[$clesRecherchees[0]]['name'];
                   $orders[$key]['status'] =  $orders_distributed[$clesRecherchees[0]]['status'];
                   $orders[$key]['status_text'] = __('status.'.$orders_distributed[$clesRecherchees[0]]['status']);
+
+                  // Get shipping and billing detail from local data
+                  if(isset($orders[$key]['billing'])){
+                    $orders[$key]['billing']['first_name'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_first_name'];
+                    $orders[$key]['billing']['last_name'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_last_name'];
+                    $orders[$key]['billing']['company'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_company'];
+                    $orders[$key]['billing']['address_1'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_address_1'];
+                    $orders[$key]['billing']['address_2'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_address_2'];
+                    $orders[$key]['billing']['city'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_city'];
+                    $orders[$key]['billing']['state'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_state'];
+                    $orders[$key]['billing']['postcode'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_postcode'];
+                    $orders[$key]['billing']['country'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_country'];
+                    $orders[$key]['billing']['email'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_email'];
+                    $orders[$key]['billing']['phone'] =  $orders_distributed[$clesRecherchees[0]]['billing_customer_phone'];
+                  }
+
+                  if(isset($orders[$key]['shipping'])){
+                    $orders[$key]['shipping']['first_name'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_first_name'];
+                    $orders[$key]['shipping']['last_name'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_last_name'];
+                    $orders[$key]['shipping']['company'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_company'];
+                    $orders[$key]['shipping']['address_1'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_address_1'];
+                    $orders[$key]['shipping']['address_2'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_address_2'];
+                    $orders[$key]['shipping']['city'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_city'];
+                    $orders[$key]['shipping']['state'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_state'];
+                    $orders[$key]['shipping']['postcode'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_postcode'];
+                    $orders[$key]['shipping']['country'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_country'];
+                    $orders[$key]['shipping']['phone'] =  $orders_distributed[$clesRecherchees[0]]['shipping_customer_phone'];
+                  }
+
                 } else {
                   $orders[$key]['user_id'] = null;
                   $orders[$key]['name'] = "Non attribuée";
@@ -191,8 +228,8 @@ class Order extends BaseController
           foreach($orders as $key => $order){
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if($order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Nice 06100"
-                  && $order['shipping_lines'][0]['method_title'] != "Retrait dans notre magasin à Marseille 13002"){
+                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $list_orders[] = $order;
                 }
               } else {
@@ -363,16 +400,12 @@ class Order extends BaseController
           }
         }
 
-
         if($check_if_order_done && $partial == "1"){
           
           // Récupère les chefs d'équipes
           $leader = $this->user->getUsersByRole([4]);
           $from_user = Auth()->user()->id;
           foreach($leader as $lead){
-              $email = $lead['email'];
-              $name = $lead['name'];
-
               // Insert dans notification
               $data = [
                 'from_user' => $from_user,
@@ -384,48 +417,82 @@ class Order extends BaseController
 
               $this->notification->insert($data);
           }
+
+          // Pusher notification partial order  
+          $notification_push = [
+            'role' => 4,
+            'order_id' => $order_id,
+            'type' => 'partial_order',
+            'data' => $note_partial_order ?? "La commande #".$order_id." est incomplète"
+          ];
+          event(New NotificationPusher($notification_push));
         }
         echo json_encode(["success" => $check_if_order_done]);
       } else {
         // Check if all products are picked
-        $products = $this->productOrder->getProductsByOrderId($order_id);
         $picked = true;
-        foreach($products as $p){
-          if($p->pick != 1){
-            $picked = false;
+        if($from_transfers){
+          $products = $this->reassort->getReassortById($order_id);
+          foreach($products as $p){
+            if($p->qty != $p->pick){
+              $picked = false;
+            }
+          }
+        } else {
+          $products = $this->productOrder->getProductsByOrderId($order_id);
+          foreach($products as $p){
+            if($p->quantity != $p->pick){
+              $picked = false;
+            }
           }
         }
 
-        if($picked){
+        if($picked && $from_dolibarr){
+            $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
+            echo json_encode(["success" => true]);
+            return;
+        } else if($picked && $from_transfers){
+            $this->reassort->updateStatusTextReassort($order_id ,"finished");
+            echo json_encode(["success" => true]);
+            return;
+        } else if($picked && !$from_transfers && !$from_dolibarr){
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
           echo json_encode(["success" => true]);
+          return;
         }
 
         echo json_encode(["success" => $picked]);
       }
     }
     
+    // public function transfersPrepared(Request $request){
+    //   $barcode_array = $request->post('pick_items');
+    //   $products_quantity = $request->post('pick_items_quantity');
+    //   $order_id = $request->post('order_id');
 
-    public function transfersPrepared(Request $request){
-      $barcode_array = $request->post('pick_items');
-      $products_quantity = $request->post('pick_items_quantity');
-      $order_id = $request->post('order_id');
-
-      if($barcode_array != null){
-        $check = $this->reassort->checkIfDone($order_id, $barcode_array, $products_quantity);
-      }
+    //   if($barcode_array != null){
+    //     $check = $this->reassort->checkIfDone($order_id, $barcode_array, $products_quantity);
+    //   }
      
-      echo json_encode(["success" => $check]);
-
-    }
+    //   echo json_encode(["success" => $check]);
+    // }
 
     public function ordersReset(Request $request){
       $order_id = $request->post('order_id');
-      $orderReset = $this->order->orderReset($order_id);
+      $from_dolibarr = $request->post('from_dolibarr') == "true" ? true : false;
+      $from_transfers = $request->post('from_transfers') == "true" ? true : false;
+
+      if($from_dolibarr){
+        $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+      } else if($from_transfers){
+        $orderReset = $this->reassort->orderResetTransfers($order_id);
+      } else {
+        $orderReset = $this->order->orderReset($order_id);
+      }
+
       echo json_encode(["success" => $orderReset]);
     }
-
 
     public function updateAttributionOrder(Request $request){
       $from_user = $request->post('from_user');
@@ -461,6 +528,15 @@ class Order extends BaseController
         }
 
         $number_order_attributed = $this->order->getOrdersByUsers();
+
+         // Pusher notification order attribution updated  
+         $notification_push = [
+          'role' => 2,
+          'order_id' => $order_id,
+          'type' => 'order_attribution_updated',
+        ];
+        event(New NotificationPusher($notification_push));
+
         echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
       } else {
         echo json_encode(["success" => false]);
@@ -521,6 +597,18 @@ class Order extends BaseController
       }
     }
 
+    public function orderReInvoicing(Request $request){
+      $order_id = $request->post('order_id');
+
+      try{
+        // Update order re invoicing
+        $this->commandeids->deleteOrder($order_id);
+        echo json_encode(["success" => true]);
+      } catch(Exception $e){
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+      }
+    }
+
     public function checkExpedition(Request $request){
       $order_id = $request->get('order_id');
       $order = $this->order->getOrderById($order_id);
@@ -539,7 +627,6 @@ class Order extends BaseController
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
-            
           } else {
             echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
           }
@@ -548,18 +635,18 @@ class Order extends BaseController
     }
 
     public function validWrapOrder(Request $request){
-
-        // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
-       $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-       $transfers = $request->post('transfers') == "false" ? 0 : 1;
-       $order_id = explode(',', $request->post('order_id'))[0];
+      
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
+      $order_id = explode(',', $request->post('order_id'))[0];
         
-       if($from_dolibarr){
+      if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
       } else if($transfers){
-        // Si transfert, envoyé les données à Lyes pour le valider
-        $order = $this->reassort->getReassortById($order_id);
+        // Si transfert, envoyé les données à Lyes pour le valider (id transfert)
+        return $this->executerTransfere($order_id);
       } else {
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
@@ -589,9 +676,10 @@ class Order extends BaseController
         }
 
         $orders[0]['emballeur'] = Auth()->user()->name;
+        
         // envoi des données pour créer des facture via api dolibar....
         try{
-          $this->factorder->Transferorder($orders);
+            $this->factorder->Transferorder($orders);
 
             // Insert la commande dans histories
             $data = [
@@ -603,6 +691,7 @@ class Order extends BaseController
             ];
 
             $this->history->save($data);
+           
 
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
@@ -620,15 +709,9 @@ class Order extends BaseController
             }
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
-          echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
+          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
-
-        // Génère l'étiquette ou non
-        if($request->post('label') == "true"){
-          return $this->generateLabel($orders);
-        } else {
           echo json_encode(['success' => true, 'message' => 'Commande '.$order[0]['order_woocommerce_id'].' préparée avec succès !']);
-        }
       } else {
           echo json_encode(['success' => false, 'message'=> 'Aucune commande associée, vérifiez l\'id de la commande !']);
       }
@@ -642,62 +725,62 @@ class Order extends BaseController
     }
 
     // Fonction à appelé après validation d'une commande
-    private function generateLabel($order){
+    // private function generateLabel($order){
 
-      $colissimo = $this->colissimoConfiguration->getConfiguration();
-      $product_to_add_label = [];
-      $quantity_product = [];
+    //   $colissimo = $this->colissimoConfiguration->getConfiguration();
+    //   $product_to_add_label = [];
+    //   $quantity_product = [];
 
-      if($order){
-        $weight = 0; // Kg
+    //   if($order){
+    //     $weight = 0; // Kg
 
-        foreach($order[0]['line_items'] as $or){
-          $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
-          $product_to_add_label[] = $or['product_id'];
-          $quantity_product[$or['product_id']] = $or['quantity'];
-        } 
+    //     foreach($order[0]['line_items'] as $or){
+    //       $weight = $weight + number_format(($or['weight'] *$or['quantity']), 2);
+    //       $product_to_add_label[] = $or['product_id'];
+    //       $quantity_product[$or['product_id']] = $or['quantity'];
+    //     } 
 
 
-        if(str_contains($order[0]['shipping_method'], 'chrono')){
-          $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
-          if(isset($labelChrono['success'])){
-              $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
-              $insert_label = $this->label->save($labelChrono);
-              $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
-          } else {
-              return redirect()->route('labels')->with('error', $labelChrono);
-          }
-        } else {
-          $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+    //     if(str_contains($order[0]['shipping_method'], 'chrono')){
+    //       $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+    //       if(isset($labelChrono['success'])){
+    //           $labelChrono['label'] = mb_convert_encoding($labelChrono['label'], 'ISO-8859-1');
+    //           $insert_label = $this->label->save($labelChrono);
+    //           $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+    //       } else {
+    //           return redirect()->route('labels')->with('error', $labelChrono);
+    //       }
+    //     } else {
+    //       $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
 
-          if(isset($label['success'])){
-            $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-            $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
-            $insert_label = $this->label->save($label);
-            $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
+    //       if(isset($label['success'])){
+    //         $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+    //         $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
+    //         $insert_label = $this->label->save($label);
+    //         $insert_product_label_order = $this->labelProductOrder->insert($order[0]['order_woocommerce_id'], $insert_label, $product_to_add_label, $quantity_product);
   
-            if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+    //         if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
   
-              // ----- Print label to printer Datamax -----
-              if($label['label_format'] == "ZPL"){
-                echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-              } else if($label['label_format'] == "PDF"){
-                return base64_encode($label['label']);
-              } else {
-                echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-              }
-              // ----- Print label to printer Datamax -----
+    //           // ----- Print label to printer Datamax -----
+    //           if($label['label_format'] == "ZPL"){
+    //             echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+    //           } else if($label['label_format'] == "PDF"){
+    //             return base64_encode($label['label']);
+    //           } else {
+    //             echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+    //           }
+    //           // ----- Print label to printer Datamax -----
   
-            } else {
-              echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
-            }
-          } else {
-            echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
-          }
-        }
+    //         } else {
+    //           echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation !']);
+    //         }
+    //       } else {
+    //         echo json_encode(['success' => false, 'message'=> 'Commande validée mais erreur génération d\'étiquette : '.$label]);
+    //       }
+    //     }
   
-      }
-    }
+    //   }
+    // }
 
     public function leaderHistory(){
       $histories = $this->history->getAllHistory();
@@ -706,11 +789,13 @@ class Order extends BaseController
       foreach($histories as $history){
         if(isset($histories_order[$history['order_id']])){
           if($histories_order[$history['order_id']]['status'] == "prepared"){
+            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished'] = $history['name'];
             $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
           } else {
+            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $history['name'];
             $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
@@ -718,14 +803,15 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
+          $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
+          $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished_date'] = $history['status'] == 'finished' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
-
-      return view('leader.history', ['histories' => $histories_order]);
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
     public function generateHistory(Request $request){
@@ -880,6 +966,171 @@ class Order extends BaseController
         echo json_encode(['success' => false]);
       }
     }
+
+    public function executerTransfere($identifiant_reassort){
+
+      try {
+          $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
+          if (!$tabProduitReassort) {
+              echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
+              return;
+              // return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+          }
+          
+          $apiKey = env('KEY_API_DOLIBAR');   
+          $apiUrl = env('KEY_API_URL');
+        
+          $data_save = array();
+          $incrementation = 0;
+          $decrementation = 0;
+          $i = 1;
+          $ids="";
+          $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+          foreach ($tabProduitReassort as $key => $line) {
+
+              
+
+              if ($line["qty"] != 0) {           
+                  $data = array(
+                      'product_id' => $line["product_id"],
+                      'warehouse_id' => $line["warehouse_id"], 
+                      'qty' => $line["qty"]*1, 
+                      'type' => $line["type"], 
+                      'movementcode' => $line["movementcode"], 
+                      'movementlabel' => $line["movementlabel"], 
+                      'price' => $line["price"], 
+                      'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                      'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                      'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                  );
+                  // on execute le réassort
+                  $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+
+                  if ($stockmovements) {
+                      $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                      if (count($tabProduitReassort) != $i) {
+                          $ids .= $line['id'] . ",";
+                      }else{
+                          $ids .= $line['id'];
+                      }
+                      $i++;  
+                      $incrementation++;
+                  }
+              }
+          }
+          $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
+          $response = DB::update($updateQuery);
+
+          // Update status transfers
+          $colonnes_values = ['status' => "finished"];
+          $res = $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
+
+          // Insert la commande dans histories
+          $data = [
+            'order_id' => $identifiant_reassort,
+            'user_id' => Auth()->user()->id,
+            'status' => 'finished',
+            'poste' => Auth()->user()->poste,
+            'created_at' => date('Y-m-d H:i:s')
+          ];
+
+          $this->history->save($data);
+
+          echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
+      } catch (\Throwable $th) {
+          // dd($th);
+          echo json_encode(['success' => false, 'message' => $th->getMessage()]);
+          // return ["response" => false, "error" => $th->getMessage()];
+      } 
+  }
+
+  public function updateDetailsOrders(Request $request){
+    $order_id = $request->post('order_id');
+    $field = $request->post('field');
+    $field_value = $request->post('field_value');
+
+    if($order_id && $field && $field_value){
+      $data = [
+        $field => $field_value
+      ];
+
+      $this->order->update($data, $order_id);
+    } else {
+      echo json_encode(['success' => false]);
+    }
+
+  }
+
+  function updateStockWoocommerce($identifiant_reassort){
+
+    $data = $this->reassort->getQteToTransfer($identifiant_reassort);
+
+    // dump($data);
+
+    // Enregistrez le temps de début
+    $temps_debut = microtime(true);
+
+    // $data2 = [
+    //   ["product_id" => 4702,"barcode" => 3760324820391,"qty" => 10],
+    //   ["product_id" => 5250,"barcode" => 3760324820308,"qty" => 10],
+    //   ["product_id" => 5249,"barcode" => 3760324820353,"qty" => 10],     
+    //   ["product_id" => 4700,"barcode" => 3760324820407,"qty" => 10],
+    //   ["product_id" => 5240,"barcode" => 3760324820278,"qty" => 10],
+    //   ["product_id" => 4697,"barcode" => 3760324820261,"qty" => 10],   
+    // ];
+    $datas_updated_succes = array();
+    $datas_updated_error = array();
+
+
+   // on récupère les kits
+
+  //  $kits = $this->reassort->getKits();
+  //  $array_ids_kits = $kits["all_id_pere_kits"];
+  //  $composition_kits = $kits["composition_by_pere"];
+  //  dd($kits);
+
+    // Récupérer les ids produit de woocommerce
+    $ids_woocomerce = $this->product->getProductsByBarcode($data);
+
+    // dd($ids_woocomerce);
+
+    if ($ids_woocomerce["response"]) {
+      // on fait l'actualisation sur woocommerce
+      $datas = $ids_woocomerce["ids_wc_vs_qte"];
+
+      // dd($datas);
+      dump("Total = ". count($datas));
+      foreach ($datas as $key => $data) {
+        // filtrer les kits comme les limes et construire les lots
+        $product_id_wc = $data["id_product_wc"];
+        $quantity = $data["qty"];
+
+        $update_response =  $this->product->updateStockServiceWc($product_id_wc, $quantity);
+        if ($update_response["response"]) {
+          $data["qte_actuelle"] = $update_response["qte_actuelle"];
+          array_push($datas_updated_succes,$data);
+        }else {
+          $data["qte_actuelle"] = $update_response["qte_actuelle"];
+          array_push($datas_updated_error,$data);
+        }
+        dump("reussits = ". count($datas_updated_succes));
+        dump("echoués = ". count($datas_updated_error));
+
+      }
+
+      // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
+
+    }else {
+      return ["response" => false, "message" => $ids_woocomerce["message"]];
+    }
+
+    $temps_fin = microtime(true);
+    $temps_execution = ($temps_fin - $temps_debut)/60;
+    dump("Le script a pris " . $temps_execution . " minutes pour s'exécuter.");
+    dump("les stocks actuel sont");
+    dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
+
+  }
 }
 
 

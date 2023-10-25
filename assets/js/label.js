@@ -1,4 +1,21 @@
 $(document).ready(function() {
+
+    var cn23_not_download = false
+    $(".cn23_label").each(function(index){
+        console.log($(this).val())
+       if($(this).val() == "0"){
+        cn23_not_download = true
+       }
+    });
+
+    if(cn23_not_download){
+        $('#warningCn23Download').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+        $("#warningCn23Download").modal('show')
+    }
+
     $('#example').DataTable({
         "order": [[0, 'desc']],
         "columnDefs" : [       
@@ -47,10 +64,12 @@ $(".delete_label").on('click', function(){
 
 $(".generate_label_button").on('click', function(){
         var order_id = $(this).attr('data-order')
+        var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
+
         $.ajax({
             url: "getProductOrderLabel",
             method: 'POST',
-            data : {_token: $('input[name=_token]').val(), order_id: order_id}
+            data : {_token: $('input[name=_token]').val(), order_id: order_id, from_dolibarr: from_dolibarr}
         }).done(function(data) {
             if(JSON.parse(data).success){
                 $(".line_items_label").remove()
@@ -69,10 +88,12 @@ $(".generate_label_button").on('click', function(){
                 Object.entries(product_order).forEach(([key, value]) => {
                     product = value.quantity - value.total_quantity == 0 ? product + 0 : product + 1;
 
+
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        total_weight = parseFloat(total_weight) + (parseFloat(value.weight) * value.quantity);
+                        weight_product = value.weight != "" ? value.weight : 0
+                        total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 
                     innerHtml +=
@@ -83,17 +104,20 @@ $(".generate_label_button").on('click', function(){
                             <span class="w-50">${value.name}</span>
                             <span class="w-25">${value.cost}</span>
                             <span class="w-25" ><input class="quantity_product_label" ${value.quantity - value.total_quantity == 0 ? 'disabled' : '' } min="1" max="${value.quantity - (value.total_quantity ?? 0) }" value="${value.quantity -  (value.total_quantity ?? 0) }" name="quantity[${value.product_woocommerce_id}]" type="number"> / ${value.quantity}</span>
-                            <span class="weight w-25">${value.weight}</span>
+                            <span class="weight w-25">${value.weight != "" ? value.weight : 0}</span>
                         </div>`
                 });
                 
-                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(2)+` Kg</div>`
+                innerHtml += `<div class="total_weight mt-3 w-100 d-flex justify-content-end">Poids : `+parseFloat(total_weight).toFixed(3)+` Kg</div>`
                 // Si tous les produits sont déjà dans des étiquettes alors désactiver le button de génération
                 if(product == 0){
                     $(".button_validate_modal_label").children('button').last().attr('disabled', true)
                 } else {
                     $(".button_validate_modal_label").children('button').last().attr('disabled', false)
                 }
+
+                // If is dolibarr order
+                $("#from_dolibarr").val(from_dolibarr)
 
                 $(".body_line_items_label").append(innerHtml)
                 $(".generate_label_modal").modal('show')
@@ -195,14 +219,16 @@ function total_weight(){
     $(".total_weight ").text('Poids : '+total_weight.toFixed(2)+' Kg')
 }
 
+
 document.addEventListener("keydown", function(e) {
     if(e.key.length == 1){
         $("#detail_order_label").val($("#detail_order_label").val()+e.key)
         var array = $("#detail_order_label").val().split(',')
-        if(array.length == 2 && $("#order_id").val() == ""){
-            $("#order_id").val(array[0])
-            $(".custom_input").val(array[0])
+        if(array.length == 4 && $(".custom_input").val('') == ""){
+            $("#order_id").val(array[0].split(',')[0])
+            $(".custom_input").val(array[0].split(',')[0])
             $(".research_label_order").click()
+            $(".custom_input").val('')
         }
     }
 })

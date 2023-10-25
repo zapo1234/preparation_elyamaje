@@ -74,7 +74,7 @@
                             </div>
                             <div class="mb-3 mt-3">
                                 <div class="input-group" id="show_hide_password">
-                                    <input required name="password" type="password" class="form-control" placeholder="Mot de passe">
+                                    <input autocomplete="on" required name="password" type="password" class="form-control" placeholder="Mot de passe">
                                     <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
                                 </div>
                                

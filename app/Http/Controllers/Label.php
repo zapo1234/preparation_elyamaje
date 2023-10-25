@@ -19,6 +19,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 use App\Repository\LogError\LogErrorRepository;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 
 class Label extends BaseController
 {
@@ -28,6 +29,7 @@ class Label extends BaseController
     private $colissimo;
     private $bordereau;
     private $order;
+    private $orderDolibarr;
     private $woocommerce;
     private $labelProductOrder;
     private $colissimoConfiguration;
@@ -41,6 +43,7 @@ class Label extends BaseController
         Colissimo $colissimo,
         BordereauRepository $bordereau,
         OrderRepository $order,
+        OrderDolibarrRepository $orderDolibarr,
         WoocommerceService $woocommerce,
         LabelProductOrderRepository $labelProductOrder,
         ColissimoRepository $colissimoConfiguration,
@@ -52,6 +55,7 @@ class Label extends BaseController
         $this->colissimo = $colissimo;
         $this->bordereau = $bordereau;
         $this->order = $order;
+        $this->orderDolibarr = $orderDolibarr;
         $this->woocommerce = $woocommerce;
         $this->labelProductOrder = $labelProductOrder;
         $this->colissimoConfiguration = $colissimoConfiguration;
@@ -61,21 +65,22 @@ class Label extends BaseController
     }
 
     public function getlabels(Request $request){
-
-
         if(count($request->all()) > 0){
             $filters = $request->all();
             $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders_dolibarr = $this->orderDolibarr->getAllOrdersAndLabelByFilter($filters)->toArray();
+            $orders = array_merge($orders, $orders_dolibarr);
             $orders = json_encode($orders);
             $orders = json_decode($orders, true);
         } else {
             $orders = $this->order->getAllOrdersAndLabel()->toArray();
+            $orders_dolibarr = $this->orderDolibarr->getAllOrdersAndLabel()->toArray();
+            $orders = array_merge($orders, $orders_dolibarr);
         }
-       
+
+
+        
         $labels = $this->label->getAllLabels()->toArray();
-
-    
-
         $array_order = [];
 
         foreach($orders as $order){
@@ -88,13 +93,14 @@ class Label extends BaseController
             $clesRecherchees = array_keys($ids,  $order['order_woocommerce_id']);
             
             if(!isset($array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]) && $order['label_id']){
-                $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]= [
+                $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']] = [
                     'label_id' => $order['label_id'],
                     'tracking_number' => $order['tracking_number'],
                     'label_created_at' => $order['label_created_at'],
                     'label_format' => $order['label_format'],
                     'cn23' => $order['cn23'],
-
+                    'download_cn23' => $order['download_cn23'],
+                    // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             } else if(count($clesRecherchees) > 0){
                 $array_order[$order['order_woocommerce_id']]['labels'][$labels[$clesRecherchees[0]]['id']]= [
@@ -103,13 +109,15 @@ class Label extends BaseController
                     'label_created_at' => $labels[$clesRecherchees[0]]['created_at'], 
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                     'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
+                    'download_cn23' => $order['download_cn23'],
+                    // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             }
         }
-    
+
         // Liste des status commandes
         $status_list = __('status_order');
-        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all()]);
+        return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all(), 'result' => count($array_order)]);
     }
 
     public function labelDownload(Request $request){
@@ -133,24 +141,32 @@ class Label extends BaseController
     public function labelDownloadCn23(Request $request){
        
         $order_id = $request->post('order_id');
-        $blob = $this->label->getLabelById($request->post('label_id'));
-        // $fileContent = $blob[0]->cn23;
+        $label_id = $request->post('label_id');
 
-        $fileContent = mb_convert_encoding($blob[0]->cn23, 'ISO-8859-1');
+        if($order_id && $label_id){
+            $blob = $this->label->getLabelById($label_id);
+            $fileContent = mb_convert_encoding($blob[0]->cn23, 'ISO-8859-1');
 
-        $fileName = 'declaration_'.$order_id.'.pdf';
-        $headers = [
-            'Content-Type' => 'application/pdf',
-        ];
-    
-        return Response::make($fileContent, 200, $headers)
-            ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+            // Le document à été téléchargé
+            if($blob[0]->download_cn23 == 0){
+                $this->label->updateLabel(['download_cn23' => 1], $label_id);
+            }
+
+            $fileName = 'declaration_'.$order_id.'.pdf';
+            $headers = [
+                'Content-Type' => 'application/pdf',
+            ];
+        
+            return Response::make($fileContent, 200, $headers)
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
+        } else {
+            return redirect()->route('labels')->with('error', 'Aucun numéro de commande sélectionnée !');
+        }    
     }
-
 
     public function labelPrintZPL(Request $request){
         $label_id = $request->post('label_id');
-        $blob = $this->label->getLabelById( $label_id);
+        $blob = $this->label->getLabelById($label_id);
 
         if(isset($blob[0]->label)){
             echo json_encode(['success' => true, 'file' => base64_encode($blob[0]->label)]);
@@ -284,10 +300,21 @@ class Label extends BaseController
 
     public function getProductOrderLabel(Request $request){
         $order_id = $request->post('order_id');
-        $product_order = $this->order->getProductOrder($order_id)->toArray();
+        $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
+        $transfers = $request->post('transfers') == "false" ? 0 : 1;
+
+        if($from_dolibarr){
+            $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
+            $product_order[0]['shipping_method'] = "lpc_sign";
+        } else {
+            $product_order = $this->order->getProductOrder($order_id)->toArray();
+        }
+
+        $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
 
         if(isset($product_order[0])){
-            if($product_order[0]['status'] != "finished"){
+            // dd($product_order[0]);
+            if($product_order[0]['status'] != "finished" && !$from_validWraper){
                 echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
                 return;
             }
@@ -314,6 +341,7 @@ class Label extends BaseController
             }
         }
 
+
         if(count($product_order) > 0){
             echo json_encode(['success' => true, 'products_order' => $product_order]);
         } else {
@@ -323,21 +351,42 @@ class Label extends BaseController
 
     public function generateLabel(Request $request){
 
+        $from_js = $request->post('from_js') == "true" ? 1 : 0;
+        $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
+        // $transfers = $request->post('transfers') == "false" ? 0 : 1;
+
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
-        $order_by_id = $this->order->getOrderById($order_id);
+
+        if($from_dolibarr){
+            $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
+        } else {
+            $order_by_id = $this->order->getOrderById($order_id);
+        }
+        
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
 
         if($order_by_id && $product_to_add_label){
-            $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
 
+            if($from_dolibarr){
+                $order = $this->woocommerce->transformArrayOrderDolibarr($order_by_id, $product_to_add_label);
+            } else {
+                $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+            }
+
+            if($from_dolibarr){
+                $order[0]['shipping_method'] = "lpc_sign";
+            }
             $weight = 0; // Kg
             $subtotal = 0;
+            $items = [];
            
-                foreach($order[0]['line_items'] as $or){
-                    if(isset($or['product_id'])){
-                        $quantity = $quantity_product[$or['product_id']];
+            foreach($order[0]['line_items'] as $or){
+                if(isset($or['product_id'])){
+                    $quantity = $quantity_product[$or['product_id']];
+                    if($quantity != 0){
+                        $items[] = $or['product_id'];
                         if(isset($or['real_price'] )){
                             $subtotal = $subtotal + $or['real_price'];
                         } else {
@@ -345,12 +394,14 @@ class Label extends BaseController
                         }
 
                         if(is_numeric($or['weight'])){
-                            $weight = $weight + number_format(($or['weight'] * $quantity), 2);
+                            $weight = $weight + number_format(($or['weight'] * $quantity), 4);
                         }
                     }
-                } 
+                }
+            } 
 
-                $order[0]['total_order'] = $subtotal;
+            $order[0]['total_order'] = $subtotal;
+            if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
                     $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
@@ -362,91 +413,72 @@ class Label extends BaseController
                         $insert_label = $this->label->save($labelChrono);
                         $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
                     } else {
-                        return redirect()->route('labels')->with('error', $labelChrono);
+
+                        if($from_js){
+                            echo json_encode(['success' => false, 'file' => false, 'message' => $labelChrono]);
+                            return;
+                        } else {
+                            return redirect()->route('labels')->with('error', $labelChrono);
+                        }
                     }
 
-                    return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                    if($from_js){
+                        echo json_encode(['success' => true, 'file' => false, 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+                        return;
+                    } else {
+                        return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                    }
                 } else { 
                     // Étiquette Colissimo
-                    $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
-                
+                    $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null, $items);
                     if(isset($label['success'])){
-                      $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-                      $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
-                      $insert_label = $this->label->save($label);
-                      $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
-     
-                      if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
-                        
-                        if($label['label']){
-                            // switch ($label['label_format']) {
-                            //     case "PDF":
-                            //         $headers = [
-                            //             'Content-Type' => 'application/pdf',
-                            //         ];
-                            
-                            //         $fileContent = $label['label'];
-                            //         return Response::make($fileContent, 200, $headers);
-                            //         break;
-                            //     case "ZPL":
-                            //         $zpl = $label['label'];
-                            //         $curl = curl_init();
-                            //         curl_setopt($curl, CURLOPT_URL, "http://api.labelary.com/v1/printers/8dpmm/labels/8x8/0/");
-                            //         curl_setopt($curl, CURLOPT_POST, TRUE);
-                            //         curl_setopt($curl, CURLOPT_POSTFIELDS, $zpl);
-                            //         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-                            //         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/pdf")); // omit this line to get PNG images back
-                            //         $result = curl_exec($curl);
-                    
-                            //         curl_close($curl);
-                            //         $headers = [
-                            //             'Content-Type' => 'application/pdf',
-                            //         ];
-                    
-                            //         return Response::make($result, 200, $headers);
-                            //         break;
-                            // }
+                        $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
+                        $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
+                        $insert_label = $this->label->save($label);
+                        $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
 
-                            return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
-                        } 
-                      } else {
-                        return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
-                      }
+                        if(is_int($insert_label) && $insert_label != 0 && $insert_product_label_order){
+                            if($label['label'] && $label['cn23'] == null){
+                                if($from_js){
+                                    echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+                                    return;
+                                } else {
+                                    return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                                }
+                            } else {
+                                if($from_js){
+                                    echo json_encode(['success' => true, 'file' => false, 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+                                    return;
+                                } else {
+                                    return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                                }
+                            }
+                        } else {
+                            if($from_js){
+                                echo json_encode(['success' => false, 'message' => 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
+                                return;
+                            } else {
+                                return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
+                            }
+                        }
                     } else {
-                        return redirect()->route('labels')->with('error', $label);
+                        if($from_js){
+                            echo json_encode(['success' => false, 'message' => $label]);
+                            return;
+                        } else {
+                            return redirect()->route('labels')->with('error', $label);
+                        }
                     }
                 }
-               
-             
+            }
         } else {
-            return redirect()->route('labels')->with('error', "Veuillez séléctionner des produits");
+            if($from_js){
+                echo json_encode(['success' => false, 'file' => false, 'message' => 'Veuillez séléctionner des produits']);
+                return;
+            } else {
+                return redirect()->route('labels')->with('error', "Veuillez séléctionner des produits");
+            }
         }
-        
-
-        // if($order){
-        //     $weight = 0; // Kg
-    
-        //     foreach($order[0]['line_items'] as $or){
-        //       $weight = $weight + ($or['weight'] *$or['quantity']);
-        //     } 
-    
-        //     $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id']);
-        //     // $label['label'] = file_get_contents('labelPDF.pdf');
-    
-        //     if(isset($label['success'])){
-        //       $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
-        //       if($this->label->save($label)){
-        //         if($label['label']){
-        //           echo json_encode(['success' => true, 'message'=> 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
-        //         } 
-        //       } else {
-        //         echo json_encode(['success' => false, 'message'=> 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
-        //       }
-        //     } else {
-        //       echo json_encode(['success' => false, 'message'=> $label]);
-        //     }
-        // }
-
     }
     
     public function getTrackingLabelStatus($token){
@@ -468,9 +500,11 @@ class Label extends BaseController
                     }
                 }
 
+
                 // Récupère les status de chaque commande
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
+
                 // Update status sur Wordpress pour les colis livré
                 $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
                 $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);

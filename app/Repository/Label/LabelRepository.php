@@ -37,7 +37,7 @@ class LabelRepository implements LabelInterface
    }
 
    public function getLabelById($label){
-      return $this->model::select('label', 'label_format', 'cn23')->where('id', $label)->get();
+      return $this->model::select('label', 'label_format', 'cn23', 'download_cn23')->where('id', $label)->get();
    }
 
    public function getParcelNumbersyDate($date){
@@ -76,11 +76,12 @@ class LabelRepository implements LabelInterface
          $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
       }
 
-   
-
       $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";
       $response = DB::update($updateQuery);
+   }
 
+   public function updateLabel($data, $label_id){
+      return $this->model::where('id', $label_id)->update($data);
    }
 }
 

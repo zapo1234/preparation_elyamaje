@@ -4,6 +4,9 @@
     cursor: not-allowed;
 }
 
-.error_stock{
-    color: red;
+.select_userApprovisionnement{
+	border-color: #aaa;
+	border-radius: 4px;
+	padding: 3px;
+	cursor: pointer;
 }

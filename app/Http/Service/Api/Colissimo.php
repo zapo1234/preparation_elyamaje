@@ -20,18 +20,19 @@ class Colissimo
         $this->bordereau = $bordereau;
     }
 
-    public function generateLabel($order, $weight, $order_id, $colissimo){
+    public function generateLabel($order, $weight, $order_id, $colissimo, $items){
         $productCode = $this->getProductCode($order);
+
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
-        $customsArticle = $this->customsArticle($order);
+        $customsArticle = $this->customsArticle($order, $items);
 
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
         $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
-        
+
         if($productCode){
             try {
                 $requestParameter = [
@@ -292,11 +293,13 @@ class Colissimo
     protected function parseMonoPartBody($body) {
         return json_decode($body, true);
     }
+    
 
     protected function getProductCode($order){
 
         $productCode_array = [
             'lpc_expert'     => 'DOS',
+            'lpc_expert_ddp'     => 'DOS',
             'lpc_nosign'     => 'DOM',
             'lpc_sign'       => 'DOS',
             'local_pickup'   => false
@@ -344,9 +347,10 @@ class Colissimo
             if($order['shipping']['country'] == "FR" && !preg_match($frenchMobileNumberRegex, $phoneNumber)){
                 $address = [
                     'companyName' => $order['shipping']['company'] ?? '',
-                    'lastName' => $order['shipping']['last_name'],
+                    'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'line2' => $order['shipping']['address_1'],
+                    'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -358,9 +362,10 @@ class Colissimo
             } else {
                 $address = [
                     'companyName' => $order['shipping']['company'] ?? '',
-                    'lastName' => $order['shipping']['last_name'],
+                    'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                     'firstName' => $order['shipping']['first_name'],
-                    'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                    'line2' => $order['shipping']['address_1'],
+                    'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
                     'city' => $order['shipping']['city'],
                     'zipCode' => $order['shipping']['postcode'],
@@ -373,9 +378,12 @@ class Colissimo
         } else {
             $address = [
                 'companyName' =>$order['shipping']['company'] ?? '',
-                'lastName' => $order['shipping']['last_name'],
+                'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
                 'firstName' => $order['shipping']['first_name'],
-                'line2' => $order['shipping']['address_1'].' '.$order['shipping']['address_2'] ?? '',
+                // 'line2' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_1']),
+                // 'line3' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_2'] ?? ''),
+                'line2' => $order['shipping']['address_1'],
+                'line3' => $order['shipping']['address_2'] ?? '',
                 'countryCode' => $order['shipping']['country'],
                 'city' => $order['shipping']['city'],
                 'zipCode' => $order['shipping']['postcode'],
@@ -423,20 +431,24 @@ class Colissimo
     //     }
     // }
     // XC2F000423
-    protected function customsArticle($order){
+    
+    protected function customsArticle($order, $items){
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
-            $customsArticle[] = [
-                'description'   => $item['name'],
-                'quantity'      => $item['quantity'],
-                'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
-                'currency'      => config('app.currency'),
-                'artref'        => $item['ref'] ?? '',
-                'originalIdent' => 'A',
-                'originCountry' => 'FR',
-                'hsCode'        => '33049900', // code pour produits esthétique, beauté
-                'weight'        => $item['weight']
-            ];
+            if(in_array($item['product_id'], $items)){
+                $customsArticle[] = [
+                    'description'   => $item['name'],
+                    'quantity'      => $item['quantity'],
+                    'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
+                    'currency'      => config('app.currency'),
+                    'artref'        => $item['ref'] ?? '',
+                    'originalIdent' => 'A',
+                    'originCountry' => 'FR',
+                    'hsCode'        => '33049900', // code pour produits esthétique, beauté
+                    'weight'        => is_numeric($item['weight']) ? $item['weight'] : 0
+                ];
+            }
+           
         }   
         return $customsArticle;
     }

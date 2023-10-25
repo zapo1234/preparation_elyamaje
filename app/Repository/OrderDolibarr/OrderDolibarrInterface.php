@@ -22,6 +22,14 @@ interface OrderDolibarrInterface
     public function getAllOrdersDolibarrByIdUser($user_id);
 
     public function checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, $partial);
+
+    public function getProductOrder($order_id);
+
+    public function getAllOrdersAndLabelByFilter($filters);
+
+    public function getAllOrdersAndLabel();
+
+    public function orderResetDolibarr($order_id);
 }
 
 

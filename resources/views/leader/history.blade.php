@@ -39,18 +39,19 @@
 
 						<div class="card card_table_mobile_responsive radius-10 w-100">
 							<div class="card-body">
-								<div class="table-responsive">
-									<div class="d-flex justify-content-center">
-										<div class="loading spinner-border text-dark" role="status"> 
-											<span class="visually-hidden">Loading...</span>
-										</div>
+								<div class="d-flex justify-content-center">
+									<div class="loading spinner-border text-dark" role="status"> 
+										<span class="visually-hidden">Loading...</span>
 									</div>
+								</div>
+								<div class="table-responsive">
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 										<thead>
 											<tr>
-												<th scope="col-md-1">Commande</th>
-												<th scope="col">Préparée</th>
-												<th scope="col">Emballée</th>
+												<th class="col-md-1" scope="col">Commande</th>
+												<th class="col-md-4"scope="col">Préparée</th>
+												<th class="col-md-4" scope="col">Emballée</th>
+												<th class="col-md-1" scope="col">Status</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -78,8 +79,20 @@
 															</div>
 														</div>
 													</td>
+													<td data-label="Status">
+														@if($histo['order_status'])
+															<select data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] }} select_status select_user">
+																@foreach($list_status as $key => $list)
+																	@if($key == $histo['order_status'])
+																		<option selected value="{{ $histo['order_status'] }}">{{ __('status.'.$histo['order_status']) }}</option>
+																	@else 
+																		<option value="{{ $key }}">{{ __('status.'.$key) }}</option>
+																	@endif
+																@endforeach
+															</select>
+														@endif
+													</td>
 												</tr>
-
 											@endforeach
 										</tbody>
 									</table>
@@ -87,8 +100,6 @@
 
 							</div>
 						</div>
-
-
 					<!-- Modal -->
 					<div class="modal fade" id="modalGenerateHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
@@ -134,6 +145,44 @@
 						$(".loading").addClass('d-none')
 						$('#example').removeClass('d-none');
 					}
+				})
+
+				$('body').on('change', '.select_status', function () {
+					var order_id = $(this).attr('data-order')
+					var status = $(this).val()
+
+					$(this).removeClass()
+					$(this).addClass($(this).val())
+					$(this).addClass("select_status")
+					$(this).addClass("select_user")
+
+					// Change status order
+					$.ajax({
+						url: "updateOrderStatus",
+						method: 'GET',
+						method: 'POST',
+        				data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: false}
+					}).done(function(data) {
+						if(JSON.parse(data).success){
+							// Remove order from commandeId and update dolibarr id command
+							if(status == "processing"){
+								$.ajax({
+									url: "orderReInvoicing",
+									method: 'GET',
+									method: 'POST',
+									data: {_token: $('input[name=_token]').val(), order_id: order_id}
+								}).done(function(data) {
+									if(JSON.parse(data).success){
+									} else {
+										alert(JSON.parse(data).message)
+									}
+								});
+							}
+						} else {
+							alert('Erreur !')
+						}
+					});
+
 				})
 			})
         </script>

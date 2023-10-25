@@ -310,7 +310,11 @@ class TransferOrder
                                 $socid = $fk_tiers;
                              }
 
+<<<<<<< HEAD
                               if($fk_tiers_phone!="" && $fk_tiers==""){
+=======
+                              if($fk_tiers_phone !="" && $fk_tiers == ""){
+>>>>>>> 69a1d3b10160bdcd2df6c26295fa41b26d16e9c9
                                 $socid = $fk_tiers_phone;
                              }
                             
@@ -754,7 +758,7 @@ class TransferOrder
 
                   
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
-                   $array_paiments = array('bacs');// virement bancaire id.....
+                   $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -834,10 +838,10 @@ class TransferOrder
                }
       
                $newbank = [
-              "datepaye"=>$date_finale,
-              "paymentid"=>6,
-              "closepaidinvoices"=> "yes",
-              "accountid"=> $account_id, // id du compte bancaire.
+                "datepaye"=>$date_finale,
+                "paymentid"=>6,
+                "closepaidinvoices"=> "yes",
+                "accountid"=> $account_id, // id du compte bancaire.
                ];
 
               // valider les facture dans dolibar....

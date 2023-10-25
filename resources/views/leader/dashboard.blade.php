@@ -22,13 +22,12 @@
 					<div class="dashboard_leader row row-cols-1 row-cols-lg-2">
 				   		<div class="team_board col flex-column d-flex col-lg-4">
 							<div class="card radius-10 w-100 h-100">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
-										<div>
-											<h5 class="mb-0">Équipes</h5>
-										</div>
+								<div class="header_title d-flex align-items-center">
+									<div>
+										<h5 class="mb-0">Équipes</h5>
 									</div>
-
+								</div>
+								<div class="card-body">
 									<!-- Liste des utilisateurs et leur rôle -->
 									<div class="p-3 mb-3 ps ps--active-y role_list">
 										@foreach($teams as $key => $team)
@@ -61,13 +60,13 @@
 								</div>
 							</div>
 							<div class="card radius-10 w-100 h-100">
-								<div class="card-body">
-									<div class="d-flex align-items-center">
+									<div class="header_title d-flex align-items-center">
 										<div>
 											<h5 class="mb-0">Réatribuer des commandes</h5>
 										</div>
 									</div>
-
+									<div class="card-body">
+										
 										<!-- Réatribution des commandes d'un user vers un autre -->
 										<div class="p-3 mb-3 ps ps--active-y role_list">
 										@if($number_preparateur > 1)
@@ -147,14 +146,18 @@
 						</div>
 						<div class="col d-flex col-lg-8">
 								<div class="card card_table_mobile_responsive radius-10 w-100">
-									<div class="card-body">
-										<div class="d-flex align-items-center">
-											<div>
-												<h5 class="mb-4">Commandes <span class="text-success total_amount"></span></h5>
-											</div>
+									<div class="header_title hide_mobile d-flex align-items-center">
+										<div class="w-100 d-flex justify-content-between">
+											<h5 style="width:180px">Commande</h5>
+											<h5>Attribution</h5>
+											<h5>Date</h5>
+											<h5>État</h5>
+											<h5>Total</h5>
+											<h5>Détail</h5>
 										</div>
+									</div>
+									<div class="card-body mt-2 p-0">
 										<div class="table-responsive">
-
 											<!-- chronopost -->
 											<select class="d-none select2_custom shipping_dropdown input_form_type">
 												<option value="">Chronopost</option>
@@ -168,6 +171,15 @@
 												@foreach($teams_have_order as $prepa)
 													<option value="{{ $prepa['id'] }}">{{  $prepa['name']  }}</option>
 												@endforeach
+											</select>
+
+											<!-- country -->
+											<select class="d-none select2_custom country_dropdown input_form_type">
+												<option value="">Expédition</option>
+												<option value="CH">Suisse</option>
+												<option value="BE">Belgique</option>
+												<option value="FR">France</option>
+												<option value="LU">Luxembourg</option>
 											</select>
 
 											<select class="d-none select2_custom status_dropdown input_form_type">
@@ -196,7 +208,7 @@
 												</thead>
 												<tbody></tbody>
 												<tbody>
-													@for($i = 0; $i < 8; $i++)
+													@for($i = 0; $i < 9; $i++)
 														<tr class="loading_table">
 															<td class="td-3"><span></span></td>
 															<td class="td-3"><span></span></td>

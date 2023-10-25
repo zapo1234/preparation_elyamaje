@@ -4,14 +4,23 @@ namespace App\Repository\Reassort;
 
 use Exception;
 use App\Models\Reassort;
+use App\Models\products_categories;
+use App\Models\Categorie_dolibarr;
+use App\Models\Products_association;
 use Illuminate\Support\Facades\DB;
 
 class ReassortRepository implements ReassortInterface 
 {   
     private $model;
+    private $products_categories;
+    private $categories_dolibarr;
+    private $products_association;
 
-    public function __construct(Reassort $model){
+    public function __construct(Reassort $model,products_categories $products_categories,Categorie_dolibarr $categories_dolibarr,Products_association $products_association){
         $this->model = $model;
+        $this->products_categories = $products_categories;
+        $this->categories_dolibarr = $categories_dolibarr;
+        $this->products_association = $products_association;
     }
 
     public function getReassortByUser($user_id){
@@ -19,11 +28,13 @@ class ReassortRepository implements ReassortInterface
         $list = [];
         $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+        // ->where('products.status', 'publish')
+        // ->where('products.is_variable', 0)
+        ->whereIn('id_reassort', [0, -1])
         ->where([
             ['user_id', $user_id],
             ['type', 0]
         ])
-        ->whereIn('id_reassort', [0, -1])
         ->whereIn('hist_reassort.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
         ->get();
 
@@ -48,6 +59,45 @@ class ReassortRepository implements ReassortInterface
                 'customer_note'   => ''
             ];
             $list[$rea['identifiant_reassort']]['items'][] = $rea;
+        }
+
+        // Cas de produits double si par exemple 1 en cadeau et 1 normal
+        $product_double = [];
+        foreach($list as $key1 => $li){
+            foreach($li['items'] as $key2 => $item){
+                if(isset($product_double[$key1])){
+
+                    $id_product = array_column($product_double[$key1], "id");
+                    $clesRecherchees = array_keys($id_product,  $item['product_id']);
+
+                    if(count($clesRecherchees) > 0){
+                        // $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
+                        unset($list[$key1]['items'][$key2]);
+
+                        // Merge quantity
+                        // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['qty'] = $item['qty'] + $detail_doublon['qty'];
+                    
+                        // Merge pick product
+                        // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
+                    } else {
+                        $product_double[$key1][] = [
+                            'id' => $item['product_id'],
+                            'qty' => $item['qty'], 
+                            'key1' => $key1,
+                            'key2' => $key2,
+                            'pick' => $item['pick']
+                        ];
+                    }
+                } else {
+                    $product_double[$key1][] = [
+                        'id' => $item['product_id'],
+                        'qty' => $item['qty'], 
+                        'key1' => $key1,
+                        'key2' => $key2,
+                        'pick' => $item['pick']
+                    ];
+                }
+            }
         }
 
         return $list;
@@ -156,7 +206,90 @@ class ReassortRepository implements ReassortInterface
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['id_reassort' => $status]);
     }
 
-    public function updateStatusTextReassort($transfer_id, $status){
+
+    public function getAllCategoriesAndProducts($cat_lab){
+
+        $res =  $this->products_categories::select()
+        ->get()
+        ->toArray();
+        ;
+
+        $product_catIds = array();
+        foreach ($res as $key => $value) {
+            if (!isset($product_catIds[$value["fk_product"]])) {
+                $value["fk_categorie"] = [
+                    "cat" => [$value["fk_categorie"]],
+                    "cat_parent" => [$cat_lab[$value["fk_categorie"]]["fk_parent"]],
+                ];
+                $product_catIds[$value["fk_product"]] = $value;
+            }else {
+                array_push($product_catIds[$value["fk_product"]]["fk_categorie"]["cat"], $value["fk_categorie"]);
+                array_push($product_catIds[$value["fk_product"]]["fk_categorie"]["cat_parent"], $cat_lab[$value["fk_categorie"]]["fk_parent"]);
+            }
+        }
+
+
+        foreach ($product_catIds as $key => $value) {
+
+            $cat = $value["fk_categorie"]["cat"];
+            $catParent = $value["fk_categorie"]["cat_parent"];
+            $product_catIds[$key]["fk_categorie"] = $this->getLastCategorie($cat, $catParent);
+
+        }
+
+
+        return $product_catIds;
+    }
+
+    public function getAllCategoriesLabel(){
+
+       // dd($this->categories_dolibarr);
+
+        return  $this->categories_dolibarr::select()
+        ->get()
+        ->pluck(null, 'id')
+        ->toArray();
+       
+    }
+
+    public function getKits(){
+
+        $all_table = $this->products_association::select()
+        ->get()
+        ->toArray();
+        
+
+
+
+        $all_id_pere_kits = array();
+        $composition_by_pere = array();
+
+        foreach ($all_table as $key => $value) {
+
+
+            $id_pere = $value["fk_product_pere"];
+            $id_fils = $value["fk_product_fils"];
+            $qty = $value["qty"];
+
+            if (!in_array($id_pere, $all_id_pere_kits)) {
+                array_push($all_id_pere_kits,$id_pere);
+            }
+
+            if (!isset($composition_by_pere[$id_pere])) {
+
+                $composition_by_pere[$id_pere][] = [$id_fils,$qty];
+
+            }else {
+                array_push($composition_by_pere[$id_pere], [$id_fils,$qty]);
+            }
+        }
+        return [
+            "all_id_pere_kits" => $all_id_pere_kits,
+            "composition_by_pere" => $composition_by_pere
+        ];
+     }
+
+     public function updateStatusTextReassort($transfer_id, $status){
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['status' => $status]);
     }
 
@@ -165,20 +298,41 @@ class ReassortRepository implements ReassortInterface
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['identifiant_reassort', $order_id],
-            ['type', 0],
-            ['pick', 0],
+            ['type', 0]
         ])
         ->get();
 
         $transfer = json_decode(json_encode($transfer), true);
 
+        // Cas de produits double si par exemple 1 en cadeau et 1 normal
+        $product_double = [];
+        foreach($transfer as $key_barcode => $list){
+
+            if(isset($product_double[$list["barcode"]])){
+                if(isset($product_double[$list["barcode"]][0])){
+
+                // $quantity = $product_double[$list["barcode"]][0]['qty'];
+                $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+                unset($transfer[$key_barcode_to_remove]);
+                // $transfer[$key_barcode]['qty'] = $transfer[$key_barcode]['qty'] + $quantity;
+                }
+            } else {
+                $product_double[$list["barcode"]][] = [
+                'qty' => $list['qty'],
+                'key_barcode_to_remove' => $key_barcode
+                ];
+            }
+        }
+
         $list_products = [];
         foreach($transfer as $list){
-            $list_products[] = [
-                "barcode" => $list['barcode'],
-                "quantity" =>  $list['qty'],
-                "id" =>  $list['id'],
-            ];
+            if($list['qty'] != $list['pick']){
+                $list_products[] = [
+                    "barcode" => $list['barcode'],
+                    "quantity" =>  $list['qty'],
+                    "id" =>  $list['id'],
+                ];
+            }
         }
 
         $product_pick_in = [];
@@ -214,19 +368,21 @@ class ReassortRepository implements ReassortInterface
                 }
             } else {
                 $diff_barcode = true;
+
             }
         }
 
+    
+        if(count($product_pick_in) > 0){
+            // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+            $cases = collect($product_pick_in)->map(function ($item) {
+                return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
+            })->implode(' ');
 
-        // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
-        $cases = collect($product_pick_in)->map(function ($item) {
-            return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
-        })->implode(' ');
 
-
-        $query = "UPDATE prepa_hist_reassort SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-        DB::statement($query);
-
+            $query = "UPDATE prepa_hist_reassort SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
+            DB::statement($query);
+        }
 
         if(!$partial){
             if(!$diff_quantity && !$diff_barcode){
@@ -254,6 +410,59 @@ class ReassortRepository implements ReassortInterface
             }
         }
     }
+
+    public function getLastCategorie($cat, $catParent){
+
+
+        if (count($cat) == 1) {
+            return $cat[0];
+        }
+        else {
+            foreach ($cat as $key => $value) {
+                if (!in_array($value,$catParent)) {
+                    return $value;
+                }
+            }
+            return "inconue";
+        }
+        
+    }
+
+    public function updateUserReassort($id_user,$identifiant_reassort){
+
+        try {
+
+            Reassort::where('identifiant_reassort', $identifiant_reassort)
+            ->update(['user_id' => $id_user]);
+            return true;
+
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+    public function orderResetTransfers($order_id){
+        try{
+            $update_products = $this->model::where('identifiant_reassort', $order_id)->update(['pick' => 0]);
+            return true;
+         } catch(Exception $e){
+            return false;
+         }
+    }
+
+    public function getQteToTransfer($identifiant_reassort){
+
+        $transfer = $this->model::select('product_id', 'barcode', 'qty')
+        ->where([
+            ['identifiant_reassort', $identifiant_reassort],
+            ['qty','>', 0]
+        ])
+        ->get()
+        ->toArray()
+        ;
+        return $transfer;
+    }
+
+
 }
 
 

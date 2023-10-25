@@ -81,7 +81,7 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Transfert</h6>
-									<!-- <h2>{{ $transfers['details']['id'] }}</h2> -->
+									<h2 style="font-size:1.2rem !important">{{ $transfers['details']['id'] }}</h2>
 								</div>
 								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
@@ -89,7 +89,7 @@
 											<h6>Le {{ \Carbon\Carbon::parse($transfers['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 										</div>
 
-										<button data-transfers=true id="{{ $transfers['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+										<button data-transfers=true id="{{ $transfers['details']['id'] }}" class="show_order btn">Préparer</button>
 									</div>
 									<div class="progress" id="progress_{{ $transfers['details']['id'] }}">
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -116,18 +116,23 @@
 												<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 													<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 														
-														@if($item['name'])
-															<span>{{ $item['name'] }}</span>
+														@if($item['label'])
+															<span>{{ $item['label'] }}</span>
 														@else
-															<span class="text-danger">Produit manquant</span>
+															<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 														@endif
-													
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+
+															@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																<div class="d-flex">
+																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfers['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																	<span class="remove_{{ $item['barcode'] }}_{{ $transfers['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfers['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																</div>
+															@endif
 														</div>
 													</div>
-													<span class="column22">{{ round(floatval($item['price']),2) }}</span>
+													<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
 													<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 													<span class="column44">{{ $item['location'] }}</span>
 												</div>
@@ -166,6 +171,7 @@
 									<div class="course">
 										<div class="course-preview">
 											<h6>Transfert</h6>
+											<h2 style="font-size:1.2rem !important">{{ $transfer['details']['id'] }}</h2>
 										</div>
 										<div class="w-100 d-flex flex-column justify-content-between">
 											<div class="course-info d-flex justify-content-between align-items-center">
@@ -173,7 +179,7 @@
 													<h6>Le {{ \Carbon\Carbon::parse($transfer['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 												</div>
 
-												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="show_order btn">Préparer</button>
 											</div>
 											<div class="progress" id="progress_{{ $transfer['details']['id'] }}">
 												<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -197,22 +203,28 @@
 
 													<div class="body_detail_product_order">
 														@foreach($transfer['items'] as $item)
-														<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+														<div class="barcode_{{ $item['barcode']  ?? 0 }} {{ $item['pick'] == $item['qty'] ? 'pick' : '' }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 																
-																@if($item['name'])
-																	<span>{{ $item['name'] }}</span>
+																@if($item['label'])
+																	<span>{{ $item['label'] }}</span>
 																@else
-																	<span class="text-danger">Produit manquant</span>
+																	<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 																@endif
 															
-																<div class="mt-1 d-flex align-items-center">
+																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+
+																	@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																		<div class="d-flex">
+																			<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																			<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																		</div>
+																	@endif
 																</div>
 															</div>
-															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
-															<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
+															<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
+															<span class="quantity column33"><span class="quantity_pick_in">{{ $item['pick'] }}</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 															<span class="column44">{{ $item['location'] }}</span>
 														</div>
 														@endforeach
@@ -252,6 +264,7 @@
 									<div class="course">
 										<div class="course-preview">
 											<h6>Transfert</h6>
+											<h2 style="font-size:1.2rem !important">{{ $transfer['details']['id'] }}</h2>
 										</div>
 										<div class="w-100 d-flex flex-column justify-content-between">
 											<div class="course-info d-flex justify-content-between align-items-center">
@@ -259,7 +272,7 @@
 													<h6>Le {{ \Carbon\Carbon::parse($transfer['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 												</div>
 
-												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="show_order btn">Préparer</button>
 											</div>
 											<div class="progress" id="progress_{{ $transfer['details']['id'] }}">
 												<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -286,18 +299,24 @@
 														<div class="barcode_{{ $item['barcode']  ?? 0 }} product_order p-2 d-flex w-100 align-items-center justify-content-between detail_product_order_line">
 															<div class="column11 d-flex align-items-center detail_product_name_order flex-column">
 																
-																@if($item['name'])
-																	<span>{{ $item['name'] }}</span>
+																@if($item['label'])
+																	<span>{{ $item['label'] }}</span>
 																@else
-																	<span class="text-danger">Produit manquant</span>
+																	<span class="text-danger">Produit manquant ({{ $item['product_id'] }})</span>
 																@endif
 															
-																<div class="mt-1 d-flex align-items-center">
+																<div class="mt-1 d-flex flex-column align-items-start">
 																	<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-																	<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+
+																	@if($item['barcode'] && $item['barcode'] != "no_barcode")
+																		<div class="d-flex">
+																			<span onclick="enter_manually_barcode({{ $item['product_id']}} , {{ $transfer['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																			<span class="remove_{{ $item['barcode'] }}_{{ $transfer['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $transfer['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																		</div>
+																	@endif
 																</div>
 															</div>
-															<span class="column22">{{ round(floatval($item['price']),2) }}</span>
+															<span class="column22">{{ round(floatval($item['price_ttc']),2) }}</span>
 															<span class="quantity column33"><span class="quantity_pick_in">0</span> / <span class="quantity_to_pick_in">{{ $item['qty'] }}</span> </span>
 															<span class="column44">{{ $item['location'] }}</span>
 														</div>

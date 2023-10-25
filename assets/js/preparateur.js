@@ -61,14 +61,13 @@ $(document).ready(function () {
         $(".barcode_" + localStorage.getItem('product_quantity_verif')).removeClass('pick')
     }
 
-    $(".show_order").removeClass("d-none")
+    // $(".show_order").removeClass("d-none")
     progress_bar()
  
 })
 
 // Affiche la progression de l'avancée de la commande
 function progress_bar(){
-
     $(".modal_order").each(function(){
         order_id = $(this).attr('data-order')
         
@@ -101,7 +100,6 @@ function progress_bar(){
 }
 
 document.addEventListener("keydown", function (e) {
-
     // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
     if ($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') 
     && !$("#infoMessageModal").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show')
@@ -111,7 +109,7 @@ document.addEventListener("keydown", function (e) {
         if (!isNaN(parseInt(e.key))) {
             $("#barcode").val($("#barcode").val() + e.key)
             if ($("#barcode").val().length == 13) {
-
+                
                 var quantity_to_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
 
                 if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).length > 0) {
@@ -231,24 +229,29 @@ document.addEventListener("keydown", function (e) {
 
 $(".validate_pick_in").on('click', function () {
 
-    var from_transfers = $(this).attr('from_transfers') == "true" ? true : false
+    var from_transfers = $(this).attr('from_transfers') == "1" || $(this).attr('from_transfers') == "true" ? true : false
     var order_id = $("#order_in_progress").val()
-    var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
+    var from_dolibarr = $(this).attr('from_dolibarr') == "1" || $(this).attr('from_dolibarr') == "true" ? true : false
 
-    if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length && localStorage.getItem('barcode')) {
+    if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length) {
         // Ouvre la modal de loading
         $(".loading_prepared_command").removeClass('d-none')
         $("#modalSuccess").modal('show')
-        var pick_items = JSON.parse(localStorage.getItem('barcode'))
-        var order_object = false
 
-        if (pick_items) {
-            // Récupère les produits de cette commande
-            order_object = pick_items.find(
-                element => element.order_id == order_id
-            )
+        if(localStorage.getItem('barcode')){
+            var order_object = false
+            var pick_items = JSON.parse(localStorage.getItem('barcode'))
+            if (pick_items) {
+                // Récupère les produits de cette commande
+                order_object = pick_items.find(
+                    element => element.order_id == order_id
+                )
+            }
+        } else {
+            var pick_items = false
+            var order_object = false
         }
-        
+
 
         if (order_object) {
             pick_items = order_object.products
@@ -307,20 +310,24 @@ $(".validate_pick_in").on('click', function () {
                     })
                 }
 
-                if (pick_items.length == 0) {
-                    localStorage.removeItem('barcode');
-                } else {
-                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                if(pick_items){
+                    if (pick_items.length == 0) {
+                        localStorage.removeItem('barcode');
+                    } else {
+                        localStorage.setItem('barcode', JSON.stringify(pick_items));
+                    }
                 }
-
+              
             } else {
-                $(".info_message").text("Produits manquants !")
+                $(".info_message").text("Produits manquants ou incorrects !")
                 $("#infoMessageModal").modal('show')
                 $(".error_prepared_command").removeClass('d-none')
             }
         });
     } else {
         // Récupère les produits de cette commande
+        $(".valid_partial_order").attr('from_dolibarr', from_dolibarr)
+        $(".valid_partial_order").attr('from_transfers', from_transfers)
         if ($("#order_" + order_id + " .pick").length >= 0) {
             $('#modalPartial').modal({
                 backdrop: 'static',
@@ -355,6 +362,8 @@ $(".reset_order").on('click', function () {
 
 $(".confirmation_reset_order").on('click', function () {
     var order_id = $("#order_in_progress").val()
+    var from_dolibarr = $(".validate_pick_in").attr('from_dolibarr') == "1" || $(".validate_pick_in").attr('from_dolibarr') == "true" ? true : false
+    var from_transfers = $(".validate_pick_in").attr('from_transfers') == "1" || $(".validate_pick_in").attr('from_transfers') == "true" ? true : false
 
     $("#order_" + order_id + " .product_order").removeClass("pick")
     $("#barcode").val("")
@@ -381,7 +390,7 @@ $(".confirmation_reset_order").on('click', function () {
     $.ajax({
         url: "ordersReset",
         method: 'POST',
-        data: { _token: $('input[name=_token]').val(), order_id: order_id }
+        data: { _token: $('input[name=_token]').val(), order_id: order_id, from_dolibarr: from_dolibarr, from_transfers: from_transfers}
     }).done(function (data) {
         if (JSON.parse(data).success) {
             location.reload()
@@ -407,8 +416,8 @@ $('body').on('click', '.valid_partial_order', function () {
     var pick_items = JSON.parse(localStorage.getItem('barcode')) ?? [];
     var order_id = $("#order_in_progress").val()
     var note_partial_order = $("#note_partial_order").val()
-    var from_dolibarr = $(this).attr('from_dolibarr') == "1" ? true : false
-    var from_transfers = $(this).attr('from_transfers') == "true" ? true : false
+    var from_dolibarr = $(this).attr('from_dolibarr') == "1" || $(this).attr('from_dolibarr') == "true" ? true : false
+    var from_transfers = $(this).attr('from_transfers') == "1" || $(this).attr('from_transfers') == "true" ? true : false
     // Récupère les produits de cette commande
 
     if (pick_items.length > 0) {
@@ -437,7 +446,6 @@ $('body').on('click', '.valid_partial_order', function () {
             data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order, 
             from_dolibarr: from_dolibarr, from_transfers: from_transfers }
         }).done(function (data) {
-            console.log(data)
             if (JSON.parse(data).success) {
                 location.reload()
             } else {
@@ -521,14 +529,17 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
             localStorage.setItem('barcode', JSON.stringify(list_barcode))
         }
     } else {
-        const data = [{
-            order_id: order_id,
-            products: [
-                $("#barcode").val()
-            ],
-            quantity: [quantity_pick_in]
-        }]
-        localStorage.setItem('barcode', JSON.stringify(data));
+        if($("#order_" + order_id + " .barcode_" + $("#barcode").val()).length > 0 ){
+            const data = [{
+                order_id: order_id,
+                products: [
+                    $("#barcode").val()
+                ],
+                quantity: [quantity_pick_in]
+            }]
+            localStorage.setItem('barcode', JSON.stringify(data));
+        }
+        
     }
     $("#barcode_verif").val('')
 }
@@ -600,6 +611,34 @@ function enter_manually_barcode(product_id, order_id){
     $("#modalManuallyBarcode").modal('show')
 }
 
+function remove_product(barcode, order_id){
+
+    if($(".barcode_"+barcode).hasClass('pick')){
+        $(".remove_"+barcode+"_"+order_id+" i").addClass('rotate')
+    }
+    $(".barcode_"+barcode).removeClass('pick')
+    $(".barcode_"+barcode).find('.quantity_pick_in').text("0")
+
+    if(localStorage.getItem('barcode')){
+        if (localStorage.getItem('barcode')) {
+            pick_items = JSON.parse(localStorage.getItem('barcode'))
+            Object.keys(pick_items).forEach(function (k, v) {
+                if (pick_items[k]) {
+                    if (order_id == pick_items[k].order_id) {
+                        Object.keys(pick_items[k].products).forEach(function (l, w) {
+                            if(pick_items[k].products[l] == barcode){
+                                pick_items[k].products.splice(w);
+                                pick_items[k].quantity.splice(w);
+                            }
+                        }) 
+                    }
+                }
+            })
+        }
+        localStorage.setItem('barcode', JSON.stringify(pick_items));
+    }
+}
+
 // Commandes classiques
 $(".valid_manually_barcode").on('click', function(){
 
@@ -607,16 +646,16 @@ $(".valid_manually_barcode").on('click', function(){
     var barcode = $("#barcode_manually").val()
     var order_id = $("#product_id_barcode_order_id").val()
   
-    // Update en base de données
+    // check en base de données
     $.ajax({
         url: "checkProductBarcode",
         method: 'POST',
         data: { _token: $('input[name=_token]').val(), product_id: product_id, barcode: barcode}
     }).done(function (data) {
         if (JSON.parse(data).success) {
-            if(!$(".barcode_"+barcode).hasClass('pick')){
-                $(".barcode_"+barcode).addClass('pick')
-                $(".barcode_"+barcode).find('.quantity_pick_in').text($(".barcode_"+barcode).find('.quantity_to_pick_in').text())
+            if(!$("#order_"+order_id+" .barcode_"+barcode).hasClass('pick')){
+                $("#order_"+order_id+" .barcode_"+barcode).addClass('pick')
+                $("#order_"+order_id+" .barcode_"+barcode).find('.quantity_pick_in').text($("#order_"+order_id+" .barcode_"+barcode).find('.quantity_to_pick_in').text())
                 $("#modalManuallyBarcode").modal('hide')
                 $("#barcode").val(barcode)
                 saveItem(order_id, false, true)
@@ -640,7 +679,7 @@ $(".valid_manually_barcode_transfert").on('click', function(){
     var barcode = $("#barcode_manually").val()
     var order_id = $("#product_id_barcode_order_id").val()
 
-    // Update en base de données
+    // check en base de données
     $.ajax({
         url: "checkProductBarcodeForTransfers",
         method: 'POST',

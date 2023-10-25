@@ -116,7 +116,7 @@
 										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
 										@endif
-										<button id="{{ $orders['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+										<button id="{{ $orders['details']['id'] }}" class="show_order btn">Préparer</button>
 									</div>
 									<div class="progress" id="progress_{{ $orders['details']['id'] }}">
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -149,12 +149,15 @@
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>
 															@else
-																<span class="text-danger">Produit manquant</span>
+																<span class="text-danger">Produit manquant ({{ $item['productID'] }})</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $orders['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $orders['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -278,9 +281,12 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -404,9 +410,12 @@
 																<span class="text-danger">Produit manquant</span>
 															@endif
 														@endif
-														<div class="mt-1 d-flex align-items-center">
+														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
-															<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+															<div class="d-flex">
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+															</div>
 														</div>
 													</div>
 													<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
@@ -563,7 +572,7 @@
 						<textarea style="resize:none" class="mb-3 form-control" id="note_partial_order" placeholder="Note..." rows="3"></textarea>
 						<div class="w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
-							<button from_dolibarr="{{ isset($orders['details']['from_dolibarr']) ? true : false }}" style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
+							<button style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
 						</div>
 					</div>
 				</div>

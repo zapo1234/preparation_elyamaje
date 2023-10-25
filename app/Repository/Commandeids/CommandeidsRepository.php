@@ -10,6 +10,8 @@ class CommandeidsRepository implements CommandeidsInterface
 {
      
     private $ids = [];
+    private $model = [];
+
      public function __construct(Commandeid $model)
      {
         $this->model = $model;
@@ -55,5 +57,8 @@ class CommandeidsRepository implements CommandeidsInterface
         return $name_list;
      }
     
+     public function deleteOrder($order_id){
+      return $this->model::where('id_commande', $order_id)->delete();
+     }
     
 }

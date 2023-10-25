@@ -37,8 +37,8 @@
 
             <div class="topbar d-flex align-items-center">
                 <nav class="navbar navbar-expand">
-                    <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
-                    </div>
+                    <!-- <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
+                    </div> -->
          
                     <!-- <div class="search-bar flex-grow-1">
                         <div class="position-relative search-bar-box">
@@ -87,7 +87,7 @@
                                             </a>
                                         @endforeach
                                         @if($count_notif == 0)
-                                            <span class="mt-3 msg-time d-flex justify-content-center w-100">Aucune notification non lue</span>
+                                            <span class="empty_notification mt-3 msg-time d-flex justify-content-center w-100">Aucune notification non lue</span>
                                         @endif
                                     </div>
                                     <a href="{{ route('notifications.all') }}">

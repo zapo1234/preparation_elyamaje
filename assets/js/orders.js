@@ -40,7 +40,7 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '59vh',
+        scrollY: '63vh',
         scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
@@ -112,8 +112,13 @@ $(document).ready(function() {
             { 
             data: null, 
                 render: function(data, type, row) {
-                    return `<div class="d-flex flex-column"> #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
-                                ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                    var country = row.shipping ? row.shipping.country : false
+                    return `<div class="align-items-center d-flex w-100">
+                                ${country ? '<img class="country_flag" src="assets/images/icons/'+country+'.png"/>' : ''}
+                                <div class="d-flex flex-column">
+                                    #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
+                                    ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
+                                </div>
                             </div>`
                 }
             },
@@ -248,33 +253,119 @@ $(document).ready(function() {
                                             ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}
                                         </div>
                                         
-                                        <span>${row.billing.first_name} ${row.billing.last_name}</span>
-                                        <div>
-                                            <i class="bx bx-envelope"></i>
-                                            <a href="mailto:${row.billing.email}"><span>${row.billing.email}</span></a>
-                                        </div>
-                                        <div>
-                                            <i class="bx bx-phone"></i>
-                                            <span>${row.billing.phone}</span>
-                                        </div>
-                                        <span>${row.billing.company}</span>
-                                        <span>${row.billing.address_1}</span>
-                                        <span>${row.billing.address_2}</span>
-                                        <span>${row.billing.state}</span>
-                                        <span>${row.billing.postcode}</span>
-                                        <span>${row.billing.country}</span>
+
+                                        ${row.billing.first_name ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_first_name">`+row.billing.first_name+`</span>
+                                            <i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.last_name ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_last_name">`+row.billing.last_name+`</span>
+                                            <i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.email ? `<div class="d-flex w-100 justify-content-between">
+                                            <div class="d-flex w-100">
+                                                <i class="bx bx-envelope"></i>
+                                                <span class="billing_customer_email">`+row.billing.email+`</span>
+                                            </div>
+                                            <i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+                                        
+                                        ${row.billing.phone ? `<div class="d-flex w-100 justify-content-between">
+                                            <div class="d-flex w-100">
+                                                <i class="bx bx-phone"></i>
+                                                <span class="billing_customer_phone">`+row.billing.phone+`</span>
+                                            </div>
+                                            <i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.company ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_comapny">`+row.billing.company+`</span>
+                                            <i data-edit="billing_customer_comapny" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_address_1">`+row.billing.address_1+`</span>
+                                            <i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_address_2">`+row.billing.address_2+`</span>
+                                            <i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.state ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_state">`+row.billing.state+`</span>
+                                            <i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.postcode ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_postcode">`+row.billing.postcode+`</span>
+                                            <i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.city ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_city">`+row.billing.city+`</span>
+                                            <i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.billing.country ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="billing_customer_country">`+row.billing.country+`</span>
+                                        </div>` : ``}
                                     </div>
+
                                     <div class="mt-3 d-flex flex-column w-100 customer_shipping">
                                         <span class="customer_detail_title badge bg-dark">Expédition</span>
-                                        <span>${row.shipping.first_name} ${row.shipping.last_name}</span>
-                                        <span>${row.shipping.company}</span>
-                                        <span>${row.shipping.address_1}</span>
-                                        <span>${row.shipping.address_2}</span>
-                                        <span>${row.shipping.state}</span>
-                                        <span>${row.shipping.postcode}</span>
-                                        <span>${row.shipping.country}</span>
+
+                                        ${row.shipping.first_name ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_first_name">`+row.shipping.first_name+`</span>
+                                            <i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.last_name ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_last_name">`+row.shipping.last_name+`</span>
+                                            <i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.company ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_company">`+row.shipping.company+`</span>
+                                            <i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_address_1">`+row.shipping.address_1+`</span>
+                                            <i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_address_2">`+row.shipping.address_2+`</span>
+                                            <i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.state ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_state">`+row.shipping.state+`</span>
+                                            <i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.postcode ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_postcode">`+row.shipping.postcode+`</span>
+                                            <i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.city ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_city">`+row.shipping.city+`</span>
+                                            <i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                        </div>` : ``}
+
+                                        ${row.shipping.country ? `<div class="d-flex w-100 justify-content-between">
+                                            <span class="shipping_customer_country">`+row.shipping.country+`</span>
+                                        </div>` : ``}
                                     </div>
                                 </div>
+                                <input type="hidden" value="${row.id}" id="order_detail_id">
+                                <input type="hidden" value="${row.user_id}" id="order_attributed">
+
                                 <div class="modal-footer d-flex w-100 justify-content-between">
                                     <span>Commande #${row.id}</span>
                                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
@@ -308,24 +399,41 @@ $(document).ready(function() {
                     return '<span>'+preparateur+'</span>';
                 }
             },
+            {data: null, 
+                render: function(data, type, row) {
+                    var country = row.shipping ? row.shipping.country : false
+                    return country
+                }
+            },
         ],
 
         "columnDefs": [
             { "visible": false, "targets": 6 },
             { "visible": false, "targets": 7 },
-            { "visible": false, "targets": 8 }
+            { "visible": false, "targets": 8 },
+            { "visible": false, "targets": 9 },
         ],
         "initComplete": function(settings, json) {
-            // $("#example_length select").css('margin-right', '10px')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
             $(".preparateur_dropdown").appendTo('.dataTables_length')
+            $(".country_dropdown").appendTo('.dataTables_length')
+
+            // Design
+            $("#example_length").parent().css('width', '70%')
+            $("#example_length").parent().css('margin-bottom', '5px')
+            $("#example_filter").parent().css('width', '30%')
+            $("#example_filter").parent().css('margin-bottom', '5px')
+            $("#example_filter").parent().parent().css('justify-content', 'space-between')
+            $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
+            $("#example_filter").parent().css('min-width', '210px')
 
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").removeClass('d-none')
             $(".status_dropdown").removeClass('d-none')
             $(".preparateur_dropdown").removeClass('d-none')
+            $(".country_dropdown").removeClass('d-none')
 
             $(".preparateur_dropdown").select2({
                 width: '130px',
@@ -339,15 +447,17 @@ $(document).ready(function() {
                 width: '150px',
             });
 
-            $(".select2-container").css('margin-left', '10px')
+            $(".country_dropdown").select2({
+                width: '130px',
+            });
 
+            $(".select2-container").css('margin-left', '10px')
 
             $(".percent").remove()
             $(".loading_table").remove()
             $(".loading_table_content").removeClass('loading_table_content')
 
             var info = $('#example').DataTable().page.info();
-            var total = 0
             var attribution = 0
             var order_progress = 0
 
@@ -355,7 +465,6 @@ $(document).ready(function() {
             $('#example').DataTable().rows().eq(0).each( function ( index ) {
                 var row = $('#example').DataTable().row( index );
                 var data = row.data();
-                total = parseFloat(total) + parseFloat(data.total)
             } );
 
             // Check nombre attribution
@@ -368,7 +477,6 @@ $(document).ready(function() {
             } );
             
             $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
-            $(".total_amount").append('('+parseFloat(total).toFixed(2)+'€ )')
             $(".allocation_of_orders").attr('disabled', false)
             $(".dataTables_paginate").parent().removeClass("col-md-7")
         },
@@ -397,6 +505,9 @@ $(document).ready(function() {
         }
     })
 
+
+    $('thead').remove()
+
     $('.shipping_dropdown').on('change', function(e){
         var shipping_dropdown = $(this).val();
         $('#example').DataTable()
@@ -418,6 +529,12 @@ $(document).ready(function() {
         .draw();
     })
 
+    $('.country_dropdown').on('change', function(e){
+        var preparateur_dropdown = $(this).val();
+        $('#example').DataTable()
+        .column(9).search(preparateur_dropdown, true, false)
+        .draw();
+    })
 })
 
 if($(window).width() < 650){
@@ -428,7 +545,7 @@ $(window).resize(function(){
     if($(window).width() < 650){
         $(".dataTables_scrollBody").css('max-height', '100%')
     } else {
-        $(".dataTables_scrollBody").css('max-height', '59vh')
+        $(".dataTables_scrollBody").css('max-height', '63vh')
     }
 })
 
@@ -489,7 +606,7 @@ $(".unassignOrdersConfirm").on("click", function(){
     });
 })
 
-
+// Update user attribution order
 $(".change_attribution_order").on("change", function(){
     if($(this).val() != ""){
         var from_user = $(this).attr('id').split('_')[1]
@@ -527,6 +644,49 @@ $(".reallocationOrdersConfirm").on("click", function(){
 
 })
     
+// Edit details orders billing and shipping
+$('body').on('click', '.edit_detail_order', function() {
+    // Change icon edit to valid
+    $(this).removeClass('bx-pencil')
+    $(this).removeClass('.edit_detail_order')
+
+    $(this).addClass('bx-check')
+    $(this).addClass('valid_edit_detail_order')
+
+    var field = $(this).attr('data-edit')
+    $(".show ."+field).attr('contentEditable', true);
+    $(".show ."+field).addClass('editableContent');
+})
+
+// Valid edit details orders billing and shipping
+$('body').on('click', '.valid_edit_detail_order', function() {
+    // Change icon valid to edit
+    $(this).removeClass('bx-check')
+    $(this).removeClass('valid_edit_detail_order')
+
+    $(this).addClass('bx-pencil')
+    $(this).addClass('edit_detail_order')
+
+    var field = $(this).attr('data-edit')
+    var field_value = $(".show ."+field).text()
+    var order_id = $(".show #order_detail_id").val()
+    $(".show ."+field).attr('contentEditable', false);
+    $(".show ."+field).removeClass('editableContent');
+
+    $.ajax({
+        url: "updateDetailsOrders",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, field: field, field_value: field_value}
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+           
+        } else {
+            alert('Erreur')
+        }
+    })
+})
+
+// Add product on order
 $('body').on('click', '.add_product_order', function() {
     $("#order_id_add_product").val($(this).attr('data-order'))
     $('#addProductOrderModal').modal({
@@ -588,6 +748,7 @@ function addProductOrderConfirm(){
     
 }
 
+// Show detail product order
 function show(id){
     $('#order_'+id).modal({
         backdrop: 'static',
@@ -597,9 +758,13 @@ function show(id){
     $("#order_"+id).appendTo("body").modal('show')
 }
 
-
+// Show detail billing and shipping order
 function showCustomerOrderDetail(id){
 
+    var order_attributed = $('#order_detail_customer_'+id+' #order_attributed').val() != "null" ? true: false
+    if(!order_attributed){
+        $('#order_detail_customer_'+id+' .edit_detail_order').remove()
+    }
     $('#order_detail_customer_'+id).modal({
         backdrop: 'static',
         keyboard: false
@@ -609,6 +774,7 @@ function showCustomerOrderDetail(id){
 
 }
 
+// Delete product's order
 function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
     var id = variation_id != 0 ? variation_id : product_id
     var name = $("."+order_id+"_"+line_item_id).children('.detail_product_name_order').children('span').text()
@@ -658,6 +824,7 @@ function deleteProductOrderConfirm(increase){
     });
 }
 
+// Update status order
 function changeStatusOrder(order_id, user_id, from_dolibarr){
     
     var status = $("#selectStatus_"+order_id).val()
@@ -677,6 +844,7 @@ function changeStatusOrder(order_id, user_id, from_dolibarr){
 
 }
 
+// Update attribution order
 function changeOneOrderAttribution(order_id, from_dolibarr){
 
     var order_id = order_id

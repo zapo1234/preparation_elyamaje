@@ -39,7 +39,6 @@ class WoocommerceService
 
         // Construis le tableau de la même manière que woocommerce
         foreach($order as $key => $or){
-
           if(in_array(100, explode(',', $or['discount_amount'])) && str_contains($or['coupons'], 'fem')){
             $order[$key]['coupons'] = $or['coupons'] ?? '';
             $order[$key]['discount'] = 0;
@@ -122,10 +121,10 @@ class WoocommerceService
         return $orders;
   }
 
-  public function transformArrayOrderDolibarr($orderDolibarr){
+  public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
     $transformOrder = [];
     $newArray = [];
-
+    
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'];
     $transformOrder['date'] = $orderDolibarr[0]['date'];
     $transformOrder['date_created'] = $orderDolibarr[0]['date'];
@@ -152,6 +151,7 @@ class WoocommerceService
 
     // On force la méthode d'expédition en livraison à domicile avec signature
     $transformOrder['shipping_method'] = "lpc_sign";
+    $transformOrder['product_code'] = null;
     $transformOrder['shipping_method_detail'] = $orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)";
 
 
@@ -171,23 +171,45 @@ class WoocommerceService
     $transformOrder['shipping'] =  $transformOrder['billing'];
 
     foreach($orderDolibarr as $order){
-      $transformOrder['line_items'][]= [
-        'id' => $order['line_items_id_dolibarr'],
-        'name' => $order['productName'],
-        'product_id' => $order['product_woocommerce_id'],
-        'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
-        'quantity' => $order['quantity'],
-        'subtotal' => $order['priceDolibarr'],
-        'price' => $order['priceDolibarr'],
-        'total' => $order['total_ht'],
-        'subtotal_tax' => $order['total_tva'],
-        'total_tax' => $order['total_tva'],
-        'weight' => $order['weight'],
-        'ref' => $order['ref'],
-        'meta_data' => [
-          ['key' => 'barcode', "value" => $order['barcode']]
-        ]
-      ];
+      if($product_to_add_label){
+        if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {
+          $transformOrder['line_items'][]= [
+            'id' => $order['line_items_id_dolibarr'],
+            'name' => $order['productName'],
+            'product_id' => $order['product_woocommerce_id'],
+            'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
+            'quantity' => $order['quantity'],
+            'subtotal' => $order['priceDolibarr'],
+            'price' => $order['priceDolibarr'],
+            'total' => $order['total_ht'],
+            'subtotal_tax' => $order['total_tva'],
+            'total_tax' => $order['total_tva'],
+            'weight' => $order['weight'],
+            'ref' => $order['ref'],
+            'meta_data' => [
+              ['key' => 'barcode', "value" => $order['barcode']]
+            ]
+          ];
+        }
+      } else {
+        $transformOrder['line_items'][]= [
+          'id' => $order['line_items_id_dolibarr'],
+          'name' => $order['productName'],
+          'product_id' => $order['product_woocommerce_id'],
+          'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
+          'quantity' => $order['quantity'],
+          'subtotal' => $order['priceDolibarr'],
+          'price' => $order['priceDolibarr'],
+          'total' => $order['total_ht'],
+          'subtotal_tax' => $order['total_tva'],
+          'total_tax' => $order['total_tva'],
+          'weight' => $order['weight'],
+          'ref' => $order['ref'],
+          'meta_data' => [
+            ['key' => 'barcode', "value" => $order['barcode']]
+          ]
+        ];
+      }
     }
 
     $newArray[] = $transformOrder;

@@ -104,14 +104,15 @@
 								<button style="margin-left:10px" class="research_label_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
-						
+					
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>Commande</th>
 										<th>Status</th>
 										<th>Générée le</th>
-										<th class="col-md-2">Étiquette</th>
+										<th class="col-md-2">Visualiser</th>
+										<th class="col-md-2">Imprimer</th>
 										<th class="col-md-2">Déclaration douanière</th>
 									</tr>
 								</thead>
@@ -125,17 +126,36 @@
 												<span class="badge bg-default bg-light-{{ $order[0]['status'] }} text-light">{{ __('status.'.$order[0]['status'] ) }}</span>
 											</td>
 											<td data-label="Générée le">{{ $order[0]['label_created_at'] ? date("d/m/Y", strtotime($order[0]['label_created_at'])) : '' }}</td>
-											<td data-label="Étiquette">
+											<td data-label="Visualiser">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)
-														<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
+														<div class="mb-3 flex-wrap d-flex w-100 align-items-center justify-content-between">
 															<div>
 																<form class="d-flex" method="POST" action="{{ route('label.show') }}">
 																	@csrf
 																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
-																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }} <span class="label_created_at text-secondary">({{ date("d/m/Y", strtotime($label['label_created_at'])) }})</span></button>
+																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }}</button>
 																</form>
-
+															</div>
+															<div>
+																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+															</div>
+														</div>
+													@endforeach
+													<div class="w-100 d-flex justify-center">
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" from_dolibarr="{{ isset($order[0]['fk_commande']) ? true : false }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+													</div>
+												@else 
+													<div class="w-100 d-flex justify-center">
+														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" from_dolibarr="{{ isset($order[0]['fk_commande']) ? 1 : 0 }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
+													</div>
+												@endif
+											</td>
+											<td style="vertical-align:baseline" data-label="Imprimer">
+												@if(isset($order['labels']))
+													@foreach($order['labels'] as $label)
+														<div class="mb-3 flex-wrap d-flex w-100 align-items-center justify-content-between">
+															<div>
 																@if( $label['label_format'] == "PDF")
 																	<form class="d-flex" method="POST" action="{{ route('label.download') }}">
 																		@csrf
@@ -143,7 +163,7 @@
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
 																		<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
 
-																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
+																		<button type="submit" class="d-flex download_label_button print_pdf_file"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
 																	</form>
 																@elseif($label['label_format'] == "ZPL")
 																<div class="d-flex">
@@ -156,27 +176,34 @@
 															</div>
 														</div>
 													@endforeach
-													<div>
-														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
-													</div>
-												@else 
-													<div>
-														<button data-order="{{ $order[0]['order_woocommerce_id'] }}" type="button" class="generate_label_button download_label_button"><i class="bx bx-plus"></i>Générer</button>
-													</div>
-												@endif
+												@endif 
 											</td>
-											<td data-label="Déclaration douanière">
+											<td style="position:relative" data-label="Déclaration douanière">
 												@if(isset($order['labels']))
 													@foreach($order['labels'] as $label)
 														<div class="mb-2 d-flex w-100 align-items-center justify-content-between">
-															<div>
+															<div class="w-100">	
+																@if($result == 1 && $label['cn23'])
+																	<input class="cn23_label" type="hidden" value="{{ $label['download_cn23'] }}">
+																@endif
 																@if($label['cn23'])
-																	<form class="d-flex" method="POST" action="{{ route('label.download_cn23') }}">
-																		@csrf
-																		<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
-																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
-																		<button type="submit" class="d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
-																	</form>
+																	
+																	<div class="d-flex align-items-center w-100 justify-content-between flex-wrap">
+																		<form class="d-flex" method="POST" action="{{ route('label.download_cn23') }}">
+																			@csrf
+																			<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">
+																			<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
+																			<button type="submit" class="download_cn23 d-flex download_label_button"><i class="bx bx-download"></i>Télécharger ({{$label['tracking_number']}})</button>
+																		</form>
+
+																		<div class="download_cn23_status icon-badge position-relative bg-{{ $label['download_cn23'] ? 'success' : 'danger' }} me-lg-2"> 
+																			@if($label['download_cn23'])
+																				<i title="Déjà téléchargé" class="text-white bx bx-check"></i>
+																			@else 
+																				<i title="Pas encore téléchargé" class="text-white bx bx-x"></i>
+																			@endif
+																		</div>
+																	</div>
 																@else 
 																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
 																@endif
@@ -194,6 +221,28 @@
 				</div>
 			</div>
 
+
+			<!-- Modal avertissement documents à télécharger -->
+			<div class="modal fade" id="warningCn23Download" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<h2 class="text-center">
+								<svg style="margin-bottom:5px;" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+									<path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+									<path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+								</svg>	
+								Des documents douaniers sont nécéssaires pour cette commande
+							</h2>
+							<div class="d-flex justify-content-between mt-3 w-100">
+								<img src="assets{{ ('/images/icons/switzerland.png') }}" width="45" alt="" />
+								<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+								<img src="assets{{ ('/images/icons/switzerland.png') }}" width="45" alt="" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<!-- Modal supression -->
 			<div class="modal fade" id="deleteLabelModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -224,6 +273,7 @@
 								<form class="h-100" method="POST" action="{{ route('label.generate') }}">
 									@csrf
 									<input id="order_id_label" type="hidden" name="order_id" value="">
+									<input id="from_dolibarr" type="hidden" name="from_dolibarr" value="">
 									<div class="h-100 d-flex flex-column justify-content-between">
 										<div class="d-flex flex-column">
 											<div class="mb-2 d-flex w-100 justify-content-between">

@@ -16,7 +16,7 @@
 						<div class="card card_table_mobile_responsive">
 							<div class="card-body">
 								{{ $message  }}
-								<div class="table-responsive">
+								
                                 <table id="example" class="w-100 table_mobile_responsive table table-striped table-bordered">
 										<thead>
 											<tr>
@@ -31,7 +31,7 @@
 										</thead>
 									</table>
 									
-								</div>
+							
 							</div>
 						</div>
 					</div>
