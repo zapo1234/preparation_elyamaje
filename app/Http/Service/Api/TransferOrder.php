@@ -310,11 +310,7 @@ class TransferOrder
                                 $socid = $fk_tiers;
                              }
 
-<<<<<<< HEAD
-                              if($fk_tiers_phone!="" && $fk_tiers==""){
-=======
                               if($fk_tiers_phone !="" && $fk_tiers == ""){
->>>>>>> 69a1d3b10160bdcd2df6c26295fa41b26d16e9c9
                                 $socid = $fk_tiers_phone;
                              }
                             
