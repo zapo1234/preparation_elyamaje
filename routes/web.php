@@ -72,12 +72,15 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
+    Route::post("/updateStockWoocommerce/{identifiant}", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce'); 
     Route::post("/cancel_transfert/{identifiant}", [Controller::class, "cancel_transfert"])->name('cancel_transfert');
 
 
     Route::get("/executerTransfere/{identifiant_reassort}", [Order::class, "executerTransfere"])->name('executerTransfere');
     // teste 
     Route::get("/actualiseProductDolibarr", [Controller::class, "actualiseProductDolibarr"])->name('actualiseProductDolibarr');
+    
+    // Route::get("/updateStockWoocommerce", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce');
 
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');

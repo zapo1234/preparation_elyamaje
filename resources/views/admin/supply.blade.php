@@ -620,11 +620,39 @@
                                             @endif
 
 
-                                            
+                                            {{-- @dd($value) --}}
                                             <div>
                                                 <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
                                                     <i style="color:#333333" class="lni lni-eye"></i>
                                                 </button>
+
+                                                @if ($value["val_etat"] > 0 && $value["origin_id_reassort"] != "Valide_annule" && $value["syncro"] == 0)
+
+                                                    <button data-bs-toggle="modal" data-bs-target="#confirmationModal_{{$value["identifiant"]}}" class="btn" title="Diminuer les stocks sur wc" style="margin: 0;padding: 0;">
+                                                        <i class="fadeIn animated bx bx-sync"></i>
+                                                    </button>
+
+                                                    <div class="modal fade" id="confirmationModal_{{$value["identifiant"]}}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                        @include('layouts.transfert.modalConfirmationSyncro', 
+                                                        [
+                                                            'identifiant' => $value["identifiant"],
+                                                            'detail_reassort' => $value["detail_reassort"],
+
+                                                            'entrepot_source' => $value["entrepot_source"],
+                                                            'entrepot_destination' => $value["entrepot_destination"],
+                                                        ])
+                                                    </div>
+
+                                                    
+                                                @else
+                                                    <button class="btn" title="Diminuer les stocks sur wc" style="margin: 0;padding: 0;color:gray">
+                                                        <i class="fadeIn animated bx bx-sync"></i>
+                                                    </button>
+                                                @endif
+
+
+                                               
+
 
                                                 {{-- @dump($value["detail_reassort"]); --}}
 

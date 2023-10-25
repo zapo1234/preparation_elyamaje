@@ -364,6 +364,7 @@ class Controller extends BaseController
                 "origin_id_reassort" => $value->origin_id_reassort,
                 "attribue_a" => $value->user_id,
                 "disabled" => $disabled,
+                "syncro" => $value->syncro,
                 "detail_reassort" => [],
             ];
         }
@@ -428,90 +429,6 @@ class Controller extends BaseController
     }
 
     function createReassort(Request $request){
-        
-
-
-/*
-
-        $data = [
-            ["id_product" => 16750, 'qte' => 5],
-            ["id_product" => 13867, 'qte' => 10],    
-            ["id_product" => 8875, 'qte' => 15],
-            ["id_product" => 8507, 'qte' => 20]  
-        ];
-
-       // $tabProduitReassort = $this->reassort->destockInWoocommerce($data);
-
-
-        $customer_key = config('app.woocommerce_customer_key');
-        $customer_secret = config('app.woocommerce_customer_secret');
-        // $id ="8507";
-
-        try {
-
-            $temps_debut = microtime(true);
-
-
-            for ($i=0; $i <15 ; $i++) { 
-                foreach ($data as $key => $value) {
-                    $id = $value["id_product"];
-                    $qte = $value["qte"];
-        
-                    $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$id, [
-                        'stock_quantity' => $qte,
-                      ]);
-                }
-            }
-
-
-            $temps_fin = microtime(true);
-            $temps_execution = $temps_fin - $temps_debut;
-
-            dd("Le script a pris ". $temps_execution ." secondes pour s'exécuter.");
-
-
-        } catch (\Throwable $th) {
-            dd($th);
-        }
-
-        
-
-      
-
-       
-
-        dd("dddddd");
-
-
-        
-        
-
-        $per_page = 100;
-        $page = 1;
-
-       
-
-
-
-        try{
-        $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/74423?per_page=".$per_page."&page=".$page);
-       
-       dd($response->json());
-       
-        return $response->json();
-
-        } catch(Exception $e){
-        return $e->getMessage();
-        }
-
-        dd("fin");
-
-        */
-
-
-        
-
-
 
         $start_date = $request->post('start_date');
         $end_date = $request->post('end_date');

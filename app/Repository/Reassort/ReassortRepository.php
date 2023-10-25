@@ -26,20 +26,20 @@ class ReassortRepository implements ReassortInterface
     public function getReassortByUser($user_id){
 
         $list = [];
-        $reassort = $this->model::select('products_dolibarr.label', 'products_dolibarr.price_ttc', 'products.location', 'hist_reassort.*')
-        ->leftJoin('products_dolibarr', 'products_dolibarr.barcode', '=', 'hist_reassort.barcode')
+        $reassort = $this->model::select('products.name', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+        // ->where('products.status', 'publish')
+        // ->where('products.is_variable', 0)
         ->whereIn('id_reassort', [0, -1])
         ->where([
-            ['hist_reassort.user_id', $user_id],
-            ['hist_reassort.type', 0]
+            ['user_id', $user_id],
+            ['type', 0]
         ])
         ->whereIn('hist_reassort.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
-        ->orderBy('hist_reassort.created_at', 'ASC')
         ->get();
 
+
         $reassort = json_decode(json_encode($reassort), true);
-        // dd($reassort);
 
         foreach($reassort as $rea){
             $list[$rea['identifiant_reassort']]['details'] = [
@@ -104,8 +104,7 @@ class ReassortRepository implements ReassortInterface
     }
 
     public function getReassortById($order_id){
-        $transfer = $this->model::select('products_dolibarr.label', 'products.image', 'products_dolibarr.price_ttc', 'products.location', 'hist_reassort.*')
-        ->leftJoin('products_dolibarr', 'products_dolibarr.barcode', '=', 'hist_reassort.barcode')
+        $transfer = $this->model::select('products.name', 'products.image', 'products.price', 'products.location', 'hist_reassort.*')
         ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['identifiant_reassort', $order_id],
@@ -116,9 +115,9 @@ class ReassortRepository implements ReassortInterface
         foreach($transfer as $key => $order){
             $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
             $transfer[$key]['transfers'] = true;
-            $transfer[$key]['cost'] = $order['price_ttc'] ?? 0;
+            $transfer[$key]['cost'] = $order['price'];
             $transfer[$key]['quantity'] = $order['qty'];
-            $transfer[$key]['name'] = $order['label'] ?? 'Produit manquant';
+
             $transfer[$key]['shipping_method_detail'] = "Transfert";
         }
 
@@ -295,8 +294,8 @@ class ReassortRepository implements ReassortInterface
     }
 
     public function checkIfDoneTransfersDolibarr($order_id, $barcode_array, $products_quantity, $partial){
-        $transfer = $this->model::select('products_dolibarr.label', 'products_dolibarr.price_ttc', 'hist_reassort.*')
-        ->leftJoin('products_dolibarr', 'products_dolibarr.barcode', '=', 'hist_reassort.barcode')
+        $transfer = $this->model::select('products.name', 'products.image', 'products.price', 'products.location', 'hist_reassort.*')
+        ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
         ->where([
             ['identifiant_reassort', $order_id],
             ['type', 0]
@@ -304,6 +303,7 @@ class ReassortRepository implements ReassortInterface
         ->get();
 
         $transfer = json_decode(json_encode($transfer), true);
+
         // Cas de produits double si par exemple 1 en cadeau et 1 normal
         $product_double = [];
         foreach($transfer as $key_barcode => $list){
@@ -448,6 +448,21 @@ class ReassortRepository implements ReassortInterface
             return false;
          }
     }
+
+    public function getQteToTransfer($identifiant_reassort){
+
+        $transfer = $this->model::select('product_id', 'barcode', 'qty')
+        ->where([
+            ['identifiant_reassort', $identifiant_reassort],
+            ['qty','>', 0]
+        ])
+        ->get()
+        ->toArray()
+        ;
+        return $transfer;
+    }
+
+
 }
 
 
