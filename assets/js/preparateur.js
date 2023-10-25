@@ -61,7 +61,7 @@ $(document).ready(function () {
         $(".barcode_" + localStorage.getItem('product_quantity_verif')).removeClass('pick')
     }
 
-    $(".show_order").removeClass("d-none")
+    // $(".show_order").removeClass("d-none")
     progress_bar()
  
 })

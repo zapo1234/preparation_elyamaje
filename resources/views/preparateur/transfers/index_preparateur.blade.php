@@ -89,7 +89,7 @@
 											<h6>Le {{ \Carbon\Carbon::parse($transfers['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 										</div>
 
-										<button data-transfers=true id="{{ $transfers['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+										<button data-transfers=true id="{{ $transfers['details']['id'] }}" class="show_order btn">Préparer</button>
 									</div>
 									<div class="progress" id="progress_{{ $transfers['details']['id'] }}">
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -179,7 +179,7 @@
 													<h6>Le {{ \Carbon\Carbon::parse($transfer['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 												</div>
 
-												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="show_order btn">Préparer</button>
 											</div>
 											<div class="progress" id="progress_{{ $transfer['details']['id'] }}">
 												<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -272,7 +272,7 @@
 													<h6>Le {{ \Carbon\Carbon::parse($transfer['details']['date'])->isoFormat(' DD/MM/YY') }}</h6>
 												</div>
 
-												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+												<button data-tarnsfers=true id="{{ $transfer['details']['id'] }}" class="show_order btn">Préparer</button>
 											</div>
 											<div class="progress" id="progress_{{ $transfer['details']['id'] }}">
 												<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>

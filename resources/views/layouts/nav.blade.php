@@ -1,190 +1,198 @@
-<div class="sidebar-wrapper" data-simplebar="true">
-    <div class="sidebar-header">
-        <div class="d-flex flex-column">
-            <img src="assets{{ ('/images/elyamaje_logo_long_noir.png') }}" class="logo-icon" alt="logo icon">
-            <img src="assets{{ ('/images/Logo_elyamaje.png') }}" class="d-none logo-icon-2" alt="logo icon">
-
-            <!-- <span class="header_name_logo">Préparation</span> -->
+<div class="sidebar close">
+    <div class="logo-details">
+      <!-- <i class='bx bxl-c-plus-plus'></i> -->
+      <!-- <span class="logo_name">CodingLab</span> -->
+        <div class="div_short_icon">
+            <img src="assets{{ ('/images/short_logo_blanc.png') }}" class="logo-short" alt="logo icon">
         </div>
-
-        <div class="toggle-icon ms-auto"><i class='bx bx-first-page'></i></div>
+        <img src="assets{{ ('/images/elyamaje_logo_long_blanc.png') }}" class="logo_name logo-icon" alt="logo icon">
     </div>
-
-    <!--navigation-->
-
-    <ul class="metismenu" id="menu">
-  
+    <ul class="nav-links">
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
             <li>
                 <a href="{{ url('dashboard') }}">
-                    <div class="parent-icon"><i class='bx bx-grid-alt'></i>
-                    </div>
-                    <div class="menu-title">Dashboard</div>
+                    <i class='bx bx-grid-alt' ></i>
+                    <span class="link_name">Dashboard</span>
                 </a>
-            </li>
-            <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-history'></i>
-                    </div>
-                    <div class="menu-title">Historiques</div>
-                </a>
-                <ul>
-                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Préparées</a>
-                    </li>
-                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
-                    </li>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('dashboard') }}">Dashboard</a></li>
                 </ul>
             </li>
             <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-cog'></i>
-                    </div>
-                    <div class="menu-title">Configuration</div>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-history' ></i>
+                    <span class="link_name">Historiques</span>
                 </a>
-                <ul>
-                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
-                    </li>
-                    <li> <a href="{{ url('printers') }}"><i class="bx bx-right-arrow-alt"></i>Imprimantes</a>
-                    </li>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Historiques</a></li>
+                    <li><a href="{{ url('leaderHistoryOrder') }}">Préparées</a></li>
+                    <li><a href="{{ url('leaderHistory') }}">Commandes</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-cog'></i>
+                    <span class="link_name">Configuration</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Configuration</a></li>
+                    <li><a href="{{ url('account') }}">Comptes</a></li>
+                    <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                 </ul>
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-transfer"></i>
-                    </div>
-                    <div class="menu-title">Approvisionnements</div>
+                    <i class='bx bx-transfer'></i>
+                    <span class="link_name">Transferts</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
+                </ul>
             </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
                 <a href="{{ url('indexAdmin') }}">
-                    <div class="parent-icon"><i class='bx bx-grid-alt'></i>
-                    </div>
-                    <div class="menu-title">Dashboard</div>
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="link_name">Dashboard</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('indexAdmin') }}">Dashboard</a></li>
+                </ul>
             </li>
             <li>
                 <a href="{{ url('analytics') }}">
-                    <div class="parent-icon"><i class='bx bx-line-chart-down'></i>
-                    </div>
-                    <div class="menu-title">Analytics</div>
+                    <i class='bx bx-line-chart-down'></i>
+                    <span class="link_name">Analytics</span>
                 </a>
-            </li>    
-            <li>
-                <a href="{{ url('billing') }}">
-                    <div class="parent-icon"><i class='bx bx-credit-card-front'></i>
-                    </div>
-                    <div class="menu-title">Facturation</div>
-                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('analytics') }}">Analytics</a></li>
+                </ul>
             </li>
             <li>
-            <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-history'></i>
-                    </div>
-                    <div class="menu-title">Historiques</div>
+                <a href="{{ url('billing') }}">
+                    <i class='bx bx-credit-card-front'></i>
+                    <span class="link_name">Facturation</span>
                 </a>
-                <ul>
-                    <li> <a href="{{ url('leaderHistoryOrder') }}"><i class="bx bx-right-arrow-alt"></i>Préparées</a>
-                    </li>
-                    <li> <a href="{{ url('leaderHistory') }}"><i class="bx bx-right-arrow-alt"></i>Commandes</a>
-                    </li>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('billing') }}">Facturation</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-history' ></i>
+                    <span class="link_name">Historiques</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Historiques</a></li>
+                    <li><a href="{{ url('leaderHistoryOrder') }}">Préparées</a></li>
+                    <li><a href="{{ url('leaderHistory') }}">Commandes</a></li>
                 </ul>
             </li>
             <li>
                 <a href="{{ url('orderfacturer') }}">
-                    <div class="parent-icon"><i class='bx bx-box'></i>
-                    </div>
-                    <div class="menu-title">Commandes facturés</div>
+                    <i class='bx bx-box'></i>
+                    <span class="link_name">Dolibarr</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('orderfacturer') }}">Dolibarr</a></li>
+                </ul>
             </li>
             <li>
                 <a href="{{ url('refreshtiers') }}">
-                    <div class="parent-icon"><i class="bx bx-import"></i>
-                    </div>
-                    <div class="menu-title">Import Api tiers</div>
+                    <i class='bx bx-import'></i>
+                    <span class="link_name">Import clients</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('refreshtiers') }}">Import clients</a></li>
+                </ul>
             </li>
             <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-cog'></i>
-                    </div>
-                    <div class="menu-title">Configuration</div>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-cog'></i>
+                    <span class="link_name">Configuration</span>
                 </a>
-                <ul>
-                    <li> <a href="{{ url('categories') }}"><i class="bx bx-right-arrow-alt"></i>Catégories</a>
-                    </li>
-                    <li> <a href="{{ url('products') }}"><i class="bx bx-right-arrow-alt"></i>Produits</a>
-                    </li>
-                    <li> <a href="{{ url('account') }}"><i class="bx bx-right-arrow-alt"></i>Comptes</a>
-                    </li>
-                    <li> <a href="{{ url('roles') }}"><i class="bx bx-right-arrow-alt"></i>Roles</a>
-                    </li>
-                    <li> <a href="{{ url('distributors') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
-                    </li>
-                    <li> <a href="{{ url('printers') }}"><i class="bx bx-right-arrow-alt"></i>Imprimantes</a>
-                    </li>
-                    <li> <a href="{{ url('colissimo') }}"><i class="bx bx-right-arrow-alt"></i>Colissimo</a>
-                    </li>
+                <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Configuration</a></li>
+                    <li><a href="{{ url('categories') }}">Catégories</a></li>
+                    <li><a href="{{ url('products') }}">Produits</a></li>
+                    <li><a href="{{ url('account') }}">Comptes</a></li>
+                    <li><a href="{{ url('roles') }}">Roles</a></li>
+                    <li><a href="{{ url('distributors') }}">Distributeurs</a></li>
+                    <li><a href="{{ url('printers') }}">Imprimantes</a></li>
+                    <li><a href="{{ url('colissimo') }}">Colissimo</a></li>
                 </ul>
             </li>
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
-                    <div class="parent-icon"><i class="bx bx-transfer"></i>
-                    </div>
-                    <div class="menu-title">Approvisionnements</div>
+                    <i class='bx bx-transfer'></i>
+                    <span class="link_name">Transferts</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
+                </ul>
             </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class='bx bx-box'></i>
-                    </div>
-                    <div class="menu-title">Préparation</div>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-box'></i>
+                    <span class="link_name">Préparation</span>
                 </a>
-                <ul>
-                    <li class="orders_customer"> <a href="{{ url('orders') }}"><i class="bx bx-right-arrow-alt"></i>Internet</a>
-                    </li>
-                    <li class="orders_distributor"> <a href="{{ url('ordersDistributeurs') }}"><i class="bx bx-right-arrow-alt"></i>Distributeurs</a>
-                    </li>
-                    <li class="transfers_orders"> <a href="{{ url('ordersTransfers') }}"><i class="bx bx-right-arrow-alt"></i>Transfert</a>
-                    </li>
-                    <li> <a href="{{ url('ordersHistory') }}"><i class="bx bx-right-arrow-alt"></i>Historique</a>
-                    </li>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Préparation</a></li>
+                    <li class="orders_customer"><a href="{{ url('orders') }}">Internet</a></li>
+                    <li class="orders_distributor"><a href="{{ url('ordersDistributeurs') }}">Distributeurs</a></li>
+                    <li class="transfers_orders"><a href="{{ url('ordersTransfers') }}">Transfert</a></li>
+                    <li><a href="{{ url('ordersHistory') }}">Historique</a></li>
                 </ul>
             </li>
-         @endif
-         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0)
+        @endif
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0)
             <li>
                 <a href="{{ url('wrapOrder') }}">
-                    <div class="parent-icon"><i class='bx bx-box'></i>
-                    </div>
-                    <div class="menu-title">Emballer</div>
+                    <i class='bx bx-box'></i>
+                    <span class="link_name">Emballer</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('wrapOrder') }}">Emballer</a></li>
+                </ul>
             </li>
         @endif
-
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0 || 
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0 || 
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class="lni lni-delivery"></i>
-                    </div>
-                    <div class="menu-title">Colissimo</div>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='lni lni-delivery'></i>
+                    <span class="link_name">Colissimo</span>
                 </a>
-                <ul>
-                    <li> <a href="{{ url('labels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes</a>
-                    </li>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Colissimo</a></li>
+                    <li><a href="{{ url('labels') }}">Étiquettes</a></li>
                         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
                         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
-                            <li> <a href="{{ url('missingLabels') }}"><i class="bx bx-right-arrow-alt"></i>Étiquettes Manquantes</a>
-                            </li>
+                            <li><a href="{{ url('missingLabels') }}">Étiquettes Manquantes</a></li>
                         @endif
-                    <li> <a href="{{ url('bordereaux') }}"><i class="bx bx-right-arrow-alt"></i>Borderaux</a>
-                    </li>
+                    <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
                 </ul>
             </li>
         @endif
@@ -193,13 +201,75 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
             <li>
                 <a href="{{ url('sav') }}">
-                    <div class="parent-icon"><i class=' bx bx-support'></i>
-                    </div>
-                    <div class="menu-title">Sav</div>
+                    <i class='bx bx-support'></i>
+                    <span class="link_name">Sav</span>
                 </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('sav') }}">Sav</a></li>
+                </ul>
             </li>
         @endif
-    </ul>
-    
-    <!--end navigation-->
-</div>
+
+        <li>
+            <div class="profile-details">
+                <div class="profile-content">
+                    <img src="assets/images/avatars/default_avatar.png" class="user-img" alt="user avatar">
+                </div>
+                <div class="name-job">
+                    <div class="profile_name">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</div>
+                    <div class="job">@include('partials.account', ['role' => Auth()->user()->roles->toArray()])</div>
+                </div>
+                <a href="{{ url('logout') }}"><i class="bx bx-log-out"></i></a>
+
+                <ul class="sub-menu blank sub_with_icon">
+                    <li><a class="link_name" href="{{ url('logout') }}"><i class="bx bx-log-out"></i></a></li>
+                </ul>
+            </div>
+        </li>
+
+
+  </div>
+  <section class="home-section close">
+    <div class="home-content">
+      <i class='bx bx-menu' ></i>
+    </div>
+  </section>
+  
+  <script>
+    let arrow = document.querySelectorAll(".arrow");
+    for (var i = 0; i < arrow.length; i++) {
+        arrow[i].addEventListener("click", (e)=>{
+            let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+            arrowParent.classList.toggle("showMenu");
+        });
+    }
+
+    let sidebar = document.querySelector(".sidebar");
+    let sidebar_home = document.querySelector(".home-section");
+    let sidebarBtn = document.querySelector(".bx-menu");
+
+    sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("close");
+        sidebar_home.classList.toggle("close");
+        resize()
+    });
+
+    addEventListener("resize", (event) => {
+        resize()
+    })
+
+    function resize(){
+        if(!jQuery('.sidebar').hasClass('close') && document.body.clientWidth > 1025){
+            jQuery(".page-wrapper").css('margin-left', '260px')
+            jQuery(".page-footer").css('margin-left', '260px')
+        } else if(jQuery('.sidebar').hasClass('close') && document.body.clientWidth > 1025){
+            jQuery(".page-wrapper").css('margin-left', '85px')
+            jQuery(".page-footer").css('margin-left', '85px')
+        } else {
+            jQuery(".page-wrapper").css('margin-left', '0px')
+            jQuery(".page-footer").css('margin-left', '0px')
+        }
+    }
+
+  </script>
+

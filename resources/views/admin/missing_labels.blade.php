@@ -33,7 +33,7 @@
                                     <tr>
                                         <th>Commandes</th>
                                         <th>Date</th>
-                                        <td data-label="Status">Status</td>
+                                        <th data-label="Status">Status</th>
                                     </tr>
                                 </thead>
 

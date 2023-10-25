@@ -9,8 +9,15 @@
 	@section("wrapper")
 		<div class="page-wrapper">
 			<div class="page-content">
-				<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
-					<div class="breadcrumb-title pe-3">Analytics</div>
+				<div class="d-flex w-100 justify-content-between page-breadcrumb d-sm-flex align-items-center mb-3">
+					<div class="breadcrumb-title pe-3">
+						Analytics
+					</div>
+					<div class="d-flex pe-3 analytics_data_title">
+						Préparées : <span class="ml-1 mr-2 order_prepared breadcrumb-title pe-3"></span>
+						Emballées : <span class="ml-1 order_finished"></span>
+					</div>
+					<div style="width:105px"></div>
 				</div>
 
 				@if(session()->has('success'))
@@ -26,35 +33,22 @@
 					</div>
 				@endif
 
-				<div class="card card_table_mobile_responsive">
-					<div class="card-body analytics_preparation">
-
-						<div style="background:rgb(0 0 0 / 12%)" class="d-none number_order p-2 radius-10 text-center mt-1 mb-3">
-							<h1 class="data_number mb-0 font-weight-bold text-primary d-flex justify-content-center"><span style="margin-right:5px" class="order_prepared"></span> / <span style="margin-left:5px" class="order_finished"></span></h1>
-							
-							<div class="d-none loading_data w-100">
-								<div class="spinner-border spinner-border2 text-dark" role="status"> <span class="visually-hidden">Loading...</span></div> / 
-								<div class="spinner-border spinner-border2 text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
-							</div>
-							
-						
-
-							<p class="mb-0">Commandes préparées / emballées</p>
+				<div class="card card_table_mobile_responsive radius-10">
+					<div class="header_title hide_mobile d-flex align-items-center">
+						<div class="w-100 d-flex justify-content-between">
+							<h5>Nom</h5>
+							<h5>Commandes Préparées</h5>
+							<h5>Commandes Emballées</h5>
+							<h5>Produits Bippés</h5>
+							<h5>Date</h5>
 						</div>
+					</div>
 
+					<div class="card-body analytics_preparation p-0 mt-2">
 						<div class="table-responsive">
 							<input format="dd/mm/yyyy" type="date" class="d-none custom_dropdown date_dropdown">
 				
 							<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th>Nom</th>
-										<th>Commandes Préparées</th>
-										<th>Commandes Emballées</th>
-										<th>Produits bippés</th>
-										<th>Date</th>
-									</tr>
-								</thead>
 								<tbody></tbody>
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
@@ -73,7 +67,12 @@
 				</div>
 
 				<div class="col">
-					<div class="card">
+					<div class="card radius-10">
+						<div class="header_title hide_mobile d-flex align-items-center">
+							<div class="w-100 d-flex justify-content-between">
+								<h5>Moyenne préparation / Jour</h5>
+							</div>
+						</div>
 						<div class="card-body">
 							<div class="chart_average" id="chart6">
 

@@ -68,6 +68,8 @@ $(document).ready(function() {
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
             $(".date_dropdown").removeClass('d-none')
+            $(".dataTables_paginate").css('margin-right', '10px')
+            $(".dataTables_paginate").css('margin-bottom', '10px')
 
             var order_prepared = 0
             var order_finished = 0
@@ -83,6 +85,15 @@ $(document).ready(function() {
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
             $(".number_order").removeClass('d-none')
+        },
+        "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            $('td:nth-child(1)', nRow).attr('data-label', 'Nom');
+            $('td:nth-child(2)', nRow).attr('data-label', 'Commandes Préparées');
+            $('td:nth-child(3)', nRow).attr('data-label', 'Commandes Emballées');
+            $('td:nth-child(4)', nRow).attr('data-label', 'Prouits Bippés');
+            $('td:nth-child(5)', nRow).attr('data-label', 'Date');
+
+            return nRow;
         },
         "drawCallback": function( settings  ) {
             var order_prepared = 0
@@ -102,19 +113,19 @@ $(document).ready(function() {
 
             })
 
-            $(".loading_data").addClass('d-none')
             $(".data_number").removeClass('d-none')
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
         }
 
     })
+
+    $("thead").remove()
 })
 
 
 $('.date_dropdown').on('change', function(e){
     $(".data_number").addClass('d-none')
-    $(".loading_data").removeClass('d-none')
     $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
@@ -165,7 +176,7 @@ function chartAverage(average){
             styledMode: true
         },
         title: {
-            text: 'Moyenne préparation / Jour'
+            text: ''
         },
         xAxis: {
             categories: list_name

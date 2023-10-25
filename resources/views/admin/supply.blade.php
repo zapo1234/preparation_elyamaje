@@ -83,10 +83,18 @@
             <div class="card">
                 <form method="POST" action="{{route('createReassort')}}">
                     @csrf
-                    <div class="card-body row">
-                        <div id="sender" class="col-md-4">
 
-                            <label for="" class="form-label">Dépot d'éxpediteur</label>
+                    <div class="header_title hide_mobile d-flex align-items-center">
+                                <div class="w-100 d-flex justify-content-between">
+                                    <h5>Dépot d'éxpediteur</h5>
+                                    <h5>>>>>>>>>>>>>>>>>>>>>>>></h5>
+                                    <h5>Dépot de reception</h5>
+                                </div>
+                            </div>
+                    <div class="card-body row d-flex justify-content-between">
+                        <div id="sender" class="col-md-4">
+                           
+                            <!-- <label for="" class="form-label">Dépot d'éxpediteur</label> -->
 
                             <select id="entrepot_source" name="entrepot_source" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à déstocker</option>
@@ -108,12 +116,12 @@
                             </select>
                         </div>
 
-                        <div class="col-md-4 d-flex justify-content-center align-items-center">
+                        <!-- <div class="col-md-4 d-flex justify-content-center align-items-center">
                             <p class="mb-0">>>>>>>>>>>>>>>>>>>>>>></p>
-                        </div>
+                        </div> -->
 
                         <div id="recipient" class="col-md-4">
-                            <label for="" class="form-label">Dépot de reception</label>
+                            <!-- <label for="" class="form-label">Dépot de reception</label> -->
 
                             <select id="entrepot_destination" name="entrepot_destination" class="form-select" aria-label="Default select example">
                                 <option value="0" selected="">Selectionner l'entrepot à approvisionner</option>
@@ -526,10 +534,10 @@
 
             @if (isset($liste_reassort))
 
-
+            <div class="card-body analytics_preparation p-0 mt-2">
                 <div id="id_reassor1" class="card card_product_commande">
                     <div class="table-responsive p-3">
-                        <table id="example4" class="table mb-0 dataTable">
+                        <table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th title="L'entrepôt qui va être décrémenté">Identifiant</th>
@@ -569,7 +577,7 @@
                                                     <form action="{{ route('delete_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="deleteForm">
                                                         @csrf
                                                         <button type="button" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal">
-                                                            <i class="fadeIn animated bx bx-trash"></i>
+                                                            <i  style="color:#333333" class="fadeIn animated bx bx-trash"></i>
                                                         </button>
                                                     </form>
 
@@ -578,7 +586,7 @@
                                                     <form action="{{ route('cancel_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="cancelForm">
                                                         @csrf
                                                         <button type="button" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal2">
-                                                            <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                            <i style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                         </button>
                                                     </form>
                                                     {{-- a griser --}}
@@ -589,7 +597,7 @@
                                                 
                                                 <div>
                                                     <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
-                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                        <i  style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                     </button>
                                                 </div>
                                                 {{-- a griser --}}
@@ -601,7 +609,7 @@
                                             @else
                                                 <div>
                                                     <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
-                                                        <i class="fadeIn animated bx bx-transfer-alt"></i>
+                                                        <i  style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                     </button>
                                                 </div>
                                                 {{-- a griser --}}
@@ -615,7 +623,7 @@
                                             {{-- @dd($value) --}}
                                             <div>
                                                 <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
-                                                    <i class="lni lni-eye"></i>
+                                                    <i style="color:#333333" class="lni lni-eye"></i>
                                                 </button>
 
                                                 @if ($value["val_etat"] > 0 && $value["origin_id_reassort"] != "Valide_annule" && $value["syncro"] == 0)

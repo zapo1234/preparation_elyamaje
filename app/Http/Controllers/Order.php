@@ -33,8 +33,6 @@ use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
-use Illuminate\Support\Facades\Http;
-
 class Order extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -163,8 +161,8 @@ class Order extends BaseController
             $take_order = true;
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if((str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
-                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")) && $order['id'] != "106074"){
+                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $take_order = false;
                 }
               } 
@@ -230,8 +228,8 @@ class Order extends BaseController
           foreach($orders as $key => $order){
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if((str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
-                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")) && $order['id'] != "106074" ){
+                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $list_orders[] = $order;
                 }
               } else {

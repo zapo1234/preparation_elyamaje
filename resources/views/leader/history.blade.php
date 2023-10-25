@@ -39,12 +39,12 @@
 
 						<div class="card card_table_mobile_responsive radius-10 w-100">
 							<div class="card-body">
-								<div class="table-responsive">
-									<div class="d-flex justify-content-center">
-										<div class="loading spinner-border text-dark" role="status"> 
-											<span class="visually-hidden">Loading...</span>
-										</div>
+								<div class="d-flex justify-content-center">
+									<div class="loading spinner-border text-dark" role="status"> 
+										<span class="visually-hidden">Loading...</span>
 									</div>
+								</div>
+								<div class="table-responsive">
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 										<thead>
 											<tr>

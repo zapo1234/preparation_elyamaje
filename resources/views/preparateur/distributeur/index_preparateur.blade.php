@@ -114,7 +114,7 @@
 										@if(str_contains($orders['details']['shipping_method'], 'chrono'))
 											<div class="chronopost_shipping_method_preparateur"></div>
 										@endif
-										<button id="{{ $orders['details']['id'] }}" class="d-none show_order btn">Préparer</button>
+										<button id="{{ $orders['details']['id'] }}" class="show_order btn">Préparer</button>
 									</div>
 									<div class="progress" id="progress_{{ $orders['details']['id'] }}">
 										<div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
