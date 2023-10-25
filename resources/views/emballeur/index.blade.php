@@ -193,13 +193,12 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-body">
-                <h3 class="text-center info_message">Confirmer la validation de commande sans étiquette ?</h3>
-                <span class="text-center d-flex w-100 justify-content-center">Il sera possible de la générer par la suite dans l'onglet Colissimo -> Étiquettes</span> 
+                <h3 class="text-center info_message">Confirmer la facturation de la commande sans étiquette ?</h3>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <div class="modal-footer d-flex w-100 justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
                 <button style="max-height: 50px;" onclick="validWrapOrder(false)" type="button" class="confirm_valid_order btn btn-primary">
-                    <span>Valider</span>
+                    <span>oui</span>
                     <div style="height:1rem; width:1rem" class="d-none loading_valid_wrapper spinner-border text-light" role="status"> <span class="visually-hidden">Loading...</span></div>
                 </button> 
             </div>

@@ -188,6 +188,17 @@
                 </ul>
             </li>
         @endif
+
+        <!-- Espace Sav -->
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
+            <li>
+                <a href="{{ url('sav') }}">
+                    <div class="parent-icon"><i class=' bx bx-support'></i>
+                    </div>
+                    <div class="menu-title">Sav</div>
+                </a>
+            </li>
+        @endif
     </ul>
     
     <!--end navigation-->

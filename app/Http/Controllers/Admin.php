@@ -276,7 +276,6 @@ class Admin extends BaseController
         $ids = array_column($rolesUser, "id");
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();
-        
         return view('admin.account', ['users' => $users, 'roles' => $roles, 'isAdmin' => $isAdmin]);
     }
 

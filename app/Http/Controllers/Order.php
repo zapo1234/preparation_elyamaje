@@ -23,6 +23,7 @@ use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
@@ -58,6 +59,7 @@ class Order extends BaseController
     private $logError;
     private $reassort;
     private $orderDolibarr;
+    private $commandeids;
 
     public function __construct(Api $api, UserRepository $user, 
     OrderRepository $order,
@@ -77,7 +79,8 @@ class Order extends BaseController
     Chronopost $chronopost,
     LogErrorRepository $logError,
     ReassortRepository $reassort,
-    OrderDolibarrRepository $orderDolibarr
+    OrderDolibarrRepository $orderDolibarr,
+    CommandeidsRepository $commandeids
     ){
       $this->api = $api;
       $this->user = $user;
@@ -99,6 +102,7 @@ class Order extends BaseController
       $this->logError = $logError;
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
+      $this->commandeids = $commandeids;
     }
   
     public function orders($id = null, $distributeur = false){
@@ -595,6 +599,18 @@ class Order extends BaseController
       }
     }
 
+    public function orderReInvoicing(Request $request){
+      $order_id = $request->post('order_id');
+
+      try{
+        // Update order re invoicing
+        $this->commandeids->deleteOrder($order_id);
+        echo json_encode(["success" => true]);
+      } catch(Exception $e){
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+      }
+    }
+
     public function checkExpedition(Request $request){
       $order_id = $request->get('order_id');
       $order = $this->order->getOrderById($order_id);
@@ -613,7 +629,6 @@ class Order extends BaseController
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
-            
           } else {
             echo json_encode(['success' => false, 'message' => 'Aucune commande ne correspond à ce numéro']);
           }
@@ -637,7 +652,6 @@ class Order extends BaseController
       } else {
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
-
 
       if($order && count($order) > 0){
         if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
@@ -664,6 +678,7 @@ class Order extends BaseController
         }
 
         $orders[0]['emballeur'] = Auth()->user()->name;
+        
         // envoi des données pour créer des facture via api dolibar....
         try{
             $this->factorder->Transferorder($orders);
@@ -956,14 +971,14 @@ class Order extends BaseController
 
     public function executerTransfere($identifiant_reassort){
 
-  
-
       try {
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-          dd($tabProduitReassort);
           if (!$tabProduitReassort) {
-              return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
+              echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
+              return;
+              // return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
           }
+          
           $apiKey = env('KEY_API_DOLIBAR');   
           $apiUrl = env('KEY_API_URL');
         

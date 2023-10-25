@@ -164,7 +164,20 @@
         				data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: false}
 					}).done(function(data) {
 						if(JSON.parse(data).success){
-							
+							// Remove order from commandeId and update dolibarr id command
+							if(status == "processing"){
+								$.ajax({
+									url: "orderReInvoicing",
+									method: 'GET',
+									method: 'POST',
+									data: {_token: $('input[name=_token]').val(), order_id: order_id}
+								}).done(function(data) {
+									if(JSON.parse(data).success){
+									} else {
+										alert(JSON.parse(data).message)
+									}
+								});
+							}
 						} else {
 							alert('Erreur !')
 						}

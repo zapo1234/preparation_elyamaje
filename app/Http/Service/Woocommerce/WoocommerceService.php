@@ -39,7 +39,6 @@ class WoocommerceService
 
         // Construis le tableau de la même manière que woocommerce
         foreach($order as $key => $or){
-
           if(in_array(100, explode(',', $or['discount_amount'])) && str_contains($or['coupons'], 'fem')){
             $order[$key]['coupons'] = $or['coupons'] ?? '';
             $order[$key]['discount'] = 0;
