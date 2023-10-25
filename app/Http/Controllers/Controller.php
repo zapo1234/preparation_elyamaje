@@ -819,7 +819,7 @@ class Controller extends BaseController
             }      
        
 
-        //    dd($array_factures_total);
+           dd($array_factures_total);
 
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
