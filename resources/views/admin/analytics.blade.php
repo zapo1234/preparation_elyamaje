@@ -68,7 +68,7 @@
 
 				<div class="col">
 					<div class="card radius-10">
-						<div class="header_title hide_mobile d-flex align-items-center">
+						<div class="header_title d-flex align-items-center">
 							<div class="w-100 d-flex justify-content-between">
 								<h5>Moyenne préparation / Jour</h5>
 							</div>

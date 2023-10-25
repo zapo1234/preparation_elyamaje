@@ -483,10 +483,6 @@ a {
 
 @media (max-width: 990px) { 
 
-	.hide_mobile{
-		display: none !important;
-	}
-
 	.back_labels button{
 		height: 50px;
 	}
@@ -5047,11 +5043,31 @@ input::placeholder {
 
 
 
+.print_pdf_file, 
+.print_zpl_file,
+.download_label_button{
+	font-size: 1.1em;
+}
+.download_label_button,
+.download_bordereau_button{
+	border: none;
+	background-color: transparent;
+	transition: 0.3s;
+	color: #333333 !important;
+}
 
+.download_label_button i,
+.download_bordereau_button i{
+	margin-right: 8px;
+}
 
+.delete_bordereau i{
+	color: red !important;
+}
 
-
-
+.delete_label{
+	color: red !important;
+}
 
 
 /* Responsive */
@@ -5798,13 +5814,15 @@ input::placeholder {
   @media screen and (min-width: 951px) {
 
 	/* CSS DATATABLE */
-
 	.table td{
+		border: none !important;
+	}
+	#example td{
 		border: none !important;
 		color: #808080 !important;
 	}
 
-	.table td button{
+	#example  td button{
 		color: #808080;
 	}
 
@@ -5926,6 +5944,11 @@ input::placeholder {
 }
 
 @media screen and (max-width: 950px) {
+
+	.hide_mobile{
+		display: none !important;
+	}
+
 	.loading_table{
 		padding: 15px !important;
 	}
@@ -5944,10 +5967,8 @@ input::placeholder {
 
 	.generate_label_button{
 		border-radius: 5px !important;
-		background: black !important;
-		color: white !important;
 		padding: 8px 11px 8px 8px !important;
-		border: none !important;
+		border: 1px solid #333333 !important;
 	}
 
 	.col-md-7:has(.dataTables_paginate){
@@ -6782,32 +6803,6 @@ select:focus, input:focus{
 .notification_list .notify{
 	min-width: 45px !important;
 }
-.print_pdf_file, 
-.print_zpl_file,
-.download_label_button{
-	font-size: 1.1em;
-}
-.download_label_button,
-.download_bordereau_button{
-	border: none;
-	background-color: transparent;
-	transition: 0.3s;
-	color: #333333 !important;
-}
-
-.download_label_button i,
-.download_bordereau_button i{
-	margin-right: 8px;
-}
-
-.delete_bordereau i{
-	color: red !important;
-}
-
-.delete_label{
-	color: red !important;
-}
-
 
 .label_created_at{
 	font-size: 12px;
