@@ -5043,11 +5043,31 @@ input::placeholder {
 
 
 
+.print_pdf_file, 
+.print_zpl_file,
+.download_label_button{
+	font-size: 1.1em;
+}
+.download_label_button,
+.download_bordereau_button{
+	border: none;
+	background-color: transparent;
+	transition: 0.3s;
+	color: #333333 !important;
+}
 
+.download_label_button i,
+.download_bordereau_button i{
+	margin-right: 8px;
+}
 
+.delete_bordereau i{
+	color: red !important;
+}
 
-
-
+.delete_label{
+	color: red !important;
+}
 
 
 /* Responsive */
@@ -5928,7 +5948,7 @@ input::placeholder {
 	.hide_mobile{
 		display: none !important;
 	}
-	
+
 	.loading_table{
 		padding: 15px !important;
 	}
@@ -6785,32 +6805,6 @@ select:focus, input:focus{
 .notification_list .notify{
 	min-width: 45px !important;
 }
-.print_pdf_file, 
-.print_zpl_file,
-.download_label_button{
-	font-size: 1.1em;
-}
-.download_label_button,
-.download_bordereau_button{
-	border: none;
-	background-color: transparent;
-	transition: 0.3s;
-	color: #333333 !important;
-}
-
-.download_label_button i,
-.download_bordereau_button i{
-	margin-right: 8px;
-}
-
-.delete_bordereau i{
-	color: red !important;
-}
-
-.delete_label{
-	color: red !important;
-}
-
 
 .label_created_at{
 	font-size: 12px;
