@@ -9,17 +9,9 @@
 
 
             <div class="modal-body">
-
-
-
-
-                
-
-
-                
                 <div id="id_reassor1" class="card card_product_commande">
                     <div class="table-responsive p-3">
-                        <table id="example6" class="table mb-0 dataTable">
+                        <table class="table mb-0 dataTable example6">
                             <thead>
                                 <tr>
                                     <th title="L'entrepôt qui va être décrémenté">ID</th>
@@ -54,20 +46,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
             </div>
-
-
-        {{-- <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">fermé</button>
-        </div> --}}
     </div>
 </div>

@@ -12,6 +12,28 @@
     <link href="{{asset('assets/plugins/datetimepicker/css/classic.date.css')}}" rel="stylesheet" />
     <link href="{{asset('assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.min.css')}}" rel="stylesheet" />
 
+    <style>
+    .icon-container {
+    position: relative;
+    display: inline-block;
+    }
+
+    .icon-container::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-60%, -50%) rotate(-45deg);
+        width: 100%;
+        height: 1px;
+        background-color: black;
+    }
+    .mt-5p{
+        margin-top: 5%;
+    }
+
+    </style>
+
 
    
 @endsection
@@ -155,8 +177,13 @@
                                 @else
                                     <input class="form-check-input" type="checkbox" id="first_transfert" name="first_transfert">
                                 @endif
-                                
                                 <label class="form-check-label" for="first_transfert">State de vente</label>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="ignore_bp" name="ignore_bp">
+                                <label class="form-check-label" for="ignore_bp">Ignorer la pb</label>
                             </div>
                         </div>
 
@@ -322,7 +349,7 @@
                                     <input onclick="checkAll()" class="form-check-input" style="margin-top: 0.5em;" type="checkbox" value="" id="check_all">
                                                                      
                                     <button id="delete_all_id" data-lines-deleted="" onclick='delete_selected_line()' type="button" class="btn d-none" title="Supprimer l'offre" style="margin: 0;padding: 0;">
-                                        <a class="" title="Supprimer les lignes" href="javascript:void(0)">
+                                        <a class="" title="Supprimer les lignes" href="javascript:void(0)" style="color: #fff !important">
                                             <i class="fadeIn animated bx bx-trash"></i>
                                         </a>
                                     </button>
@@ -570,11 +597,11 @@
                                             
                                                 @if ($value["val_etat"] == 0)
                                                     {{-- a griser --}}
-                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <button type="submit" class="btn icon-container mt-5p" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
                                                         <i class="fadeIn animated bx bx-transfer-alt"></i>
                                                     </button>
 
-                                                    <form action="{{ route('delete_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="deleteForm">
+                                                    <form action="{{ route('delete_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="deleteForm" class="mt-5p">
                                                         @csrf
                                                         <button type="button" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal">
                                                             <i  style="color:#333333" class="fadeIn animated bx bx-trash"></i>
@@ -583,37 +610,37 @@
 
 
                                                 @elseif ($value["val_etat"] > 0)
-                                                    <form action="{{ route('cancel_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="cancelForm">
+                                                    <form action="{{ route('cancel_transfert', ['identifiant' => $value["identifiant"]]) }}" method="post" id="cancelForm" class="mt-5p">
                                                         @csrf
                                                         <button type="button" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;" data-bs-toggle="modal" data-bs-target="#confirmationModal2">
                                                             <i style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                         </button>
                                                     </form>
                                                     {{-- a griser --}}
-                                                    <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                    <button type="submit" class="btn icon-container mt-5p" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
                                                         <i class="fadeIn animated bx bx-trash"></i>
                                                     </button>
                                                 @elseif ($value["val_etat"] < 0)
                                                 
-                                                <div>
-                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
+                                                <div class="mt-5p">
+                                                    <button type="submit" class="btn icon-container" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
                                                         <i  style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                     </button>
                                                 </div>
                                                 {{-- a griser --}}
-                                                <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                <button type="submit" class="btn icon-container mt-5p" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
                                                     <i class="fadeIn animated bx bx-trash"></i>
                                                 </button>
 
                                                 @endif
                                             @else
-                                                <div>
-                                                    <button type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray"">
+                                                <div class="mt-5p">
+                                                    <button type="submit" class="btn icon-container" title="Annuler le transfère" style="margin: 0;padding: 0;color:gray">
                                                         <i  style="color:#333333" class="fadeIn animated bx bx-transfer-alt"></i>
                                                     </button>
                                                 </div>
                                                 {{-- a griser --}}
-                                                <button type="submit" class="btn" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
+                                                <button type="submit" class="btn icon-container mt-5p" title="Supprimer le transfère" style="margin: 0;padding: 0;color:gray">
                                                     <i class="fadeIn animated bx bx-trash"></i>
                                                 </button>
 
@@ -621,7 +648,7 @@
 
 
                                             {{-- @dd($value) --}}
-                                            <div>
+                                            <div class="mt-5p">
                                                 <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
                                                     <i style="color:#333333" class="lni lni-eye"></i>
                                                 </button>
@@ -645,7 +672,7 @@
 
                                                     
                                                 @else
-                                                    <button class="btn" title="Diminuer les stocks sur wc" style="margin: 0;padding: 0;color:gray">
+                                                    <button class="btn icon-container" title="Diminuer les stocks sur wc" style="margin: 0;padding: 0;color:gray">
                                                         <i class="fadeIn animated bx bx-sync"></i>
                                                     </button>
                                                 @endif
@@ -875,7 +902,7 @@
 
     // 
 
-    $('#example4, #example6').DataTable({
+    $('#example4').DataTable({
     language: {
         info: "_START_ à _END_ sur _TOTAL_ entrées",
         infoEmpty: "Aucune données",
@@ -891,7 +918,34 @@
     },
 
 
-    order: [[2, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
+    order: [[0, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
+    pageLength: 10,
+
+   
+    lengthMenu: [
+        [5,10, 25, 50, -1],
+        ['5','10', '25', '50', 'Tout']
+    ],
+
+    });
+
+    $('.example6').DataTable({
+    language: {
+        info: "_START_ à _END_ sur _TOTAL_ entrées",
+        infoEmpty: "Aucune données",
+        infoFiltered: "(filtrés sur un total de _MAX_ éléments)",
+        lengthMenu: "_MENU_",
+        search: "",
+        paginate: {
+            first: ">>",
+            last: "<<",
+            next: ">",
+            previous: "<"
+        }
+    },
+
+
+    order: [[5, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
     pageLength: 1000,
 
     dom: 'Bfrtip',

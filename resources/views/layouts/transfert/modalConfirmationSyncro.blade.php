@@ -6,7 +6,7 @@
         <form action="{{ route('updateStockWoocommerce', ['identifiant' => $value["identifiant"]]) }}" method="post">
             @csrf
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirmation de syncronisation</h5>
+                <h5 class="modal-title">Confirmation de syncronisation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

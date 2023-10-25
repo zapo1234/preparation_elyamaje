@@ -523,8 +523,8 @@ class Controller extends BaseController
         $entrepot_source = $request->post('entrepot_source');
         $entrepot_destination = $request->post('entrepot_destination');
         $first_transfert = $request->post('first_transfert');
+        $ignore_bp = $request->post('ignore_bp');
 
-        
         if (!$entrepot_source || !$entrepot_destination) {
             dd("selectionnez les entrepots");
         }
@@ -781,17 +781,45 @@ class Controller extends BaseController
                 $interval = date("Y-m-d", strtotime("-$jours days")); 
                 $coef = (1.10)/($jours/7);
 
-                $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+                if ($ignore_bp && $interval >= "2023-10-07") {
+                    $date_start_bp = "2023-10-07";
+                    $date_end_bp = "2023-10-10";
+                    $coef = $coef*(7/6.5);
 
-                $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-                $factures = json_decode($listinvoice,true); 
+                    $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".$date_start_bp." 23:59:59'";
+                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    $factures = json_decode($listinvoice,true); 
+                  //  dd($factures);
 
-                array_push($array_factures_total,$factures);
+                    if (!isset($factures["error"])) {
+                        array_push($array_factures_total,$factures);
+                    }
+
+                    $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$date_end_bp." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+                    
+                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    $factures = json_decode($listinvoice,true); 
+
+                    if (!isset($factures["error"])) {
+                        array_push($array_factures_total,$factures);
+                    }
+
+
+
+                }else {
+                    $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+
+                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    $factures = json_decode($listinvoice,true); 
+                      if (!isset($factures["error"])) {
+                        array_push($array_factures_total,$factures);
+                    }
+                }
 
             }      
        
 
-           // dd($array_factures_total);
+        //    dd($array_factures_total);
 
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
