@@ -588,7 +588,7 @@ class Controller extends BaseController
                 $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
                 $nbr_facure_gel = count($res2);
 
-                dd($nbr_facure_gel);
+                // dd($nbr_facure_gel);
                
                // traitement selon les clients
                 $fks_facture = array();
