@@ -789,23 +789,18 @@ class Controller extends BaseController
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".$date_start_bp." 23:59:59'";
                     $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
                     $factures = json_decode($listinvoice,true); 
-                  //  dd($factures);
 
                     if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
                     }
 
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$date_end_bp." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-                    
                     $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
                     $factures = json_decode($listinvoice,true); 
 
                     if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
                     }
-
-
-
                 }else {
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
 
@@ -819,7 +814,6 @@ class Controller extends BaseController
             }      
        
 
-           dd($array_factures_total);
 
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
