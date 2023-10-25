@@ -7,6 +7,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ProductRepository implements ProductInterface
 
@@ -151,6 +152,74 @@ class ProductRepository implements ProductInterface
    public function checkProductBarcode($product_id, $barcode){
       return $this->model::where('product_woocommerce_id', $product_id)->where('barcode', $barcode)->count();
    }
+
+   function getProductsByBarcode($data){
+
+      $list_barcode = array();
+
+      foreach ($data as $key => $value) {
+        if ($value["barcode"] != "no_barcode" && $value["barcode"]) {
+          array_push($list_barcode,$value["barcode"]);
+        }else {
+          return ["response" => false, "message" => "Le produit ".$value["product_id"]." n'a pas de code barre sur dolibarr"];
+        }
+      }
+
+      $res = $this->model::select('product_woocommerce_id', 'barcode')
+      ->get()
+      ->pluck(null, 'barcode')
+      ->whereIn('barcode', $list_barcode)
+      ->toArray();
+
+      $ids_wc_vs_qte = array();
+
+      foreach ($data as $key => $value) {
+         if (isset($res[$value["barcode"]])) {
+            array_push($ids_wc_vs_qte, [
+               "id_product_wc" => $res[$value["barcode"]]["product_woocommerce_id"],
+               "qty" => $value["qty"]
+            ]);
+         }else {
+            return ["response" => false, "message" => "Le produit dont le code barre dolibarr est = ".$value["barcode"]." n'existe pas dans la table prepa_procuct wc"];
+         }
+      }
+
+      return ["response" => true, "ids_wc_vs_qte"=> $ids_wc_vs_qte];
+
+    }
+
+    function updateStockServiceWc($product_id_wc, $quantity){
+
+      try {
+         $customer_key = config('app.woocommerce_customer_key');
+         $customer_secret = config('app.woocommerce_customer_secret');
+
+         $getProductQuantity = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc);
+
+         $newQuantity = $getProductQuantity->json()['stock_quantity'] - $quantity;
+
+         // Si c'est une variation
+         if($getProductQuantity->json()['parent_id'] != 0){
+            $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+            ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$getProductQuantity->json()['parent_id']."/variations/".$product_id_wc, [
+                  "stock_quantity" => $newQuantity
+            ]);
+            
+         // Si c'est un produit sans variation
+         } else {
+            $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+            ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc, [
+                  "stock_quantity" => $newQuantity
+            ]);
+         }
+         return ["response" => true,"qte_actuelle" => $newQuantity];
+
+      } catch (\Throwable $th) {
+         return ["response" => false,"qte_actuelle" => "inchange", "message" => $th->getMessage()];
+      }
+    }
+    
+
 }
 
 

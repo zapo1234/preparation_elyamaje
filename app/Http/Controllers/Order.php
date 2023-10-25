@@ -32,6 +32,8 @@ use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
 
+use Illuminate\Support\Facades\Http;
+
 class Order extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -1043,6 +1045,72 @@ class Order extends BaseController
     } else {
       echo json_encode(['success' => false]);
     }
+
+  }
+
+  function updateStockWoocommerce($identifiant_reassort){
+
+    $data = $this->reassort->getQteToTransfer($identifiant_reassort);
+
+    // dump($data);
+
+    // Enregistrez le temps de début
+    $temps_debut = microtime(true);
+
+    // $data2 = [
+    //   ["product_id" => 4702,"barcode" => 3760324820391,"qty" => 10],
+    //   ["product_id" => 5250,"barcode" => 3760324820308,"qty" => 10],
+    //   ["product_id" => 5249,"barcode" => 3760324820353,"qty" => 10],     
+    //   ["product_id" => 4700,"barcode" => 3760324820407,"qty" => 10],
+    //   ["product_id" => 5240,"barcode" => 3760324820278,"qty" => 10],
+    //   ["product_id" => 4697,"barcode" => 3760324820261,"qty" => 10],   
+    // ];
+    $datas_updated_succes = array();
+    $datas_updated_error = array();
+
+
+   // on récupère les kits
+
+  //  $kits = $this->reassort->getKits();
+  //  $array_ids_kits = $kits["all_id_pere_kits"];
+  //  $composition_kits = $kits["composition_by_pere"];
+  //  dd($kits);
+
+    // Récupérer les ids produit de woocommerce
+    $ids_woocomerce = $this->product->getProductsByBarcode($data);
+
+    dd($ids_woocomerce);
+
+    if ($ids_woocomerce["response"]) {
+      // on fait l'actualisation sur woocommerce
+      $datas = $ids_woocomerce["ids_wc_vs_qte"];
+
+      foreach ($datas as $key => $data) {
+        // filtrer les kits comme les limes et construire les lots
+        $product_id_wc = $data["id_product_wc"];
+        $quantity = $data["qte"];
+
+        $update_response =  $this->product->updateStockServiceWc($product_id_wc, $quantity);
+        if ($update_response["response"]) {
+          $data["qte_actuelle"] = $update_response["qte_actuelle"];
+          array_push($datas_updated_succes,$data);
+        }else {
+          $data["qte_actuelle"] = $update_response["qte_actuelle"];
+          array_push($datas_updated_error,$data);
+        }
+      }
+
+      // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
+
+    }else {
+      return ["response" => false, "message" => $ids_woocomerce["message"]];
+    }
+
+    $temps_fin = microtime(true);
+    $temps_execution = $temps_fin - $temps_debut;
+    dump("Le script a pris " . $temps_execution . " secondes pour s'exécuter.");
+    dump("les stocks actuel sont");
+    dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 
   }
 }

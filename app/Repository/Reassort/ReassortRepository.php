@@ -448,6 +448,21 @@ class ReassortRepository implements ReassortInterface
             return false;
          }
     }
+
+    public function getQteToTransfer($identifiant_reassort){
+        $transfer = $this->model::select('product_id', 'barcode', 'qty')
+        ->where([
+            ['identifiant_reassort', $identifiant_reassort],
+            ['qty','>', 0]
+        ])
+        ->get()
+        ->toArray()
+        ;
+
+     return $transfer;
+    }
+
+
 }
 
 
