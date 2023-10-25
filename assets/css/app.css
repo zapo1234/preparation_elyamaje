@@ -5967,10 +5967,8 @@ input::placeholder {
 
 	.generate_label_button{
 		border-radius: 5px !important;
-		background: black !important;
-		color: white !important;
 		padding: 8px 11px 8px 8px !important;
-		border: none !important;
+		border: 1px solid #333333 !important;
 	}
 
 	.col-md-7:has(.dataTables_paginate){
