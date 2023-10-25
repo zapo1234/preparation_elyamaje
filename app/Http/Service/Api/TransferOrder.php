@@ -776,10 +776,9 @@ class TransferOrder
                     }
 
                     if(in_array($account_name,$array_paimentss)){
-                      // defini le paiment comme virement bancaire......
-                       //$mode_reglement_id = 4;
-                       $account_id=3; // PROD
-                       $paimentid =3;// PROD
+                        // dons 
+                         $account_id=3; // PROD
+                         $paimentid =3;// PROD
                     }
 
 
