@@ -757,8 +757,9 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB', 'DONS');// carte bancaire....
+                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
+                   $array_paimentss = array('DONS');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -773,6 +774,13 @@ class TransferOrder
                        $account_id=6; // PROD
                        $paimentid =6;// PROD
                     }
+
+                    if(in_array($account_name,$array_paimentss)){
+                        // dons 
+                         $account_id=3; // PROD
+                         $paimentid =3;// PROD
+                    }
+
 
                      
                     // si c'est un distributeur (mettre la facture impayé)
