@@ -5798,13 +5798,15 @@ input::placeholder {
   @media screen and (min-width: 951px) {
 
 	/* CSS DATATABLE */
-
 	.table td{
+		border: none !important;
+	}
+	#example td{
 		border: none !important;
 		color: #808080 !important;
 	}
 
-	.table td button{
+	#example  td button{
 		color: #808080;
 	}
 
