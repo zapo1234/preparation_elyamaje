@@ -149,7 +149,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-             // Si commande dolibarr ajouter cet attribut fk_commande
+            // Si commande dolibarr ajouter cet attribut fk_commande
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -181,13 +181,10 @@ class TransferOrder
 
                  $produitParam = ["limit" => 1050, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
 
-                  
-               
-               if(count($listproduct)==0){
+                if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
@@ -553,12 +550,9 @@ class TransferOrder
                          }
                         */
                          
+                        // echo json_encode($data_lines);
+                       // Create le client via Api...
                       
-
-                      // echo json_encode($data_lines);
-
-                        // Create le client via Api...
-                       
 
                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -786,9 +780,9 @@ class TransferOrder
                         "idwarehouse"=>6,
                         "notrigger"=>0,
                        ];
-
                          
-                      }
+                         $valid=1;// mettre la facture impayés.
+                    }
                      if($status_dist=="true" && $account_name!="bacs"){
                          $newCommandepaye = [
                          "paye"	=> 1,
@@ -797,7 +791,8 @@ class TransferOrder
                         "idwarehouse"=>6,
                         "notrigger"=>0,
                          ];
-    
+                          
+                           $valid=2;
                        }
 
                       if($status_dist!="true"){
@@ -809,9 +804,18 @@ class TransferOrder
                         "idwarehouse"=>6,
                          "notrigger"=>0,
                        ];
+                           $valid=3;
   
                     }
         
+
+                    $newCommandepaye = [
+                      "paye"	=> 1,
+                     "statut"	=> 2,
+                      "mode_reglement_id"=>$mode_reglement_id,
+                      "idwarehouse"=>6,
+                       "notrigger"=>0,
+                     ];
 
                   // recupérer la datetime et la convertir timestamp
                   // liée la facture à un mode de rélgement
@@ -835,13 +839,22 @@ class TransferOrder
                 "closepaidinvoices"=> "yes",
                 "accountid"=> $account_id, // id du compte bancaire.
                ];
-           
-               // valider les facture dans dolibar....
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-               // Lier les factures dolibar  à un moyen de paiement et bank.
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-              // mettre le statut en payé dans la facture  dolibar
-               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+
+              // valider les facture dans dolibar....
+               if($valid==1){
+                // valider la facture en impayée.
+                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+               }
+               else{
+                     // valider et mettre en payée la facture.
+                     $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+                     // Lier les factures dolibar  à un moyen de paiement et bank.
+                     $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                    // mettre le statut en payé dans la facture  dolibar
+                    $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+              }
+
+              
 
          }
 

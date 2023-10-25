@@ -15,7 +15,7 @@ class ReassortRepository implements ReassortInterface
     private $products_categories;
     private $categories_dolibarr;
     private $products_association;
-
+    
     public function __construct(Reassort $model,products_categories $products_categories,Categorie_dolibarr $categories_dolibarr,Products_association $products_association){
         $this->model = $model;
         $this->products_categories = $products_categories;
@@ -107,13 +107,13 @@ class ReassortRepository implements ReassortInterface
     public function getReassortById($order_id){
 
         $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
-        ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
-        ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
-        ->where([
-            ['identifiant_reassort', $order_id],
-            ['type', 0]
-        ])
-        ->get();
+            ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
+            ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+            ->where([
+                ['identifiant_reassort', $order_id],
+                ['type', 0]
+            ])
+            ->get();
 
         foreach($transfer as $key => $order){
             $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
