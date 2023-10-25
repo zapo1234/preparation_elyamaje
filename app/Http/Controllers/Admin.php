@@ -633,12 +633,17 @@ class Admin extends BaseController
         $checkWoocommerceOrders= [];
         $checkWoocommerce = $this->api->getLabelsfromOrder($orders); 
 
-        foreach($checkWoocommerce as $check){
-            $checkWoocommerceOrders[] = intval($check['order_id']);
+        if($checkWoocommerce){
+            foreach($checkWoocommerce as $check){
+                $checkWoocommerceOrders[] = intval($check['order_id']);
+            }
+    
+            $missingLabels = array_diff($orders, $checkWoocommerceOrders);
+            return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date, 'labelMissingStatusArray' => $labelMissingStatusArray]);
+        } else {
+            return redirect()->route('labels')->with('error', 'Problème base de données woocommerce');        
         }
-
-        $missingLabels = array_diff($orders, $checkWoocommerceOrders);
-        return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date, 'labelMissingStatusArray' => $labelMissingStatusArray]);
+       
     }
 
     public function validLabelMissing(Request $request){

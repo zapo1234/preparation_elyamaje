@@ -350,6 +350,11 @@ class Api
             "order_id" => $orders
         ]);
 
+        if($resp->successful()){
+          return $resp->json();
+        } else {
+          return false;
+        }
         return $resp->json();
       });
 

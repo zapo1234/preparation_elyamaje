@@ -534,10 +534,10 @@
 
             @if (isset($liste_reassort))
 
-            <div class="card-body analytics_preparation p-0 mt-2">
+            <div class="card-body p-0 mt-2">
                 <div id="id_reassor1" class="card card_product_commande">
                     <div class="table-responsive p-3">
-                        <table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
+                        <table id="example2" class="table mb-0 dataTable table_mobile_responsive w-100 table_list_order table-striped table-bordered">
                             <thead>
                                 <tr>
                                     <th title="L'entrepôt qui va être décrémenté">Identifiant</th>
