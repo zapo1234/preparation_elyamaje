@@ -1094,16 +1094,18 @@ class Order extends BaseController
     // Récupérer les ids produit de woocommerce
     $ids_woocomerce = $this->product->getProductsByBarcode($data);
 
-    dd($ids_woocomerce);
+    // dd($ids_woocomerce);
 
     if ($ids_woocomerce["response"]) {
       // on fait l'actualisation sur woocommerce
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
+      dd($datas);
+
       foreach ($datas as $key => $data) {
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
-        $quantity = $data["qte"];
+        $quantity = $data["qty"];
 
         $update_response =  $this->product->updateStockServiceWc($product_id_wc, $quantity);
         if ($update_response["response"]) {
@@ -1113,6 +1115,9 @@ class Order extends BaseController
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
           array_push($datas_updated_error,$data);
         }
+        dump("reussits = ". count($datas_updated_succes));
+        dump("echoués = ". count($datas_updated_error));
+
       }
 
       // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
@@ -1122,8 +1127,8 @@ class Order extends BaseController
     }
 
     $temps_fin = microtime(true);
-    $temps_execution = $temps_fin - $temps_debut;
-    dump("Le script a pris " . $temps_execution . " secondes pour s'exécuter.");
+    $temps_execution = ($temps_fin - $temps_debut)/60;
+    dump("Le script a pris " . $temps_execution . " minutes pour s'exécuter.");
     dump("les stocks actuel sont");
     dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 

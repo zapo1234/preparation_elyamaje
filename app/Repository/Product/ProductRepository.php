@@ -196,6 +196,7 @@ class ProductRepository implements ProductInterface
 
          $getProductQuantity = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc);
 
+         // dd($getProductQuantity->json());
          $newQuantity = $getProductQuantity->json()['stock_quantity'] - $quantity;
 
          // Si c'est une variation

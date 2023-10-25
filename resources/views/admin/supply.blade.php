@@ -869,8 +869,8 @@
 
     $('#example4, #example6').DataTable({
     language: {
-        info: "_TOTAL_ lignes",
-        infoEmpty: "Aucun utlisateur à afficher",
+        info: "_START_ à _END_ sur _TOTAL_ entrées",
+        infoEmpty: "Aucune données",
         infoFiltered: "(filtrés sur un total de _MAX_ éléments)",
         lengthMenu: "_MENU_",
         search: "",
