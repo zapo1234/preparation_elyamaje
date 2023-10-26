@@ -48,6 +48,7 @@ class OrderRepository implements OrderInterface
                   // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
                   $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
                   $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+                  $is_professional = $this->getValueByKey($orderData['meta_data'], "billing_customer_is_professional");
    
    
                   if(isset($orderData['cart_hash'])){
@@ -95,7 +96,8 @@ class OrderRepository implements OrderInterface
       
                         'product_code' => $productCode,
                         'pick_up_location_id' => $pickUpLocationId,
-                        'customer_note' => $orderData['customer_note']
+                        'customer_note' => $orderData['customer_note'],
+                        'is_professional' => $is_professional != "" ? 1 : 0
                      ];
                      
       
@@ -581,7 +583,7 @@ class OrderRepository implements OrderInterface
                // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
                $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
                $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
-
+               $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
 
                // Insert commande
                $ordersToInsert = [
@@ -626,7 +628,8 @@ class OrderRepository implements OrderInterface
                   'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
-                  'customer_note' => $insert_order_by_user['customer_note']
+                  'customer_note' => $insert_order_by_user['customer_note'],
+                  'is_professional' => $is_professional != "" ? 1 : 0
                ];
 
                // Insert produits

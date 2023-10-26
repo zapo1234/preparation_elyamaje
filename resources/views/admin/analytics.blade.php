@@ -49,7 +49,7 @@
 							<input format="dd/mm/yyyy" type="date" class="d-none custom_dropdown date_dropdown">
 				
 							<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
-								<tbody></tbody>
+								<!-- <tbody></tbody> -->
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
 										<tr class="loading_table">
