@@ -151,6 +151,7 @@ Route::group(['middleware' => ['auth', 'role:6']], function () {
 // ADMIN ET CHEF D'ÉQUIPE
 Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('getAllOrders');
+    Route::get("/getProductsOrder", [Order::class, "getProductsOrder"])->name('getProductsOrder');
     Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');

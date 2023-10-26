@@ -817,6 +817,7 @@ class Order extends BaseController
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
+
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -1136,6 +1137,25 @@ class Order extends BaseController
     dump("les stocks actuel sont");
     dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 
+  }
+
+
+  public function getProductsOrder(Request $request){
+    $order_id = $request->post('order_id');
+
+    if(strlen($order_id) == 10){
+      $order = $this->reassort->getReassortById($order_id);
+    } else if(strlen($order_id) < 5){
+      $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+    } else {
+      $order = $this->order->getOrderById($order_id);
+    }
+
+    if($order){
+      echo json_encode(['success' => true, 'order' => $order]);
+    } else {
+      echo json_encode(['success' => false]);
+    }
   }
 }
 

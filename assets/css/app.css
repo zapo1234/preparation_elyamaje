@@ -6538,6 +6538,23 @@ a{
 	color: #333333;
 }
 
+.show_detail_button{
+	border: none;
+	background: transparent;
+}
+
+.show_detail_button i{
+	color: #333333;
+}
+
+.show_detail_button[disabled],.show_detail_button:disabled{
+	border: none !important;
+	background: transparent !important;
+}
+
+.show_detail_button[disabled] i, .show_detail_button:disabled i{
+	color: #cdc9c9 !important;
+}
 .dataTables_info{
 	display: none !important;
 }
