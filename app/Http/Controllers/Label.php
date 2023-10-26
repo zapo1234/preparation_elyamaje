@@ -78,8 +78,6 @@ class Label extends BaseController
             $orders = array_merge($orders, $orders_dolibarr);
         }
 
-
-        
         $labels = $this->label->getAllLabels()->toArray();
         $array_order = [];
 
