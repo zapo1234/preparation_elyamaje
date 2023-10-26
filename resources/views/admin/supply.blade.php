@@ -34,7 +34,6 @@
 
     </style>
 
-
    
 @endsection
 
@@ -42,7 +41,8 @@
     <div class="page-wrapper">
         <div class="page-content">
 
-
+        {{-- Alert d erreur --}}
+        @include('layouts.transfert.alertSuccesError')
 
         {{-- alert succes --}}
         <div class="alert alert-success border-0 bg-success alert-dismissible fade show alert-succes-calcul" style="display: none">
@@ -170,7 +170,7 @@
                         </div>
 
                         <div class="col-12 d-flex justify-content-center">
-                            <div class="form-check">
+                            <div class="form-check" id="first_transfert_div">
                                 
                                 @if (isset($vente_by_product) && $first_transfert)
                                     <input class="form-check-input" type="checkbox" id="first_transfert" name="first_transfert" checked>
@@ -181,7 +181,7 @@
                             </div>
                         </div>
                         <div class="col-12 d-flex justify-content-center">
-                            <div class="form-check">
+                            <div class="form-check d-none" id="ignore_bp_div">
                                 <input class="form-check-input" type="checkbox" id="ignore_bp" name="ignore_bp">
                                 <label class="form-check-label" for="ignore_bp">Ignorer la pb</label>
                             </div>
@@ -649,7 +649,7 @@
 
                                             {{-- @dd($value) --}}
                                             <div class="mt-5p">
-                                                <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Annuler le transfère" style="margin: 0;padding: 0;">
+                                                <button data-bs-toggle="modal" data-bs-target="#exampleFullScreenModal_{{$value["identifiant"]}}" type="submit" class="btn" title="Visualiser le transfère" style="margin: 0;padding: 0;">
                                                     <i style="color:#333333" class="lni lni-eye"></i>
                                                 </button>
 
@@ -659,6 +659,7 @@
                                                         <i class="fadeIn animated bx bx-sync"></i>
                                                     </button>
 
+                                                    {{-- @dump($value) --}}
                                                     <div class="modal fade" id="confirmationModal_{{$value["identifiant"]}}" tabindex="-1" style="display: none;" aria-hidden="true">
                                                         @include('layouts.transfert.modalConfirmationSyncro', 
                                                         [
@@ -667,6 +668,9 @@
 
                                                             'entrepot_source' => $value["entrepot_source"],
                                                             'entrepot_destination' => $value["entrepot_destination"],
+                                                            'totalSecondes' => round(count($value["detail_reassort"])*(40/8),0),
+                                                            'id_div' => "id_compteur_".$value["identifiant"],
+                                                            'btnElement' => "btn_".$value["identifiant"]
                                                         ])
                                                     </div>
 
@@ -1301,12 +1305,59 @@
 
    
 
+    function demarrerCompteARebours(totalSecondes, element,btnElement) {
+    var minutes = Math.floor(totalSecondes / 60);
+    var secondes = totalSecondes % 60;
+
+ 
+    var parentElement = element.parentElement;
+    parentElement.classList.remove('d-none');
+
+    
+
+    // console.log($(this));
+
+    // $(this).addClass("disabled-link");
+    btnElement.classList.add("disabled-link");
+    spinner = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Synchronisation en cours...`;
+    // $(this).html(spinner);
+    btnElement.innerHTML = spinner;
 
 
+    var interval = setInterval(function() {
+        if (totalSecondes == 0) {
+            clearInterval(interval);
+        } else {
+            if (secondes == 0) {
+                minutes--;
+                secondes = 59;
+            } else {
+                secondes--;
+            }
+
+            // Mettez à jour l'élément
+            element.innerHTML = (minutes < 10 ? '0' : '') + minutes + ':' + (secondes < 10 ? '0' : '') + secondes;
+            
+            totalSecondes--;
+        }
+    }, 1000);
+}
+    
 
 
-   
+// 
 
+$("#entrepot_destination").on("change", function(){
+    var entrepot_source = $(this).val();
+    if (entrepot_source != "all") {
+        $("#ignore_bp_div").removeClass('d-none');
+        $("#first_transfert_div").removeClass('d-none');
+        
+    }else{
+        $("#ignore_bp_div").addClass('d-none');
+        $("#first_transfert_div").addClass('d-none');
+    }
+})
 
     
     
@@ -1320,25 +1371,10 @@
         selectMonths: true,
         selectYears: true
     })
-    // ,
-    // $('.timepicker').pickatime()
 </script>
 
 
-{{-- <script>
-    $(function () {
-        $('#date-time').bootstrapMaterialDatePicker({
-            format: 'YYYY-MM-DD HH:mm'
-        });
-        $('#date').bootstrapMaterialDatePicker({
-            time: false
-        });
-        $('#time').bootstrapMaterialDatePicker({
-            date: false,
-            format: 'HH:mm'
-        });
-    });
-</script> --}}
+
 
 
 @endsection

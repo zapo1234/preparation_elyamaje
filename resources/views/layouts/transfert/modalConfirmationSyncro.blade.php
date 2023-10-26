@@ -13,13 +13,16 @@
                 Êtes-vous sûr de vouloir diminuer ces quantitées sur le site ?
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-danger">Syncroniser</button>
+                <div class="d-flex justify-content-center parent_compteur d-none">
+                   <strong>Temps estimé : </strong> <div id="id_compteur_{{$identifiant}}"></div>
+                </div>
+                <div class="btn">
+                    <button id="btn_{{$identifiant}}" type="submit" class="btn btn-danger" onclick='demarrerCompteARebours({{$totalSecondes}},{{$id_div}},{{$btnElement}})'>Synchronisation</button>
+                </div>
+                
             </div>
+
         </form>
-
-
-
-
 
     </div>
 </div>

@@ -455,13 +455,28 @@ class ReassortRepository implements ReassortInterface
         $transfer = $this->model::select('product_id', 'barcode', 'qty')
         ->where([
             ['identifiant_reassort', $identifiant_reassort],
-            ['qty','>', 0]
+            ['qty','>', 0],
+            ['syncro', 0],
         ])
         ->get()
         ->toArray()
         ;
         return $transfer;
     }
+
+    public function update_syncro_in_hist_reassort($identifiant_reassort, $datas_updated_succes){
+
+        try {
+            Reassort::whereIn('product_id', $datas_updated_succes)
+            ->where('identifiant_reassort', $identifiant_reassort)
+            ->update(["syncro" => 1]);
+            return true;
+
+        } catch (\Throwable $th) {
+            return -1;
+        }
+
+     }
 
 
 }
