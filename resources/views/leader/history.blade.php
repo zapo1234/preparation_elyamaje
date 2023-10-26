@@ -265,7 +265,7 @@
 															${order[0].coupons && order[0].coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+order[0].coupons+` (-`+order[0].coupons_amount+`€)</strong></span>` : ``}
 															${!order[0].from_dolibarr ? '<span class="montant_total_order">Expédition:<strong>'+order[0].shipping_amount+'€</strong></span>' : ''}
 															<span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
-															${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>`+gift_card+`€)</strong></span>` : ``}
+															${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>`+gift_card+`€</strong></span>` : ``}
 															<span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+total+`€</strong></span>
 															<div class="d-flex justify-content-end">
 																<button style="width:-min-content" type="button" class="close_show_order btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
