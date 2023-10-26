@@ -1063,44 +1063,22 @@ class Order extends BaseController
 
   function updateStockWoocommerce($identifiant_reassort){
 
-    $data = $this->reassort->getQteToTransfer($identifiant_reassort);
-
-    // dump($data);
-
+    $data1 = $this->reassort->getQteToTransfer($identifiant_reassort);
     // Enregistrez le temps de début
     $temps_debut = microtime(true);
-
-    // $data2 = [
-    //   ["product_id" => 4702,"barcode" => 3760324820391,"qty" => 10],
-    //   ["product_id" => 5250,"barcode" => 3760324820308,"qty" => 10],
-    //   ["product_id" => 5249,"barcode" => 3760324820353,"qty" => 10],     
-    //   ["product_id" => 4700,"barcode" => 3760324820407,"qty" => 10],
-    //   ["product_id" => 5240,"barcode" => 3760324820278,"qty" => 10],
-    //   ["product_id" => 4697,"barcode" => 3760324820261,"qty" => 10],   
-    // ];
     $datas_updated_succes = array();
     $datas_updated_error = array();
-
-
-   // on récupère les kits
-
-  //  $kits = $this->reassort->getKits();
-  //  $array_ids_kits = $kits["all_id_pere_kits"];
-  //  $composition_kits = $kits["composition_by_pere"];
-  //  dd($kits);
+    // $datas_updated_error = [1452,5987,3652,4789];
 
     // Récupérer les ids produit de woocommerce
-    $ids_woocomerce = $this->product->getProductsByBarcode($data);
-
-    // dd($ids_woocomerce);
+    $ids_woocomerce = $this->product->getProductsByBarcode($data1);
 
     if ($ids_woocomerce["response"]) {
       // on fait l'actualisation sur woocommerce
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
-      // dd($datas);
-      dump("Total = ". count($datas));
       foreach ($datas as $key => $data) {
+
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
         $quantity = $data["qty"];
@@ -1108,28 +1086,44 @@ class Order extends BaseController
         $update_response =  $this->product->updateStockServiceWc($product_id_wc, $quantity);
         if ($update_response["response"]) {
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
-          array_push($datas_updated_succes,$data);
+          array_push($datas_updated_succes,$data["product_id"]);
         }else {
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
-          array_push($datas_updated_error,$data);
+          array_push($datas_updated_error,$data["product_id"]);
         }
-        dump("reussits = ". count($datas_updated_succes));
-        dump("echoués = ". count($datas_updated_error));
 
       }
 
+      // updater la valeur de la colonne syncro des produit syncroniser 
+      if ($datas_updated_succes) {
+        $colonnes_values = ['origin_id_reassort' => "Valide_annule",'status' => "canceled"];
+        $res = $this->reassort->update_syncro_in_hist_reassort($identifiant_reassort, $datas_updated_succes);
+        return redirect()->back()->with('success', 'Synchronisation faite !');
+        if ($datas_updated_error) {
+          return redirect()->back()->with('success', 'ces ids ('.implode("|",$datas_updated_error).')des produit n\'on pas été synchroniser');
+        }
+      }
+      
+
+
       // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
 
+      return redirect()->back()->with('success', 'Synchronisation faite !');
+
     }else {
-      return ["response" => false, "message" => $ids_woocomerce["message"]];
+      return redirect()->back()->with('error', $ids_woocomerce["message"]);
+     // return ["response" => false, "message" => $ids_woocomerce["message"]];
     }
 
-    $temps_fin = microtime(true);
-    $temps_execution = ($temps_fin - $temps_debut)/60;
-    dump("Le script a pris " . $temps_execution . " minutes pour s'exécuter.");
-    dump("les stocks actuel sont");
-    dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
+  }
 
+  function composeKitsInWc(){
+   // on récupère les kits
+
+  //  $kits = $this->reassort->getKits();
+  //  $array_ids_kits = $kits["all_id_pere_kits"];
+  //  $composition_kits = $kits["composition_by_pere"];
+  //  dd($kits);
   }
 }
 
