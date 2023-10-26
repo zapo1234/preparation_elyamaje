@@ -148,9 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            // order_id de test 105413
-           // Si commande dolibarr ajouter cet attribut fk_commande
-           // aurore-leg@orange.fr
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
