@@ -6238,7 +6238,7 @@ a{
 		bottom: 10px !important;
 		right: 10px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 		height: 45px !important;
 		margin-top: 5px;
 	}
@@ -6247,7 +6247,7 @@ a{
 		bottom: 10px !important;
 		right: 65px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 		height: 45px !important;
 		margin-top: 5px;
 	}
@@ -6303,7 +6303,7 @@ a{
 		bottom: 10px !important;
 		right: 10px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 	}
 
 	.course-info{
@@ -6531,6 +6531,7 @@ a{
 .dashboard_leader .show_detail,
 .admin_orders_list .show_detail,
 .dashboard_leader .show_detail_customer,
+.dashboard_label .show_detail_customer,
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
 	cursor: pointer;

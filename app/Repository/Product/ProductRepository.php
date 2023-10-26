@@ -175,12 +175,14 @@ class ProductRepository implements ProductInterface
 
       foreach ($data as $key => $value) {
          if (isset($res[$value["barcode"]])) {
+
             array_push($ids_wc_vs_qte, [
                "id_product_wc" => $res[$value["barcode"]]["product_woocommerce_id"],
-               "qty" => $value["qty"]
+               "qty" => $value["qty"],
+               "product_id" => $value["product_id"]
             ]);
          }else {
-            return ["response" => false, "message" => "Le produit dont le code barre dolibarr est = ".$value["barcode"]." n'existe pas dans la table prepa_procuct wc"];
+            return ["response" => false, "message" => "Le produit dont le code barre dolibarr = ".$value["barcode"]." n'existe pas dans la table prepa_procuct wc"];
          }
       }
 

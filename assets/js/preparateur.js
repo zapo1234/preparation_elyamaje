@@ -15,6 +15,9 @@ $('body').on('click', '.show_order', function () {
         })
     } 
 
+    // Supprime la classe de rotation du bouton remove product
+    $(".remove_product i").removeClass('rotate')
+
     // Stock l'id de la comande en cours de prépa pour la récupérer plus tard
     $("#order_in_progress").val(id)
     $('#order_' + id).modal({
@@ -649,6 +652,7 @@ function remove_product(barcode, order_id){
 
                                 if(JSON.stringify(pick_items)){
                                     localStorage.setItem('barcode', JSON.stringify(pick_items));
+                                    progress_bar()
                                     return;
                                 }
                             }
@@ -657,7 +661,7 @@ function remove_product(barcode, order_id){
                 }
             })
         }  
-    }
+    }  
 }
 
 // Commandes classiques
@@ -679,6 +683,7 @@ $(".valid_manually_barcode").on('click', function(){
                 $("#order_"+order_id+" .barcode_"+barcode).find('.quantity_pick_in').text($("#order_"+order_id+" .barcode_"+barcode).find('.quantity_to_pick_in').text())
                 $("#modalManuallyBarcode").modal('hide')
                 $("#barcode").val(barcode)
+                progress_bar()
                 saveItem(order_id, false, true)
             } else {
                 $("#modalManuallyBarcode").modal('hide')
