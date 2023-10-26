@@ -6555,6 +6555,16 @@ a{
 .show_detail_button[disabled] i, .show_detail_button:disabled i{
 	color: #cdc9c9 !important;
 }
+
+.loading_show_detail_order{
+	position: absolute;
+	top: 50%;
+}
+.loading_show_detail_order .spinner-grow{
+	width: 4rem;
+	height: 4rem;
+}
+
 .dataTables_info{
 	display: none !important;
 }

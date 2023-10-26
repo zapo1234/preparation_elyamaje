@@ -46,6 +46,11 @@
 								</div>
 								<div class="table-responsive">
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+
+										<div class="d-none loading_show_detail_order w-100 d-flex justify-content-center">
+											<div class="spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
+										</div>
+										
 										<thead>
 											<tr>
 												<th class="col-md-1" scope="col">Commande</th>
@@ -195,14 +200,20 @@
 			// Show detail product order
 			function show(id){
 
+				$("#example").css('opacity', '0.3')
+				$(".loading_show_detail_order ").removeClass('d-none')
+
 				$(".show_detail").attr('disabled', true)
 				$.ajax({
 					url: "getProductsOrder",
 					method: 'GET',
 					data: {order_id: id}
 				}).done(function(data) {
+					$("#example").css('opacity', '1')
+					$(".loading_show_detail_order ").addClass('d-none')
+
 					if(JSON.parse(data).success){
-						
+					
 						var order = JSON.parse(data).order
 						console.log(order)
 						if(order.length > 0){
@@ -273,7 +284,6 @@
 									</div>
 								</div>
 							</div>`)
-							
 							$('#order_'+id).modal({
 								backdrop: 'static',
 								keyboard: false
