@@ -6531,9 +6531,14 @@ a{
 .dashboard_leader .show_detail,
 .admin_orders_list .show_detail,
 .dashboard_leader .show_detail_customer,
-.dashboard_label .show_detail_customer,
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
+	cursor: pointer;
+	color: #333333;
+}
+
+.dashboard_label .show_detail_customer{
+	font-size: 20px !important;
 	cursor: pointer;
 	color: #333333;
 }
