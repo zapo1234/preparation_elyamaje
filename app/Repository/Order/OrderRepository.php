@@ -97,7 +97,7 @@ class OrderRepository implements OrderInterface
                         'product_code' => $productCode,
                         'pick_up_location_id' => $pickUpLocationId,
                         'customer_note' => $orderData['customer_note'],
-                        'is_professional' => $is_professional != "" ? 1 : 0
+                        'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                      ];
                      
       
@@ -629,7 +629,7 @@ class OrderRepository implements OrderInterface
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
                   'customer_note' => $insert_order_by_user['customer_note'],
-                  'is_professional' => $is_professional != "" ? 1 : 0
+                  'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                ];
 
                // Insert produits
