@@ -30,6 +30,8 @@ interface OrderDolibarrInterface
     public function getAllOrdersAndLabel();
 
     public function orderResetDolibarr($order_id);
+
+    public function getAllProductsPickedDolibarr();
 }
 
 

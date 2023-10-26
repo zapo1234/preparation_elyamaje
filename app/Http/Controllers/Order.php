@@ -254,6 +254,12 @@ class Order extends BaseController
       // Préparateur
       $users =  $this->user->getUsersAndRoles();
       $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
+      $products_pick_dolibarr =  $this->orderDolibarr->getAllProductsPickedDolibarr();
+
+      if(count($products_pick_dolibarr) > 0){
+        $products_pick = array_merge($products_pick, $products_pick_dolibarr);
+      }
+
       $status_list = __('status_order');
       echo json_encode(['orders' => $this->orders(), 'users' => $users, 'products_pick' => $products_pick, 'status_list' => $status_list]);
     }
@@ -640,7 +646,8 @@ class Order extends BaseController
       $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro
       $order_id = explode(',', $request->post('order_id'))[0];
-        
+
+
       if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
@@ -676,7 +683,6 @@ class Order extends BaseController
         }
 
         $orders[0]['emballeur'] = Auth()->user()->name;
-        
         // envoi des données pour créer des facture via api dolibar....
         try{
             $this->factorder->Transferorder($orders);
@@ -692,7 +698,6 @@ class Order extends BaseController
 
             $this->history->save($data);
            
-
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {

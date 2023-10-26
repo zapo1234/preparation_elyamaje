@@ -313,6 +313,21 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          return false;
       }
    }
+
+   public function getAllProductsPickedDolibarr(){
+      $productsPicked = DB::table('lines_commande_doli')
+      ->select('products.product_woocommerce_id', 'id_commande as order_id', 'pick')
+      ->join('orders_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+      ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+      ->where('orders_doli.statut', '=',  'finished')
+      ->where('pick', '>',  0)
+      ->get()
+      ->toArray();
+
+      $productsPicked = json_decode(json_encode($productsPicked), true);
+
+      return $productsPicked;
+   }
 }
 
 

@@ -15,6 +15,9 @@ $('body').on('click', '.show_order', function () {
         })
     } 
 
+    // Supprime la classe de rotation du bouton remove product
+    $(".remove_product i").removeClass('rotate')
+
     // Stock l'id de la comande en cours de prépa pour la récupérer plus tard
     $("#order_in_progress").val(id)
     $('#order_' + id).modal({
@@ -174,9 +177,9 @@ document.addEventListener("keydown", function (e) {
                             $("#barcode_verif").val($("#barcode").val())
                             saveItem(order_id, true)
                         } else {
-                            saveItem(order_id, false)
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(1)
                             $(".show .barcode_"+$("#barcode").val())[0].scrollIntoView({behavior: 'smooth'}, true)
+                            saveItem(order_id, false)
                         }
 
                         if ($("#order_" + order_id + " .pick").length == $("#order_" + order_id + " .product_order").length) {
@@ -492,11 +495,15 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
                 var index = order_object.products.indexOf($("#barcode").val())
                 if (index != -1) {
                     order_object.quantity[index] = quantity_pick_in
-                    localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    if(JSON.stringify(list_barcode)){
+                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    }
                 } else {
                     order_object.products.push($("#barcode").val())
                     order_object.quantity.push(quantity_pick_in)
-                    localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    if(JSON.stringify(list_barcode)){
+                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    }
                 }
             } else {
                 if (mutiple_quantity) {
@@ -507,12 +514,16 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
                     } else {
                         order_object.products.push($("#barcode_verif").val())
                         order_object.quantity.push(1)
-                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                        if(JSON.stringify(list_barcode)){
+                            localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                        }
                     }
                 } else {
                     order_object.products.push($("#barcode").val())
                     order_object.quantity.push(1)
-                    localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    if(JSON.stringify(list_barcode)){
+                        localStorage.setItem('barcode', JSON.stringify(list_barcode))
+                    }
                 }
             }
            
@@ -526,7 +537,10 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
             }
 
             list_barcode.push(data)
-            localStorage.setItem('barcode', JSON.stringify(list_barcode))
+
+            if(JSON.stringify(list_barcode)){
+                localStorage.setItem('barcode', JSON.stringify(list_barcode))
+            }
         }
     } else {
         if($("#order_" + order_id + " .barcode_" + $("#barcode").val()).length > 0 ){
@@ -537,10 +551,15 @@ function saveItem(order_id, mutiple_quantity, manually = false) {
                 ],
                 quantity: [quantity_pick_in]
             }]
-            localStorage.setItem('barcode', JSON.stringify(data));
+
+            if(JSON.stringify(data)){
+                localStorage.setItem('barcode', JSON.stringify(data));
+            }
         }
         
     }
+
+    $("#barcode").val('')
     $("#barcode_verif").val('')
 }
 
@@ -619,24 +638,30 @@ function remove_product(barcode, order_id){
     $(".barcode_"+barcode).removeClass('pick')
     $(".barcode_"+barcode).find('.quantity_pick_in').text("0")
 
-    if(localStorage.getItem('barcode')){
-        if (localStorage.getItem('barcode')) {
-            pick_items = JSON.parse(localStorage.getItem('barcode'))
+    if (localStorage.getItem('barcode')) {
+        pick_items = JSON.parse(localStorage.getItem('barcode'))
+
+        if (pick_items.length > 0) {
             Object.keys(pick_items).forEach(function (k, v) {
                 if (pick_items[k]) {
                     if (order_id == pick_items[k].order_id) {
                         Object.keys(pick_items[k].products).forEach(function (l, w) {
                             if(pick_items[k].products[l] == barcode){
-                                pick_items[k].products.splice(w);
-                                pick_items[k].quantity.splice(w);
+                                pick_items[k].products.splice(l, 1);
+                                pick_items[k].quantity.splice(l, 1);
+
+                                if(JSON.stringify(pick_items)){
+                                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                                    progress_bar()
+                                    return;
+                                }
                             }
                         }) 
                     }
                 }
             })
-        }
-        localStorage.setItem('barcode', JSON.stringify(pick_items));
-    }
+        }  
+    }  
 }
 
 // Commandes classiques
@@ -658,6 +683,7 @@ $(".valid_manually_barcode").on('click', function(){
                 $("#order_"+order_id+" .barcode_"+barcode).find('.quantity_pick_in').text($("#order_"+order_id+" .barcode_"+barcode).find('.quantity_to_pick_in').text())
                 $("#modalManuallyBarcode").modal('hide')
                 $("#barcode").val(barcode)
+                progress_bar()
                 saveItem(order_id, false, true)
             } else {
                 $("#modalManuallyBarcode").modal('hide')

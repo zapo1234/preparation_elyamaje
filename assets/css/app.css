@@ -6074,6 +6074,23 @@ input::placeholder {
 	.table_mobile_responsive tr{
 		display: flex !important;
 		flex-direction: column !important;
+		border-left: 6px solid #333333 !important;
+		border-radius: 10px !important;
+		padding: 0px !important;
+	}
+
+	.table_mobile_responsive tr td:first-child{
+		border-top-right-radius: 10px !important;
+	} 
+
+	.table_mobile_responsive tr td:last-child{
+		border-bottom-right-radius: 10px !important;
+	} 
+
+
+
+	#example_wrapper .row{
+		--bs-gutter-x: 0px !important;
 	}
 
 	.table_mobile_responsive td .order-actions{
@@ -6221,7 +6238,7 @@ a{
 		bottom: 10px !important;
 		right: 10px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 		height: 45px !important;
 		margin-top: 5px;
 	}
@@ -6230,7 +6247,7 @@ a{
 		bottom: 10px !important;
 		right: 65px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 		height: 45px !important;
 		margin-top: 5px;
 	}
@@ -6286,7 +6303,7 @@ a{
 		bottom: 10px !important;
 		right: 10px !important;
 		padding: 6px 12px !important;
-		box-shadow: none !important;
+		/* box-shadow: none !important; */
 	}
 
 	.course-info{
@@ -6514,6 +6531,7 @@ a{
 .dashboard_leader .show_detail,
 .admin_orders_list .show_detail,
 .dashboard_leader .show_detail_customer,
+.dashboard_label .show_detail_customer,
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
 	cursor: pointer;

@@ -232,3 +232,54 @@ document.addEventListener("keydown", function(e) {
         }
     }
 })
+
+
+function showCustomerOrderDetail(order_id){
+    $("#order_detail_customer_"+order_id).modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#order_detail_customer_"+order_id).appendTo("body").modal('show');
+}
+
+// Edit details orders billing and shipping
+$('body').on('click', '.edit_detail_order', function() {
+    // Change icon edit to valid
+    $(this).removeClass('bx-pencil')
+    $(this).removeClass('.edit_detail_order')
+
+    $(this).addClass('bx-check')
+    $(this).addClass('valid_edit_detail_order')
+
+    var field = $(this).attr('data-edit')
+    $(".show ."+field).attr('contentEditable', true);
+    $(".show ."+field).addClass('editableContent');
+})
+
+// Valid edit details orders billing and shipping
+$('body').on('click', '.valid_edit_detail_order', function() {
+    // Change icon valid to edit
+    $(this).removeClass('bx-check')
+    $(this).removeClass('valid_edit_detail_order')
+
+    $(this).addClass('bx-pencil')
+    $(this).addClass('edit_detail_order')
+
+    var field = $(this).attr('data-edit')
+    var field_value = $(".show ."+field).text()
+    var order_id = $(".show #order_detail_id").val()
+    $(".show ."+field).attr('contentEditable', false);
+    $(".show ."+field).removeClass('editableContent');
+
+    $.ajax({
+        url: "updateDetailsOrders",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, field: field, field_value: field_value}
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+           
+        } else {
+            alert('Erreur')
+        }
+    })
+})
