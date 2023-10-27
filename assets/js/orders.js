@@ -188,6 +188,7 @@ $(document).ready(function() {
                         } 
                     }) 
 
+
                     return `
                         <div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
