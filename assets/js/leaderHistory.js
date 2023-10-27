@@ -78,7 +78,6 @@ function show(id){
                     var total_tax = !order[0].from_dolibarr ? parseFloat(order[0].total_tax_order) : parseFloat(order[0].total_tax)
                     var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? parseFloat(order[0].shipping_amount) : 0)
                 }
-                
 
                 $(".modal_order_admin").remove()
                 $('body').append(`<div class="modal_order_admin modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -100,7 +99,7 @@ function show(id){
                                                     ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                 </div>
                                                 ${!order[0].transfers ? '<span class="column22">'+parseFloat(element.cost).toFixed(2)+'</span>' : '<span class="column22">'+parseFloat(element.price_ttc).toFixed(2)+'</span>'}
-                                                <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
+                                                <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
                                                 ${!order[0].transfers ? '<span class="column44">'+parseFloat(element.price * element.quantity).toFixed(2)+'</span>' : '<span class="column44">'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'</span>'}
                                             </div>`
                                     ).join('')}
