@@ -817,7 +817,6 @@ class Order extends BaseController
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
-
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -1057,11 +1056,11 @@ class Order extends BaseController
     $field_value = $request->post('field_value');
 
     if($order_id && $field && $field_value){
-      $data = [
-        $field => $field_value
-      ];
-
-      $this->order->update($data, $order_id);
+        $data = [
+          $field => $field_value
+        ];
+  
+        $this->order->update($data, $order_id);
     } else {
       echo json_encode(['success' => false]);
     }
@@ -1140,7 +1139,7 @@ class Order extends BaseController
   }
 
 
-  public function getProductsOrder(Request $request){
+  public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
     if(strlen($order_id) == 10){

@@ -156,7 +156,7 @@
 											<h5>Détail</h5>
 										</div>
 									</div>
-									<div class="card-body mt-2 p-0">
+									<div class="mobile_padding card-body mt-2 p-0">
 										<div class="table-responsive">
 											<!-- chronopost -->
 											<select class="d-none select2_custom shipping_dropdown input_form_type">

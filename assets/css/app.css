@@ -5945,6 +5945,9 @@ input::placeholder {
 
 @media screen and (max-width: 950px) {
 
+	.mobile_padding{
+		padding: 1rem !important;
+	}
 	.hide_mobile{
 		display: none !important;
 	}
