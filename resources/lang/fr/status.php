@@ -13,6 +13,14 @@ return [
     |
     */
 
+    // Transferts
+    'transfers_processing' => 'Transfert en cours',
+    'transfers_waiting_to_validate' => 'Transfert attente de validation',
+    'transfers_waiting_validate' => 'Transfert en attente validé',
+    'transfers_prepared-order' => 'Transfert préparé',
+    'transfers_finished' => 'Transfert terminé',
+
+    // Commandes
     'processing' => 'En cours',
     'waiting_to_validate' => 'En attente de validation',
     'waiting_validate' => 'En attente validée',

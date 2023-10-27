@@ -14,7 +14,7 @@
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
-									<li class="breadcrumb-item active" aria-current="page">Commandes</li>
+									<li class="breadcrumb-item active" aria-current="page">Commandes & Transferts</li>
 								</ol>
 							</nav>
 						</div>
@@ -86,16 +86,23 @@
 														</div>
 													</td>
 													<td data-label="Status">
-														@if($histo['order_status'])
-															<select data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] }} select_status select_user">
+														@if($histo['order_status'] || $histo['order_dolibarr_status'])
+															<select data-from_dolibarr="{{ $histo['order_dolibarr_status'] ? 'true' : 'false' }}" data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }} select_status select_user">
 																@foreach($list_status as $key => $list)
-																	@if($key == $histo['order_status'])
-																		<option selected value="{{ $histo['order_status'] }}">{{ __('status.'.$histo['order_status']) }}</option>
+																	@if($key == $histo['order_status'] || $key == $histo['order_dolibarr_status'])
+																		<option selected value="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }}">
+																			{{ $histo['order_status'] ? __('status.'.$histo['order_status']) : __('status.'.$histo['order_dolibarr_status']) }}
+																		</option>
 																	@else 
 																		<option value="{{ $key }}">{{ __('status.'.$key) }}</option>
 																	@endif
 																@endforeach
 															</select>
+
+														@elseif($histo['order_transfer_status'])
+															<span class="p-2 badge bg-secondary">{{ __('status.transfers_'.$histo['order_transfer_status']) }}</span>
+														@else 
+															<span class="p-2 badge" style="background-color:#d16c6c">Aucune information</span>
 														@endif
 													</td>
 													<td data-label="Détails">

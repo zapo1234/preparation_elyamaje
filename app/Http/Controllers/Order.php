@@ -559,7 +559,7 @@ class Order extends BaseController
       if($order_id && $status){
 
         // Si pas de user récupéré
-        if($user_id == null){
+        if($user_id == null && ($from_dolibarr == "false" || $from_dolibarr == "0")){
           $order_details = $this->order->getOrderById($order_id);
 
           if(count($order_details) > 0){
@@ -584,7 +584,7 @@ class Order extends BaseController
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
 
 
-        if($from_dolibarr == "false"){
+        if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
               $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
@@ -795,13 +795,13 @@ class Order extends BaseController
       foreach($histories as $history){
         if(isset($histories_order[$history['order_id']])){
           if($histories_order[$history['order_id']]['status'] == "prepared"){
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished'] = $history['name'];
             $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
           } else {
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $history['name'];
             $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
@@ -809,7 +809,7 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
-          $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
+          // $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
           $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
@@ -817,6 +817,8 @@ class Order extends BaseController
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
+
+      // dd($histories_order);
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 

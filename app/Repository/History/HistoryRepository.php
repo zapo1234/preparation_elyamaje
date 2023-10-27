@@ -28,14 +28,19 @@ class HistoryRepository implements HistoryInterface
    }
 
    public function getAllHistory(){
+
+      // Woocommerce
       return $this->model::select('histories.id as histo', 'users.id', 'users.name', 'histories.poste', 'histories.created_at', 'histories.order_id',
-      'histories.status', 'orders.status as order_status')
+      'histories.status', 'orders.status as order_status', 'orders_doli.statut as order_dolibarr_status', 'hist_reassort.status as order_transfer_status')
          ->Leftjoin('users', 'users.id', '=', 'histories.user_id')
          ->Leftjoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         ->Leftjoin('orders_doli', 'orders_doli.id', '=', 'histories.order_id')
+         ->Leftjoin('hist_reassort', 'hist_reassort.identifiant_reassort', '=', 'histories.order_id')
          ->groupBy('histories.id')
          ->orderBy('histories.created_at', 'DESC')
          ->get()
          ->toArray();
+      
    }
 
    // Uniquement utilisé par l'admin

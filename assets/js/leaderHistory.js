@@ -14,6 +14,7 @@ $(document).ready(function() {
     $('body').on('change', '.select_status', function () {
         var order_id = $(this).attr('data-order')
         var status = $(this).val()
+        var from_dolibarr = $(this).attr('data-from_dolibarr') == "true" ? 1 : 0
 
         $(this).removeClass()
         $(this).addClass($(this).val())
@@ -25,7 +26,7 @@ $(document).ready(function() {
             url: "updateOrderStatus",
             method: 'GET',
             method: 'POST',
-            data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: false}
+            data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: from_dolibarr}
         }).done(function(data) {
             if(JSON.parse(data).success){
                 // Remove order from commandeId and update dolibarr id command
