@@ -199,7 +199,7 @@ $(document).ready(function() {
                                                 <span class="column2 name_column">Coût</span>
                                                 <span class="column3 name_column">Pick / Qté</span>
                                                 <span class="column4 name_column">Total</span>
-                                                ${!row.from_dolibarr ? '<span class="column5 name_column">Action</span>' : ''}
+                                                <span class="column5 name_column">Action</span>
                                             </div>	
 
                                             <div class="body_detail_product_order">
@@ -212,7 +212,8 @@ $(document).ready(function() {
                                                         
                                                         <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
-                                                        ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : ''}
+                                                        ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : 
+                                                        '<span class="column55"><i onclick="deleteProductDolibarr('+row.id+','+element.product_id+','+element.product_dolibarr_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>'}
                                                     </div>`
                                             ).join('')}
                                             </div>
@@ -221,7 +222,7 @@ $(document).ready(function() {
                                                     <div class="d-flex flex-column align-items-center justify-content-end">
                                                         ${row.coupons ? `<span class="order_customer_coupon mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
                                                     </div>
-                                                    <button type="button" data-order=`+row.id+` class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>
+                                                    ${!row.from_dolibarr ? '<button type="button" data-order='+row.id+' class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>' : ''}
                                                 </div>
                                                 <div class="d-flex flex-column list_amount">
                                                     <span class="montant_total_order">Sous-total des articles:<strong class="total_ht_order">`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
@@ -774,7 +775,7 @@ function showCustomerOrderDetail(id){
 
 }
 
-// Delete product's order
+// Delete product's order Woocommerce
 function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
     var id = variation_id != 0 ? variation_id : product_id
     var name = $("."+order_id+"_"+line_item_id).children('.detail_product_name_order').children('span').text()
@@ -787,6 +788,7 @@ function deleteProduct(order_id, line_item_id, variation_id, product_id, quantit
     $("#deleteProductOrderModal").appendTo("body").modal('show')
 }
 
+// Delete product's confirm order woocommerce
 function deleteProductOrderConfirm(increase){
 
     $(".loading_delete").removeClass('d-none')
@@ -821,6 +823,53 @@ function deleteProductOrderConfirm(increase){
         }
         $(".delete_modal").removeClass('d-none')
         $("#deleteProductOrderModal").modal('hide')
+    });
+}
+
+
+// Delete product's order dolibarr
+function deleteProductDolibarr(order_id, product_id, product_dolibarr_id, quantity){
+    var name = $("#order_"+order_id+" ."+product_id).children('.detail_product_name_order').children('span').text()
+    $("#order_id_dolibarr").val(order_id)
+    $("#product_dolibarr_id").val(product_dolibarr_id)
+    $("#product_order_id_dolibarr").val(product_id)
+    $(".product_dolibarr_name_to_delete").text(name)
+    $("#quantity_order_dolibarr").attr('max', quantity)
+    $("#deleteProductOrderDolibarrModal").appendTo("body").modal('show')
+}
+
+// Delete product's confirm order dolibarr
+function deleteProductOrderDolibarrConfirm(){
+
+    $(".loading_delete").removeClass('d-none')
+    $(".delete_modal").addClass('d-none')
+    var order_id = $("#order_id_dolibarr").val()
+    var product_dolibarr_id = $("#product_dolibarr_id").val()
+    var product_id = $("#product_order_id_dolibarr").val()
+    var quantity_to_delete = $("#quantity_order_dolibarr").val()
+    var quantity =  $("#quantity_order_dolibarr").attr('max')
+
+    $.ajax({
+        url: "deleteOrderProductsDolibarr",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, quantity_to_delete: quantity_to_delete, quantity:quantity, product_dolibarr_id: product_dolibarr_id}
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+
+            if(quantity_to_delete >= quantity){
+                $("#order_"+order_id+" ."+product_id).fadeOut()
+                $("#order_"+order_id+" ."+product_id).remove()
+            } else {
+                var new_quantity = parseInt(quantity) - parseInt(quantity_to_delete)
+                $("#order_"+order_id+" ."+product_id).find('.quantity').text('0 / '+new_quantity)
+            }
+           
+            $(".loading_delete").addClass('d-none')
+        } else {
+            alert('Erreur !')
+        }
+        $(".delete_modal").removeClass('d-none')
+        $("#deleteProductOrderDolibarrModal").modal('hide')
     });
 }
 

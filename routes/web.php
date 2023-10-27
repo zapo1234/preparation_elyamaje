@@ -165,6 +165,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
     Route::get("/user", [User::class, "getUser"])->name('account.user');
     Route::post("/deleteOrderProducts", [Order::class, "deleteOrderProducts"])->name('deleteOrderProducts');
+    Route::post("/deleteOrderProductsDolibarr", [Order::class, "deleteOrderProductsDolibarr"])->name('deleteOrderProductsDolibarr');
     Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
     Route::post("/closeDay", [Order::class, "closeDay"])->name('leader.closeDay');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
