@@ -108,23 +108,23 @@ class OrderRepository implements OrderInterface
                         'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                      ];
                      
-      
                      foreach($orderData['line_items'] as $value){
-      
-                        $productsToInsert[] = [
-                           'order_id' => $orderData['id'],
-                           'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                           'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                           'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                           'quantity' => $value['quantity'],
-                           'cost' => $value['subtotal'] / $value['quantity'],
-                           'subtotal_tax' =>  $value['subtotal_tax'],
-                           'total_tax' =>  $value['total_tax'],
-                           'total_price' => $value['total'],
-                           'pick' => 0,
-                           'line_item_id' => $value['id'],
-                           'pick_control' => 0
-                        ];
+                        if($value['is_virtual'] == "no"){
+                           $productsToInsert[] = [
+                              'order_id' => $orderData['id'],
+                              'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                              'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                              'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                              'quantity' => $value['quantity'],
+                              'cost' => $value['subtotal'] / $value['quantity'],
+                              'subtotal_tax' =>  $value['subtotal_tax'],
+                              'total_tax' =>  $value['total_tax'],
+                              'total_price' => $value['total'],
+                              'pick' => 0,
+                              'line_item_id' => $value['id'],
+                              'pick_control' => 0
+                           ];
+                        }
                      }
                   }
                } else {
@@ -648,20 +648,23 @@ class OrderRepository implements OrderInterface
 
                // Insert produits
                foreach($insert_order_by_user['line_items'] as $value){
-                  $productsToInsert[] = [
-                     'order_id' => $insert_order_by_user['id'],
-                     'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                     'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                     'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                     'quantity' => $value['quantity'],
-                     'cost' => $value['subtotal'] / $value['quantity'],
-                     'subtotal_tax' =>  $value['subtotal_tax'],
-                     'total_tax' =>  $value['total_tax'],
-                     'total_price' => $value['total'],
-                     'pick' => 0,
-                     'line_item_id' => $value['id'],
-                     'pick_control' => 0
-                  ];
+
+                  if($value['is_virtual'] == "no"){
+                     $productsToInsert[] = [
+                        'order_id' => $insert_order_by_user['id'],
+                        'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                        'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                        'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                        'quantity' => $value['quantity'],
+                        'cost' => $value['subtotal'] / $value['quantity'],
+                        'subtotal_tax' =>  $value['subtotal_tax'],
+                        'total_tax' =>  $value['total_tax'],
+                        'total_price' => $value['total'],
+                        'pick' => 0,
+                        'line_item_id' => $value['id'],
+                        'pick_control' => 0
+                     ];
+                  }
                }
 
                $this->model->insert($ordersToInsert);
