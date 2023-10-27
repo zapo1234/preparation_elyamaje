@@ -19,6 +19,7 @@ return [
     'transfers_waiting_validate' => 'Transfert en attente validé',
     'transfers_prepared-order' => 'Transfert préparé',
     'transfers_finished' => 'Transfert terminé',
+    'transfers_canceled' => 'Transfert annulé',
 
     // Commandes
     'processing' => 'En cours',
