@@ -5818,7 +5818,7 @@ input::placeholder {
 	.analytics_preparation .table tr td:first-child{
 		width: 20%;
 	}
-	
+
 	.table td{
 		border: none !important;
 	}
@@ -7115,6 +7115,10 @@ textarea:focus{
 
 .customer_billing a{
 	color: #0d6efd !important
+}
+
+.page-wrapper:has(.bg-404-no-role){
+	padding: 0px !important;
 }
 
 .bg-404-no-role{
