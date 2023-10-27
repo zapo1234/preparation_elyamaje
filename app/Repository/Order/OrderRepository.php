@@ -109,7 +109,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      foreach($orderData['line_items'] as $value){
-                        if($value['is_virtual'] == "no" && !str_contains('Carte Cadeau', $value['name'])){
+                        if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
                            $productsToInsert[] = [
                               'order_id' => $orderData['id'],
                               'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -648,7 +648,7 @@ class OrderRepository implements OrderInterface
 
                // Insert produits
                foreach($insert_order_by_user['line_items'] as $value){
-                  if($value['is_virtual'] == "no" && !str_contains('Carte Cadeau', $value['name'])){
+                  if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
                      $productsToInsert[] = [
                         'order_id' => $insert_order_by_user['id'],
                         'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
