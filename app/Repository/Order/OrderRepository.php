@@ -109,7 +109,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      foreach($orderData['line_items'] as $value){
-                        if($value['is_virtual'] == "no"){
+                        if($value['is_virtual'] == "no" && !str_contains('Carte Cadeau', $value['name'])){
                            $productsToInsert[] = [
                               'order_id' => $orderData['id'],
                               'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -648,8 +648,7 @@ class OrderRepository implements OrderInterface
 
                // Insert produits
                foreach($insert_order_by_user['line_items'] as $value){
-
-                  if($value['is_virtual'] == "no"){
+                  if($value['is_virtual'] == "no" && !str_contains('Carte Cadeau', $value['name'])){
                      $productsToInsert[] = [
                         'order_id' => $insert_order_by_user['id'],
                         'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -924,10 +923,14 @@ class OrderRepository implements OrderInterface
 
    public function unassignOrders(){
       try{
+         DB::table('products_order')
+            ->join('orders', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+            ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
+            ->delete();
+
          $this->model
-         ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
-         ->delete();
+            ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
+            ->delete();
 
          echo json_encode(['success' => true]);
       } catch(Exception $e){

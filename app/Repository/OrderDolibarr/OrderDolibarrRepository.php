@@ -96,7 +96,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function unassignOrdersDolibarr(){
       try{
-         $this->model::where('statut', '!=', 'finished')->update(['user_id' => 0]);
+         $this->model::where('statut', 'processing')->update(['user_id' => 0]);
          return true;
       } catch(Exception $e){
          return false;
