@@ -100,7 +100,7 @@
 															</select>
 
 														@elseif($histo['order_transfer_status'])
-															<span class="p-2 badge bg-secondary">{{ __('status.transfers_'.$histo['order_transfer_status']) }}</span>
+															<span class="p-2 badge bg-secondary">{{ __('status_transfers.'.$histo['order_transfer_status']) }}</span>
 														@else 
 															<span class="p-2 badge" style="background-color:#d16c6c">Aucune information</span>
 														@endif
