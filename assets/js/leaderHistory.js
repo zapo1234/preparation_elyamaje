@@ -94,7 +94,7 @@ function show(id){
 
                                     <div class="body_detail_product_order">
                                         ${order.map((element) => `
-                                            <div class="${element.product_id}  ${element.variation_id} ${order[0].id}_${element.id} ${id[element.product_id] ? (id[element.product_id] == element.quantity ? 'pick' : '') : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                            <div class="${element.product_id}  ${element.variation_id} ${order[0].id}_${element.id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
                                                 <div class="column11 d-flex align-items-center detail_product_name_order">
                                                     ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
                                                 </div>
