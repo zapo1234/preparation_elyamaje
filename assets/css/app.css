@@ -548,23 +548,6 @@ a {
 
 @media (min-width: 992px) {
 
-	.analytics_preparation .table tr td:last-child{
-		width: 5%;
-	}
-	
-	.analytics_preparation .table tr td:nth-child(2){
-		width: 30%;
-	}
-	
-	.analytics_preparation .table tr td:nth-child(3){
-		width: 30%;
-	}
-	
-	
-	.analytics_preparation .table tr td:first-child{
-		width: 20%;
-	}
-
 	.dashboard_leader tr td:first-child{
 		max-width: 200px;
 		white-space: normal;
@@ -3370,6 +3353,10 @@ a {
 	background-color: rgb(0 0 0 / 15%) !important;
 }
 
+.bg-dark{
+	background-color: #333333 !important;
+}
+
 
 .bg-light-success {
 
@@ -5814,6 +5801,24 @@ input::placeholder {
   @media screen and (min-width: 951px) {
 
 	/* CSS DATATABLE */
+
+	.analytics_preparation .table tr td:last-child{
+		width: 5%;
+	}
+	
+	.analytics_preparation .table tr td:nth-child(2){
+		width: 30%;
+	}
+	
+	.analytics_preparation .table tr td:nth-child(3){
+		width: 30%;
+	}
+	
+	
+	.analytics_preparation .table tr td:first-child{
+		width: 20%;
+	}
+	
 	.table td{
 		border: none !important;
 	}
@@ -7964,7 +7969,7 @@ select option[disabled] {
   }
   .sidebar .nav-links li i{
 	height: 50px;
-	min-width: 78px;
+	min-width: 65px;
 	text-align: center;
 	line-height: 50px;
 	color: #fff;

@@ -46,9 +46,17 @@ class OrderRepository implements OrderInterface
                   }
       
                   // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-                  $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
-                  $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
-                  $is_professional = $this->getValueByKey($orderData['meta_data'], "billing_customer_is_professional");
+
+                  if(isset($orderData['meta_data'])){
+                     $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
+                     $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+                     $is_professional = $this->getValueByKey($orderData['meta_data'], "billing_customer_is_professional");
+                  } else {
+                     $productCode = null;
+                     $pickUpLocationId = null;
+                     $is_professional = false;
+                  }
+                 
    
    
                   if(isset($orderData['cart_hash'])){
@@ -581,10 +589,16 @@ class OrderRepository implements OrderInterface
                }
 
                // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-               $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
-               $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
-               $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
-
+               if(isset($insert_order_by_user['meta_data'])){
+                  $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
+                  $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
+                  $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
+               } else {
+                  $productCode = null;
+                  $pickUpLocationId = null;
+                  $is_professional = false;
+               }
+             
                // Insert commande
                $ordersToInsert = [
                   'order_woocommerce_id' => $insert_order_by_user['id'],

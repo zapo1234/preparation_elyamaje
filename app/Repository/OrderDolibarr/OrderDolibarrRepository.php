@@ -95,7 +95,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function unassignOrdersDolibarr(){
-      return $this->model->update(['user_id' => 0]);
+      try{
+         $this->model::where('statut', '!=', 'finished')->update(['user_id' => 0]);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
    }
 
    public function getAllOrdersDolibarrByIdUser($user_id){
