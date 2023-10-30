@@ -390,7 +390,9 @@
                                     @else
                                         @if ((($value["qte_optimale"] - $value["qte_act"])/($value["qte_en_stock_in_source"]))>0.2)
                                         {{-- Quantité demandée trop elevée on donne juste 20% de la reserve --}}
-                                        <td data-key="qte_transfere" data-value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" disabled></td>
+                                        <td class="alerte_stock" data-key="qte_transfere" data-value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" disabled>
+                                            <i title="La demande ne peux pas être transférer en entier (20%)" class="fadeIn animated bx bx-error"></i>
+                                        </td>
                                         @else
                                         <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
                                         @endif
