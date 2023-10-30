@@ -20,7 +20,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       $array_order = [];
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
-      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'users.name as preparateur')
+      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'lines_commande_doli.id_product as product_dolibarr_id', 'users.name as preparateur')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
@@ -41,7 +41,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getOrdersDolibarrById($order_id){
       $order_lines = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
-      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'users.name as preparateur')
+      'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'lines_commande_doli.id_product as product_dolibarr_id', 'users.name as preparateur')
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
@@ -95,7 +95,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function unassignOrdersDolibarr(){
-      return $this->model->update(['user_id' => 0]);
+      try{
+         $this->model::where('statut', 'processing')->update(['user_id' => 0]);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
    }
 
    public function getAllOrdersDolibarrByIdUser($user_id){
@@ -319,7 +324,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       ->select('products.product_woocommerce_id', 'id_commande as order_id', 'pick')
       ->join('orders_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
       ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
-      ->where('orders_doli.statut', '=',  'finished')
       ->where('pick', '>',  0)
       ->get()
       ->toArray();
@@ -327,6 +331,24 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       $productsPicked = json_decode(json_encode($productsPicked), true);
 
       return $productsPicked;
+   }
+
+   public function  updateProductOrder($order_id, $product_id, $data){
+      try{
+         $update_products = DB::table('lines_commande_doli')->where('id_commande', $order_id)->where('id_product', $product_id)->update($data);
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
+   }
+
+   public function  deleteProductOrder($order_id, $product_id){
+      try{
+         $delete_products = DB::table('lines_commande_doli')->where('id_commande', $order_id)->where('id_product', $product_id)->delete();
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
    }
 }
 

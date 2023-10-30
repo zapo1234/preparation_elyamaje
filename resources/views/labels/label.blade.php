@@ -214,179 +214,182 @@
 												@endif
 											</td>
 											<td data-label="Expédition">
-												<i onclick="showCustomerOrderDetail({{ $order[0]['order_woocommerce_id'] }})" class="show_detail_customer lni lni-delivery"></i>
-												<div class="modal fade" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered" role="document">
-														<div class="modal-content">
-															<div class="modal-body">
-																<div class="mt-2 d-flex flex-column w-100 customer_billing">
-																	<div class="d-flex w-100 justify-content-between">
-																		<span class="customer_detail_title badge bg-dark">Facturation</span>
-																		@if(str_contains('chrono', $order[0]['shipping_method']))
-																			<div class="shipping_chrono_logo"></div>
+
+												@if(!isset($order[0]['fk_commande']))
+													<i onclick="showCustomerOrderDetail({{ $order[0]['order_woocommerce_id'] }})" class="show_detail_customer lni lni-delivery"></i>
+													<div class="modal fade" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered" role="document">
+															<div class="modal-content">
+																<div class="modal-body">
+																	<div class="mt-2 d-flex flex-column w-100 customer_billing">
+																		<div class="d-flex w-100 justify-content-between">
+																			<span class="customer_detail_title badge bg-dark">Facturation</span>
+																			@if(str_contains('chrono', $order[0]['shipping_method']))
+																				<div class="shipping_chrono_logo"></div>
+																			@endif
+																		</div>
+
+																		@if($order[0]['billing_customer_first_name'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_first_name">{{ $order[0]['billing_customer_first_name'] }}</span>
+																				<i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_last_name'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_last_name">{{ $order[0]['billing_customer_last_name'] }}</span>
+																				<i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_email'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<div class="d-flex w-100">
+																					<i class="bx bx-envelope"></i>
+																					<span class="billing_customer_email">{{ $order[0]['billing_customer_email'] }}</span>
+																				</div>
+																				<i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_phone'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<div class="d-flex w-100">
+																					<i class="bx bx-phone"></i>
+																					<span class="billing_customer_phone">{{ $order[0]['billing_customer_phone'] }}</span>
+																				</div>
+																				<i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_company'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_company">{{ $order[0]['billing_customer_company'] }}</span>
+																				<i data-edit="billing_customer_company" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_address_1'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_address_1">{{ $order[0]['billing_customer_address_1'] }}</span>
+																				<i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_address_2'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_address_2">{{ $order[0]['billing_customer_address_2'] }}</span>
+																				<i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_state'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_state">{{ $order[0]['billing_customer_state'] }}</span>
+																				<i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_postcode'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_postcode">{{ $order[0]['billing_customer_postcode'] }}</span>
+																				<i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_city'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_city">{{ $order[0]['billing_customer_city'] }}</span>
+																				<i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
+
+																		@if($order[0]['billing_customer_country'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="billing_customer_country">{{ $order[0]['billing_customer_country'] }}</span>
+																			</div>
 																		@endif
 																	</div>
 
-																	@if($order[0]['billing_customer_first_name'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_first_name">{{ $order[0]['billing_customer_first_name'] }}</span>
-																			<i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																	<div class="mt-3 d-flex flex-column w-100 customer_shipping">
+																		<span class="customer_detail_title badge bg-dark">Expédition</span>
 
-																	@if($order[0]['billing_customer_last_name'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_last_name">{{ $order[0]['billing_customer_last_name'] }}</span>
-																			<i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['billing_customer_email'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<div class="d-flex w-100">
-																				<i class="bx bx-envelope"></i>
-																				<span class="billing_customer_email">{{ $order[0]['billing_customer_email'] }}</span>
+																		@if($order[0]['shipping_customer_first_name'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_first_name">{{ $order[0]['shipping_customer_first_name'] }}</span>
+																				<i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
 																			</div>
-																			<i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@endif
 
-																	@if($order[0]['billing_customer_phone'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<div class="d-flex w-100">
-																				<i class="bx bx-phone"></i>
-																				<span class="billing_customer_phone">{{ $order[0]['billing_customer_phone'] }}</span>
+																		@if($order[0]['shipping_customer_last_name'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_last_name">{{ $order[0]['shipping_customer_last_name'] }}</span>
+																				<i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
 																			</div>
-																			<i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@endif
 
-																	@if($order[0]['billing_customer_company'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_company">{{ $order[0]['billing_customer_company'] }}</span>
-																			<i data-edit="billing_customer_company" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_company'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_company">{{ $order[0]['shipping_customer_company'] }}</span>
+																				<i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_address_1'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_address_1">{{ $order[0]['billing_customer_address_1'] }}</span>
-																			<i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_address_1'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_address_1">{{ $order[0]['shipping_customer_address_1'] }}</span>
+																				<i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_address_2'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_address_2">{{ $order[0]['billing_customer_address_2'] }}</span>
-																			<i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_address_2'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_address_2">{{ $order[0]['shipping_customer_address_2'] }}</span>
+																				<i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_state'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_state">{{ $order[0]['billing_customer_state'] }}</span>
-																			<i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_state'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_state">{{ $order[0]['shipping_customer_state'] }}</span>
+																				<i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_postcode'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_postcode">{{ $order[0]['billing_customer_postcode'] }}</span>
-																			<i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_postcode'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_postcode">{{ $order[0]['shipping_customer_postcode'] }}</span>
+																				<i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_city'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_city">{{ $order[0]['billing_customer_city'] }}</span>
-																			<i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_city'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_city">{{ $order[0]['shipping_customer_city'] }}</span>
+																				<i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
+																			</div>
+																		@endif
 
-																	@if($order[0]['billing_customer_country'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="billing_customer_country">{{ $order[0]['billing_customer_country'] }}</span>
-																		</div>
-																	@endif
+																		@if($order[0]['shipping_customer_country'])
+																			<div class="d-flex w-100 justify-content-between">
+																				<span class="shipping_customer_country">{{ $order[0]['shipping_customer_country'] }}</span>
+																			</div>
+																		@endif
+																	</div>
 																</div>
 
-																<div class="mt-3 d-flex flex-column w-100 customer_shipping">
-																	<span class="customer_detail_title badge bg-dark">Expédition</span>
+																<input type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}" id="order_detail_id">
+																<input type="hidden" value="{{ $order[0]['user_id'] }}" id="order_attributed">
 
-																	@if($order[0]['shipping_customer_first_name'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_first_name">{{ $order[0]['shipping_customer_first_name'] }}</span>
-																			<i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_last_name'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_last_name">{{ $order[0]['shipping_customer_last_name'] }}</span>
-																			<i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_company'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_company">{{ $order[0]['shipping_customer_company'] }}</span>
-																			<i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_address_1'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_address_1">{{ $order[0]['shipping_customer_address_1'] }}</span>
-																			<i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_address_2'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_address_2">{{ $order[0]['shipping_customer_address_2'] }}</span>
-																			<i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_state'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_state">{{ $order[0]['shipping_customer_state'] }}</span>
-																			<i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_postcode'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_postcode">{{ $order[0]['shipping_customer_postcode'] }}</span>
-																			<i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_city'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_city">{{ $order[0]['shipping_customer_city'] }}</span>
-																			<i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
-																		</div>
-																	@endif
-
-																	@if($order[0]['shipping_customer_country'])
-																		<div class="d-flex w-100 justify-content-between">
-																			<span class="shipping_customer_country">{{ $order[0]['shipping_customer_country'] }}</span>
-																		</div>
-																	@endif
+																<div class="modal-footer d-flex w-100 justify-content-between">
+																	<span>Commande #{{ $order[0]['order_woocommerce_id'] }}</span>
+																	<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
 																</div>
-															</div>
-
-															<input type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}" id="order_detail_id">
-															<input type="hidden" value="{{ $order[0]['user_id'] }}" id="order_attributed">
-
-															<div class="modal-footer d-flex w-100 justify-content-between">
-																<span>Commande #{{ $order[0]['order_woocommerce_id'] }}</span>
-																<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
 															</div>
 														</div>
 													</div>
-												</div>
+												@endif
 											</td>
 										</tr>
 									@endforeach

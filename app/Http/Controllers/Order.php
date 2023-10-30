@@ -559,7 +559,7 @@ class Order extends BaseController
       if($order_id && $status){
 
         // Si pas de user récupéré
-        if($user_id == null){
+        if($user_id == null && ($from_dolibarr == "false" || $from_dolibarr == "0")){
           $order_details = $this->order->getOrderById($order_id);
 
           if(count($order_details) > 0){
@@ -584,7 +584,7 @@ class Order extends BaseController
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
 
 
-        if($from_dolibarr == "false"){
+        if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
               $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
@@ -795,13 +795,13 @@ class Order extends BaseController
       foreach($histories as $history){
         if(isset($histories_order[$history['order_id']])){
           if($histories_order[$history['order_id']]['status'] == "prepared"){
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished'] = $history['name'];
             $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
           } else {
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $history['name'];
             $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
@@ -809,7 +809,7 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
-          $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
+          // $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
           $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
@@ -817,6 +817,8 @@ class Order extends BaseController
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
+
+      // dd($histories_order);
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -924,6 +926,23 @@ class Order extends BaseController
         echo json_encode(['success' => true, 'order' => $delete]);
       } else {
         echo json_encode(['success' => false]);
+      }
+    }
+
+    public function deleteOrderProductsDolibarr(Request $request){
+      $order_id = $request->post('order_id');
+      $quantity_to_delete = $request->post('quantity_to_delete');
+      $quantity = $request->post('quantity');
+      $product_dolibarr_id = $request->post('product_dolibarr_id');
+
+      if($quantity_to_delete >= $quantity){
+        // Suppression produit
+        $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
+        echo json_encode(['success' => $delete_product]);
+      } else {
+        // Update produit
+        $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
+        echo json_encode(['success' => $update_product]);
       }
     }
 
@@ -1056,11 +1075,11 @@ class Order extends BaseController
     $field_value = $request->post('field_value');
 
     if($order_id && $field && $field_value){
-      $data = [
-        $field => $field_value
-      ];
-
-      $this->order->update($data, $order_id);
+        $data = [
+          $field => $field_value
+        ];
+  
+        $this->order->update($data, $order_id);
     } else {
       echo json_encode(['success' => false]);
     }
@@ -1136,6 +1155,25 @@ class Order extends BaseController
     dump("les stocks actuel sont");
     dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 
+  }
+
+
+  public function getDetailsOrder(Request $request){
+    $order_id = $request->post('order_id');
+
+    if(strlen($order_id) == 10){
+      $order = $this->reassort->getReassortById($order_id);
+    } else if(strlen($order_id) < 5){
+      $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+    } else {
+      $order = $this->order->getOrderById($order_id);
+    }
+
+    if($order){
+      echo json_encode(['success' => true, 'order' => $order]);
+    } else {
+      echo json_encode(['success' => false]);
+    }
   }
 }
 

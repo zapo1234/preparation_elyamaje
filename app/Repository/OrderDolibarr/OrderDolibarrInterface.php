@@ -32,6 +32,10 @@ interface OrderDolibarrInterface
     public function orderResetDolibarr($order_id);
 
     public function getAllProductsPickedDolibarr();
+
+    public function  updateProductOrder($order_id, $product_id, $data);
+
+    public function  deleteProductOrder($order_id, $product_id);
 }
 
 

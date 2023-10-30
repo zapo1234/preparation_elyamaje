@@ -186,6 +186,7 @@ class WoocommerceService
             'total_tax' => $order['total_tva'],
             'weight' => $order['weight'],
             'ref' => $order['ref'],
+            'product_dolibarr_id' => $order['product_dolibarr_id'],
             'meta_data' => [
               ['key' => 'barcode', "value" => $order['barcode']]
             ]
@@ -205,6 +206,7 @@ class WoocommerceService
           'total_tax' => $order['total_tva'],
           'weight' => $order['weight'],
           'ref' => $order['ref'],
+          'product_dolibarr_id' => $order['product_dolibarr_id'],
           'meta_data' => [
             ['key' => 'barcode', "value" => $order['barcode']]
           ]
