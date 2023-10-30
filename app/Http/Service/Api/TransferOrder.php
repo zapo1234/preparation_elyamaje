@@ -351,13 +351,22 @@ class TransferOrder
                                  
                                    $socid = $id_cl;
                                    $woo = $donnees['billing']['company'];
+                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté....
+                                    
 
                                     $type_id="";
                                     $typent_code="";
+                                    // defini si le client est un professionnel.
                                    if($woo!=""){
                                       $type_id ="235";
                                       $typent_code="PROF";
                                    }
+
+                                   if($index_type==true){
+                                     $type_id ="235";
+                                     $typent_code="PROF";
+                                   }
+
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce 
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
