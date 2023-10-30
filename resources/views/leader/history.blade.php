@@ -14,7 +14,7 @@
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
-									<li class="breadcrumb-item active" aria-current="page">Commandes</li>
+									<li class="breadcrumb-item active" aria-current="page">Commandes & Transferts</li>
 								</ol>
 							</nav>
 						</div>
@@ -46,12 +46,18 @@
 								</div>
 								<div class="table-responsive">
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+
+										<div class="d-none loading_show_detail_order w-100 d-flex justify-content-center">
+											<div class="spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
+										</div>
+										
 										<thead>
 											<tr>
 												<th class="col-md-1" scope="col">Commande</th>
 												<th class="col-md-4"scope="col">Préparée</th>
 												<th class="col-md-4" scope="col">Emballée</th>
 												<th class="col-md-1" scope="col">Status</th>
+												<th class="col-md-1" scope="col">Détails</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -80,16 +86,33 @@
 														</div>
 													</td>
 													<td data-label="Status">
-														@if($histo['order_status'])
-															<select data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] }} select_status select_user">
+														@if($histo['order_status'] || $histo['order_dolibarr_status'])
+															<select data-from_dolibarr="{{ $histo['order_dolibarr_status'] ? 'true' : 'false' }}" data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }} select_status select_user">
 																@foreach($list_status as $key => $list)
-																	@if($key == $histo['order_status'])
-																		<option selected value="{{ $histo['order_status'] }}">{{ __('status.'.$histo['order_status']) }}</option>
+																	@if($key == $histo['order_status'] || $key == $histo['order_dolibarr_status'])
+																		<option selected value="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }}">
+																			{{ $histo['order_status'] ? __('status.'.$histo['order_status']) : __('status.'.$histo['order_dolibarr_status']) }}
+																		</option>
 																	@else 
 																		<option value="{{ $key }}">{{ __('status.'.$key) }}</option>
 																	@endif
 																@endforeach
 															</select>
+
+														@elseif($histo['order_transfer_status'])
+															<span class="p-2 badge bg-secondary">{{ __('status_transfers.'.$histo['order_transfer_status']) }}</span>
+														@else 
+															<span class="p-2 badge" style="background-color:#d16c6c">Aucune information</span>
+														@endif
+													</td>
+													<td data-label="Détails">
+														<button class="show_detail_button show_detail" onclick="show({{ $histo['order_id'] }})">
+															<i class="font-primary font-20 bx bx-cube"></i>
+														</button>	
+														@if(strlen($histo['order_id']) < 10 && strlen($histo['order_id']) >= 5)
+															<button class="show_detail_button show_detail" onclick="show_detail_customer({{ $histo['order_id'] }})">
+																<i class="font-primary font-20 bx bx-user"></i>
+															</button>	
 														@endif
 													</td>
 												</tr>
@@ -128,63 +151,10 @@
 	
 		@section("script")
 
-		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
-		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
+	<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
+	<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+	<script src="assets/plugins/select2/js/select2.min.js"></script>
+	<script src="{{asset('assets/js/leaderHistory.js')}}"></script>
 
-		<script>
-
-			$("#history_by_date").on('click', function(){
-				$('#modalGenerateHistory').modal('show')
-			})
-			
-			$(document).ready(function() {
-				$('#example').DataTable({
-					"ordering": false,
-					"initComplete": function( settings, json ) {
-						$(".loading").addClass('d-none')
-						$('#example').removeClass('d-none');
-					}
-				})
-
-				$('body').on('change', '.select_status', function () {
-					var order_id = $(this).attr('data-order')
-					var status = $(this).val()
-
-					$(this).removeClass()
-					$(this).addClass($(this).val())
-					$(this).addClass("select_status")
-					$(this).addClass("select_user")
-
-					// Change status order
-					$.ajax({
-						url: "updateOrderStatus",
-						method: 'GET',
-						method: 'POST',
-        				data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: false}
-					}).done(function(data) {
-						if(JSON.parse(data).success){
-							// Remove order from commandeId and update dolibarr id command
-							if(status == "processing"){
-								$.ajax({
-									url: "orderReInvoicing",
-									method: 'GET',
-									method: 'POST',
-									data: {_token: $('input[name=_token]').val(), order_id: order_id}
-								}).done(function(data) {
-									if(JSON.parse(data).success){
-									} else {
-										alert(JSON.parse(data).message)
-									}
-								});
-							}
-						} else {
-							alert('Erreur !')
-						}
-					});
-
-				})
-			})
-        </script>
 	@endsection
 

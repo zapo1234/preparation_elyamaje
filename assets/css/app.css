@@ -351,6 +351,12 @@ a {
 	margin-bottom: 10px !important;
 }
 
+.dataTables_wrapper input,
+.dataTables_wrapper select{
+	border-radius: 10px;
+}
+
+
 @media (max-width: 650px) { 
 
 	.dataTables_wrapper .col-md-6{
@@ -467,6 +473,10 @@ a {
 	font-size: 0.8em;
 }
 
+.badge{
+	border-radius: 10px !important;
+}
+
 .back_labels{
 	position: absolute;
 	bottom: 1rem;
@@ -547,23 +557,6 @@ a {
 }
 
 @media (min-width: 992px) {
-
-	.analytics_preparation .table tr td:last-child{
-		width: 5%;
-	}
-	
-	.analytics_preparation .table tr td:nth-child(2){
-		width: 30%;
-	}
-	
-	.analytics_preparation .table tr td:nth-child(3){
-		width: 30%;
-	}
-	
-	
-	.analytics_preparation .table tr td:first-child{
-		width: 20%;
-	}
 
 	.dashboard_leader tr td:first-child{
 		max-width: 200px;
@@ -3370,6 +3363,10 @@ a {
 	background-color: rgb(0 0 0 / 15%) !important;
 }
 
+.bg-dark{
+	background-color: #333333 !important;
+}
+
 
 .bg-light-success {
 
@@ -5814,6 +5811,24 @@ input::placeholder {
   @media screen and (min-width: 951px) {
 
 	/* CSS DATATABLE */
+
+	.analytics_preparation .table tr td:last-child{
+		width: 5%;
+	}
+	
+	.analytics_preparation .table tr td:nth-child(2){
+		width: 30%;
+	}
+	
+	.analytics_preparation .table tr td:nth-child(3){
+		width: 30%;
+	}
+	
+	
+	.analytics_preparation .table tr td:first-child{
+		width: 20%;
+	}
+
 	.table td{
 		border: none !important;
 	}
@@ -5945,6 +5960,9 @@ input::placeholder {
 
 @media screen and (max-width: 950px) {
 
+	.mobile_padding{
+		padding: 1rem !important;
+	}
 	.hide_mobile{
 		display: none !important;
 	}
@@ -6531,11 +6549,43 @@ a{
 .dashboard_leader .show_detail,
 .admin_orders_list .show_detail,
 .dashboard_leader .show_detail_customer,
-.dashboard_label .show_detail_customer,
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
 	cursor: pointer;
 	color: #333333;
+}
+
+.dashboard_label .show_detail_customer{
+	font-size: 20px !important;
+	cursor: pointer;
+	color: #333333;
+}
+
+.show_detail_button{
+	border: none;
+	background: transparent;
+}
+
+.show_detail_button i{
+	color: #333333;
+}
+
+.show_detail_button[disabled],.show_detail_button:disabled{
+	border: none !important;
+	background: transparent !important;
+}
+
+.show_detail_button[disabled] i, .show_detail_button:disabled i{
+	color: #cdc9c9 !important;
+}
+
+.loading_show_detail_order{
+	position: absolute;
+	top: 50%;
+}
+.loading_show_detail_order .spinner-grow{
+	width: 4rem;
+	height: 4rem;
 }
 
 .dataTables_info{
@@ -6834,6 +6884,9 @@ select:focus, input:focus{
 	border: 1px solid #ced4da
 }
 
+.select2-selection{
+	border-radius: 10px !important;
+}
 .dataTables_scrollHeadInner{
 	width: 100% !important;
 }
@@ -7075,6 +7128,10 @@ textarea:focus{
 
 .customer_billing a{
 	color: #0d6efd !important
+}
+
+.page-wrapper:has(.bg-404-no-role){
+	padding: 0px !important;
 }
 
 .bg-404-no-role{
@@ -7563,7 +7620,7 @@ button[disabled]{
 
 .role_list{
 	overflow-y: auto !important;
-    max-height: 30vh !important;
+    max-height: 27vh !important;
 }
 
 .colissimo_form, .billing_form{
@@ -7929,7 +7986,7 @@ select option[disabled] {
   }
   .sidebar .nav-links li i{
 	height: 50px;
-	min-width: 78px;
+	min-width: 65px;
 	text-align: center;
 	line-height: 50px;
 	color: #fff;

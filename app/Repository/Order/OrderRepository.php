@@ -46,8 +46,17 @@ class OrderRepository implements OrderInterface
                   }
       
                   // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-                  $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
-                  $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+
+                  if(isset($orderData['meta_data'])){
+                     $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
+                     $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+                     $is_professional = $this->getValueByKey($orderData['meta_data'], "billing_customer_is_professional");
+                  } else {
+                     $productCode = null;
+                     $pickUpLocationId = null;
+                     $is_professional = false;
+                  }
+                 
    
    
                   if(isset($orderData['cart_hash'])){
@@ -95,26 +104,27 @@ class OrderRepository implements OrderInterface
       
                         'product_code' => $productCode,
                         'pick_up_location_id' => $pickUpLocationId,
-                        'customer_note' => $orderData['customer_note']
+                        'customer_note' => $orderData['customer_note'],
+                        'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                      ];
                      
-      
                      foreach($orderData['line_items'] as $value){
-      
-                        $productsToInsert[] = [
-                           'order_id' => $orderData['id'],
-                           'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                           'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                           'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                           'quantity' => $value['quantity'],
-                           'cost' => $value['subtotal'] / $value['quantity'],
-                           'subtotal_tax' =>  $value['subtotal_tax'],
-                           'total_tax' =>  $value['total_tax'],
-                           'total_price' => $value['total'],
-                           'pick' => 0,
-                           'line_item_id' => $value['id'],
-                           'pick_control' => 0
-                        ];
+                        if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
+                           $productsToInsert[] = [
+                              'order_id' => $orderData['id'],
+                              'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                              'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                              'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                              'quantity' => $value['quantity'],
+                              'cost' => $value['subtotal'] / $value['quantity'],
+                              'subtotal_tax' =>  $value['subtotal_tax'],
+                              'total_tax' =>  $value['total_tax'],
+                              'total_price' => $value['total'],
+                              'pick' => 0,
+                              'line_item_id' => $value['id'],
+                              'pick_control' => 0
+                           ];
+                        }
                      }
                   }
                } else {
@@ -579,10 +589,16 @@ class OrderRepository implements OrderInterface
                }
 
                // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-               $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
-               $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
-
-
+               if(isset($insert_order_by_user['meta_data'])){
+                  $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
+                  $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
+                  $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
+               } else {
+                  $productCode = null;
+                  $pickUpLocationId = null;
+                  $is_professional = false;
+               }
+             
                // Insert commande
                $ordersToInsert = [
                   'order_woocommerce_id' => $insert_order_by_user['id'],
@@ -626,25 +642,28 @@ class OrderRepository implements OrderInterface
                   'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
                   'product_code' => $productCode,
                   'pick_up_location_id' => $pickUpLocationId,
-                  'customer_note' => $insert_order_by_user['customer_note']
+                  'customer_note' => $insert_order_by_user['customer_note'],
+                  'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                ];
 
                // Insert produits
                foreach($insert_order_by_user['line_items'] as $value){
-                  $productsToInsert[] = [
-                     'order_id' => $insert_order_by_user['id'],
-                     'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                     'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                     'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                     'quantity' => $value['quantity'],
-                     'cost' => $value['subtotal'] / $value['quantity'],
-                     'subtotal_tax' =>  $value['subtotal_tax'],
-                     'total_tax' =>  $value['total_tax'],
-                     'total_price' => $value['total'],
-                     'pick' => 0,
-                     'line_item_id' => $value['id'],
-                     'pick_control' => 0
-                  ];
+                  if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
+                     $productsToInsert[] = [
+                        'order_id' => $insert_order_by_user['id'],
+                        'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                        'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                        'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                        'quantity' => $value['quantity'],
+                        'cost' => $value['subtotal'] / $value['quantity'],
+                        'subtotal_tax' =>  $value['subtotal_tax'],
+                        'total_tax' =>  $value['total_tax'],
+                        'total_price' => $value['total'],
+                        'pick' => 0,
+                        'line_item_id' => $value['id'],
+                        'pick_control' => 0
+                     ];
+                  }
                }
 
                $this->model->insert($ordersToInsert);
@@ -904,10 +923,14 @@ class OrderRepository implements OrderInterface
 
    public function unassignOrders(){
       try{
+         DB::table('products_order')
+            ->join('orders', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+            ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
+            ->delete();
+
          $this->model
-         ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-         ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
-         ->delete();
+            ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
+            ->delete();
 
          echo json_encode(['success' => true]);
       } catch(Exception $e){

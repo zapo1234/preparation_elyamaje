@@ -12,11 +12,11 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-    'processing' => 'En cours',
-    'waiting_to_validate' => 'En attente de validation',
-    'waiting_validate' => 'En attente validée',
-    'prepared-order' => 'Commande préparée',
-    'finished' => 'Terminée',
-    "order-new-distrib" => "Commmande futur distibuteur",
-    "en-attente-de-pai" => "En attente de paiement distributeur"
+
+    'processing' => 'Transfert en cours',
+    'waiting_to_validate' => 'Transfert attente de validation',
+    'waiting_validate' => 'Transfert en attente validé',
+    'prepared-order' => 'Transfert préparé',
+    'finished' => 'Transfert terminé',
+    'canceled' => 'Transfert annulé',
 ];

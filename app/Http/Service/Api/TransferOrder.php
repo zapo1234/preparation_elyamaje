@@ -149,7 +149,6 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
-            // Si commande dolibarr ajouter cet attribut fk_commande
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -238,6 +237,8 @@ class TransferOrder
 		               "mode" => "1",
 		               )
          	         ), true);
+
+                
 
                   
                  foreach($clientSearch as $data) {
@@ -349,9 +350,25 @@ class TransferOrder
                                     $a2 = $dat[1];
                                  
                                    $socid = $id_cl;
-                                   $woo ="woocommerce";
+                                   $woo = $donnees['billing']['company'];
+                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté....
+                                    
+
+                                    $type_id="";
+                                    $typent_code="";
+                                    // defini si le client est un professionnel.
+                                   if($woo!=""){
+                                      $type_id ="235";
+                                      $typent_code="PROF";
+                                   }
+
+                                   if($index_type==true){
+                                     $type_id ="235";
+                                     $typent_code="PROF";
+                                   }
+
                                     $name="";
-                                   $code = $donnees['customer_id'];//customer_id dans woocomerce
+                                   $code = $donnees['customer_id'];//customer_id dans woocomerce 
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
 
                                     $data_tiers[] =[ 
@@ -362,6 +379,8 @@ class TransferOrder
                                    'zip' => $donnees['billing']['postcode'],
                                    'status'=>'1',
                                    'email' => $donnees['billing']['email'],
+                                   "typent_id" => $type_id,
+                                   "typent_code" => $typent_code,
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
                                     'code_client'	=> $code_client,
@@ -552,7 +571,6 @@ class TransferOrder
                          
                         // echo json_encode($data_lines);
                        // Create le client via Api...
-                      
 
                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar

@@ -156,7 +156,7 @@
 											<h5>Détail</h5>
 										</div>
 									</div>
-									<div class="card-body mt-2 p-0">
+									<div class="mobile_padding card-body mt-2 p-0">
 										<div class="table-responsive">
 											<!-- chronopost -->
 											<select class="d-none select2_custom shipping_dropdown input_form_type">
@@ -250,7 +250,7 @@
 								</div>
 
 
-								<!-- Modal confirmation supression produit commande -->
+								<!-- Modal confirmation supression produit commande Woocommerce -->
 								<div class="modal fade modal_backfrop_fixe" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
@@ -269,6 +269,34 @@
 												<div class="delete_modal w-100 d-flex justify-content-center flex-column">
 													<button onclick="deleteProductOrderConfirm(1)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui et remettre en stock</button>
 													<button onclick="deleteProductOrderConfirm(0)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui sans remettre en stock</button>
+													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- Modal confirmation supression produit commande Dolibarr-->
+								<div class="modal fade modal_backfrop_fixe" id="deleteProductOrderDolibarrModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered" role="document">
+										<div class="modal-content">
+											<div class="modal-body">
+												<h2 class="text-center">Supprimer ce produit de la commande ?</h2>
+												<span class="text-center d-flex justify-content-center text-danger w-100 mb-2 product_dolibarr_name_to_delete"></span>
+												<input type="hidden" id="order_id_dolibarr" value="">
+												<input type="hidden" id="product_dolibarr_id" value="">
+												<input type="hidden" id="product_order_id_dolibarr"value="">
+												<div class="w-100">
+													<label>Quantité :</label>
+													<input class="custom_input w-100 mb-3" type="number" id="quantity_order_dolibarr"value="1">
+												</div>
+													<div class="d-none loading_delete d-flex w-100 justify-content-center">
+														<div class="spinner-border" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+													</div>
+												<div class="delete_modal w-100 d-flex justify-content-center flex-column">
+													<button onclick="deleteProductOrderDolibarrConfirm()" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Valider</button>
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
 												</div>
 											</div>

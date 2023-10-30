@@ -559,7 +559,7 @@ class Order extends BaseController
       if($order_id && $status){
 
         // Si pas de user récupéré
-        if($user_id == null){
+        if($user_id == null && ($from_dolibarr == "false" || $from_dolibarr == "0")){
           $order_details = $this->order->getOrderById($order_id);
 
           if(count($order_details) > 0){
@@ -584,7 +584,7 @@ class Order extends BaseController
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
 
 
-        if($from_dolibarr == "false"){
+        if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
               $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
@@ -698,6 +698,7 @@ class Order extends BaseController
 
             $this->history->save($data);
            
+
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {
@@ -794,13 +795,13 @@ class Order extends BaseController
       foreach($histories as $history){
         if(isset($histories_order[$history['order_id']])){
           if($histories_order[$history['order_id']]['status'] == "prepared"){
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished'] = $history['name'];
             $histories_order[$history['order_id']]['prepared_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($history['created_at']));
           } else {
-            $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
+            // $histories_order[$history['order_id']]['order_status'] = $histories_order[$history['order_id']]['order_status'];
             $histories_order[$history['order_id']]['prepared'] = $history['name'];
             $histories_order[$history['order_id']]['finished'] = $histories_order[$history['order_id']]['name'];
             $histories_order[$history['order_id']]['finished_date'] = date('d/m/Y H:i', strtotime($histories_order[$history['order_id']]['created_at']));
@@ -808,7 +809,7 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
-          $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
+          // $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
           $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
           $histories_order[$history['order_id']]['finished'] = $history['status'] == 'finished' ? $history['name'] : null;
@@ -816,6 +817,8 @@ class Order extends BaseController
           $histories_order[$history['order_id']]['prepared_date'] = $history['status'] == 'prepared' ? date('d/m/Y H:i', strtotime($history['created_at'])) : null;
         } 
       }
+
+      // dd($histories_order);
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -923,6 +926,23 @@ class Order extends BaseController
         echo json_encode(['success' => true, 'order' => $delete]);
       } else {
         echo json_encode(['success' => false]);
+      }
+    }
+
+    public function deleteOrderProductsDolibarr(Request $request){
+      $order_id = $request->post('order_id');
+      $quantity_to_delete = $request->post('quantity_to_delete');
+      $quantity = $request->post('quantity');
+      $product_dolibarr_id = $request->post('product_dolibarr_id');
+
+      if($quantity_to_delete >= $quantity){
+        // Suppression produit
+        $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
+        echo json_encode(['success' => $delete_product]);
+      } else {
+        // Update produit
+        $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
+        echo json_encode(['success' => $update_product]);
       }
     }
 
@@ -1055,11 +1075,11 @@ class Order extends BaseController
     $field_value = $request->post('field_value');
 
     if($order_id && $field && $field_value){
-      $data = [
-        $field => $field_value
-      ];
-
-      $this->order->update($data, $order_id);
+        $data = [
+          $field => $field_value
+        ];
+  
+        $this->order->update($data, $order_id);
     } else {
       echo json_encode(['success' => false]);
     }
@@ -1068,22 +1088,44 @@ class Order extends BaseController
 
   function updateStockWoocommerce($identifiant_reassort){
 
-    $data1 = $this->reassort->getQteToTransfer($identifiant_reassort);
+    $data = $this->reassort->getQteToTransfer($identifiant_reassort);
+
+    // dump($data);
+
     // Enregistrez le temps de début
     $temps_debut = microtime(true);
+
+    // $data2 = [
+    //   ["product_id" => 4702,"barcode" => 3760324820391,"qty" => 10],
+    //   ["product_id" => 5250,"barcode" => 3760324820308,"qty" => 10],
+    //   ["product_id" => 5249,"barcode" => 3760324820353,"qty" => 10],     
+    //   ["product_id" => 4700,"barcode" => 3760324820407,"qty" => 10],
+    //   ["product_id" => 5240,"barcode" => 3760324820278,"qty" => 10],
+    //   ["product_id" => 4697,"barcode" => 3760324820261,"qty" => 10],   
+    // ];
     $datas_updated_succes = array();
     $datas_updated_error = array();
-    // $datas_updated_error = [1452,5987,3652,4789];
+
+
+   // on récupère les kits
+
+  //  $kits = $this->reassort->getKits();
+  //  $array_ids_kits = $kits["all_id_pere_kits"];
+  //  $composition_kits = $kits["composition_by_pere"];
+  //  dd($kits);
 
     // Récupérer les ids produit de woocommerce
-    $ids_woocomerce = $this->product->getProductsByBarcode($data1);
+    $ids_woocomerce = $this->product->getProductsByBarcode($data);
+
+    // dd($ids_woocomerce);
 
     if ($ids_woocomerce["response"]) {
       // on fait l'actualisation sur woocommerce
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
+      // dd($datas);
+      dump("Total = ". count($datas));
       foreach ($datas as $key => $data) {
-
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
         $quantity = $data["qty"];
@@ -1091,44 +1133,47 @@ class Order extends BaseController
         $update_response =  $this->product->updateStockServiceWc($product_id_wc, $quantity);
         if ($update_response["response"]) {
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
-          array_push($datas_updated_succes,$data["product_id"]);
+          array_push($datas_updated_succes,$data);
         }else {
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
-          array_push($datas_updated_error,$data["product_id"]);
+          array_push($datas_updated_error,$data);
         }
+        dump("reussits = ". count($datas_updated_succes));
+        dump("echoués = ". count($datas_updated_error));
 
       }
-
-      // updater la valeur de la colonne syncro des produit syncroniser 
-      if ($datas_updated_succes) {
-        $colonnes_values = ['origin_id_reassort' => "Valide_annule",'status' => "canceled"];
-        $res = $this->reassort->update_syncro_in_hist_reassort($identifiant_reassort, $datas_updated_succes);
-        return redirect()->back()->with('success', 'Synchronisation faite !');
-        if ($datas_updated_error) {
-          return redirect()->back()->with('success', 'ces ids ('.implode("|",$datas_updated_error).')des produit n\'on pas été synchroniser');
-        }
-      }
-      
-
 
       // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
 
-      return redirect()->back()->with('success', 'Synchronisation faite !');
-
     }else {
-      return redirect()->back()->with('error', $ids_woocomerce["message"]);
-     // return ["response" => false, "message" => $ids_woocomerce["message"]];
+      return ["response" => false, "message" => $ids_woocomerce["message"]];
     }
+
+    $temps_fin = microtime(true);
+    $temps_execution = ($temps_fin - $temps_debut)/60;
+    dump("Le script a pris " . $temps_execution . " minutes pour s'exécuter.");
+    dump("les stocks actuel sont");
+    dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 
   }
 
-  function composeKitsInWc(){
-   // on récupère les kits
 
-  //  $kits = $this->reassort->getKits();
-  //  $array_ids_kits = $kits["all_id_pere_kits"];
-  //  $composition_kits = $kits["composition_by_pere"];
-  //  dd($kits);
+  public function getDetailsOrder(Request $request){
+    $order_id = $request->post('order_id');
+
+    if(strlen($order_id) == 10){
+      $order = $this->reassort->getReassortById($order_id);
+    } else if(strlen($order_id) < 5){
+      $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+    } else {
+      $order = $this->order->getOrderById($order_id);
+    }
+
+    if($order){
+      echo json_encode(['success' => true, 'order' => $order]);
+    } else {
+      echo json_encode(['success' => false]);
+    }
   }
 }
 

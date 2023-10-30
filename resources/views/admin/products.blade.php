@@ -80,7 +80,6 @@
 										<th>Catégorie</th>
 										<th>Status</th>
 										<th>Stock</th>
-										<th>Order</th>
 										<th>Location</th>
 									</tr>
 								</thead>
@@ -110,7 +109,6 @@
 													Non géré
 												@endif
 											</td>
-											<td>{{ $product->menu_order }}</td>
 											<td data-label="Location" class="product_location">
 												<div class="d-flex location_product w-100">
 													<input disabled id="input_{{ $product->product_woocommerce_id }}" class="custom_input" type="text" value="{{ $product->location }}">

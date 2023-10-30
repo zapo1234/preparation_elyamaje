@@ -44,12 +44,12 @@
 						</div>
 					</div>
 
-					<div class="card-body analytics_preparation p-0 mt-2">
-						<div class="table-responsive">
+					<div class="mobile_padding  card-body analytics_preparation p-0 mt-2">
+						<div>
 							<input format="dd/mm/yyyy" type="date" class="d-none custom_dropdown date_dropdown">
 				
 							<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
-								<tbody></tbody>
+								<!-- <tbody></tbody> -->
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
 										<tr class="loading_table">
@@ -66,7 +66,7 @@
 					</div>
 				</div>
 
-				<div class="col">
+				<div class="mobile_padding  col">
 					<div class="card radius-10">
 						<div class="header_title d-flex align-items-center">
 							<div class="w-100 d-flex justify-content-between">
