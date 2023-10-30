@@ -7607,7 +7607,7 @@ button[disabled]{
 
 .role_list{
 	overflow-y: auto !important;
-    max-height: 30vh !important;
+    max-height: 27vh !important;
 }
 
 .colissimo_form, .billing_form{
