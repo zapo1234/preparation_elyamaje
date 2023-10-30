@@ -351,6 +351,12 @@ a {
 	margin-bottom: 10px !important;
 }
 
+.dataTables_wrapper input,
+.dataTables_wrapper select{
+	border-radius: 10px;
+}
+
+
 @media (max-width: 650px) { 
 
 	.dataTables_wrapper .col-md-6{
@@ -465,6 +471,10 @@ a {
     right: 15px;
     top: 18px;
 	font-size: 0.8em;
+}
+
+.badge{
+	border-radius: 10px !important;
 }
 
 .back_labels{
@@ -6874,6 +6884,9 @@ select:focus, input:focus{
 	border: 1px solid #ced4da
 }
 
+.select2-selection{
+	border-radius: 10px !important;
+}
 .dataTables_scrollHeadInner{
 	width: 100% !important;
 }
