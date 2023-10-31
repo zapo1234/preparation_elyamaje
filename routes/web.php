@@ -194,7 +194,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labels", [Label::class, "getlabels"])->name('labels.filter');
-
     Route::post("/labelDownload", [Label::class, "labelDownload"])->name('label.download');
     Route::post("/labelPrintZPL", [Label::class, "labelPrintZPL"])->name('label.printZpl');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
@@ -236,10 +235,10 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
-// Tache crons mise a jours status commande colissimo 21h tous les jours
+// Tache crons mise a jours status commande colissimo 13h & 21h tous les jours
 Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
-// Route test à enlever par la suite
+// Route test validation emballage à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 
