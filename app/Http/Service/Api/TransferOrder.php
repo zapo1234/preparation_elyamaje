@@ -351,10 +351,8 @@ class TransferOrder
                                  
                                    $socid = $id_cl;
                                    $woo = $donnees['billing']['company'];
-                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté.....
-                                    
-
-                                    $type_id="";
+                                   
+                                     $type_id="";
                                     $typent_code="";
                                     // defini si le client est un professionnel.
                                    if($woo!=""){
@@ -362,8 +360,8 @@ class TransferOrder
                                       $typent_code="PROF";
                                    }
                                    
-                                   if(isset($index_type)){
-                                   if($index_type==true){
+                                   if(isset($donnees['is_professional'])){
+                                   if($donnees['is_professional']==true){
                                      $type_id ="235";
                                      $typent_code="PROF";
                                    }
