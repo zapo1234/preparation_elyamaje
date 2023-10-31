@@ -110,7 +110,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.user_id', $user_id)
-         ->where('orders_doli.statut', '!=', 'finished')
+         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
          ->get();
 
          $orders = json_decode(json_encode($orders), true);
