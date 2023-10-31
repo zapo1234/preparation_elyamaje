@@ -20,6 +20,7 @@ use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Label\LabelMissingRepository;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -40,6 +41,7 @@ class Admin extends BaseController
     private $woocommerce;
     private $factorder;
     private $labelMissing;
+    private $orderDolibarr;
 
     public function __construct(
         Api $api, 
@@ -54,7 +56,8 @@ class Admin extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
-        LabelMissingRepository $labelMissing
+        LabelMissingRepository $labelMissing,
+        OrderDolibarrRepository $orderDolibarr
     ){
         $this->api = $api;
         $this->category = $category;
@@ -69,6 +72,7 @@ class Admin extends BaseController
         $this->woocommerce = $woocommerce;
         $this->factorder = $factorder;
         $this->labelMissing = $labelMissing;
+        $this->orderDolibarr = $orderDolibarr;
     }
 
     public function syncCategories(){
@@ -540,24 +544,31 @@ class Admin extends BaseController
         if($order_id == ""){
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
-            if($order){
-                $order = $this->woocommerce->transformArrayOrder($order);
-                $order[0]['emballeur'] = "admin";
-            } else {
-                // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
-                $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
 
-                if(isset($order[1][0]['code'])){
-                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+            if(strlen($order_id) < 5){
+                $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+                $order = $this->woocommerce->transformArrayOrderDolibarr($order);
+                $order[0]['emballeur'] = "Admin";
+            } else {
+                if($order){
+                    $order = $this->woocommerce->transformArrayOrder($order);
+                    $order[0]['emballeur'] = "Admin";
                 } else {
-                    // Insert la commande
-                    $insert = $this->order->insertOrdersByUsers($order);
-                    $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
-                    $order_insert[0]['emballeur'] = "admin";
-                    $order = $this->woocommerce->transformArrayOrder($order_insert);
+                    // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
+                    $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
+    
+                    if(isset($order[1][0]['code'])){
+                        return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+                    } else {
+                        // Insert la commande
+                        $insert = $this->order->insertOrdersByUsers($order);
+                        $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
+                        $order_insert[0]['emballeur'] = "Admin";
+                        $order = $this->woocommerce->transformArrayOrder($order_insert);
+                    }
                 }
             }
-
+            
             try {
                 $this->factorder->Transferorder($order);  
 
