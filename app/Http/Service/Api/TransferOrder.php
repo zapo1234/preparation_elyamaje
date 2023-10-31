@@ -351,7 +351,7 @@ class TransferOrder
                                  
                                    $socid = $id_cl;
                                    $woo = $donnees['billing']['company'];
-                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté....
+                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté.....
                                     
 
                                     $type_id="";
