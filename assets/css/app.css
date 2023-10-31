@@ -8267,3 +8267,6 @@ select option[disabled] {
 .error_stock{
     color: red !important;
 }
+.alerte_stock{
+	color: #ff7c07 !important
+}
