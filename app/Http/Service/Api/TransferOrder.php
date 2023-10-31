@@ -361,11 +361,18 @@ class TransferOrder
                                       $type_id ="235";
                                       $typent_code="PROF";
                                    }
-
+                                   
+                                   if(isset($index_type)){
                                    if($index_type==true){
                                      $type_id ="235";
                                      $typent_code="PROF";
                                    }
+
+                                  }else{
+                                    $type_id="";
+                                    $typent_code="";
+                                      
+                                  }
 
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce 
@@ -571,6 +578,7 @@ class TransferOrder
                          
                         // echo json_encode($data_lines);
                        // Create le client via Api...
+                      
 
                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
