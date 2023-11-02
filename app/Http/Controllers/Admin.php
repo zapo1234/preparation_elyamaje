@@ -547,8 +547,12 @@ class Admin extends BaseController
 
             if(strlen($order_id) < 5){
                 $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
-                $order = $this->woocommerce->transformArrayOrderDolibarr($order);
-                $order[0]['emballeur'] = "Admin";
+                if(count($order) > 0){
+                    $order = $this->woocommerce->transformArrayOrderDolibarr($order);
+                    $order[0]['emballeur'] = "Admin";
+                } else {
+                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante !');
+                }
             } else {
                 if($order){
                     $order = $this->woocommerce->transformArrayOrder($order);
@@ -568,7 +572,7 @@ class Admin extends BaseController
                     }
                 }
             }
-            
+
             try {
                 $this->factorder->Transferorder($order);  
 
