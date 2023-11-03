@@ -152,7 +152,7 @@ class Order extends BaseController
         } 
 
         // Récupère les commandes attribuée en base s'il y en a 
-        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
+        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
         $ids = array_column($orders_distributed, "order_woocommerce_id");
         $list_orders = [];
         
@@ -454,11 +454,11 @@ class Order extends BaseController
         }
 
         if($picked && $from_dolibarr){
-            $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
+            $this->orderDolibarr->updateOneOrderStatus("prepared-order", $order_id);
             echo json_encode(["success" => true]);
             return;
         } else if($picked && $from_transfers){
-            $this->reassort->updateStatusTextReassort($order_id ,"finished");
+            $this->reassort->updateStatusTextReassort($order_id ,"prepared-order");
             echo json_encode(["success" => true]);
             return;
         } else if($picked && !$from_transfers && !$from_dolibarr){
