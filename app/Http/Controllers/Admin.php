@@ -185,11 +185,6 @@ class Admin extends BaseController
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
 
-
-                if($product['id'] == 55678){
-                   dd($option);
-                }
-
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -200,6 +195,10 @@ class Admin extends BaseController
                                 }
                             }
                         } 
+
+                        if($product['id'] == 55678){
+                            dd($name_variation);
+                         }
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
