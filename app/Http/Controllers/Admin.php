@@ -134,6 +134,10 @@ class Admin extends BaseController
           }
         }  
 
+
+
+
+
         foreach($products as $product){
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
@@ -155,6 +159,10 @@ class Admin extends BaseController
             if($variation){
                 $ids = array_column($product['attributes'], "name");
                 $clesRecherchees = array_keys($ids,  $variation);
+            }
+
+            if($product['id'] == 55678){
+                dd($product);
             }
 
             if($variation && count($product['variations']) > 0){

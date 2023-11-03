@@ -152,7 +152,7 @@ class Order extends BaseController
         } 
 
         // Récupère les commandes attribuée en base s'il y en a 
-        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray();  
+        $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
         $ids = array_column($orders_distributed, "order_woocommerce_id");
         $list_orders = [];
         
