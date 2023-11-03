@@ -155,10 +155,15 @@ class Admin extends BaseController
                 }
             }
 
-            
-            if( $product['id'] == 103842){
-                dd($product['variations']);
+            // Dans le cas ou plus d'options que de variations, on re check
+            if(!$variation){
+                foreach($product['attributes'] as $attribut){
+                    if($attribut['variation']){
+                        $variation = $attribut['name'];
+                    }
+                }
             }
+
           
             if($variation){
                 $ids = array_column($product['attributes'], "name");
