@@ -186,7 +186,7 @@ class Admin extends BaseController
                 ];
 
                 if($product['id'] == 55678){
-                    dump($product['variations']);
+                    dd($product);
                  }
 
                 foreach($option as $key => $op){
@@ -199,11 +199,7 @@ class Admin extends BaseController
                                 }
                             }
                         } 
-
-                        if($product['id'] == 55678){
-                            dd($option);
-                         }
-
+                        
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
