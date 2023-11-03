@@ -150,7 +150,7 @@ class Admin extends BaseController
             
             $variation = false;
             foreach($product['attributes'] as $attribut){
-                if($attribut['variation']){
+                if($attribut['variation'] && count($product['variations']) == count($attribut['options'])){
                     $variation = $attribut['name'];
                 }
             }
