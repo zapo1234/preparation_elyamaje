@@ -197,7 +197,7 @@ class Admin extends BaseController
                         } 
 
                         if($product['id'] == 55678){
-                            dd($name_variation);
+                            dump($product['variations'][$key]);
                          }
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
@@ -243,6 +243,7 @@ class Admin extends BaseController
             }
         }
 
+        die;
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){
