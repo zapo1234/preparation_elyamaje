@@ -161,11 +161,6 @@ class Admin extends BaseController
                 $clesRecherchees = array_keys($ids,  $variation);
             }
 
-            if($product['id'] == 55678){
-                dump($variation);
-                dd(count($product['variations']));
-            }
-
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
                 $name_variation = false;
@@ -189,6 +184,11 @@ class Admin extends BaseController
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
+
+
+                if($product['id'] == 55678){
+                   dd($option);
+                }
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
