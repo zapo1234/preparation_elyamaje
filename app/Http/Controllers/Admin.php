@@ -154,9 +154,10 @@ class Admin extends BaseController
                     $variation = $attribut['name'];
                 }
             }
+
             
             if( $product['id'] == 103842){
-                dd($variation);
+                dd($product['attributes']);
             }
           
             if($variation){
