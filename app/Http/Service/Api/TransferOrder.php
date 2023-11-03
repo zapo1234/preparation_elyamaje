@@ -148,7 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+          
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -178,7 +178,7 @@ class TransferOrder
                  $apiUrl = env('KEY_API_URL');
 
 
-                 $produitParam = ["limit" => 1050, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 1200, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
@@ -238,10 +238,7 @@ class TransferOrder
 		               )
          	         ), true);
 
-                
-
-                  
-                 foreach($clientSearch as $data) {
+                  foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
                  }
                   // convertir en entier la valeur le dernier id du tiers=>socid.
@@ -576,7 +573,7 @@ class TransferOrder
                          
                         // echo json_encode($data_lines);
                        // Create le client via Api...
-                      
+
 
                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
