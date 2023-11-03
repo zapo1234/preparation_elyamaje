@@ -162,7 +162,8 @@ class Admin extends BaseController
             }
 
             if($product['id'] == 55678){
-                dd($product);
+                dump($variation);
+                dd(count($product['variations']));
             }
 
             if($variation && count($product['variations']) > 0){
