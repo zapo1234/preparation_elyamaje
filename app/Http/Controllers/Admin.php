@@ -161,6 +161,12 @@ class Admin extends BaseController
                 $clesRecherchees = array_keys($ids,  $variation);
             }
 
+
+            if($product['id'] == 55678){
+                dd($variation);
+             }
+
+
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
                 $name_variation = false;
@@ -184,11 +190,7 @@ class Admin extends BaseController
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
-
-                if($product['id'] == 55678){
-                    dd($product);
-                 }
-
+              
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -199,7 +201,7 @@ class Admin extends BaseController
                                 }
                             }
                         } 
-                        
+
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
