@@ -161,12 +161,6 @@ class Admin extends BaseController
                 $clesRecherchees = array_keys($ids,  $variation);
             }
 
-
-            if($product['id'] == 55678){
-                dd($variation);
-             }
-
-
             if($variation && count($product['variations']) > 0){
                 $option = $product['attributes'][$clesRecherchees[0]]['options'];
                 $name_variation = false;
