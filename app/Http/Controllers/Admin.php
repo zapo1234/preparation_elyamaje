@@ -185,6 +185,10 @@ class Admin extends BaseController
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
 
+                if($product['id'] == 55678){
+                    dump($product['variations']);
+                 }
+
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -197,7 +201,7 @@ class Admin extends BaseController
                         } 
 
                         if($product['id'] == 55678){
-                            dump($product['variations'][$key]);
+                            dd($option);
                          }
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
@@ -243,7 +247,7 @@ class Admin extends BaseController
             }
         }
 
-        die;
+   
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){
