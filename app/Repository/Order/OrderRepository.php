@@ -29,9 +29,8 @@ class OrderRepository implements OrderInterface
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
-
                if(!isset($orderData['from_dolibarr'])){
-   
+
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
                   $coupons = [];
                   $discount = [];
@@ -128,7 +127,7 @@ class OrderRepository implements OrderInterface
                      }
                   }
                } else {
-                  DB::table('orders_doli')->where('id', $orderData['id'])->update(['user_id' => $userId]);
+                  DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);
                }
             } 
    
@@ -829,7 +828,7 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->join('users', 'users.id', '=', 'orders.user_id')
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',

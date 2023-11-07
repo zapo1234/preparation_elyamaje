@@ -106,11 +106,11 @@
 														@endif
 													</td>
 													<td data-label="Détails">
-														<button class="show_detail_button show_detail" onclick="show({{ $histo['order_id'] }})">
+														<button class="show_detail_button show_detail" onclick="show('{{ $histo['order_id'] }}')">
 															<i class="font-primary font-20 bx bx-cube"></i>
 														</button>	
-														@if(strlen($histo['order_id']) < 10 && strlen($histo['order_id']) >= 5)
-															<button class="show_detail_button show_detail" onclick="show_detail_customer({{ $histo['order_id'] }})">
+														@if(strlen($histo['order_id']) != 10 && !str_contains($histo['order_id'], 'CO'))
+															<button class="show_detail_button show_detail" onclick="show_detail_customer('{{ $histo['order_id'] }}')">
 																<i class="font-primary font-20 bx bx-user"></i>
 															</button>	
 														@endif

@@ -100,7 +100,7 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Commande</h6>
-									<h2>#{{ $orders['details']['id'] }}</h2>
+									<h2 class="text-center">#{{ $orders['details']['id'] }}</h2>
 								</div>
 								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
@@ -155,8 +155,8 @@
 														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 															<div class="d-flex">
-																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $orders['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																<span class="remove_{{ $item['barcode'] }}_{{ $orders['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $orders['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , '{{ $orders['details']['id'] }}')" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $orders['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , '{{ $orders['details']['id'] }}')"><i class="lni lni-spinner-arrow"></i></span>
 															</div>
 														</div>
 													</div>
@@ -228,7 +228,7 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Commande</h6>
-									<h2>#{{ $order['details']['id'] }}</h2>
+									<h2 class="text-center">#{{ $order['details']['id'] }}</h2>
 								</div>
 								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="course-info d-flex justify-content-between align-items-center">
@@ -284,8 +284,8 @@
 														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 															<div class="d-flex">
-																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , '{{ $order['details']['id'] }}')" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , '{{ $order['details']['id'] }}')"><i class="lni lni-spinner-arrow"></i></span>
 															</div>
 														</div>
 													</div>
@@ -356,7 +356,7 @@
 							<div class="course">
 								<div class="course-preview">
 									<h6>Commande</h6>
-									<h2>#{{ $order['details']['id'] }}</h2>
+									<h2 class="text-center">#{{ $order['details']['id'] }}</h2>
 								</div>
 								<div class="w-100 d-flex flex-column justify-content-between">
 									<div class="{{ str_contains($order['details']['shipping_method'], 'chrono') ? 'chronopost_shipping_method' : '' }} course-info d-flex justify-content-between align-items-center">
@@ -413,8 +413,8 @@
 														<div class="mt-1 d-flex flex-column align-items-start">
 															<span style="font-size:13px">{{ $item['barcode'] ?? '' }}</span>
 															<div class="d-flex">
-																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , {{ $order['details']['id'] }})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
-																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , {{ $order['details']['id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																<span onclick="enter_manually_barcode({{ $item['product_woocommerce_id']}} , '{{ $order['details']['id'] }}')" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																<span class="remove_{{ $item['barcode'] }}_{{ $order['details']['id'] }} remove_product" onclick="remove_product({{ $item['barcode']}} , '{{ $order['details']['id'] }}')"><i class="lni lni-spinner-arrow"></i></span>
 															</div>
 														</div>
 													</div>

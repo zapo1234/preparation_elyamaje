@@ -16,7 +16,7 @@ class CreateLabelTable extends Migration
     {
         Schema::create('labels', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
+            $table->string('order_id');
             $table->string('tracking_number')->default(0);
             $table->timestamps();
 

@@ -185,9 +185,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
 
     Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
-
-    // Update details order billing and shipping
-    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -205,6 +202,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
+    
+    // Update details order billing and shipping
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // TOUS LES ROLES

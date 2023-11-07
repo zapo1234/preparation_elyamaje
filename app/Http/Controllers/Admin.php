@@ -559,7 +559,7 @@ class Admin extends BaseController
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
 
-            if(strlen($order_id) < 5){
+            if(str_contains($order_id, 'CO')){
                 $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
                 if(count($order) > 0){
                     $order = $this->woocommerce->transformArrayOrderDolibarr($order);
@@ -587,6 +587,7 @@ class Admin extends BaseController
                 }
             }
 
+            dd($order);
             try {
                 $this->factorder->Transferorder($order);  
 

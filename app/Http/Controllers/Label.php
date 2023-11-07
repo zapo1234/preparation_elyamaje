@@ -351,7 +351,6 @@ class Label extends BaseController
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
         $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
         // $transfers = $request->post('transfers') == "false" ? 0 : 1;
-
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 

@@ -108,6 +108,7 @@ class Order extends BaseController
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id);
+
         if(count($orderDolibarr['orders']) > 0){
           if(!$distributeur){
             foreach($orderDolibarr['orders'] as $ord){
@@ -142,6 +143,13 @@ class Order extends BaseController
           }
         }  
 
+        // Liste des distributeurs
+        $distributors = $this->distributor->getDistributors();
+        $distributors_list = [];
+        foreach($distributors as $dis){
+          $distributors_list[] = $dis->customer_id;
+        }
+
         // Récupère également les commandes créées depuis dolibarr vers préparation
         $orderDolibarr = $this->orderDolibarr->getAllOrders();
         if(count($orderDolibarr) > 0){
@@ -169,6 +177,14 @@ class Order extends BaseController
             } 
             
             if($take_order == true){
+
+              // Check if is distributor
+              if(in_array($order['customer_id'], $distributors_list)){
+                $orders[$key]['is_distributor'] = true;
+              } else {
+                $orders[$key]['is_distributor'] = false;
+              }
+
               $clesRecherchees = array_keys($ids,  $order['id']);
               
               // Pour les commandes depuis dolibarr
@@ -226,6 +242,14 @@ class Order extends BaseController
           }
         } else {
           foreach($orders as $key => $order){
+
+            // Check if is distributor
+            if(in_array($order['customer_id'], $distributors_list)){
+              $orders[$key]['is_distributor'] = true;
+            } else {
+              $orders[$key]['is_distributor'] = false;
+            }
+
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
                 if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
@@ -533,6 +557,7 @@ class Order extends BaseController
           $update = $this->orderDolibarr->updateOneOrderAttributionDolibarr($order_id, $user_id);
         }
 
+
         $number_order_attributed = $this->order->getOrdersByUsers();
 
          // Pusher notification order attribution updated  
@@ -616,7 +641,7 @@ class Order extends BaseController
     }
 
     public function checkExpedition(Request $request){
-      $order_id = $request->get('order_id');
+      $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderById($order_id);
 
       if($order){
@@ -641,7 +666,6 @@ class Order extends BaseController
     }
 
     public function validWrapOrder(Request $request){
-      
       $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
       $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
@@ -817,7 +841,6 @@ class Order extends BaseController
         } 
       }
 
-      // dd($histories_order);
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -1160,10 +1183,10 @@ class Order extends BaseController
   public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
-    if(strlen($order_id) == 10){
-      $order = $this->reassort->getReassortById($order_id);
-    } else if(strlen($order_id) < 5){
+    if(str_contains($order_id, 'CO')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+    } else if(strlen($order_id) == 10){
+      $order = $this->reassort->getReassortById($order_id);
     } else {
       $order = $this->order->getOrderById($order_id);
     }
