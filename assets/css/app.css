@@ -8286,15 +8286,9 @@ select option[disabled] {
 	color: #ff7c07 !important
 }
 
-
-
-
-
-
-
-
-
-
+table tr:first-child .card_with_label:after{
+	top: -30px !important;
+}
 
 .card_with_label {
 	width: 25rem;
