@@ -5814,6 +5814,10 @@ input::placeholder {
 
 	/* CSS DATATABLE */
 
+	table tr:first-child .card_with_label:after{
+		top: -30px !important;
+	}
+	
 	.analytics_preparation .table tr td:last-child{
 		width: 5%;
 	}
@@ -8285,10 +8289,6 @@ select option[disabled] {
 }
 .alerte_stock{
 	color: #ff7c07 !important
-}
-
-table tr:first-child .card_with_label:after{
-	top: -30px !important;
 }
 
 .card_with_label {
