@@ -15,4 +15,8 @@ class ApiController extends BaseController
          return response()->json(['success' => false]);
       }
    }
+
+   public function test(){
+      return response()->json(['success' => true]);
+   }
 }
