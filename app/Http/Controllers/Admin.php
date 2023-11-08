@@ -27,11 +27,7 @@ use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
-<<<<<<< HEAD
-=======
-use App\Repository\Label\LabelMissingRepository;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
->>>>>>> 1a9031e3eff0509f1bea66ee1ca4bf18cd11ed3a
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
