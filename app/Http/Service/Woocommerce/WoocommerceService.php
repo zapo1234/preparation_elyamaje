@@ -108,6 +108,7 @@ class WoocommerceService
         $order_new_array['line_items'] = $products['line_items'];
         $order_new_array['billing'] = $billing;
         $order_new_array['shipping'] = $shipping;
+        $order_new_array['from_dolibarr'] = false;
 
         if(isset($order[0]['is_distributor'])){
           $distributor = $order[0]['is_distributor'] ? true : false;

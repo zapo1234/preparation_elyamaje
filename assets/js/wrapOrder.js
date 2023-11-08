@@ -6,7 +6,7 @@ $(".order_input").on('input', function(){
 
 // Action lorsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    // $("#order_id").val($(".order_id_input").val())
+    $("#order_id").val($(".order_id_input").val())
     $(".validate_order").attr('disabled', false)
 })
 
