@@ -23,3 +23,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get("/preparationCommandeByToken", [Controller::class, "preparationCommandeByToken"])->name('preparationCommandeByToken'); // acces pour preparer la commande doli
 
 Route::post("/login", [ApiController::class, "login"]);
+
+Route::get("/test", [ApiController::class, "test"]);
+
