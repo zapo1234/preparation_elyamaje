@@ -8312,7 +8312,7 @@ table tr:first-child .card_with_label:after{
 }
 .card_with_label::before {
 	position: absolute;
-    top: -29px;
+    top: -25px;
     left: -21px;
     content: '';
     background: #cb5f5f;
@@ -8323,7 +8323,7 @@ table tr:first-child .card_with_label:after{
 .card_with_label::after {
     position: absolute;
     content: attr(data-label);
-    top: -35px;
+    top: -31px;
     left: -9px;
     padding: 0.5rem;
     width: 8rem;
