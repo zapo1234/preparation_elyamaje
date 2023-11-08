@@ -15,7 +15,7 @@ class History extends Migration
     {
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id');
+            $table->string('order_id');
             $table->integer('user_id');
             $table->string('status');
             $table->timestamps();

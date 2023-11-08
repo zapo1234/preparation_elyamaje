@@ -197,10 +197,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
 
     Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
-
-    // Update details order billing and shipping
-    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
-
     // Route créate kits
     Route::post("/constructKit", [Order::class, "constructKit"])->name('constructKit');
     Route::post("/validateKits", [Order::class, "validateKits"])->name('validateKits');
@@ -211,7 +207,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labels", [Label::class, "getlabels"])->name('labels.filter');
-
     Route::post("/labelDownload", [Label::class, "labelDownload"])->name('label.download');
     Route::post("/labelPrintZPL", [Label::class, "labelPrintZPL"])->name('label.printZpl');
     Route::post("/labelShow", [Label::class, "labelShow"])->name('label.show');
@@ -223,6 +218,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
+    
+    // Update details order billing and shipping
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // TOUS LES ROLES
@@ -253,10 +251,10 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
-// Tache crons mise a jours status commande colissimo 21h tous les jours
+// Tache crons mise a jours status commande colissimo 13h & 21h tous les jours
 Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
-// Route test à enlever par la suite
+// Route test validation emballage à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
 
 

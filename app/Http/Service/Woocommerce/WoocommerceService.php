@@ -137,9 +137,10 @@ class WoocommerceService
     $transformOrder['payment_method'] = $orderDolibarr[0]['payment_methode'];
     $transformOrder['is_distributor'] = false;
     $transformOrder['customer_id'] = 0;
-    $transformOrder['order_woocommerce_id'] = $orderDolibarr[0]['orderDoliId'];
-    $transformOrder['order_id'] = $orderDolibarr[0]['orderDoliId'];
-    $transformOrder['id'] = $orderDolibarr[0]['orderDoliId'];
+    $transformOrder['order_woocommerce_id'] = $orderDolibarr[0]['ref_order'];
+    $transformOrder['order_id'] = $orderDolibarr[0]['ref_order'];
+    $transformOrder['id'] = $orderDolibarr[0]['ref_order'];
+    $transformOrder['dolibarrOrderId'] = $orderDolibarr[0]['id'];
     $transformOrder['discount_total'] = 0;
     $transformOrder['coupons'] = "";
     $transformOrder['shipping_amount'] = 0;

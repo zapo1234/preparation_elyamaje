@@ -45,12 +45,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
-         ->where('orders_doli.id', $order_id)
+         ->where('orders_doli.ref_order', $order_id)
          ->get();
 
       foreach($order_lines as $key => $order){
          $order_lines[$key]['name'] = $order['productName'];
-         $order_lines[$key]['order_woocommerce_id'] = $order['id'];
+         $order_lines[$key]['order_woocommerce_id'] = $order['ref_order'];
          $order_lines[$key]['from_dolibarr'] = true;
 
       
@@ -79,11 +79,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function updateOneOrderAttributionDolibarr($order_id, $user_id){
-      return $this->model::where('id', $order_id)->update(['user_id' => $user_id]);
+      return $this->model::where('ref_order', $order_id)->update(['user_id' => $user_id]);
    }
 
    public function updateOrderAttributionDolibarr($from_user, $to_user){
-      return $this->model::where('user_id', $from_user)->update(['user_id' => $to_user]);
+      return $this->model::where('user_id', $from_user)->where('statut', 'processing')->update(['user_id' => $to_user]);
    }
 
    public function getUsersWithOrderDolibarr(){
@@ -91,7 +91,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function updateOneOrderStatus($status, $order_id){
-      return $this->model::where('id', $order_id)->update(['statut' => $status]);
+      return $this->model::where('ref_order', $order_id)->update(['statut' => $status]);
    }
 
    public function unassignOrdersDolibarr(){
@@ -110,15 +110,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.user_id', $user_id)
-         ->where('orders_doli.statut', '!=', 'finished')
+         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
          ->get();
 
          $orders = json_decode(json_encode($orders), true);
          $list = [];
 
          foreach($orders as $key => $order){
-            $list[$order['orderDoliId']]['details'] = [
-               'id' => $order['orderDoliId'],
+            $list[$order['ref_order']]['details'] = [
+               'id' => $order['ref_order'],
                'first_name' => $order['firstname'],
                'last_name' => $order['firstname'] != $order['lastname'] ? $order['lastname'] : '',
                'date' => $order['date'],
@@ -135,7 +135,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                'from_dolibarr' => true
             ];
 
-            $list[$order['orderDoliId']]['items'][] = [
+            $list[$order['ref_order']]['items'][] = [
                "variation" => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
                "name" => $order['productName'],
                "barcode" => $order['barcode'],
@@ -159,7 +159,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          'lines_commande_doli.id', 'lines_commande_doli.pick')
             ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
             ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
-            ->where('orders_doli.id', $order_id)
+            ->where('orders_doli.ref_order', $order_id)
             ->get()
             ->toArray();
 
@@ -255,12 +255,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          'lines_commande_doli.qte as quantity', 'products.product_woocommerce_id', 'lines_commande_doli.price as cost', 'orders_doli.statut as status')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
-         ->where('orders_doli.id', $order_id)
+         ->where('orders_doli.ref_order', $order_id)
          ->get();
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-         $query = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+         $query = $this->model::select('orders_doli.ref_order as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
          'labels.cn23', 'labels.download_cn23')
          ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
          ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
@@ -273,7 +273,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                   $key = "statut";
                   break;
                case "order_woocommerce_id":
-                  $key = "id";
+                  $key = "ref_order";
                   break;
            }
 

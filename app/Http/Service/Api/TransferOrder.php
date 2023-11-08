@@ -148,7 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+          
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -178,7 +178,7 @@ class TransferOrder
                  $apiUrl = env('KEY_API_URL');
 
 
-                 $produitParam = ["limit" => 1050, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 1200, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
@@ -238,10 +238,7 @@ class TransferOrder
 		               )
          	         ), true);
 
-                
-
-                  
-                 foreach($clientSearch as $data) {
+                  foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
                  }
                   // convertir en entier la valeur le dernier id du tiers=>socid.
@@ -351,21 +348,26 @@ class TransferOrder
                                  
                                    $socid = $id_cl;
                                    $woo = $donnees['billing']['company'];
-                                    $index_type = $donnees['is_professional'];// le champ professionnel détecté....
-                                    
-
-                                    $type_id="";
+                                   
+                                     $type_id="";
                                     $typent_code="";
                                     // defini si le client est un professionnel.
                                    if($woo!=""){
                                       $type_id ="235";
                                       $typent_code="PROF";
                                    }
-
-                                   if($index_type==true){
+                                   
+                                   if(isset($donnees['is_professional'])){
+                                   if($donnees['is_professional']==true){
                                      $type_id ="235";
                                      $typent_code="PROF";
                                    }
+
+                                  }else{
+                                    $type_id="";
+                                    $typent_code="";
+                                      
+                                  }
 
                                     $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce 
@@ -571,6 +573,7 @@ class TransferOrder
                          
                         // echo json_encode($data_lines);
                        // Create le client via Api...
+
 
                        foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar

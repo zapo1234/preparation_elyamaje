@@ -27,6 +27,11 @@ use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
+<<<<<<< HEAD
+=======
+use App\Repository\Label\LabelMissingRepository;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
+>>>>>>> 1a9031e3eff0509f1bea66ee1ca4bf18cd11ed3a
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -47,6 +52,7 @@ class Admin extends BaseController
     private $woocommerce;
     private $factorder;
     private $labelMissing;
+    private $orderDolibarr;
 
     public function __construct(
         Api $api, 
@@ -61,7 +67,8 @@ class Admin extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
-        LabelMissingRepository $labelMissing
+        LabelMissingRepository $labelMissing,
+        OrderDolibarrRepository $orderDolibarr
     ){
         $this->api = $api;
         $this->category = $category;
@@ -76,6 +83,7 @@ class Admin extends BaseController
         $this->woocommerce = $woocommerce;
         $this->factorder = $factorder;
         $this->labelMissing = $labelMissing;
+        $this->orderDolibarr = $orderDolibarr;
     }
 
     public function syncCategories(){
@@ -137,6 +145,10 @@ class Admin extends BaseController
           }
         }  
 
+
+
+
+
         foreach($products as $product){
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
@@ -149,11 +161,20 @@ class Admin extends BaseController
             
             $variation = false;
             foreach($product['attributes'] as $attribut){
-                if($attribut['variation']){
+                if($attribut['variation'] && count($product['variations']) == count($attribut['options'])){
                     $variation = $attribut['name'];
                 }
             }
-            
+
+            // Dans le cas ou plus d'options que de variations, on re check
+            if(!$variation){
+                foreach($product['attributes'] as $attribut){
+                    if($attribut['variation']){
+                        $variation = $attribut['name'];
+                    }
+                }
+            }
+
           
             if($variation){
                 $ids = array_column($product['attributes'], "name");
@@ -183,7 +204,7 @@ class Admin extends BaseController
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                 ];
-
+              
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -238,6 +259,7 @@ class Admin extends BaseController
             }
         }
 
+   
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){
@@ -547,24 +569,36 @@ class Admin extends BaseController
         if($order_id == ""){
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
-            if($order){
-                $order = $this->woocommerce->transformArrayOrder($order);
-                $order[0]['emballeur'] = "admin";
-            } else {
-                // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
-                $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
 
-                if(isset($order[1][0]['code'])){
-                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+            if(str_contains($order_id, 'CO')){
+                $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+                if(count($order) > 0){
+                    $order = $this->woocommerce->transformArrayOrderDolibarr($order);
+                    $order[0]['emballeur'] = "Admin";
                 } else {
-                    // Insert la commande
-                    $insert = $this->order->insertOrdersByUsers($order);
-                    $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
-                    $order_insert[0]['emballeur'] = "admin";
-                    $order = $this->woocommerce->transformArrayOrder($order_insert);
+                    return redirect()->route('admin.billing')->with('error', 'Commande inexistante !');
+                }
+            } else {
+                if($order){
+                    $order = $this->woocommerce->transformArrayOrder($order);
+                    $order[0]['emballeur'] = "Admin";
+                } else {
+                    // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
+                    $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
+    
+                    if(isset($order[1][0]['code'])){
+                        return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
+                    } else {
+                        // Insert la commande
+                        $insert = $this->order->insertOrdersByUsers($order);
+                        $order_insert = $this->order->getOrderByIdWithCustomer($order_id);
+                        $order_insert[0]['emballeur'] = "Admin";
+                        $order = $this->woocommerce->transformArrayOrder($order_insert);
+                    }
                 }
             }
 
+            dd($order);
             try {
                 $this->factorder->Transferorder($order);  
 

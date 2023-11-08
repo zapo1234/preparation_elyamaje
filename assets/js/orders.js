@@ -40,7 +40,7 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '63vh',
+        scrollY: '62vh',
         scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
@@ -100,7 +100,9 @@ $(document).ready(function() {
                         shipping_amount: shipping_amount,
                         shipping_method: shipping_method,
                         customer_note:  order.customer_note,
-                        from_dolibarr:  order.from_dolibarr ?? false
+                        from_dolibarr:  order.from_dolibarr ?? false,
+                        orderDolibarId : order.from_dolibarr ? order.dolibarrOrderId : false,
+                        is_distributor : order.is_distributor
                     };
                 });
 
@@ -113,10 +115,11 @@ $(document).ready(function() {
             data: null, 
                 render: function(data, type, row) {
                     var country = row.shipping ? row.shipping.country : false
-                    return `<div class="align-items-center d-flex w-100">
+                    return `<div class="${row.is_distributor ? 'card_with_label' : ''} align-items-center d-flex w-100" ${row.is_distributor ? "data-label='Distributeur'" : ''}>
                                 ${country ? '<img class="country_flag" src="assets/images/icons/'+country+'.png"/>' : ''}
                                 <div class="d-flex flex-column">
                                     #${row.id} ${row.first_name} ${row.last_name} ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''} 
+                                 
                                     ${row.customer_note ? '<span class="customer_note">'+row.customer_note+'</span>' : ''}
                                 </div>
                             </div>`
@@ -135,7 +138,7 @@ $(document).ready(function() {
 
                     })
                     
-                    var selectHtml = `<select onchange="changeOneOrderAttribution(${row.id}, ${row.from_dolibarr})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
+                    var selectHtml = `<select onchange="changeOneOrderAttribution('${row.id}', ${row.from_dolibarr})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
 
                     if($("#select_"+row.id).val() == "Non attribuée"){
                         $("#select_"+row.id).addClass('empty_select')
@@ -160,7 +163,7 @@ $(document).ready(function() {
                         selectOptions += `<option ${key == row.status ? "selected" : ""} value="`+key+`">`+row.status_list[key]+`</option>`
                     });
                     
-                    var selectHtml = `<select onchange="changeStatusOrder(${row.id}, ${row.user_id}, ${row.from_dolibarr})" id="selectStatus_${row.id}" class="${row.status} select_status select_user empty_select">${selectOptions}</select>`;
+                    var selectHtml = `<select onchange="changeStatusOrder('${row.id}', ${row.user_id}, ${row.from_dolibarr})" id="selectStatus_${row.id}" class="${row.status} select_status select_user empty_select">${selectOptions}</select>`;
                     return selectHtml;
                 }
             },
@@ -187,10 +190,10 @@ $(document).ready(function() {
                             id[value.product_woocommerce_id] = value.pick
                         } 
                     }) 
-
+                    console.log(row)
 
                     return `
-                        <div class="modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="${row.from_dolibarr ? 'order_dolibarr_'+row.orderDolibarId+'' : ''} modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-body detail_product_order">
@@ -214,7 +217,7 @@ $(document).ready(function() {
                                                         <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
                                                         <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
                                                         ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : 
-                                                        '<span class="column55"><i onclick="deleteProductDolibarr('+row.id+','+element.product_id+','+element.product_dolibarr_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>'}
+                                                        '<span class="column55"><i onclick="deleteProductDolibarr('+row.orderDolibarId+','+element.product_id+','+element.product_dolibarr_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>'}
                                                     </div>`
                                             ).join('')}
                                             </div>
@@ -243,9 +246,10 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         </div>
-                        <i onclick="show(`+row.id+`)" class="show_detail bx bx-cube"></i>
 
-                        <div class="modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <i onclick="show('`+row.id+`')" class="show_detail bx bx-cube"></i>
+
+                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                 <div class="modal-body">
@@ -375,7 +379,7 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         </div>
-                        <i onclick="showCustomerOrderDetail(`+row.id+`)" class="show_detail_customer bx bx-user"></i>
+                        <i onclick="showCustomerOrderDetail('`+row.id+`')" class="show_detail_customer bx bx-user"></i>
                         `;
                 }
 
@@ -547,7 +551,7 @@ $(window).resize(function(){
     if($(window).width() < 650){
         $(".dataTables_scrollBody").css('max-height', '100%')
     } else {
-        $(".dataTables_scrollBody").css('max-height', '63vh')
+        $(".dataTables_scrollBody").css('max-height', '62vh')
     }
 })
 
@@ -858,11 +862,11 @@ function deleteProductOrderDolibarrConfirm(){
         if(JSON.parse(data).success){
 
             if(quantity_to_delete >= quantity){
-                $("#order_"+order_id+" ."+product_id).fadeOut()
-                $("#order_"+order_id+" ."+product_id).remove()
+                $(".order_dolibarr_"+order_id+" ."+product_id).fadeOut()
+                $(".order_dolibarr_"+order_id+" ."+product_id).remove()
             } else {
                 var new_quantity = parseInt(quantity) - parseInt(quantity_to_delete)
-                $("#order_"+order_id+" ."+product_id).find('.quantity').text('0 / '+new_quantity)
+                $(".order_dolibarr_"+order_id+" ."+product_id).find('.quantity').text('0 / '+new_quantity)
             }
            
             $(".loading_delete").addClass('d-none')

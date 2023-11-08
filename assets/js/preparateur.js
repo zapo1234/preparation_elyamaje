@@ -103,6 +103,7 @@ function progress_bar(){
 }
 
 document.addEventListener("keydown", function (e) {
+
     // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
     if ($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') 
     && !$("#infoMessageModal").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show')
@@ -112,7 +113,7 @@ document.addEventListener("keydown", function (e) {
         if (!isNaN(parseInt(e.key))) {
             $("#barcode").val($("#barcode").val() + e.key)
             if ($("#barcode").val().length == 13) {
-                
+
                 var quantity_to_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
 
                 if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).length > 0) {
@@ -280,10 +281,17 @@ $(".validate_pick_in").on('click', function () {
 
             if (JSON.parse(data).success) {
                 $(".success_prepared_command").removeClass('d-none')
-                const href = order_id + "," + pick_items.length + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
+
+                if(pick_items){
+                    number_products = pick_items.length
+                } else {
+                    number_products = $("#order_"+order_id).find('.product_order').length
+                }
+
+                const href = order_id + "," + number_products + "," + accentsTidy(customer_name) + "," + accentsTidy(user_name);
                 const size = 150;
 
-                $(".info_order").text("#Commande " + order_id + " - " + pick_items.length + " Produit(s)" + " - " + customer_name + " - "+user_name)
+                $(".info_order").text("#Commande " + order_id + " - " + number_products + " Produit(s)" + " - " + customer_name + " - "+user_name)
                 var list_products = ""
                 $("#order_" + order_id + " .product_order").each(function () {
                     list_products += '<span>' + $(this).children("div").children("span").text() + ' - x' + $(this).children(".quantity ").text() + '</span>'
@@ -467,7 +475,7 @@ $('body').on('click', '.impression_code', function () {
     $(".close_modal_validation").removeClass("d-none")
 })
 
-function saveItem(order_id, mutiple_quantity, manually = false) {
+function saveItem(order_id, mutiple_quantity, barcode, manually = false) {
 
     var quantity_to_pick_in = parseInt($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
     if(manually){
@@ -670,7 +678,7 @@ $(".valid_manually_barcode").on('click', function(){
     var product_id = $("#product_id_barcode").val()
     var barcode = $("#barcode_manually").val()
     var order_id = $("#product_id_barcode_order_id").val()
-  
+
     // check en base de données
     $.ajax({
         url: "checkProductBarcode",
