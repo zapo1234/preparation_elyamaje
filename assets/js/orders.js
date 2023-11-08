@@ -40,7 +40,7 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '60vh',
+        scrollY: '62vh',
         scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
@@ -551,7 +551,7 @@ $(window).resize(function(){
     if($(window).width() < 650){
         $(".dataTables_scrollBody").css('max-height', '100%')
     } else {
-        $(".dataTables_scrollBody").css('max-height', '60vh')
+        $(".dataTables_scrollBody").css('max-height', '62vh')
     }
 })
 
