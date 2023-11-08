@@ -769,7 +769,7 @@ class Controller extends BaseController
                 }
 
 
-            // $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+                // $produitParam['sqlfilters'] = $produitParam['sqlfilters'] . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
 
                     
                 }else {
@@ -1674,57 +1674,6 @@ class Controller extends BaseController
         // $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
        
         return $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
-    }
-
-    function actualiseProductDolibarr(){
-
-        try {
-            $products_dolibarrs_save = array();
-            $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
-
-            $produitParamProduct = array(
-                'apikey' => $apiKey,
-                'limit' => 10000,
-            );
-
-            $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
-            $all_products = json_decode($all_products,true); 
-
-            if ($all_products) {
-                foreach ($all_products as $key => $product) {
-                    array_push($products_dolibarrs_save, [
-                        "product_id" => $product["id"],
-                        "label" => $product["label"],
-                        "price_ttc" => $product["price_ttc"],
-                        "barcode" => $product["barcode"],
-                        "poids" => 0,
-                        "warehouse_array_list" => json_encode($product["warehouse_array_list"])
-                    ]);
-                }
-
-                $response = DB::transaction(function () use ($products_dolibarrs_save) {
-                    $original_data = DB::table('products_dolibarr')->get();
-                    DB::table('products_dolibarr')->truncate();
-                    try {
-                        DB::table('products_dolibarr')->insert($products_dolibarrs_save);
-                        return true;
-                    } catch (\Throwable $th) {
-                        // En cas d'erreur, réinsérez les données originales
-                        $tableau_php = json_decode(json_encode($original_data), true);
-                        DB::table('products_dolibarr')->insert($tableau_php);
-                        return false;
-                    }
-
-                });
-            }else {
-                return false;
-            }
-        } catch (\Throwable $th) {
-            return false;
-        }
-
-     
     }
     
 

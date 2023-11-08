@@ -6,6 +6,13 @@ use Exception;
 use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Models\ProductDolibarr;
+
+use App\Models\Categorie_dolibarr;
+use Illuminate\Support\Facades\DB;
+use App\Models\products_categories;
+use App\Models\Products_association;
+use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
@@ -14,12 +21,12 @@ use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\Label\LabelMissingRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
-use App\Repository\Label\LabelMissingRepository;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -685,4 +692,157 @@ class Admin extends BaseController
         $order_id = $request->post('order_id');
         echo json_encode(['success' => $this->labelMissing->delete($order_id)]);
     }
+
+    public function configDolibarr(){
+
+        $datas = array();
+
+        $dateLast_date_categorie_dolibarr = Categorie_dolibarr::first()->updated_at;
+        $dateLast_date_products_categories = products_categories::first()->updated_at;
+        $dateLast_date_products_association = Products_association::first()->updated_at;
+        $dateLast_date_product_dolibarr = ProductDolibarr::first()->updated_at;
+        
+
+
+        array_push($datas,
+            [
+                "name_table" => "Categorie_dolibarr",
+                "last_update" => $dateLast_date_categorie_dolibarr ? $dateLast_date_categorie_dolibarr->format('d/m/Y à H:i:s'): "Jamais",
+                "route" => route("updatePrepaCategoriesDolibarr")
+            ],
+            [
+                "name_table" => "products_categories",
+                "last_update" => $dateLast_date_products_categories ? $dateLast_date_products_categories->format('d/m/Y à H:i:s'): "Jamais",
+                "route" => route("updatePrepaProductsCategories")
+            ],
+            [
+                "name_table" => "products_association",
+                "last_update" => $dateLast_date_products_association ? $dateLast_date_products_association->format('d/m/Y à H:i:s'): "Jamais",
+                "route" => route("updatePrepaProductsAssociation")
+            ],
+            [
+                "name_table" => "product_dolibarr",
+                "last_update" => $dateLast_date_product_dolibarr ? $dateLast_date_product_dolibarr->format('d/m/Y à H:i:s'): "Jamais",
+                "route" => route("updatePrepaProductsDolibarr")
+            ]
+        );
+
+
+        return view('admin.configDolibarr',
+        [
+           "datas" => $datas
+        ]);
+
+    }
+
+    public function updatePrepaCategoriesDolibarr(){
+        
+        try {
+            $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+            $tab_categories = $pdoDolibarr->getCategoriesDolibarr();
+           
+            DB::beginTransaction();
+            DB::table('categories_dolibarr')->truncate();
+            DB::table('categories_dolibarr')->insert($tab_categories);
+
+            // Si tout se passe bien, commit la transaction
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Table mise à jour');
+        } catch (\Throwable $th) {
+            // En cas d'erreur, annuler la transaction
+            DB::rollBack();
+            return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
+        }
+    }
+
+    public function updatePrepaProductsCategories(){
+        
+        try {
+            $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+            $products_categories = $pdoDolibarr->getCategories();
+           
+            DB::beginTransaction();
+            DB::table('products_categories')->truncate();
+            DB::table('products_categories')->insert($products_categories);
+
+            // Si tout se passe bien, commit la transaction
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Table mise à jour');
+        } catch (\Throwable $th) {
+            // En cas d'erreur, annuler la transaction
+            DB::rollBack();
+            return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
+        }
+    }
+
+    public function updatePrepaProductsAssociation(){
+        
+        try {
+            $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+            $products_associations = $pdoDolibarr->getProductsAssociations();
+           
+            DB::beginTransaction();
+            DB::table('products_association')->truncate();
+            DB::table('products_association')->insert($products_associations);
+
+            // Si tout se passe bien, commit la transaction
+            DB::commit();
+            return redirect()->back()->with('success', 'Table mise à jour');
+        } catch (\Throwable $th) {
+
+            // En cas d'erreur, annuler la transaction
+            DB::rollBack();
+            return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
+        }
+    }
+
+    public function updatePrepaProductsDolibarr(){   
+
+
+
+        try {
+
+            $products_dolibarrs_save = array();
+            $apiUrl = env('KEY_API_URL');
+            $apiKey = env('KEY_API_DOLIBAR');
+
+            $produitParamProduct = array(
+                'apikey' => $apiKey,
+                'limit' => 10000,
+            );
+
+
+            $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
+            $all_products = json_decode($all_products,true); 
+
+            if ($all_products) {
+                foreach ($all_products as $key => $product) {
+                    array_push($products_dolibarrs_save, [
+                        "product_id" => $product["id"],
+                        "label" => $product["label"],
+                        "price_ttc" => $product["price_ttc"],
+                        "barcode" => $product["barcode"],
+                        "poids" => 0,
+                        "warehouse_array_list" => json_encode($product["warehouse_array_list"])
+                    ]);
+                }
+    
+                DB::beginTransaction();
+                DB::table('products_dolibarr')->truncate();
+                DB::table('products_dolibarr')->insert($products_dolibarrs_save);
+
+                // Si tout se passe bien, commit la transaction
+                DB::commit();
+                return redirect()->back()->with('success', 'Table mise à jour');
+                
+            }
+
+
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
+        }
+    }
+
 }

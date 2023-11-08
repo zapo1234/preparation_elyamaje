@@ -27,11 +27,20 @@ class PdoDolibarr
 
     function getCategories($fk_categorie = null){
 
-        $sql = 'SELECT `fk_product` FROM `llxyq_categorie_product` WHERE `fk_categorie` =' . $fk_categorie;
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':fk_categorie', $fk_categorie, PDO::PARAM_STR);
-        $stmt->execute();
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($fk_categorie) {
+            $sql = 'SELECT `fk_product` FROM `llxyq_categorie_product` WHERE `fk_categorie` =' . $fk_categorie;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':fk_categorie', $fk_categorie, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+
+            $sql = 'SELECT * FROM `llxyq_categorie_product`';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+       
  
         return $res;
 
@@ -116,6 +125,70 @@ class PdoDolibarr
 
 
     }
+
+    function getCategoriesDolibarr($fk_categorie = null){
+
+        if ($fk_categorie) {
+            $sql = 'SELECT * FROM `llxyq_categorie` WHERE `fk_categorie` =' . $fk_categorie;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':rowid', $fk_categorie, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+
+            $sql = 'SELECT `rowid` as `id`, `fk_parent`, `label` FROM `llxyq_categorie`';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+       
+ 
+        return $res;
+
+    }
+
+    function getProductsAssociations($fk_product_fils = null){
+
+        if ($fk_product_fils) {
+            $sql = 'SELECT * FROM `llxyq_product_association` WHERE `fk_product_fils` =' . $fk_product_fils;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':rowid', $fk_product_fils, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+
+            $sql = 'SELECT `rowid` as `id`, `fk_product_pere`, `fk_product_fils`, `qty` FROM `llxyq_product_association`';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+       
+ 
+        return $res;
+
+    }
+
+    function getProducts($rowid = null){
+
+        if ($fk_product_fils) {
+            $sql = 'SELECT * FROM `llxyq_product` WHERE `rowid` =' . $rowid;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':rowid', $fk_product_fils, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+
+            $sql = 'SELECT `rowid` as `product_id`, `label`, `price_ttc`, `barcode`, `qty`, `qty`, `qty` FROM `llxyq_product_association`';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+       
+ 
+        return $res;
+
+    }
+
 
 
 

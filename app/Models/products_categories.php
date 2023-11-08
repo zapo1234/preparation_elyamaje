@@ -16,5 +16,5 @@ class products_categories extends Model
         'fk_product',
         'import_key'
     ];
-
+    public $timestamps = true;
 }
