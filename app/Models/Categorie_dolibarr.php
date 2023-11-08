@@ -16,5 +16,6 @@ class Categorie_dolibarr extends Model
         'fk_parent',
         'label'
     ];
+    public $timestamps = true;
 
 }

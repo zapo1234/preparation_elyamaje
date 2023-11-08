@@ -133,6 +133,7 @@
                     <li><a href="{{ url('distributors') }}">Distributeurs</a></li>
                     <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                     <li><a href="{{ url('colissimo') }}">Colissimo</a></li>
+                    <li><a href="{{ url('configDolibarr') }}">Dolibarr</a></li>
                 </ul>
             </li>
             <li>

@@ -14,7 +14,8 @@ class Products_association extends Model
     protected $fillable = [
         'id',
         'fk_product_pere',
-        'fk_product_fils'
+        'fk_product_fils',
+        'qty'
     ];
-
+    public $timestamps = true;
 }

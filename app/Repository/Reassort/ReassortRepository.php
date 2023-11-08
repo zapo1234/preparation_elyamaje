@@ -3,11 +3,15 @@
 namespace App\Repository\Reassort;
 
 use Exception;
+use App\Models\Product;
 use App\Models\Reassort;
-use App\Models\products_categories;
 use App\Models\Categorie_dolibarr;
-use App\Models\Products_association;
 use Illuminate\Support\Facades\DB;
+use App\Models\products_categories;
+
+use App\Models\Products_association;
+use Illuminate\Support\Facades\Http;
+use App\Http\Service\Api\Api;
 
 class ReassortRepository implements ReassortInterface 
 {   
@@ -15,12 +19,18 @@ class ReassortRepository implements ReassortInterface
     private $products_categories;
     private $categories_dolibarr;
     private $products_association;
-    
-    public function __construct(Reassort $model,products_categories $products_categories,Categorie_dolibarr $categories_dolibarr,Products_association $products_association){
+    private $products;
+    private $api;
+    public function __construct(Reassort $model,products_categories $products_categories,
+    Categorie_dolibarr $categories_dolibarr,Products_association $products_association,Product $products,Api $api
+    )
+    {
         $this->model = $model;
         $this->products_categories = $products_categories;
         $this->categories_dolibarr = $categories_dolibarr;
         $this->products_association = $products_association;
+        $this->products = $products;
+        $this->api = $api;
     }
 
     public function getReassortByUser($user_id){
@@ -477,6 +487,306 @@ class ReassortRepository implements ReassortInterface
         }
 
      }
+
+     public function getProductsByCategorie($id_categorie){
+
+        $res =  $this->products_categories::select()
+        ->where('fk_categorie',$id_categorie)
+        ->get()
+        ->toArray();
+        ;
+
+        return $res;
+    }
+
+    public function productsAssociationByIds($products_unite, $id_categorie){
+
+      
+
+        $data_no_products =[5502,5495,5544]; // les id dolibarr des produits a ignorer
+        // on met les id des produits dans un seul tableau
+        $data = array();
+        foreach ($products_unite as $key => $value) {
+            array_push($data,$value["fk_product"]);
+        }
+
+        $res = $this->products_association::select()
+        ->whereIn('fk_product_fils',$data)
+        ->get()
+        ->toArray();
+
+       
+
+        
+        foreach ($res as $key => $value) {
+            if (!in_array($value["fk_product_pere"], $data_no_products)) {
+                array_push($data,$value["fk_product_pere"]);
+            }
+            
+        }
+        $data = array_unique($data, SORT_REGULAR);
+
+
+        $infos_id_wc = $this->products::select(
+            'products.product_woocommerce_id as id_product_wc', 
+            'products.name as name', 
+            'products.barcode as barcode_wc', 
+            'products_dolibarr.barcode as barcode_dolibarr',
+            'products_dolibarr.product_id as product_id_doli',
+            )
+        ->leftJoin('products_dolibarr', 'products.barcode', '=', 'products_dolibarr.barcode')
+
+        ->whereIn('products_dolibarr.product_id',$data)
+        ->get()
+        ->toArray()
+        ;
+
+
+      // création des réassort a la base du tableau $tab_repartition ce tableau a l'architecture suivante 
+        // le produit fils c'est a dire le produit qui compose les quites est stocker dans l'index, chaque produit 
+        // contient les produit qu'ils composent c'est a dire les kits 
+
+        $tab_repartition = array();
+        // mettre la valeur de 'product_id_doli' comme clée dans notre résultat
+        $infos_id_wc = array_column($infos_id_wc, null, 'product_id_doli');
+        $no_trouve = array();
+
+        foreach ($res as $key => $value) {
+
+            if (isset($infos_id_wc[$value["fk_product_pere"]])) {
+                if (!isset($tab_repartition[$value["fk_product_fils"]])) {
+                    $tab_repartition[$value["fk_product_fils"]][] = [
+                        "fk_product_pere" => $value["fk_product_pere"],
+                        "qty" => $value["qty"],
+                        "id_wc" => $infos_id_wc[$value["fk_product_pere"]]["id_product_wc"],
+                        "barcode" => $infos_id_wc[$value["fk_product_pere"]]["barcode_wc"],
+                        "name" => $infos_id_wc[$value["fk_product_pere"]]["name"]
+                    ];
+                }else {
+                    array_push($tab_repartition[$value["fk_product_fils"]], [
+                        "fk_product_pere" => $value["fk_product_pere"],
+                        "qty" => $value["qty"],
+                        "id_wc" => $infos_id_wc[$value["fk_product_pere"]]["id_product_wc"],
+                        "barcode" => $infos_id_wc[$value["fk_product_pere"]]["barcode_wc"],
+                        "name" => $infos_id_wc[$value["fk_product_pere"]]["name"]
+                    ]);
+                }
+            }else {
+                array_push($no_trouve,$value["fk_product_pere"]);
+            }
+
+        }
+
+
+        
+
+        $tab_vernis = array();  
+        $ids_unitaire = array();
+        $all_ids_wc = array();
+
+        
+        if ($id_categorie == "1" || $id_categorie == "70") {
+
+            // on construit un tableau associatif qui va contenir tout les vernis avec leux composant
+            foreach ($tab_repartition as $fils => $val) {
+                array_push($ids_unitaire,$fils);
+
+                foreach ($val as $key => $value) {  
+
+                    
+
+                    if (!in_array($value["fk_product_pere"],$data_no_products)) {                    
+                        if (!isset($tab_vernis[$value["fk_product_pere"]])) {
+                            array_push($tab_vernis,);
+                            $tab_vernis[$value["fk_product_pere"]] = [$fils];
+                        }else {
+                            array_push($tab_vernis[$value["fk_product_pere"]],$fils);
+                        }
+                    }
+                }
+            }
+
+            // on ignorer les coffret qui possèdent plus de 6 verni 
+            foreach ($tab_vernis as $id_coffret => $value) {
+                if (count($value) > 6) {
+                    unset($tab_vernis[$id_coffret]);
+                }
+            }
+
+            // on récupère les quantité des produits dans dolibarr (on va se baser sur ça pour calculer les coffret)
+            $entrepot_cible = "Entrepôt Malpassé";
+            $all_product =  $this->getProductDolibarByApi($ids_unitaire,$entrepot_cible);
+            // mettre la valeur de 'product_id_doli' comme clée dans notre résultat
+            $all_product = array_column($all_product, null, 'id_product');
+
+
+            // on constrits un tableau qui va contenir la quantité de chaque coffret récupérer depuis dolibarr 
+            $datas = array();
+
+            foreach ($tab_vernis as $id_coffret => $value) {
+                $qty_coffret = $all_product[$value[0]]["stock"];
+                foreach ($value as $key => $coffret) {
+                    if ($all_product[$coffret]["stock"] < $qty_coffret) {
+                        $qty_coffret = $all_product[$coffret]["stock"];
+                    }
+                }
+                array_push($datas,[
+                    "id_dolibarr" =>  $id_coffret,
+                    "id_wc" =>  $infos_id_wc[$id_coffret]["id_product_wc"],
+                    "qty" => $qty_coffret,
+                    "name" =>  $infos_id_wc[$id_coffret]["name"]
+                ]);  
+                
+                array_push($all_ids_wc,$infos_id_wc[$id_coffret]["id_product_wc"]);
+
+            }  
+            
+            return ["datas"=>$datas, "all_ids_wc" => $all_ids_wc];
+        }
+
+        
+        if ($id_categorie == "100") {
+            $datas_limes = array();
+
+            foreach ($tab_repartition as $id_dolibarr_unite => $kits) {
+
+                $id_wc_unite = $infos_id_wc[$id_dolibarr_unite]["id_product_wc"];
+                $qtyUniteInWc = $this->getQuantiteInWc($id_wc_unite);
+
+                foreach ($kits as $key => $kit) {
+                    array_push($datas_limes,[
+                        "id_dolibarr" =>  $kit["fk_product_pere"],
+                        "id_wc" =>  $infos_id_wc[$kit["fk_product_pere"]]["id_product_wc"],
+                        "qty" => intval($qtyUniteInWc/$kit["qty"]),
+                        "name" =>  $kit["name"]
+                    ]);
+                    array_push($all_ids_wc,$infos_id_wc[$kit["fk_product_pere"]]["id_product_wc"]);
+                }
+
+               
+            }
+
+            return ["datas"=>$datas_limes, "all_ids_wc" => $all_ids_wc];
+        }
+           
+
+
+
+     }
+
+
+    function updateStockServiceWcKits($data,$id_fils){
+
+        try {
+
+            $customer_key = config('app.woocommerce_customer_key');
+            $customer_secret = config('app.woocommerce_customer_secret');
+
+            $qtyFils = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$id_fils)->json()['stock_quantity'];
+
+                
+            foreach ($data as $key => $value) {
+
+                $id_pere_wc = $value["id_wc"];
+                $newQuantity = (intval($qtyFils/$value["qty"]))?? 0;
+                $this->putQuantiteInWc($id_pere_wc, $newQuantity);
+
+            }
+
+           return ["response" => true];
+  
+        } catch (\Throwable $th) {
+           return ["response" => false,"qte_actuelle" => "inchange", "message" => $th->getMessage()];
+        }
+    }
+
+      
+
+    function putQuantiteInWc($product_id_wc, $newQuantity){
+
+        try {
+           $customer_key = config('app.woocommerce_customer_key');
+           $customer_secret = config('app.woocommerce_customer_secret');
+
+           $getProductQuantity = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc);
+
+           // Si c'est une variation
+           if($getProductQuantity->json()['parent_id'] != 0){
+              $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+              ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$getProductQuantity->json()['parent_id']."/variations/".$product_id_wc, [
+                    "stock_quantity" => $newQuantity
+              ]);
+              
+           // Si c'est un produit sans variation
+           } else {
+              $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+              ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc, [
+                    "stock_quantity" => $newQuantity
+              ]);
+           }
+           return ["response" => true];
+  
+        } catch (\Throwable $th) {
+           return ["response" => false,"qte_actuelle" => "inchange", "message" => $th->getMessage()];
+        }
+    }
+
+
+    function getProductDolibarByApi($ids_unitaire, $entrepot_cible){
+       
+        $limite = 10000;
+        $method = "GET";
+        $apiKey = env('KEY_API_DOLIBAR'); 
+        $apiUrl = env('KEY_API_URL');
+
+        $datas_product_final = array();
+        
+        $produitParamProduct = array(
+            'apikey' => $apiKey,
+            'limit' => $limite,
+        );
+
+        $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
+        $all_products = json_decode($all_products,true); 
+
+      foreach ($all_products as $key => $product) {
+        if (in_array($product["id"],$ids_unitaire)) {
+
+            $stock = 0;
+            if ($product["warehouse_array_list"]) {
+                foreach ($product["warehouse_array_list"][$product["id"]] as $key => $entrepot) {
+                    if ($entrepot["warehouse"] == $entrepot_cible) {
+                        $stock = $entrepot["stock"];
+                    }
+                }
+            }
+            
+            array_push($datas_product_final,[
+                "id_product" => $product["id"],
+                "stock" => $stock
+            ]);
+        }
+      }
+
+        return $datas_product_final;
+
+    }
+
+
+    function getQuantiteInWc($product_id_wc){
+
+        try {
+           $customer_key = config('app.woocommerce_customer_key');
+           $customer_secret = config('app.woocommerce_customer_secret');
+
+           $getProductQuantity = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc)->json()['stock_quantity'];
+
+           return $getProductQuantity;
+  
+        } catch (\Throwable $th) {
+           return ["response" => false,"message" => $th->getMessage()];
+        }
+    }
 
 
 }

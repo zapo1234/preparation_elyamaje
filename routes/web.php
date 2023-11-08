@@ -114,6 +114,18 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
 
     // Email preview
     Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+
+    // Cofiguration dolibarr
+    Route::get("/configDolibarr", [Admin::class, "configDolibarr"])->name('configDolibarr');
+    Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
+    Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
+    Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
+    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
+
+    
+
+    
+    
 });
 
 // PRÉPARATEUR
@@ -188,6 +200,11 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 
     // Update details order billing and shipping
     Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
+
+    // Route créate kits
+    Route::post("/constructKit", [Order::class, "constructKit"])->name('constructKit');
+    Route::post("/validateKits", [Order::class, "validateKits"])->name('validateKits');
+
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
