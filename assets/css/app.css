@@ -6904,6 +6904,7 @@ select:focus, input:focus{
 
 .dataTables_scrollBody{
 	margin-bottom: 15px !important;
+	padding-top: 20px;
 }
 
 .generate_label_modal .modal-content{
