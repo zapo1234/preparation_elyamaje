@@ -22,7 +22,6 @@ $(".order_id_input").on('input', function(){
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
-    scan = false;
 
     $.ajax({
         url: "checkExpedition",
@@ -867,6 +866,7 @@ function clean_scan(){
     $("#customer").val("")
     $(".validate_order").attr('disabled', true)
     $("#detail_order").val("")
+    scan = false;
 }
 
 function getCountry(order){
