@@ -162,8 +162,7 @@ document.addEventListener("keydown", function (e) {
                             $(".quantity_product").text('')
                             $(".quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
                             $(".name_quantity_product").text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).children('.detail_product_name_order').children('span').text())
-                            $("#product_to_verif").val($("#barcode").val())
-
+                            $("#barcode_verif").val($("#barcode").val())
                             $('#modalverification2').modal({
                                 backdrop: 'static',
                                 keyboard: false
@@ -171,8 +170,9 @@ document.addEventListener("keydown", function (e) {
 
                             $("#modalverification2").attr('data-order', order_id)
                             $("#modalverification2").modal('show')
+
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text())
-                            saveItem(order_id, false, true)
+                            saveItem(order_id, false, true, true)
                         } else if ($("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_to_pick_in').text() > 1) {
                             $("#order_" + order_id + " .barcode_" + $("#barcode").val()).find('.quantity_pick_in').text(quantity_pick_in)
                             $("#barcode_verif").val($("#barcode").val())
@@ -198,7 +198,7 @@ document.addEventListener("keydown", function (e) {
             }
         }
     } else if ($(".modal_verif_order").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show') 
-    && !$(".info_message").hasClass('show')) {
+    && !$(".info_message").hasClass('show') && !$("#infoMessageModal").hasClass('show')) {
         var order_id = $(".modal_verif_order").attr('data-order')
         localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
         if (!isNaN(parseInt(e.key))) {
@@ -692,7 +692,7 @@ $(".valid_manually_barcode").on('click', function(){
                 $("#modalManuallyBarcode").modal('hide')
                 $("#barcode").val(barcode)
                 progress_bar()
-                saveItem(order_id, false, true)
+                saveItem(order_id, false, true, true)
             } else {
                 $("#modalManuallyBarcode").modal('hide')
             }
@@ -725,7 +725,7 @@ $(".valid_manually_barcode_transfert").on('click', function(){
                 $(".barcode_"+barcode).find('.quantity_pick_in').text($(".barcode_"+barcode).find('.quantity_to_pick_in').text())
                 $("#modalManuallyBarcode").modal('hide')
                 $("#barcode").val(barcode)
-                saveItem(order_id, false, true)
+                saveItem(order_id, false, true, true)
             } else {
                 $("#modalManuallyBarcode").modal('hide')
             }

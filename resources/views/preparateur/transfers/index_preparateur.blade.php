@@ -432,6 +432,22 @@
 			</div>
 		</div>
 
+		
+		<!-- Modal vérification quantité -->
+		<div class="modal_reset_order modal_verif_order modal fade" data-order="" id="modalverification2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+						<h2 class="text-center">Attention, cette commande contient <span class="quantity_product"></span> <span class="name_quantity_product"></span></h2>
+					</div>
+					<div class="w-100 d-flex justify-content-center mb-2">
+						<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Valider</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<!-- Modal de validation partielle -->
 		<div class="modal fade modal_reset_order" id="modalPartial" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">

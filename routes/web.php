@@ -246,8 +246,6 @@ Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->na
 Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage'])->name('auth.passwords.reset');
 
 
-
-
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 

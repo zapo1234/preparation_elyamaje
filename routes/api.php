@@ -23,17 +23,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // http://localhost/preparation.elyamaje.com/preparationCommandeByToken
 Route::get("/preparationCommandeByToken", [Controller::class, "preparationCommandeByToken"])->name('preparationCommandeByToken'); // acces pour preparer la commande doli
 
-
-
-// API APP REACT NATIVE
-Route::group(['middleware' =>  ['auth:sanctum']], function () {
-    // Route::post("/test", [ApiController::class, "test"]);
-});
+// Route::group(['middleware' =>  ['auth:sanctum']], function () {
+// });
 Route::post("/login", [ApiController::class, "login"]);
 
-
-
-Route::post("/test", [ApiController::class, "test"]);
 
 
 
