@@ -61,6 +61,7 @@ $(document).ready(function() {
                 var coupons_amount = false;
                 var shipping_amount = 0
                 var shipping_method = '';
+                var take_order = true;
 
                     if(order['coupon_lines']){
                         order['coupon_lines'].forEach(function(cp){
@@ -76,35 +77,48 @@ $(document).ready(function() {
                         })
                     }
 
-                    return {
-                        id: order.id,
-                        first_name: order.billing.first_name,
-                        last_name: order.billing.last_name,
-                        total: order.total,
-                        total_tax: order.total_tax,
-                        name: order.name,
-                        billing: order.billing,
-                        shipping: order.shipping,
-                        status: order.status,
-                        status_text: order.status_text ?? 'En cours',
-                        status_list: status_list,
-                        date_created: order.date_created,
-                        line_items: order.line_items,
-                        user_id: order.user_id,
-                        coupons: coupons,
-                        discount_total: order.discount_total,
-                        coupons_amount: coupons_amount,
-                        gift_card: order.pw_gift_cards_redeemed ?? false,
-                        users: users,
-                        products_pick: products_pick,
-                        shipping_amount: shipping_amount,
-                        shipping_method: shipping_method,
-                        customer_note:  order.customer_note,
-                        from_dolibarr:  order.from_dolibarr ?? false,
-                        orderDolibarId : order.from_dolibarr ? order.dolibarrOrderId : false,
-                        is_distributor : order.is_distributor
-                    };
-                });
+                    if(order.line_items.length == 1){
+                        Object.entries(order.line_items).forEach(([key, value]) => {
+                            if(value.name.includes("Carte Cadeau")){
+                                take_order = false;
+                            }
+                        })
+                    } 
+
+                    if(take_order){
+                        return {
+                            id: order.id,
+                            first_name: order.billing.first_name,
+                            last_name: order.billing.last_name,
+                            total: order.total,
+                            total_tax: order.total_tax,
+                            name: order.name,
+                            billing: order.billing,
+                            shipping: order.shipping,
+                            status: order.status,
+                            status_text: order.status_text ?? 'En cours',
+                            status_list: status_list,
+                            date_created: order.date_created,
+                            line_items: order.line_items,
+                            user_id: order.user_id,
+                            coupons: coupons,
+                            discount_total: order.discount_total,
+                            coupons_amount: coupons_amount,
+                            gift_card: order.pw_gift_cards_redeemed ?? false,
+                            users: users,
+                            products_pick: products_pick,
+                            shipping_amount: shipping_amount,
+                            shipping_method: shipping_method,
+                            customer_note:  order.customer_note,
+                            from_dolibarr:  order.from_dolibarr ?? false,
+                            orderDolibarId : order.from_dolibarr ? order.dolibarrOrderId : false,
+                            is_distributor : order.is_distributor
+                        };
+                    } else {
+                        return false;
+                    }
+                    
+                }).filter(Boolean);;
 
                 return combinedData;
             }
@@ -190,8 +204,6 @@ $(document).ready(function() {
                             id[value.product_woocommerce_id] = value.pick
                         } 
                     }) 
-                    console.log(row)
-
                     return `
                         <div class="${row.from_dolibarr ? 'order_dolibarr_'+row.orderDolibarId+'' : ''} modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">

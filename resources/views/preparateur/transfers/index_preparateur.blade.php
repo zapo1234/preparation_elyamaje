@@ -440,7 +440,7 @@
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
 						<h2 class="text-center">Attention, cette commande contient <span class="quantity_product"></span> <span class="name_quantity_product"></span></h2>
 					</div>
-					<div class="w-100 d-flex justify-content-center mb-2">
+					<div class="w-100 d-flex justify-content-center p-2">
 						<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Valider</button>
 					</div>
 				</div>
