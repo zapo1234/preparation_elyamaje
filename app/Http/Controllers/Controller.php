@@ -551,94 +551,104 @@ class Controller extends BaseController
            
             // boutique elyamaje
             if ($entrepot_destination== "all") {
-                
 
-                $start_date = $request->post('start_date');
-                $end_date = $request->post('end_date');
+                if (true) {
+                    $filterHowTC = "";
+                    $produitParam = array(
+                        'apikey' => $apiKey,
+                        'limit' => $limite,
+                    );
+                }
 
-                if ($start_date && $end_date) {
+                if (false) {
+                    $start_date = $request->post('start_date');
+                    $end_date = $request->post('end_date');
 
-                    $year_start = explode(", ",$start_date)[1];
-                    $year_end = explode(", ",$end_date)[1];
+                    if ($start_date && $end_date) {
 
-                    $start_date = '"'.date("$year_start-m-d", strtotime($start_date)).'"';
-                    $end_date = '"'.date("$year_end-m-d", strtotime($end_date)).'"';
+                        $year_start = explode(", ",$start_date)[1];
+                        $year_end = explode(", ",$end_date)[1];
+
+                        $start_date = '"'.date("$year_start-m-d", strtotime($start_date)).'"';
+                        $end_date = '"'.date("$year_end-m-d", strtotime($end_date)).'"';
+                        
+                        $with_dat = ' AND `fac`.`datef` >= '.$start_date.' AND `fac`.`datef` <= '.$end_date;
+                    }else {
+                        $with_dat = '';
+                    }
+                    $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
+                    // la categorie des gel = 7
+                    // Récuperer tt les produit appartenant a cette categorie
+                    $ids_gel = array();
+                    $res = $pdoDolibarr->getCategories(7);
+
+                    foreach ($res as $key => $value) {
+                        array_push($ids_gel,$value["fk_product"]);
+                    }
+
+                    // on récupère tout les lines contenant un des produits de la catégorie 7 (Gels) puis on fait un groupe by sur le 
+                    // fk_facture pour savoir combien de facture on a qui contiennent au moins un gel dont la facture est en positive
+                    // et payé paye = 1
                     
-                    $with_dat = ' AND `fac`.`datef` >= '.$start_date.' AND `fac`.`datef` <= '.$end_date;
-                }else {
-                    $with_dat = '';
-                }
-                $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+                    $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
+                    $nbr_facure_gel = count($res2);
 
-                // la categorie des gel = 7
-                // Récuperer tt les produit appartenant a cette categorie
-                $ids_gel = array();
-                $res = $pdoDolibarr->getCategories(7);
-
-                foreach ($res as $key => $value) {
-                    array_push($ids_gel,$value["fk_product"]);
-                }
-
-                // on récupère tout les lines contenant un des produits de la catégorie 7 (Gels) puis on fait un groupe by sur le 
-                // fk_facture pour savoir combien de facture on a qui contiennent au moins un gel dont la facture est en positive
-                // et payé paye = 1
+                    // dd($nbr_facure_gel);
                 
-                $res2 = $pdoDolibarr->getReelFacturesByCategories($ids_gel, $with_dat);
-                $nbr_facure_gel = count($res2);
+                // traitement selon les clients
+                    $fks_facture = array();
+                    foreach ($res2 as $key => $value) {
+                        array_push($fks_facture,$value["fk_facture"]);
+                    }
 
-                // dd($nbr_facure_gel);
-               
-               // traitement selon les clients
-                $fks_facture = array();
-                foreach ($res2 as $key => $value) {
-                    array_push($fks_facture,$value["fk_facture"]);
-                }
+                    
+
+                    $res4 = $pdoDolibarr->getClientPros($fks_facture, $with_dat);
+                    $nbr_clients_pros = count($res4);
+
+                    
+
+
+                    $res5 = $pdoDolibarr->getAllClientInHavingFacture($with_dat);
+                    $nbr_clients = count($res5);
 
                 
 
-                $res4 = $pdoDolibarr->getClientPros($fks_facture, $with_dat);
-                $nbr_clients_pros = count($res4);
-
-                
+                    $rapportBySocid = ($nbr_clients_pros/$nbr_clients)*100;
 
 
-                $res5 = $pdoDolibarr->getAllClientInHavingFacture($with_dat);
-                $nbr_clients = count($res5);
+                    $res3 = $pdoDolibarr->getFk_facture($with_dat);
+                    $nbr_facure_total = count($res3);
 
-              
+                    if ($nbr_facure_total) {
+                        $oercent_gel_fac = ($nbr_facure_gel/$nbr_facure_total)*100;
+                    }else {
+                        dd("Aucune facture dans cet interval");
+                    }
+                    $rapport = ($nbr_facure_gel/$nbr_facure_total)*100;
+                    
+                    return view('admin.supply',
+                    [
+                        "listWarehouses" => $listWarehouses,
+                        "first_transfert" => $first_transfert,
+                        "entrepot_source" => $entrepot_source,
+                        "entrepot_destination" => $entrepot_destination,
+                        "name_entrepot_a_alimenter" => "Tout les entrepots",
+                        "name_entrepot_a_destocker" => "Entrepôt Malpassé",
+                        "start_date_origin" => $start_date_origin,
+                        "end_date_origin" => $end_date_origin,
+                        "state" => true ,
+                        "nbr_facure_total" => $nbr_facure_total,
+                        "nbr_facure_gel" => $nbr_facure_gel,
+                        "rapport" => $rapport,
 
-                $rapportBySocid = ($nbr_clients_pros/$nbr_clients)*100;
+                        "nbr_clients" => $nbr_clients,
+                        "nbr_clients_pros" => $nbr_clients_pros,
+                        "rapportBySocid" => $rapportBySocid
+                    ]);
 
-
-                $res3 = $pdoDolibarr->getFk_facture($with_dat);
-                $nbr_facure_total = count($res3);
-
-                if ($nbr_facure_total) {
-                    $oercent_gel_fac = ($nbr_facure_gel/$nbr_facure_total)*100;
-                }else {
-                    dd("Aucune facture dans cet interval");
                 }
-                $rapport = ($nbr_facure_gel/$nbr_facure_total)*100;
-                
-                return view('admin.supply',
-                [
-                    "listWarehouses" => $listWarehouses,
-                    "first_transfert" => $first_transfert,
-                    "entrepot_source" => $entrepot_source,
-                    "entrepot_destination" => $entrepot_destination,
-                    "name_entrepot_a_alimenter" => "Tout les entrepots",
-                    "name_entrepot_a_destocker" => "Entrepôt Malpassé",
-                    "start_date_origin" => $start_date_origin,
-                    "end_date_origin" => $end_date_origin,
-                    "state" => true ,
-                    "nbr_facure_total" => $nbr_facure_total,
-                    "nbr_facure_gel" => $nbr_facure_gel,
-                    "rapport" => $rapport,
-
-                    "nbr_clients" => $nbr_clients,
-                    "nbr_clients_pros" => $nbr_clients_pros,
-                    "rapportBySocid" => $rapportBySocid
-                ]);
 
             }
 
@@ -660,7 +670,7 @@ class Controller extends BaseController
                 $filterHowTC = "t.ref LIKE '%TC4%'";
                 $produitParam = array(
                     'apikey' => $apiKey,
-                    'sqlfilters' => "t.ref LIKE '%TC4%'",
+                    // 'sqlfilters' => "t.ref LIKE '%TC4%'",
                     'limit' => $limite,
                 );
             }
@@ -677,6 +687,8 @@ class Controller extends BaseController
                     'limit' => $limite,
                 );
             }
+
+
 
             $array_factures_total = array();
             
@@ -745,13 +757,18 @@ class Controller extends BaseController
                     }
                 }
 
+                // dd($resultat);
 
                 foreach ($resultat as $key => $value) {
 
                     $start_date = $value["debut"];
                     $end_date = $value["fin"];
-        
-                    $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+
+                    if ($entrepot_destination !== "all") {
+                        $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+                    }else {
+                        $produitParam['sqlfilters'] = "t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
+                    }
         
                     $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
                     $factures = json_decode($listinvoice,true); 
@@ -1045,6 +1062,11 @@ class Controller extends BaseController
               }
           }
   
+          if ($entrepot_destination== "all") {
+            $name_entrepot_a_alimenter = "all_entrepot_a_alimenter";
+            $name_entrepot_a_destocker = "all_entrepot_a_destocker";
+          }
+
           if ($name_entrepot_a_alimenter == "" || $name_entrepot_a_destocker == "") {
               dd("entrepot n'a pas pu etre determine");
           }

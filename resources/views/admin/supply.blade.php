@@ -1365,14 +1365,16 @@
 
 $("#entrepot_destination").on("change", function(){
     var entrepot_source = $(this).val();
-    if (entrepot_source != "all") {
-        $("#ignore_bp_div").removeClass('d-none');
-        $("#first_transfert_div").removeClass('d-none');
+    
+    // if (entrepot_source != "all") {
+    //     $("#ignore_bp_div").removeClass('d-none');
+    //     $("#first_transfert_div").removeClass('d-none');
         
-    }else{
-        $("#ignore_bp_div").addClass('d-none');
-        $("#first_transfert_div").addClass('d-none');
-    }
+    // }else{
+    //     $("#ignore_bp_div").addClass('d-none');
+    //     $("#first_transfert_div").addClass('d-none');
+    // }
+
 })
 
     
