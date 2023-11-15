@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Helper\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
+// use Illuminate\Routing\Controller as BaseController;
 
-class ApiController extends BaseController
+class ApiController extends Controller
 {
    public function login(Request $request){
-      $input = $request->all();
+      $response = (new UserService($request->email, $request->password))->login();
+      return response()->json($response);
+   }
 
-      if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))){
-        return response()->json(['success' => true]);
-      } else {
-         return response()->json(['success' => false]);
-      }
+   public function test(){
+      return response()->json(['success' => true]);
    }
 }

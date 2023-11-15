@@ -128,11 +128,16 @@ class Colissimo
                         'cn23' => $cn23
                     ];
 
-                    if(!$order['from_dolibarr']){
-                        try{
-                            return $this->postOutwardLabelWordPress($data);
-                        } catch(Exception $e){
-                            return $e->getMessage();
+
+                    if(isset($order['from_dolibarr'])){
+                        if(!$order['from_dolibarr']){
+                            try{
+                                return $this->postOutwardLabelWordPress($data);
+                            } catch(Exception $e){
+                                return $e->getMessage();
+                            }
+                        } else {
+                            return true;
                         }
                     } else {
                         return true;

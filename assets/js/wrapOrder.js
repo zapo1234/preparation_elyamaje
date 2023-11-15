@@ -6,7 +6,7 @@ $(".order_input").on('input', function(){
 
 // Action lorsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    // $("#order_id").val($(".order_id_input").val())
+    $("#order_id").val($(".order_id_input").val())
     $(".validate_order").attr('disabled', false)
 })
 
@@ -22,7 +22,6 @@ $(".order_id_input").on('input', function(){
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
     $(".loading_detail_order").removeClass('d-none')
-    scan = false;
 
     $.ajax({
         url: "checkExpedition",
@@ -867,6 +866,7 @@ function clean_scan(){
     $("#customer").val("")
     $(".validate_order").attr('disabled', true)
     $("#detail_order").val("")
+    scan = false;
 }
 
 function getCountry(order){
