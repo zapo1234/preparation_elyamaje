@@ -200,7 +200,10 @@ document.addEventListener("keydown", function (e) {
     } else if ($(".modal_verif_order").hasClass('show') && !$("#modalManuallyBarcode").hasClass('show') 
     && !$(".info_message").hasClass('show') && !$("#infoMessageModal").hasClass('show')) {
         var order_id = $(".modal_verif_order").attr('data-order')
-        localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
+
+        if($("#product_to_verif").val().length == 13){
+            localStorage.setItem('product_quantity_verif', $("#product_to_verif").val());
+        }
         if (!isNaN(parseInt(e.key))) {
             $("#barcode_verif").val($("#barcode_verif").val() + e.key)
             if ($("#barcode_verif").val().length == 13) {
@@ -391,10 +394,12 @@ $(".confirmation_reset_order").on('click', function () {
             }
         })
 
-        if (pick_items.length == 0) {
-            localStorage.removeItem('barcode');
-        } else {
-            localStorage.setItem('barcode', JSON.stringify(pick_items));
+        if(pick_items){
+            if (pick_items.length == 0) {
+                localStorage.removeItem('barcode');
+            } else {
+                localStorage.setItem('barcode', JSON.stringify(pick_items));
+            }
         }
     }
 

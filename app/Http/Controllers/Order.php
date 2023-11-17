@@ -383,8 +383,15 @@ class Order extends BaseController
             }
           }
         }
-       
-        $this->order->insertOrdersByUsers($array_user);
+        
+        // Liste des distributeurs
+        $distributors = $this->distributor->getDistributors();
+        $distributors_list = [];
+        foreach($distributors as $dis){
+          $distributors_list[] = $dis->customer_id;
+        }
+ 
+        $this->order->insertOrdersByUsers($array_user, $distributors_list);
       }
     }
 
@@ -549,10 +556,11 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $user_id = $request->post('user_id');
       $from_dolibarr = $request->post('from_dolibarr');
+      $is_distributor = $request->post('is_distributor') ?? false;
 
       if($order_id && $user_id){
         if($from_dolibarr == "false"){
-          $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
+          $update = $this->order->updateOneOrderAttribution($order_id, $user_id, $is_distributor);
         } else {
           $update = $this->orderDolibarr->updateOneOrderAttributionDolibarr($order_id, $user_id);
         }
