@@ -810,7 +810,7 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $user_id)
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
