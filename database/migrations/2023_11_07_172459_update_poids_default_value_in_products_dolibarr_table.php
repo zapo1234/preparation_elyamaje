@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class History extends Migration
+class UpdatePoidsDefaultValueInProductsDolibarrTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class History extends Migration
      */
     public function up()
     {
-        Schema::create('histories', function (Blueprint $table) {
-            $table->id();
-            $table->string('order_id');
-            $table->integer('user_id');
-            $table->string('status');
-            $table->timestamps();
+        Schema::table('products_dolibarr', function (Blueprint $table) {
+            $table->float('poids', 8, 2)->default(0.00)->change();
         });
     }
 
@@ -29,6 +25,8 @@ class History extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('histories');
+        Schema::table('products_dolibarr', function (Blueprint $table) {
+            $table->float('poids', 8, 2)->default(null)->change();
+        });
     }
 }

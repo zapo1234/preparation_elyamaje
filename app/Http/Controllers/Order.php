@@ -108,6 +108,7 @@ class Order extends BaseController
       if($id){
         $orders_user = $this->order->getOrdersByIdUser($id, $distributeur);
         $orderDolibarr = $this->orderDolibarr->getAllOrdersDolibarrByIdUser($id);
+
         if(count($orderDolibarr['orders']) > 0){
           if(!$distributeur){
             foreach($orderDolibarr['orders'] as $ord){
@@ -142,6 +143,13 @@ class Order extends BaseController
           }
         }  
 
+        // Liste des distributeurs
+        $distributors = $this->distributor->getDistributors();
+        $distributors_list = [];
+        foreach($distributors as $dis){
+          $distributors_list[] = $dis->customer_id;
+        }
+
         // Récupère également les commandes créées depuis dolibarr vers préparation
         $orderDolibarr = $this->orderDolibarr->getAllOrders();
         if(count($orderDolibarr) > 0){
@@ -169,6 +177,14 @@ class Order extends BaseController
             } 
             
             if($take_order == true){
+
+              // Check if is distributor
+              if(in_array($order['customer_id'], $distributors_list)){
+                $orders[$key]['is_distributor'] = true;
+              } else {
+                $orders[$key]['is_distributor'] = false;
+              }
+
               $clesRecherchees = array_keys($ids,  $order['id']);
               
               // Pour les commandes depuis dolibarr
@@ -226,6 +242,14 @@ class Order extends BaseController
           }
         } else {
           foreach($orders as $key => $order){
+
+            // Check if is distributor
+            if(in_array($order['customer_id'], $distributors_list)){
+              $orders[$key]['is_distributor'] = true;
+            } else {
+              $orders[$key]['is_distributor'] = false;
+            }
+
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
                 if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
@@ -359,8 +383,15 @@ class Order extends BaseController
             }
           }
         }
-       
-        $this->order->insertOrdersByUsers($array_user);
+        
+        // Liste des distributeurs
+        $distributors = $this->distributor->getDistributors();
+        $distributors_list = [];
+        foreach($distributors as $dis){
+          $distributors_list[] = $dis->customer_id;
+        }
+ 
+        $this->order->insertOrdersByUsers($array_user, $distributors_list);
       }
     }
 
@@ -525,13 +556,15 @@ class Order extends BaseController
       $order_id = $request->post('order_id');
       $user_id = $request->post('user_id');
       $from_dolibarr = $request->post('from_dolibarr');
+      $is_distributor = $request->post('is_distributor') ?? false;
 
       if($order_id && $user_id){
         if($from_dolibarr == "false"){
-          $update = $this->order->updateOneOrderAttribution($order_id, $user_id);
+          $update = $this->order->updateOneOrderAttribution($order_id, $user_id, $is_distributor);
         } else {
           $update = $this->orderDolibarr->updateOneOrderAttributionDolibarr($order_id, $user_id);
         }
+
 
         $number_order_attributed = $this->order->getOrdersByUsers();
 
@@ -616,7 +649,7 @@ class Order extends BaseController
     }
 
     public function checkExpedition(Request $request){
-      $order_id = $request->get('order_id');
+      $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderById($order_id);
 
       if($order){
@@ -641,13 +674,12 @@ class Order extends BaseController
     }
 
     public function validWrapOrder(Request $request){
-      
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-        $transfers = $request->post('transfers') == "false" ? 0 : 1;
-       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-        $order_id = explode(',', $request->post('order_id'))[0];
-        
-        if($from_dolibarr){
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
+      $order_id = explode(',', $request->post('order_id'))[0];
+
+      if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
       } else if($transfers){
@@ -658,12 +690,10 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-        /*if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
+        if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;
         }
-
-        */
 
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         if($is_distributor && !$from_dolibarr){
@@ -819,7 +849,6 @@ class Order extends BaseController
         } 
       }
 
-      // dd($histories_order);
       return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
     }
 
@@ -1091,29 +1120,9 @@ class Order extends BaseController
 
     $data = $this->reassort->getQteToTransfer($identifiant_reassort);
 
-    // dump($data);
-
     // Enregistrez le temps de début
-    $temps_debut = microtime(true);
-
-    // $data2 = [
-    //   ["product_id" => 4702,"barcode" => 3760324820391,"qty" => 10],
-    //   ["product_id" => 5250,"barcode" => 3760324820308,"qty" => 10],
-    //   ["product_id" => 5249,"barcode" => 3760324820353,"qty" => 10],     
-    //   ["product_id" => 4700,"barcode" => 3760324820407,"qty" => 10],
-    //   ["product_id" => 5240,"barcode" => 3760324820278,"qty" => 10],
-    //   ["product_id" => 4697,"barcode" => 3760324820261,"qty" => 10],   
-    // ];
     $datas_updated_succes = array();
     $datas_updated_error = array();
-
-
-   // on récupère les kits
-
-  //  $kits = $this->reassort->getKits();
-  //  $array_ids_kits = $kits["all_id_pere_kits"];
-  //  $composition_kits = $kits["composition_by_pere"];
-  //  dd($kits);
 
     // Récupérer les ids produit de woocommerce
     $ids_woocomerce = $this->product->getProductsByBarcode($data);
@@ -1125,7 +1134,6 @@ class Order extends BaseController
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
       // dd($datas);
-      dump("Total = ". count($datas));
       foreach ($datas as $key => $data) {
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
@@ -1139,22 +1147,23 @@ class Order extends BaseController
           $data["qte_actuelle"] = $update_response["qte_actuelle"];
           array_push($datas_updated_error,$data);
         }
-        dump("reussits = ". count($datas_updated_succes));
-        dump("echoués = ". count($datas_updated_error));
 
       }
 
-      // return ["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error];
+      if ($datas_updated_succes) {
+        if ($datas_updated_error) {
+          return redirect()->back()->with('success', 'La synchronisation des quantités sur le site a réussit mais pas a 100%');
+        }else {
+          return redirect()->back()->with('success', 'La synchronisation des quantités sur le site a réussit');
+        }
+      }else {
+        return redirect()->back()->with('error',  "La synchronisation n'a pas fonctionné");
+      }
 
     }else {
-      return ["response" => false, "message" => $ids_woocomerce["message"]];
+      return redirect()->back()->with('error',  $ids_woocomerce["message"]);
     }
 
-    $temps_fin = microtime(true);
-    $temps_execution = ($temps_fin - $temps_debut)/60;
-    dump("Le script a pris " . $temps_execution . " minutes pour s'exécuter.");
-    dump("les stocks actuel sont");
-    dd(["datas_updated_succes" => $datas_updated_succes, "datas_updated_error" => $datas_updated_error]);
 
   }
 
@@ -1162,10 +1171,10 @@ class Order extends BaseController
   public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
-    if(strlen($order_id) == 10){
-      $order = $this->reassort->getReassortById($order_id);
-    } else if(strlen($order_id) < 5){
+    if(str_contains($order_id, 'CO')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+    } else if(strlen($order_id) == 10){
+      $order = $this->reassort->getReassortById($order_id);
     } else {
       $order = $this->order->getOrderById($order_id);
     }
@@ -1175,6 +1184,50 @@ class Order extends BaseController
     } else {
       echo json_encode(['success' => false]);
     }
+  }
+
+  function constructKit(Request $request){
+
+    // Récuperer les produits appartenant a la catégorie 100 (Limes)
+   
+   
+
+    $id_categorie = $request->post('id_categorie');
+
+    // return $id_categorie;
+    // dd($id_categorie);
+
+
+    // $id_categorie = 70;  // Limes
+    // $id_categorie = 70;  // Vernis semi permanent Elya Maje
+    $products_unite =  $this->reassort->getProductsByCategorie($id_categorie);
+    $products_association_by_ids = $this->reassort->productsAssociationByIds($products_unite, $id_categorie);
+
+    return $products_association_by_ids;
+    
+    dd("var");
+
+    $id_categories = 100;
+
+
+
+  }
+
+  function validateKits(Request $request){
+
+    try {
+      $id_wc = $request->post('id_wc');
+      $qty = $request->post('qty');
+
+      $res = $this->reassort->putQuantiteInWc($id_wc, $qty);
+
+    return $res;
+    } catch (\Throwable $th) {
+      return $th->getMessage();
+    }
+
+    
+
   }
 }
 

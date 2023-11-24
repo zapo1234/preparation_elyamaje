@@ -114,6 +114,18 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
 
     // Email preview
     Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
+
+    // Cofiguration dolibarr
+    Route::get("/configDolibarr", [Admin::class, "configDolibarr"])->name('configDolibarr');
+    Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
+    Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
+    Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
+    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
+
+    
+
+    
+    
 });
 
 // PRÉPARATEUR
@@ -185,9 +197,10 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/cancelLabelMissing", [Admin::class, "cancelLabelMissing"])->name('cancelLabelMissing');
 
     Route::post("/changeUserForReassort", [Controller::class, "changeUserForReassort"])->name('changeUserForReassort');
+    // Route créate kits
+    Route::post("/constructKit", [Order::class, "constructKit"])->name('constructKit');
+    Route::post("/validateKits", [Order::class, "validateKits"])->name('validateKits');
 
-    // Update details order billing and shipping
-    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -205,6 +218,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
+    
+    // Update details order billing and shipping
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
 });
 
 // TOUS LES ROLES
@@ -228,8 +244,6 @@ Route::get('/authentication-forgot-password', [Auth::class, 'forgotPassword'])->
 Route::post('/resetPassword', [Auth::class, 'resetPassword'])->name('password.reset');
 Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->name('auth.passwords.reset');
 Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage'])->name('auth.passwords.reset');
-
-
 
 
 // Tache crons mise a jours tiers chaque 30minute tous les jours.

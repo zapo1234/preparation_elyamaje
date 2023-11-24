@@ -4,22 +4,20 @@ $(".order_input").on('input', function(){
     }
 })
 
-// Action orsque qu'on rentre le numéro de commande manuellement
+// Action lorsque qu'on rentre le numéro de commande manuellement
 $(".order_id_input").on('input', function(){
-    if(isInt(parseInt($(".order_id_input").val()))){
-        $("#order_id").val($(".order_id_input").val())
-        $(".validate_order").attr('disabled', false)
-    }
+    $("#order_id").val($(".order_id_input").val())
+    $(".validate_order").attr('disabled', false)
 })
 
 // Check if is int
-function isInt(x) {
-    if (isNaN(x)) {
-        return false;
-    } else {
-        return true;
-    }
-}
+// function isInt(x) {
+//     if (isNaN(x)) {
+//         return false;
+//     } else {
+//         return true;
+//     }
+// }
  
 // Validation une fois le numéro de commande entré manuellement ou qr code scnanné
 $(".validate_order").on("click", function(){
@@ -693,11 +691,10 @@ function checkProductOnLabel(data){
 
 var scan = false
 document.addEventListener("keydown", function(e) {
-
     if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
             $("#detail_order").val($("#detail_order").val()+e.key)
             var array = $("#detail_order").val().split(',')
-
+            console.log($("#detail_order").val())
             if(array.length == 3 && !scan){
                 scan = true
                 $("#order_id").val(array[0].split(',')[0])
@@ -869,6 +866,7 @@ function clean_scan(){
     $("#customer").val("")
     $(".validate_order").attr('disabled', true)
     $("#detail_order").val("")
+    scan = false;
 }
 
 function getCountry(order){

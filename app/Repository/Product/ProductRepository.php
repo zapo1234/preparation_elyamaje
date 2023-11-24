@@ -221,7 +221,47 @@ class ProductRepository implements ProductInterface
          return ["response" => false,"qte_actuelle" => "inchange", "message" => $th->getMessage()];
       }
     }
-    
+
+    function constructKit($product_id_wc){
+
+      dd($product_id_wc);
+
+      try {
+         $customer_key = config('app.woocommerce_customer_key');
+         $customer_secret = config('app.woocommerce_customer_secret');
+
+         $getProductQuantity = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc);
+
+         dd($getProductQuantity->json());
+
+
+         $newQuantity = $getProductQuantity->json()['stock_quantity'];
+
+
+         dd($newQuantity);
+
+
+         dd("Finnnn");
+         // Si c'est une variation
+         if($getProductQuantity->json()['parent_id'] != 0){
+            $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+            ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$getProductQuantity->json()['parent_id']."/variations/".$product_id_wc, [
+                  "stock_quantity" => $newQuantity
+            ]);
+            
+         // Si c'est un produit sans variation
+         } else {
+            $updateProductQuantity  = Http::withBasicAuth($customer_key, $customer_secret)
+            ->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$product_id_wc, [
+                  "stock_quantity" => $newQuantity
+            ]);
+         }
+         return ["response" => true,"qte_actuelle" => $newQuantity];
+
+      } catch (\Throwable $th) {
+         return ["response" => false,"qte_actuelle" => "inchange", "message" => $th->getMessage()];
+      }
+    }   
 
 }
 

@@ -14,7 +14,7 @@ class AddFieldProductsOrder extends Migration
     public function up()
     {
         Schema::table('products_order', function (Blueprint $table) {
-            $table->integer('line_item_id');
+            $table->bigInteger('line_item_id');
         });
     }
 

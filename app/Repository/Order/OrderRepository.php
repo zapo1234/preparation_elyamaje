@@ -20,18 +20,19 @@ class OrderRepository implements OrderInterface
    }
 
 
-   public function insertOrdersByUsers($array_user){
+   public function insertOrdersByUsers($array_user, $distributors_list){
 
-     // Parcourir les données des utilisateurs
+      $is_distributor = false;
+
+      // Parcourir les données des utilisateurs
       foreach ($array_user as $userId => $userOrders) {
             $ordersToInsert = [];
             $productsToInsert = [];
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
-
                if(!isset($orderData['from_dolibarr'])){
-   
+
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
                   $coupons = [];
                   $discount = [];
@@ -108,8 +109,10 @@ class OrderRepository implements OrderInterface
                         'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                      ];
                      
+                     // Insert produits
+                     $total_order = 0;
                      foreach($orderData['line_items'] as $value){
-                        if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
+                        if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                            $productsToInsert[] = [
                               'order_id' => $orderData['id'],
                               'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -124,11 +127,36 @@ class OrderRepository implements OrderInterface
                               'line_item_id' => $value['id'],
                               'pick_control' => 0
                            ];
+                           $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                         }
+                     }
+
+                     if(in_array($orderData['customer_id'], $distributors_list)){
+                        $is_distributor = true;
+                     }
+
+                     // IF distributor add bag 30 for 1000 euros
+                     if($is_distributor && $total_order >= 1000){
+                        $montant_par_tranche = 1000;
+                        $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+                        $productsToInsert[] = [
+                           'order_id' => $orderData['id'],
+                           'product_woocommerce_id' => 110203,
+                           'category' =>  '',
+                           'category_id' => '',
+                           'quantity' => $nbr_sac,
+                           'cost' => 0,
+                           'subtotal_tax' =>  0,
+                           'total_tax' =>  0,
+                           'total_price' => 0,
+                           'pick' => 0,
+                           'line_item_id' => $orderData['id'].''.time(),
+                           'pick_control' => 0
+                        ];
                      }
                   }
                } else {
-                  DB::table('orders_doli')->where('id', $orderData['id'])->update(['user_id' => $userId]);
+                  DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);
                }
             } 
    
@@ -565,9 +593,9 @@ class OrderRepository implements OrderInterface
       }
    }
 
-   public function updateOneOrderAttribution($order_id, $user_id){
-      try{
+   public function updateOneOrderAttribution($order_id, $user_id, $is_distributor){
 
+      try{
          if($user_id == "Non attribuée"){
             $order = $this->model::where('order_woocommerce_id', $order_id)->delete();
             DB::table('products_order')->where('order_id', $order_id)->delete();
@@ -647,8 +675,9 @@ class OrderRepository implements OrderInterface
                ];
 
                // Insert produits
+               $total_order = 0;
                foreach($insert_order_by_user['line_items'] as $value){
-                  if($value['is_virtual'] != "yes" && !str_contains('Carte Cadeau', $value['name'])){
+                  if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                      $productsToInsert[] = [
                         'order_id' => $insert_order_by_user['id'],
                         'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -663,7 +692,28 @@ class OrderRepository implements OrderInterface
                         'line_item_id' => $value['id'],
                         'pick_control' => 0
                      ];
+                     $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                   }
+               }
+
+               // IF distributor add bag 30 for 1000 euros
+               if($is_distributor == "true" && $total_order >= 1000){
+                  $montant_par_tranche = 1000;
+                  $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+                  $productsToInsert[] = [
+                     'order_id' => $order_id,
+                     'product_woocommerce_id' => 110203,
+                     'category' =>  '',
+                     'category_id' => '',
+                     'quantity' => $nbr_sac,
+                     'cost' => 0,
+                     'subtotal_tax' =>  0,
+                     'total_tax' =>  0,
+                     'total_price' => 0,
+                     'pick' => 0,
+                     'line_item_id' => $order_id.''.time(),
+                     'pick_control' => 0
+                  ];
                }
 
                $this->model->insert($ordersToInsert);
@@ -760,7 +810,7 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $user_id)
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
@@ -829,7 +879,7 @@ class OrderRepository implements OrderInterface
       $orders = 
       $this->model->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-         ->join('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
+         ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->join('users', 'users.id', '=', 'orders.user_id')
          ->whereIn('orders.status', ['prepared-order'])
          ->select('orders.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',

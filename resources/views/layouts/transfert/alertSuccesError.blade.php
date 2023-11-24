@@ -7,7 +7,7 @@
     <script>
         setTimeout(function() {
             $('#success-message').fadeOut();
-        }, 60000);
+        }, 4000);
     </script>
 
 @endif
@@ -20,7 +20,7 @@
     <script>
         setTimeout(function() {
             $('#error-message').fadeOut();
-        }, 60000);
+        }, 4000);
     </script>
 
 @endif

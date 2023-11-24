@@ -21,8 +21,8 @@ class Colissimo
     }
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
-        $productCode = $this->getProductCode($order);
 
+        $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
         $customsArticle = $this->customsArticle($order, $items);
@@ -128,12 +128,20 @@ class Colissimo
                         'cn23' => $cn23
                     ];
 
-                    try{
-                        return $this->postOutwardLabelWordPress($data);
-                    } catch(Exception $e){
-                        return $e->getMessage();
+
+                    if(isset($order['from_dolibarr'])){
+                        if(!$order['from_dolibarr']){
+                            try{
+                                return $this->postOutwardLabelWordPress($data);
+                            } catch(Exception $e){
+                                return $e->getMessage();
+                            }
+                        } else {
+                            return true;
+                        }
+                    } else {
+                        return true;
                     }
-                    
                 } else {
 
                 }

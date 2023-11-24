@@ -14,7 +14,7 @@ interface OrderInterface
 
    public function getAllOrdersAndLabelByFilter($filters);
 
-   public function insertOrdersByUsers($array_user);
+   public function insertOrdersByUsers($array_user, $distributors_lis);
 
    public function getOrdersByUsers();
 
@@ -38,7 +38,7 @@ interface OrderInterface
 
    public function updateOrderAttribution($from_user, $to_user);
 
-   public function updateOneOrderAttribution($order_id, $user_id);
+   public function updateOneOrderAttribution($order_id, $user_id, $is_distributor);
 
    public function getHistoryByUser($user_id);
 
