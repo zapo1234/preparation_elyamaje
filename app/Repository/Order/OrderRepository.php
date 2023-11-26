@@ -110,6 +110,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      // Insert produits
+
                      $total_order = 0;
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
