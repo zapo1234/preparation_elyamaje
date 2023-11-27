@@ -129,7 +129,6 @@ class Controller extends BaseController
     public function categories()
     {
         $categories = $this->categories->getAllCategories();
-        dd($categories);
         return view('admin.categories', ['categories' => $categories]);
     }
 
