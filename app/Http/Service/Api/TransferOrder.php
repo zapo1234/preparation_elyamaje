@@ -148,9 +148,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-          
-
-        
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -189,23 +187,27 @@ class TransferOrder
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
-                //Recuperer les ref_client existant dans dolibar
-	               $tiers_ref = "";
-                 // recupérer directement les tiers de puis bdd.
-                 //$this->tiers->insertiers();// mise a jour api
-                 $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
-
-             // recuperer les ids commandes
-
-                 $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
-                 $key_commande = $this->commande->getIds();// lindex les ids commande existant.
+                  //Recuperer les ref_client existant dans dolibar
+	                $tiers_ref = "";
+                  // recupérer directement les tiers de puis bdd.
+                  //$this->tiers->insertiers();// mise a jour api
+                  $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
+                  // recuperer les ids commandes
+                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
+                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                  // recupérer le tableau de ids
-                 $ids_commandes =[];
-              
+                  $ids_commandes =[];
                   foreach($ids_commande as $key => $valis) {
                      $ids_commandes[$valis['id_commande']] = $key;
                   }
-            
+
+                  // recupérer l'id du pays du clients associé au prféfixe du pays.
+                  $data_id_country = $this->commande->getIdcountry();
+                  $data_ids_country = [];
+                  foreach($data_id_country as $valu){
+                     $data_ids_country[$valu['rowid']]= $valu['code'];
+                  }
+
                   // recupérer les email,socid, code client existant dans tiers
                   $data_email = [];//entre le code_client et email.
                   $data_list = []; //tableau associative de id et email
@@ -373,12 +375,23 @@ class TransferOrder
                                     $typent_code="";
                                       
                                   }
-
-                                    $name="";
+                                   $name="";
                                    $code = $donnees['customer_id'];//customer_id dans woocomerce 
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
 
-                                    $data_tiers[] =[ 
+                                    // recupérer le prefix pays a partir du code client 
+                                    $code_country = $donnees['billing']['country'];
+                                    $id_country = array_search($code_country,$data_ids_country);
+                                    if($id_country==""){
+                                     $id_country=1;
+                                     $code_country ="FR";
+                                   }
+                                   if($id_country!=""){
+                                     $id_country = array_search($code_country,$data_ids_country);
+                                     $code_country = $donnees['billing']['country'];
+                                   }
+
+                                   $data_tiers[] =[ 
                                    'entity' =>'1',
                                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                    'name_alias' => $woo,
@@ -391,7 +404,8 @@ class TransferOrder
                                    'phone' => $donnees['billing']['phone'],
                                     'client' 	=> '1',
                                     'code_client'	=> $code_client,
-                                    'country_code'=> $donnees['billing']['country']
+                                    'country_id' => $id_country,
+                                    'country_code'=> $code_country
                                  ];
                                  
                                    $data_infos_user = [
@@ -577,23 +591,13 @@ class TransferOrder
                         */
                          
                         // echo json_encode($data_lines);
-                       // Create le client via Api...
-
-                       
-                      //  dd(json_encode($data_tiers[0],true));
-
-
-                      //  dd($data_tiers[0]);
-
-
-                       foreach($data_tiers as $data) {
+                        // Create le client via Api...
+                          foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                             $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-
-                       }
+                          }
                     
-
-                        foreach($data_lines as $donnes){
+                          foreach($data_lines as $donnes){
                           // insérer les details des données de la facture dans dolibarr
                           $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                         }

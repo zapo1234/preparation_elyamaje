@@ -105,7 +105,6 @@ class CategoriesRepository implements CategoriesInterface
               $arborescence[] = $element;
           }
       }
-  
       return $arborescence;
   }
 

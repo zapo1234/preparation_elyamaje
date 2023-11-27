@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldProductsOrder extends Migration
+class IdCountry extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,7 @@ class AddFieldProductsOrder extends Migration
      */
     public function up()
     {
-        Schema::table('products_order', function (Blueprint $table) {
-            $table->bigInteger('line_item_id');
-        });
+        //
     }
 
     /**
@@ -25,8 +23,6 @@ class AddFieldProductsOrder extends Migration
      */
     public function down()
     {
-        Schema::table('products_order', function (Blueprint $table) {
-            //
-        });
+        //
     }
 }

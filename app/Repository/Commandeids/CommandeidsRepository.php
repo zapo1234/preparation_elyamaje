@@ -29,33 +29,34 @@ class CommandeidsRepository implements CommandeidsInterface
     
       public function getAll()
       {
-          // recupérer tous les data de la table
+           // recupérer tous les data de la table
             $data =  DB::table('commandeids')->select('id_commande')->get();
             $name_list = json_encode($data);
             $name_list = json_decode($data,true);
-
-           $id_commandes =[];
-
-          foreach($name_list as $ks => $val)
-          {
-            $id_commandes[$val['id_commande']]= $ks;
+            $id_commandes =[];
+             foreach($name_list as $ks => $val){
+               $id_commandes[$val['id_commande']]= $ks;
           }
-
           // recupérer le tableau des ids commande 
            $this->setIds($id_commandes);
-        
            return $name_list;
-      }
+        }
     
-     public function getAlldate($date)
-     {
+      public function getAlldate($date){
          // recupérer tous les data de la table
-        $data =  DB::table('commandeids')->select('id_commande')->where('date','=',$date)->get();
-        $name_list = json_encode($data);
-        $name_list = json_decode($data,true);
-        
-        return $name_list;
-     }
+         $data =  DB::table('commandeids')->select('id_commande')->where('date','=',$date)->get();
+         $name_list = json_encode($data);
+         $name_list = json_decode($data,true);
+         return $name_list;
+      }
+
+      public function getIdcountry(){
+         $data =  DB::table('id_country')->select('rowid','code','label')->get();
+         $name_list = json_encode($data);
+         $name_list = json_decode($data,true);
+         return $name_list;
+ 
+      }
     
      public function deleteOrder($order_id){
       return $this->model::where('id_commande', $order_id)->delete();

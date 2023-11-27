@@ -152,7 +152,7 @@ $(document).ready(function() {
 
                     })
                     
-                    var selectHtml = `<select onchange="changeOneOrderAttribution('${row.id}', ${row.from_dolibarr})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
+                    var selectHtml = `<select onchange="changeOneOrderAttribution('${row.id}', ${row.from_dolibarr}, ${row.is_distributor})" id="select_${row.id}" class="order_attribution select_user">${selectOptions}</select>`;
 
                     if($("#select_"+row.id).val() == "Non attribuée"){
                         $("#select_"+row.id).addClass('empty_select')
@@ -911,7 +911,7 @@ function changeStatusOrder(order_id, user_id, from_dolibarr){
 }
 
 // Update attribution order
-function changeOneOrderAttribution(order_id, from_dolibarr){
+function changeOneOrderAttribution(order_id, from_dolibarr, is_distributor){
 
     var order_id = order_id
     var user_id = $("#select_"+order_id).val()
@@ -928,7 +928,7 @@ function changeOneOrderAttribution(order_id, from_dolibarr){
     $.ajax({
         url: "updateOneOrderAttribution",
         method: 'POST',
-        data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id, from_dolibarr: from_dolibarr}
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, user_id: user_id, from_dolibarr: from_dolibarr, is_distributor: is_distributor}
     }).done(function(data) {
         if(JSON.parse(data).success){
             $("#number_attribution").text(JSON.parse(data).number_order_attributed)
