@@ -149,6 +149,8 @@ class TransferOrder
       public function Transferorder($orders)
       {
           
+
+        
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -336,6 +338,9 @@ class TransferOrder
                             }
 
                           }
+
+
+
 
                      if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
@@ -573,6 +578,12 @@ class TransferOrder
                          
                         // echo json_encode($data_lines);
                        // Create le client via Api...
+
+                       
+                      //  dd(json_encode($data_tiers[0],true));
+
+
+                      //  dd($data_tiers[0]);
 
 
                        foreach($data_tiers as $data) {
