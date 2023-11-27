@@ -1,19 +1,19 @@
 $(document).ready(function() {
 
     // Affiche la moyenne de préparation de chaque users
-    $.ajax({
-        url: "getAverage",
-        method: "GET",
-        async: true,
-    }).done(function(data) {
-        if(JSON.parse(data).success){
-            var data = JSON.parse(data)
-            $(".loading_chart").remove()
+    // $.ajax({
+    //     url: "getAverage",
+    //     method: "GET",
+    //     async: true,
+    // }).done(function(data) {
+    //     if(JSON.parse(data).success){
+    //         var data = JSON.parse(data)
+    //         $(".loading_chart").remove()
 
-            // Créer le chart js
-            chartAverage(data.average_by_name)
-        }
-    });
+    //         // Créer le chart js
+    //         chartAverage(data.average_by_name)
+    //     }
+    // });
 
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],

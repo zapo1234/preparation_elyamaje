@@ -114,11 +114,6 @@ class OrderRepository implements OrderInterface
                      $total_order = 0;
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
-
-                           // if($value['quantity'] == 0){
-                           //    file_put_contents('error.txt', $orderData['id']);
-                           // }
-
                            $productsToInsert[] = [
                               'order_id' => $orderData['id'],
                               'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
