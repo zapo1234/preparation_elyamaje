@@ -159,6 +159,7 @@ class Order extends BaseController
           }
         } 
 
+
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
         $ids = array_column($orders_distributed, "order_woocommerce_id");
@@ -175,7 +176,15 @@ class Order extends BaseController
                 }
               } 
             } 
-            
+
+            // N'affiche pos les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
+            if($order['status'] == "prepared-order"){
+              $clesRecherchees = array_keys($ids,  $order['id']);
+              if(count($clesRecherchees) == 0){
+                $take_order = false;
+              }
+            }
+  
             if($take_order == true){
 
               // Check if is distributor
