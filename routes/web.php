@@ -201,6 +201,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/constructKit", [Order::class, "constructKit"])->name('constructKit');
     Route::post("/validateKits", [Order::class, "validateKits"])->name('validateKits');
 
+    // Téléchargement de fichier de réassort
+    Route::post("/uploadFile", [Order::class, "uploadFile"])->name('uploadFile');
+
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
