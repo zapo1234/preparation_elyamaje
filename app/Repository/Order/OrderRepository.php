@@ -137,8 +137,8 @@ class OrderRepository implements OrderInterface
                      }
 
                      // IF distributor add bag 30 for 1000 euros
-                     if($is_distributor && $total_order >= 500){
-                        $montant_par_tranche = 500;
+                     if($is_distributor && $total_order >= 1000){
+                        $montant_par_tranche = 1000;
                         $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
                         $productsToInsert[] = [
                            'order_id' => $orderData['id'],
@@ -698,8 +698,8 @@ class OrderRepository implements OrderInterface
                }
 
                // IF distributor add bag 30 for 1000 euros
-               if($is_distributor == "true" && $total_order >= 500){
-                  $montant_par_tranche = 500;
+               if($is_distributor == "true" && $total_order >= 1000){
+                  $montant_par_tranche = 1000;
                   $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
                   $productsToInsert[] = [
                      'order_id' => $order_id,
