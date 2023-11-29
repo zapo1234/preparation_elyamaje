@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use DateTime;
 use Exception;
 use Throwable;
+use League\Csv\Reader;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Http\Controllers\Order;
@@ -428,89 +429,29 @@ class Controller extends BaseController
 
     }
 
-    function createReassort(Request $request){
-        
+    function createReassort(Request $request){       
 
 
-/*
 
-        $data = [
-            ["id_product" => 16750, 'qte' => 5],
-            ["id_product" => 13867, 'qte' => 10],    
-            ["id_product" => 8875, 'qte' => 15],
-            ["id_product" => 8507, 'qte' => 20]  
-        ];
+       
 
-       // $tabProduitReassort = $this->reassort->destockInWoocommerce($data);
+        $by_file = $request->hasFile('file_reassort') && $request->file('file_reassort')->isValid();
 
-
-        $customer_key = config('app.woocommerce_customer_key');
-        $customer_secret = config('app.woocommerce_customer_secret');
-        // $id ="8507";
-
-        try {
-
-            $temps_debut = microtime(true);
-
-
-            for ($i=0; $i <15 ; $i++) { 
-                foreach ($data as $key => $value) {
-                    $id = $value["id_product"];
-                    $qte = $value["qte"];
-        
-                    $response = Http::withBasicAuth($customer_key, $customer_secret)->post(config('app.woocommerce_api_url')."wp-json/wc/v3/products/".$id, [
-                        'stock_quantity' => $qte,
-                      ]);
-                }
+        if ($by_file) {
+            $file = $request->file('file_reassort');
+            $csvContent = $file->getContent();
+            $reader = Reader::createFromString($csvContent);
+            $reader->setHeaderOffset(0);
+            $csvDataArray = iterator_to_array($reader->getRecords());
+    
+    
+            if (!isset($csvDataArray[1]["ID"]) || !isset($csvDataArray[1]["Libelle"]) || !isset($csvDataArray[1]["Quantité vendu"]) || !isset($csvDataArray[1]["Catégorie"])) {
+                return redirect()->back()->with('error',  "le format du fichier n'est pas bon");
             }
-
-
-            $temps_fin = microtime(true);
-            $temps_execution = $temps_fin - $temps_debut;
-
-            dd("Le script a pris ". $temps_execution ." secondes pour s'exécuter.");
-
-
-        } catch (\Throwable $th) {
-            dd($th);
         }
 
-        
-
-      
 
        
-
-        dd("dddddd");
-
-
-        
-        
-
-        $per_page = 100;
-        $page = 1;
-
-       
-
-
-
-        try{
-        $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/products/74423?per_page=".$per_page."&page=".$page);
-       
-       dd($response->json());
-       
-        return $response->json();
-
-        } catch(Exception $e){
-        return $e->getMessage();
-        }
-
-        dd("fin");
-
-        */
-
-
-        
 
 
 
@@ -831,7 +772,6 @@ class Controller extends BaseController
             }      
        
 
-
         // récuperer les label de la categories
         $cat_lab = $this->reassort->getAllCategoriesLabel();
 
@@ -960,71 +900,126 @@ class Controller extends BaseController
         $lot_de_limes_ids = $kit["all_id_pere_kits"];
         $lot_de_limes_vs_corresp = $kit["composition_by_pere"];
 
-        foreach ($array_factures_total as $ktotal => $factures) {
-            foreach ($factures as $key => $facture) {
-                $lines = $facture["lines"];
-                foreach ($lines as $kline => $line) {
-                    if ($line["fk_product"] !="") {
 
-                        $id_product = $line["fk_product"];
-                        $qty = $line["qty"];  
-                        
-                        // if ($id_product == 5619) {
-                        //     dump($kline);
-                        //     dump($facture);
-                        // }
 
-                        if (in_array($id_product,$lot_de_limes_ids)) {
+        if ($by_file) {
+            foreach ($csvDataArray as $key => $value) {
+                $id_product = $value["ID"];
+                $qty = $value["Quantité vendu"];  
+                
+                if (in_array($id_product,$lot_de_limes_ids)) {
+    
+                    // on coverti le kit en unité dont il est composé
+                    $tab_cores = $lot_de_limes_vs_corresp[$id_product];
+                    foreach ($tab_cores as $xx => $comp) {
+                        $id_product = $comp[0];
+                        $qty = $qty*$comp[1]; 
 
-                            // on coverti le kit en unité dont il est composé
-                            $tab_cores = $lot_de_limes_vs_corresp[$id_product];
-                            foreach ($tab_cores as $xx => $comp) {
-                                $id_product = $comp[0];
-                                $qty = $qty*$comp[1]; 
 
+                        if (!isset($vente_by_product[$id_product])) {
+                            $vente_by_product[$id_product] = 
+                            [
+                                "qty" => $qty,
+                                "desc" => $products_dolibarrs_first_tr[$id_product]["desc"],
+                                "libelle" => $products_dolibarrs_first_tr[$id_product]["libelle"],
+                                "total_ttc"=>$products_dolibarrs_first_tr[$id_product]["total_ttc"],
+                                "subprice" => $products_dolibarrs_first_tr[$id_product]["subprice"],
+                                
+                                "fk_cat" => $products_dolibarrs_first_tr[$id_product]["fk_cat"],
+                                "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
+                                "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
+                            ];
+                        }else {
+                            $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty;
+                        }
+
+                    }
+                }else {
+                    if (!isset($vente_by_product[$id_product])) {
+                        $vente_by_product[$id_product] = 
+                        [
+                            "qty" => $qty,
+                            "desc" => $products_dolibarrs_first_tr[$id_product]["desc"],
+                            "libelle" => $products_dolibarrs_first_tr[$id_product]["libelle"],
+                            "total_ttc"=>$products_dolibarrs_first_tr[$id_product]["total_ttc"],
+                            "subprice" => $products_dolibarrs_first_tr[$id_product]["subprice"],
+
+                            "fk_cat" => $products_dolibarrs_first_tr[$id_product]["fk_cat"],
+                            "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
+                            "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
+                        ];
+                    }else {
+                        $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty;
+                    }
+                }
+
+            }
+        
+        }else {
+            foreach ($array_factures_total as $ktotal => $factures) {
+                foreach ($factures as $key => $facture) {
+                    $lines = $facture["lines"];
+                    foreach ($lines as $kline => $line) {
+                        if ($line["fk_product"] !="") {
+    
+                            $id_product = $line["fk_product"];
+                            $qty = $line["qty"];  
+    
+                            if (in_array($id_product,$lot_de_limes_ids)) {
+    
+                                // on coverti le kit en unité dont il est composé
+                                $tab_cores = $lot_de_limes_vs_corresp[$id_product];
+                                foreach ($tab_cores as $xx => $comp) {
+                                    $id_product = $comp[0];
+                                    $qty = $qty*$comp[1]; 
+    
+                                    if (!isset($vente_by_product[$id_product])) {
+                                        $vente_by_product[$id_product] = 
+                                        [
+                                            "qty" => $qty*$coef,
+                                            "desc" => $products_dolibarrs_first_tr[$id_product]["desc"],
+                                            "libelle" => $products_dolibarrs_first_tr[$id_product]["libelle"],
+                                            "total_ttc"=>$products_dolibarrs_first_tr[$id_product]["total_ttc"],
+                                            "subprice" => $products_dolibarrs_first_tr[$id_product]["subprice"],
+                                            
+                                            "fk_cat" => $products_dolibarrs_first_tr[$id_product]["fk_cat"],
+                                            "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
+                                            "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
+                                        ];
+                                    }else {
+                                        $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
+                                    }
+    
+                                }
+                            }else {
                                 if (!isset($vente_by_product[$id_product])) {
                                     $vente_by_product[$id_product] = 
                                     [
                                         "qty" => $qty*$coef,
-                                        "desc" => $products_dolibarrs_first_tr[$id_product]["desc"],
-                                        "libelle" => $products_dolibarrs_first_tr[$id_product]["libelle"],
-                                        "total_ttc"=>$products_dolibarrs_first_tr[$id_product]["total_ttc"],
-                                        "subprice" => $products_dolibarrs_first_tr[$id_product]["subprice"],
-                                        
-                                        "fk_cat" => $products_dolibarrs_first_tr[$id_product]["fk_cat"],
-                                        "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
-                                        "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
+                                        "desc" => $line["desc"],
+                                        "libelle" => $line["libelle"],
+                                        "total_ttc"=>$line["total_ttc"],
+                                        "subprice" => $line["subprice"],
+    
+                                        "fk_cat" => $line["fk_cat"],
+                                        "label_cat" => $line["label_cat"],
+                                        "fk_parent" => $line["fk_parent"],
                                     ];
                                 }else {
                                     $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
                                 }
-
                             }
-                        }else {
-                            if (!isset($vente_by_product[$id_product])) {
-                                $vente_by_product[$id_product] = 
-                                [
-                                    "qty" => $qty*$coef,
-                                    "desc" => $line["desc"],
-                                    "libelle" => $line["libelle"],
-                                    "total_ttc"=>$line["total_ttc"],
-                                    "subprice" => $line["subprice"],
-
-                                    "fk_cat" => $line["fk_cat"],
-                                    "label_cat" => $line["label_cat"],
-                                    "fk_parent" => $line["fk_parent"],
-                                ];
-                            }else {
-                                $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
-                            }
+    
+                                
+    
                         }
-
-                            
-
                     }
                 }
             }
         }
+
+       
+
         // 3- on récupère les entrepots existant 
         $warehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");  
         $warehouses = json_decode($warehouses,true);
@@ -1088,6 +1083,9 @@ class Controller extends BaseController
 
                 "start_date_origin" => $start_date_origin,
                 "end_date_origin" => $end_date_origin,
+
+                
+
             ]);
         }       
 
@@ -1256,7 +1254,7 @@ class Controller extends BaseController
                         "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                         "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
                         "demande" => ceil($vente_by_product[$kproduct]["qty"]),
-                        "qte_optimale" => ceil($vente_by_product[$kproduct]["qty"])*3,
+                        "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3,
 
                         "fk_cat" => $stock_in_war["fk_cat"],
                         "label_cat" => $stock_in_war["label_cat"],
@@ -1327,6 +1325,8 @@ class Controller extends BaseController
 
                 "start_date_origin" => $start_date_origin,
                 "end_date_origin" => $end_date_origin,
+                "by_file" => $by_file,
+
                 
             ]);
     }

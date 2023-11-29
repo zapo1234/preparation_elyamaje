@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use League\Csv\Reader;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Events\NotificationPusher;
-use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\TransferOrder;
@@ -23,8 +24,8 @@ use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
-use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
@@ -1239,6 +1240,27 @@ class Order extends BaseController
 
     
 
+  }
+
+  
+  function uploadFile(Request $request){
+
+    if ($request->hasFile('file_reassort') && $request->file('file_reassort')->isValid()) {
+        $file = $request->file('file_reassort');
+
+        $csvContent = $file->getContent();
+        $reader = Reader::createFromString($csvContent);
+        $reader->setHeaderOffset(0);
+
+        $csvDataArray = iterator_to_array($reader->getRecords());
+
+        dd($csvDataArray);
+
+        
+    }
+
+    // Retournez une réponse en cas d'erreur
+    return response()->json(['message' => 'Erreur lors du téléchargement du fichier CSV'], 400);
   }
 }
 

@@ -138,7 +138,7 @@
                             <div class="tab-pane fade active show" id="primary-pills-home" role="tabpanel">
                               
                                 <div class="card">
-                                    <form method="POST" action="{{route('createReassort')}}">
+                                    <form method="POST" action="{{route('createReassort')}}" enctype="multipart/form-data">
                                         @csrf
                 
                                         <div class="header_title hide_mobile d-flex align-items-center">
@@ -249,9 +249,29 @@
                 
                                             </div>
                 
-                                            <div class="col-12 d-flex justify-content-center mt-5">
+
+                                         
+
+                                            {{-- <div class="col-12 d-flex justify-content-center mt-5">
                                                 <button id="id_sub_calcul_reassort" onclick="this.disabled=true;this.form.submit();" class="btn btn-primary" type="submit">Générer le réassort</button>
+                                            </div> --}}
+
+                                            <div class="col-md-2"></div>
+
+                                            <div class="col-md-8 row">
+
+                                            
+
+                                                <div class="col-md-8">
+                                                    <input class="form-control form-control-sm" id="formFileSm" type="file" name="file_reassort">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <button id="id_sub_calcul_reassort" onclick="this.disabled=true;this.form.submit();" class="btn btn-primary" type="submit">Générer le réassort</button>
+                                                </div>
                                             </div>
+
+                                            <div class="col-md-2"></div>
+
                 
                                             
                 
@@ -260,6 +280,16 @@
                                     </form>
                                 
                                 </div>
+
+                                {{-- <form class="font-22 text-primary col-md-4 row" action="{{ route('uploadFile') }}" method="post" id="" style="margin-top: 1%"  enctype="multipart/form-data">
+                                    @csrf
+                                        <div class="col-md-8">
+                                            <input class="form-control form-control-sm" id="formFileSm" type="file" name="file_reassort">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button id="import_file" class="btn btn-primary" type="submit">Importer</button>
+                                        </div>
+                                </form> --}}
                            
                            
                             </div>
@@ -387,6 +417,7 @@
 
 
                 @if (isset($vente_by_product) && $first_transfert)
+
                 
                     {{-- {{dd($first_transfert)}} --}}
 
@@ -428,6 +459,9 @@
 
 
                 @if (isset($products_reassort))
+
+                {{-- @dd($by_file) --}}
+
 
                     <div id="id_reassor1" class="card card_product_commande">
                         <div class="table-responsive p-3">
@@ -562,7 +596,6 @@
                             <div class="col-md-3"></div>
 
                         </div>
-
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-2"></div>
@@ -1218,6 +1251,96 @@
             // $("#qte_id").val("");
         }
 
+    }
+
+    // Télécharger un fichier de réassort 
+    function uploadFile(){
+
+        uploadFileUrl = "{{route('uploadFile')}}";
+
+        // $.ajax({
+        //     url: uploadFileUrl,
+        //     method: 'POST',
+        //     data : {
+        //         id_categorie:id_categorie                    
+        //     },
+
+        //     headers: {
+        //         'X-CSRF-TOKEN': csrfToken
+        //     },                       
+        //     success: function(response) {
+
+        //         $("#create_kit").removeClass("disabled-link");
+        //         $("#create_kit").prop('disabled', true);
+        //         $("#create_kit").html("Créer les kits");
+
+        //         $('#table_kits').DataTable({
+        //             order: [[3, 'desc']],
+        //             pageLength: 1000,
+
+        //             dom: 'Bfrtip',
+
+        //             buttons: [
+        //                 'copy',
+        //                 'excel',
+        //                 'csv',
+        //                 'pdf',
+        //                 'print'
+        //             ],
+        //         });
+
+
+        //         response.datas.forEach(function(row) {
+
+        //             var line = `
+        //             <tr data_id_product="${row.id_wc}" id="${row.id_wc}_line_parent_kit" class="odd" role="row">
+                    
+        //                 <td data-key="name_kit" data-value="${row.name}" id="${row.id_wc}_wc_name" style="text-align: left !important;">${row.name}</td>
+        //                 <td data-key="id_dolibarr_kit" data-value="${row.id_dolibarr}" id="${row.id_wc}_id_dolibarr" style="text-align: left !important;">${row.id_dolibarr}</td>
+        //                 <td class="class_wc" data-key="id_wc_kit" data-value="${row.id_wc}" id="${row.id_wc}_libelle" style="text-align: left !important;">${row.id_wc}</td>
+        //                 <td data-key="qty_kit" data-value="${row.qty}" id="${row.id_wc}_qte_kite">
+        //                     <input id="${row.id_wc}_qte_kite_input" class="text-center" style="width: 50px" type="text" value="${row.qty}">
+        //                 </td>
+                    
+        //                 <td data-key="action" id="${row.id_wc}_action">
+        //                     <button onclick="delete_line_kit(${row.id_wc})" type="button" class="btn" title="Supprimer l'offre" style="margin: 0;padding: 0;">
+        //                         <a class="" title="Supprimer le kits" href="javascript:void(0)">
+        //                             <i class="fadeIn animated bx bx-trash"></i>
+        //                         </a>
+        //                     </button>
+
+        //                     <button style="width: 65px !important" id="id_btn_validate_${row.id_wc}" onclick="validate_line_kit(${row.id_wc})" type="button" class="btn btn-sm btn-dark">Valider</button>
+        //                 </td>
+        //             </tr>
+        //             `;
+
+        //             var table = $('#table_kits').DataTable();
+        //             table.row.add($(line)).draw();                   
+        //         });
+
+        //         btn_all = `
+        //         <div class="col-12 d-flex justify-content-center mt-5">
+        //             <button onclick="validate_all_line_kits(0)" id="valit_all_qty_kits" class="btn btn-primary">Valider tout</button>
+        //         </div>`;
+
+        //         $("#list_kits_id").append(btn_all);
+
+
+                
+
+                
+
+
+
+        //     },
+        //     error: function(xhr, status, error) {
+                    
+        //         console.error(error);
+
+        //     }
+        // });
+
+        
     }
 
     $("#id_sub_calcul_reassort").on("click", function(){
