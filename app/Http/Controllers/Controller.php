@@ -1087,77 +1087,7 @@ class Controller extends BaseController
                 
 
             ]);
-        }       
-
-        // 2- on recupere les produit et leurs stock dans les différents entropot
-        
-        // $products_dolibarrs = array();
-        // $page = 0;
-        // $condition = true;
-        // do {
-        //     $page++;
-        //     $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products?page=".$page);   
-        //     $all_products = json_decode($all_products,true);  
-        //     array_push($products_dolibarrs,$all_products);
-
-        //     if (count($all_products) != 100) {
-        //         $condition = false;
-        //     }
-        // } while ($condition);
-
-        // on ajoute la categorie, le label de la categorie et le parent_categorie au produits
-
-        // foreach ($products_dolibarrs as $elm => $element) {
-        //     foreach ($element as $kkp => $product) {
-                
-        //         $fk_product = $product["id"];
-        //         if ($fk_product) {
-
-        //             if (isset($all_categories[$fk_product])) {
-        //                 $fk_cat = $all_categories[$fk_product]["fk_categorie"];
-        //                 if (isset($cat_lab[$fk_cat])) {
-        //                     $label = $cat_lab[$fk_cat]['label'];
-        //                     $fk_parent = $cat_lab[$fk_cat]['fk_parent'];
-        //                 }else{
-        //                     $label = "label cat inconnu";
-        //                     $fk_parent = "parents inconnu";
-        //                 }
-        //             }else {
-        //                 $fk_cat = "inconnu";
-        //                 $label = "label cat inconnu";
-        //                 $fk_parent = "parents inconnu";
-        //             }     
-
-        //             $products_dolibarrs[$elm][$kkp]["fk_cat"] = $fk_cat;
-        //             $products_dolibarrs[$elm][$kkp]["label_cat"] = $label;
-        //             $products_dolibarrs[$elm][$kkp]["fk_parent"] = $fk_parent;
-        //         }else {
-        //             $products_dolibarrs[$elm][$kkp]["fk_cat"] = "inconnu";
-        //             $products_dolibarrs[$elm][$kkp]["label_cat"] = "label cat inconnu";
-        //             $products_dolibarrs[$elm][$kkp]["fk_parent"] = "parents inconnu";
-        //         }
-
-        //     }
-        // }
-
-
-
-        // dd($products_dolibarrs);
-
-   
-
-      
-
-        // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
-
-       // dd($products_dolibarrs[5][12]);
-
-       //dump($liste_warehouse);
-
-       // ajout des produit a zero dans les entrepot ou il n'existe pas
-
-      // dd($products_dolibarrs);
-      // dump($products_dolibarrs[0][55]);
+        }    
 
        foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
             foreach ($product_dolibarr as $k_p => $product) {
@@ -1243,7 +1173,8 @@ class Controller extends BaseController
             if (isset($vente_by_product[$kproduct])) {
 
                 // on compare les vente par semaine et la quantité dont on dispose dans l'entrepot
-                if ($stock_in_war["stock"] < $vente_by_product[$kproduct]["qty"]) {
+
+                if ($by_file) {
                     array_push($products_reassort,[
                         "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
                         "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
@@ -1261,7 +1192,30 @@ class Controller extends BaseController
                         "fk_parent" => $stock_in_war["fk_parent"],
 
                     ]);
+                }else {
+                    if ($stock_in_war["stock"] < $vente_by_product[$kproduct]["qty"]) {
+                        array_push($products_reassort,[
+                            "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
+                            "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                            "qte_en_stock_in_source" => $qte_en_stock_in_source,
+                            "libelle" => $stock_in_war["libelle"],
+                            "product_id" => $kproduct,
+                            "barcode" => $stock_in_war["barcode"],
+                            "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                            "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
+                            "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+                            "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3,
+    
+                            "fk_cat" => $stock_in_war["fk_cat"],
+                            "label_cat" => $stock_in_war["label_cat"],
+                            "fk_parent" => $stock_in_war["fk_parent"],
+    
+                        ]);
+                    }
                 }
+               
+
+
             }else {
                
                 array_push($products_non_vendu_in_last_month,[
