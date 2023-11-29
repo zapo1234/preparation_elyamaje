@@ -700,7 +700,6 @@ class Order extends BaseController
         $order = $this->order->getOrderByIdWithCustomer($order_id);
       }
 
-
       if($order && count($order) > 0){
         if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
