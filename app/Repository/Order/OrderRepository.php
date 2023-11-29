@@ -110,8 +110,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      // Insert produits
-
-                     $total_order = 0;
+                     $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                            $productsToInsert[] = [
@@ -128,7 +127,6 @@ class OrderRepository implements OrderInterface
                               'line_item_id' => $value['id'],
                               'pick_control' => 0
                            ];
-                           $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                         }
                      }
 
@@ -137,8 +135,8 @@ class OrderRepository implements OrderInterface
                      }
 
                      // IF distributor add bag 30 for 1000 euros
-                     if($is_distributor && $total_order >= 500){
-                        $montant_par_tranche = 500;
+                     if($is_distributor && $total_order >= 1000){
+                        $montant_par_tranche = 1000;
                         $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
                         $productsToInsert[] = [
                            'order_id' => $orderData['id'],
@@ -676,7 +674,7 @@ class OrderRepository implements OrderInterface
                ];
 
                // Insert produits
-               $total_order = 0;
+               $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
                foreach($insert_order_by_user['line_items'] as $value){
                   if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                      $productsToInsert[] = [
@@ -693,13 +691,12 @@ class OrderRepository implements OrderInterface
                         'line_item_id' => $value['id'],
                         'pick_control' => 0
                      ];
-                     $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                   }
                }
 
                // IF distributor add bag 30 for 1000 euros
-               if($is_distributor == "true" && $total_order >= 500){
-                  $montant_par_tranche = 500;
+               if($is_distributor == "true" && $total_order >= 1000){
+                  $montant_par_tranche = 1000;
                   $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
                   $productsToInsert[] = [
                      'order_id' => $order_id,
