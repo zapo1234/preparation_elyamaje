@@ -111,7 +111,7 @@ class OrderRepository implements OrderInterface
                      
                      // Insert produits
 
-                     $total_order = 0;
+                     $total_order = $orderData['total'];
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                            $productsToInsert[] = [
@@ -128,7 +128,6 @@ class OrderRepository implements OrderInterface
                               'line_item_id' => $value['id'],
                               'pick_control' => 0
                            ];
-                           $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                         }
                      }
 
@@ -676,7 +675,7 @@ class OrderRepository implements OrderInterface
                ];
 
                // Insert produits
-               $total_order = 0;
+               $total_order = $insert_order_by_user['total'];
                foreach($insert_order_by_user['line_items'] as $value){
                   if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                      $productsToInsert[] = [
@@ -693,7 +692,6 @@ class OrderRepository implements OrderInterface
                         'line_item_id' => $value['id'],
                         'pick_control' => 0
                      ];
-                     $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                   }
                }
 
