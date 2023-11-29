@@ -110,8 +110,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      // Insert produits
-
-                     $total_order = $orderData['total'];
+                     $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                            $productsToInsert[] = [
@@ -675,7 +674,7 @@ class OrderRepository implements OrderInterface
                ];
 
                // Insert produits
-               $total_order = $insert_order_by_user['total'];
+               $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
                foreach($insert_order_by_user['line_items'] as $value){
                   if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                      $productsToInsert[] = [
