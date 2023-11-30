@@ -558,6 +558,25 @@ class Admin extends BaseController
         return view('admin.reinvoice');
     }
 
+    public function reInvoiceOrder(Request $request){
+        $orders_id = $request->post('order_id');
+        $orders = [];
+
+        foreach($orders_id as $order_id){
+            $order =  $this->order->getOrderByIdWithCustomer($order_id);
+            if($order && count($order) > 0){
+                $orders[] = $this->woocommerce->transformArrayOrder($order)[0];
+            }
+        }
+
+        if(count($orders) == 0){
+            return redirect()->route('admin.reinvoice')->with('error', 'Commande inexistante !');
+        } else{
+            dd($orders);
+        }
+   
+    }
+
     public function billing(){
         return view('admin.billing');
     }
@@ -598,7 +617,6 @@ class Admin extends BaseController
                 }
             }
 
-            dd($order);
             try {
                 $this->factorder->Transferorder($order);  
 

@@ -8341,6 +8341,18 @@ select option[disabled] {
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px
 }
 
-.add_ligne_order_button{
-	
+.delete_line_order i{
+	border: 1px solid #ced4da;
+	border-left: 0px;
+	border-top-right-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
+	margin-left: -15px;
+	background-color: white;
+	display: flex;
+	align-items: center;
+
+}
+
+.new_line input{
+	border-right: 0px;
 }

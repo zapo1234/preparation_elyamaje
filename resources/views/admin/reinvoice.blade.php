@@ -42,11 +42,11 @@
 								</div>
 							</div>
 							<div class="card-body p-5">
-								<form method="post" action="{{ route('admin.billingOrder') }}">
+								<form method="post" action="{{ route('admin.reInvoiceOrder') }}">
 									@csrf
-									<div class="line_order line_ 1 col-md-12 mt-3">
+									<div class="line_order line_1 col-md-12 mt-3">
 										<label for="order_id" class="form-label">Numéro de commande</label>
-										<input required value="" name="order_id" type="text" class="form-control" id="order_id">
+										<input required value="" name="order_id[]" type="number" class="form-control">
 									</div>
                                     
                                     <div class="d-flex justify-content-center">
@@ -79,18 +79,30 @@
 
 		$(document).ready(function() {
             $(".add_ligne_order_button").on('click', function(){
-
                 var line = $(".line_order").length
-
-                console.log(line)
                 if(line < 3){
                     $(".line_"+line).after(`
-                        <div class="line_ 1 col-md-12 mt-3">
+                        <div class="new_line line_order line_`+parseInt(line+1)+`  col-md-12 mt-3">
                             <label for="order_id" class="form-label">Numéro de commande</label>
-                            <input required value="" name="order_id" type="text" class="form-control" id="order_id">
+
+                            <div class="d-flex align-item-center delete_line_order">
+                                <input required value="" name="order_id[]"  type="number" class="form-control">
+                                <i style="cursor:pointer" class="text-danger font-20 animated bx bx-trash-alt"></i>
+                            </div>
+                           
                         </div>
                     `)
                 }
+
+                if(line == 2){
+                    $(".add_ligne_order_button").hide()
+                }
+            })
+
+            $('body').on('click', '.delete_line_order i', function () {
+                var line = $(".line_order").length
+                $(".line_"+line).remove()
+                $(".add_ligne_order_button").show()
             })
         })
 
