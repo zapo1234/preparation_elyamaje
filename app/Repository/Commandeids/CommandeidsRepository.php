@@ -81,6 +81,24 @@ class CommandeidsRepository implements CommandeidsInterface
 
       }
 
+      public function createpaiementid(){
+
+           $data_array =[
+             '57,DONS'=>'DONS',
+             '107,stripe'=>'stripe',
+             '106,paypul'=>'payplug',
+             '6,CB'=>'CB',
+             '6,cod'=>'cod',
+             '6,bancontact'=>'bancontact',
+             '108,oney_x4_with_fees'=>'oney_x4_with_fees',
+             '3,bacs'=>'bacs',
+             '57,gift_card'=>'gift_card',
+             '6,apple_pay'=>'apple_pay',
+           ];
+
+           return $data_array;
+      }
+
 
     
      public function deleteOrder($order_id){
