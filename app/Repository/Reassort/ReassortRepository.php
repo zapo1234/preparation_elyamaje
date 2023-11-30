@@ -460,7 +460,7 @@ class ReassortRepository implements ReassortInterface
          }
     }
 
-    public function getQteToTransfer($identifiant_reassort){
+    public function getQteToTransfer($identifiant_reassort,$ids_ignore_tab){
 
         $transfer = $this->model::select('product_id', 'barcode', 'qty')
         ->where([
@@ -468,6 +468,7 @@ class ReassortRepository implements ReassortInterface
             ['qty','>', 0],
             ['syncro', 0],
         ])
+        ->whereNotIn('product_id', $ids_ignore_tab)
         ->get()
         ->toArray()
         ;
