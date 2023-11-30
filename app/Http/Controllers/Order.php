@@ -1128,10 +1128,10 @@ class Order extends BaseController
 
   function updateStockWoocommerce($identifiant_reassort){
 
-    $data = $this->reassort->getQteToTransfer($identifiant_reassort,[4670]);
+    $data = $this->reassort->getQteToTransfer($identifiant_reassort,[4670,4674]);
     
     
-
+    // dd($data);
     // Enregistrez le temps de début
     $datas_updated_succes = array();
     $datas_updated_error = array();
@@ -1141,7 +1141,7 @@ class Order extends BaseController
     // Récupérer les ids produit de woocommerce
     $ids_woocomerce = $this->product->getProductsByBarcode($data);
 
-    dd($ids_woocomerce);
+   
 
     if ($ids_woocomerce["response"]) {
       // on fait l'actualisation sur woocommerce
