@@ -1120,7 +1120,17 @@ class TransferOrder
             }
            }
 
-              // Mise à jours des ligne de product en masse(prix , quantité)
+             // Mettre les facture en brouillons et suprimer le compte lié
+               $data_fact =[
+                "idwarehouse"=>"6"
+               ];
+               foreach($data_fk_facture as $valu){
+                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
+                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
+
+               }
+          
+                 // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valus){
                     $ids_facture  = explode(',',$kyes);
                       // mettre à jours les factures 
