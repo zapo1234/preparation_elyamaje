@@ -20,7 +20,7 @@ class OrderRepository implements OrderInterface
    }
 
 
-   public function insertOrdersByUsers($array_user, $distributors_list){
+   public function insertOrdersByUsers($array_user, $distributors_list = []){
 
       $is_distributor = false;
 
@@ -110,7 +110,7 @@ class OrderRepository implements OrderInterface
                      ];
                      
                      // Insert produits
-                     $total_order = 0;
+                     $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
                      foreach($orderData['line_items'] as $value){
                         if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                            $productsToInsert[] = [
@@ -127,14 +127,13 @@ class OrderRepository implements OrderInterface
                               'line_item_id' => $value['id'],
                               'pick_control' => 0
                            ];
-                           $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                         }
                      }
 
                      if(in_array($orderData['customer_id'], $distributors_list)){
                         $is_distributor = true;
                      }
-
+                     
                      // IF distributor add bag 30 for 1000 euros
                      if($is_distributor && $total_order >= 1000){
                         $montant_par_tranche = 1000;
@@ -675,7 +674,7 @@ class OrderRepository implements OrderInterface
                ];
 
                // Insert produits
-               $total_order = 0;
+               $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
                foreach($insert_order_by_user['line_items'] as $value){
                   if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
                      $productsToInsert[] = [
@@ -692,7 +691,6 @@ class OrderRepository implements OrderInterface
                         'line_item_id' => $value['id'],
                         'pick_control' => 0
                      ];
-                     $total_order = $total_order + $value['total'] + $value['subtotal_tax'];
                   }
                }
 
@@ -743,6 +741,8 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrderByIdWithCustomer($order_id){
+
+      
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',

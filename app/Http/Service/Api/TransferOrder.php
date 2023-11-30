@@ -365,6 +365,9 @@ class TransferOrder
 
                           }
 
+
+
+
                      if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');

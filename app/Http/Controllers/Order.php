@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use League\Csv\Reader;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
 use App\Events\NotificationPusher;
-use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\TransferOrder;
@@ -23,8 +24,8 @@ use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
-use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Distributor\DistributorRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
@@ -159,6 +160,7 @@ class Order extends BaseController
           }
         } 
 
+
         // Récupère les commandes attribuée en base s'il y en a 
         $orders_distributed = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
         $ids = array_column($orders_distributed, "order_woocommerce_id");
@@ -175,7 +177,15 @@ class Order extends BaseController
                 }
               } 
             } 
-            
+
+            // N'affiche pos les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
+            if($order['status'] == "prepared-order"){
+              $clesRecherchees = array_keys($ids,  $order['id']);
+              if(count($clesRecherchees) == 0){
+                $take_order = false;
+              }
+            }
+  
             if($take_order == true){
 
               // Check if is distributor
@@ -674,10 +684,11 @@ class Order extends BaseController
     }
 
     public function validWrapOrder(Request $request){
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-       $transfers = $request->post('transfers') == "false" ? 0 : 1;
-       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-       $order_id = explode(',', $request->post('order_id'))[0];
+      
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
+      $order_id = explode(',', $request->post('order_id'))[0];
 
        if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -1228,6 +1239,27 @@ class Order extends BaseController
 
     
 
+  }
+
+  
+  function uploadFile(Request $request){
+
+    if ($request->hasFile('file_reassort') && $request->file('file_reassort')->isValid()) {
+        $file = $request->file('file_reassort');
+
+        $csvContent = $file->getContent();
+        $reader = Reader::createFromString($csvContent);
+        $reader->setHeaderOffset(0);
+
+        $csvDataArray = iterator_to_array($reader->getRecords());
+
+        dd($csvDataArray);
+
+        
+    }
+
+    // Retournez une réponse en cas d'erreur
+    return response()->json(['message' => 'Erreur lors du téléchargement du fichier CSV'], 400);
   }
 }
 

@@ -102,7 +102,7 @@ function progress_bar(){
     })
 }
 
-document.addEventListener("keydown", function (e) {
+document.addEventListener("keyup", function (e) {
 
     // Vérif si la modal d'info (produits bippé non existant ou déjà bippé) et modal de vérif (plusieurs quantité d'un même produit) non ouverte
     if ($(".modal_order").hasClass('show') && !$(".modal_verif_order").hasClass('show') 
@@ -190,10 +190,13 @@ document.addEventListener("keydown", function (e) {
                         progress_bar()
                     }
                 } else {
-                    $("#barcode").val("")
                     $(".info_message").text("Aucun produit ne correspond à ce code barre !")
                     $("#infoMessageModal").modal('show')
+                    $("#barcode").val("")
+                    $("#barcode_verif").val("")
                 }
+                $("#barcode").val("")
+            } else if($("#barcode").val().length > 13){
                 $("#barcode").val("")
             }
         }
@@ -207,7 +210,6 @@ document.addEventListener("keydown", function (e) {
         if (!isNaN(parseInt(e.key))) {
             $("#barcode_verif").val($("#barcode_verif").val() + e.key)
             if ($("#barcode_verif").val().length == 13) {
-
                 if ($("#barcode_verif").val() == localStorage.getItem('product_quantity_verif')) {
                     $("#quantity_product_to_verif").text(parseInt($("#quantity_product_to_verif").text()) - 1)
 
@@ -225,6 +227,7 @@ document.addEventListener("keydown", function (e) {
 
                 } else {
                     $("#barcode_verif").val('')
+                    $("#barcode").val('')
                     $(".info_message").text("Aucun produit ne correspond à ce code barre !")
                     $("#infoMessageModal").modal('show')
                 }
