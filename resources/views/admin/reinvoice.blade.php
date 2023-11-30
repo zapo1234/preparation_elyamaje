@@ -15,12 +15,11 @@
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
-									<li class="breadcrumb-item active" aria-current="page">Facturer</li>
+									<li class="breadcrumb-item active" aria-current="page">Refacturer</li>
 								</ol>
 							</nav>
 						</div>
 					</div>
-					
 				
 					@if(session()->has('success'))
 						<div class="alert alert-success border-0 bg-success alert-dismissible fade show">
@@ -45,28 +44,57 @@
 							<div class="card-body p-5">
 								<form method="post" action="{{ route('admin.billingOrder') }}">
 									@csrf
-									<div class="col-md-12 mt-3">
+									<div class="line_order line_ 1 col-md-12 mt-3">
 										<label for="order_id" class="form-label">Numéro de commande</label>
 										<input required value="" name="order_id" type="text" class="form-control" id="order_id">
 									</div>
+                                    
+                                    <div class="d-flex justify-content-center">
+                                        <button type="button" class="add_ligne_order_button btn btn-primary mt-2 mb-2">Ajouter une ligne</i></button>
+                                    </div>
+                                    
 								
-									<div class="col-12 mt-3">
-										<button type="sumbit" class="btn btn-primary px-5">Facturer</button>
-									</div>
+                                    <div class="d-flex justify-content-center mt-5">
+                                        <button type="sumbit" class="btn btn-primary px-5">Refacturer</button>
+                                    </div>
 								</form>
 							</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
+
 		@endsection
 
 	
-@section("script")
+	@section("script")
 
-<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
-<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
+		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="assets/plugins/select2/js/select2.min.js"></script>
+		<script>
 
-@endsection
+
+
+		$(document).ready(function() {
+            $(".add_ligne_order_button").on('click', function(){
+
+                var line = $(".line_order").length
+
+                console.log(line)
+                if(line < 3){
+                    $(".line_"+line).after(`
+                        <div class="line_ 1 col-md-12 mt-3">
+                            <label for="order_id" class="form-label">Numéro de commande</label>
+                            <input required value="" name="order_id" type="text" class="form-control" id="order_id">
+                        </div>
+                    `)
+                }
+            })
+        })
+
+		</script>
+	@endsection
 
 

@@ -76,12 +76,17 @@
                 </ul>
             </li>
             <li>
-                <a href="{{ url('billing') }}">
-                    <i class='bx bx-credit-card-front'></i>
-                    <span class="link_name">Facturation</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="{{ url('billing') }}">Facturation</a></li>
+                <div class="iocn-link">
+                    <a href="#">
+                        <i class='bx bx-credit-card-front'></i>
+                        <span class="link_name">Facturation</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Facturation</a></li>
+                    <li><a href="{{ url('billing') }}">Facturer</a></li>
+                    <li><a href="{{ url('reinvoice') }}">Refacturer</a></li>
                 </ul>
             </li>
             <li>

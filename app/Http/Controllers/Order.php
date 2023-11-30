@@ -740,7 +740,6 @@ class Order extends BaseController
 
             $this->history->save($data);
            
-
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {

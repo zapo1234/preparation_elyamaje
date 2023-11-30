@@ -554,6 +554,10 @@ class Admin extends BaseController
         }
     }
 
+    public function reinvoice(){
+        return view('admin.reinvoice');
+    }
+
     public function billing(){
         return view('admin.billing');
     }
