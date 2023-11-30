@@ -168,6 +168,11 @@ class TransferOrder
       {
            
 
+           $inv=92077;
+           $this->getfacture($inv,$orders);
+
+           dd('zapo');
+    
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -940,10 +945,209 @@ class TransferOrder
 
          public function getfacture($inv,$orders){
             
-            
+            //dd($orders);
+            // jeux de données pour des test
              $method = "GET";
             $apiKey = env('KEY_API_DOLIBAR'); 
             $apiUrl = env('KEY_API_URL');
+
+            
+            // jeu de deux commande.
+            $orderx =[
+                 0=> [
+
+                      "order_woccomerce_id"=>106396,
+                      "coupons" => "tamara-vagneri-4980-10",
+                      "discount" => "11.42",
+                       "total_tax_order" => 8.23,
+                       "total_order" => 49.32 ,
+                      "lines_items" =>[
+                            0=>[
+                              "name" => "Soft White n° 11 - Gel de construction - Creamy Gel UV LED - ElyaMaje - 50ml",
+                              "product_id" => 9132,
+                              "variation_id" => 9132,
+                              "quantity" => 1,
+                              "subtotal" => 26.18,
+                              "total" => 26.18,
+                              "subtotal_tax" => 5.82,
+                              "meta_data"=>[
+                                0=>[
+                                  "key" => "barcode",
+                                  "value" => "3760324810385",
+                                ],
+                              ],
+                             ],
+
+                             1=>[
+                              "name" => "Pearl Beige n° 17 - Gel de construction - Creamy Gel UV LED - ElyaMaje - 20ml",
+                              "product_id" => 9149,
+                              "variation_id" => 9149,
+                              "quantity" => 1,
+                              "subtotal" => 14.93,
+                              "total" => 14.93,
+                              "subtotal_tax" => 3.32,
+                              "total_tax" => 2.99,
+                              "meta_data"=>[
+                                0=>[
+                                  "key" => "barcode",
+                                  "value" => "3760324810118" 
+                                ],
+                              ],
+                             ],
+                    
+
+                         ],
+
+                    ],
+
+                   1=> [
+                     "order_woccomerce_id"=>107101,
+                     "coupons" => "",
+                     "discount" => "11.42",
+                     "total_tax_order" =>6,632,
+                     "total_order" => 33.16,
+                      "lines_items" =>[
+                        0=>[
+                          "name" => "Pink Blush n° 7 - Gel de construction - Creamy Gel UV LED - ElyaMaje - 20ml",
+                          "product_id" => 9119,
+                          "variation_id" => 9119,
+                          "quantity" => 1,
+                          "subtotal" => 16.58,
+                           "total" => 16.58,
+                          "subtotal_tax" => 3.32,
+                           "total_tax" => 3.32,
+                          "meta_data"=>[
+                            0=>[
+                              "key" => "barcode",
+                              "value" => "3760324810071",
+                            ],
+                          ],
+                         ],
+
+                         1=>[
+                          "name" => "Milky Pink n° 6 - Smoothie Gel - Elya Maje - 20ml",
+                          "product_id" => 23717,
+                          "variation_id" => 23717,
+                          "quantity" => 1,
+                          "subtotal" => 16.58,
+                          "total" => 16.58,
+                          "subtotal_tax" => 3.32,
+                          "total_tax" => 3.32,
+                          "meta_data"=>[
+                            0=>[
+                              "key" => "barcode",
+                              "value" => "3760324815434",
+                            ],
+                          ],
+                         ],
+                
+
+                     ],
+
+              ]
+
+        ];
+
+           //dump($orderx);
+          // traiter le jeu de tableau
+          // recupérer
+           $datas= $this->commande->getIdsfkfacture();
+         // recuper les fk_facture et reconstuire le tableau envoyé
+           $test_data =[];
+           $data_fk_facture =[];
+           foreach($orderx as $values){
+            // recupérer le fk_facture.
+             $fk_facture = array_search($values['order_woccomerce_id'],$datas);
+             $data_fk_facture[]= $fk_facture;
+             foreach($values['lines_items'] as $val){
+                 $chaine = $val['quantity'].','.$val['subtotal'].','.$val['meta_data'][0]['value'];
+                 $test_data[$chaine] = $val['meta_data'][0]['value'].','.$fk_facture;
+              }
+
+           }
+            
+           //dump($data_fk_facture);
+           dump($test_data);
+           // aller chercher les correspondances lines associé à ces factures.
+           foreach($data_fk_facture as $vc){
+              $json_data[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vc),true);
+           }
+        
+           
+          // dd($json_data);
+
+           // recupérer les prdoduct avec leur barcode pour utiliser plutard(important)
+           $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
+           $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+          // reference ref_client dans dolibar
+           $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+
+           $data_list_product =[];
+           foreach($listproduct as $values) {
+                   if($values['barcode']!=""){
+                   $data_list_product[$values['barcode']] = $values['id'];
+              }
+              // tableau associatve entre ref et label product....
+           }
+
+           foreach($json_data as  $key => $valus){
+            foreach($valus['lines'] as $va){
+              // renvoyer les bon prix à partir du barcode 
+              $data_result[$va['fk_facture'].','.$va['rowid']][] =[
+                       "barcode"=>array_search($va['fk_product'],$data_list_product).','.$va['fk_facture'],
+                       "multicurrency_subprice"=> $va['multicurrency_subprice'],
+                       "multicurrency_total_ht"=> $va['multicurrency_subprice'],
+                       "qty"=>$va['qty'],
+                        "tva_tx"=>$va['tva_tx'],
+             ];
+
+            }
+           }
+
+      
+            // 
+           foreach($data_result as $lm => $val){
+            foreach($val as $valis){
+               $chaine_data = array_search($valis['barcode'],$test_data);
+               if($chaine_data!=false){
+                  $donnees = explode(',',$chaine_data);
+                   $result_finale[$lm] =[
+                   "multicurrency_subprice"=> $donnees[1],
+                   "multicurrency_total_ht"=> $donnees[1],
+                   "qty"=>$donnees[0],
+                    "tva_tx"=>20,
+                  ];
+
+              }
+            }
+
+      }
+
+      dd($result_finale);
+  
+         
+         
+         // traiter les données.
+         foreach($datac as  $vals){
+           $x[] =$vals;
+          
+          }
+
+          dd($x);
+
+         foreach($datac['lines'] as  $key => $valus){
+         dd($datac['lines']);
+           // renvoyer les bon prix à partir du barcode 
+           $data_result[$valus['fk_facture'].','.$valus['rowid']][] =[
+                    "barcode"=>array_search($valus['fk_product'],$data_list_product),
+                    "multicurrency_subprice"=> $valus['multicurrency_subprice'],
+                    "multicurrency_total_ht"=> $valus['multicurrency_subprice'],
+                    "qty"=>$valus['qty'],
+                     "tva_tx"=>$valus['tva_tx'],
+          ];
+               
+       }
+
 
             // recupérer de la commande les details de produits.
             // le moyen de paiement.
@@ -969,11 +1173,14 @@ class TransferOrder
             //$ids = 545080;
             // id commande test  107101
             // recupérer le id de la facture en fonction de la commande passé.
-            $inv =  $this->commande->getIdsinvoices($orders[0]['order_woocommerce_id']);
+            //$inv =  $this->commande->getIdsinvoices($orders[0]['order_woocommerce_id']);
       
-            // aller me recupérer le un jeu de données d'id en chaine
-            $data = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$inv);
-            $datac = json_decode($data,true);
+            // aller me recupérer le un jeu de données d'id en chaine à voir.
+           
+
+            // triaiter des données
+
+
             
              $data_paiement =[
               "idwarehouse"=>6,
@@ -985,7 +1192,7 @@ class TransferOrder
                "notrigger" => "0",
               ];
             
-              //suprimer le paimement
+              //Mise a jour la facture brouillons
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/settounpaid");
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
               // modifier le paiment.
@@ -1021,10 +1228,7 @@ class TransferOrder
            }
 
            
-          
-           
-        
-             foreach($data_result as $lm => $val){
+          foreach($data_result as $lm => $val){
                  foreach($val as $valis){
                     $chaine_data = array_search($valis['barcode'],$data_result_product_wo);
                     if($chaine_data!=false){

@@ -69,6 +69,18 @@ class CommandeidsRepository implements CommandeidsInterface
 
       }
 
+      public function  getIdsfkfacture(){
+         $invoices_id= DB::table('fk_factures')->select('id_invoices','id_commande')->get();
+           $name_list = json_encode($invoices_id);
+           $name_list = json_decode($invoices_id,true);
+           foreach($name_list as $values){
+               $result_data[$values['id_invoices']] = $values['id_commande'];
+            }
+
+            return $result_data;
+
+      }
+
 
     
      public function deleteOrder($order_id){
