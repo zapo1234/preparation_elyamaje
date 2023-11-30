@@ -342,7 +342,8 @@ class Controller extends BaseController
             $etatSyncro = 1;
 
             foreach ($value as $k => $lineReassort) {
-                if ($lineReassort->syncro == 0) {
+
+                if ($lineReassort->syncro == 0 && !in_array($lineReassort->product_id,[4670,4674])) {
                     $etatSyncro = 0;
                     break;
                 }

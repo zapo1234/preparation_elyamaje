@@ -1165,7 +1165,10 @@ class Order extends BaseController
 
       // changer le statut de sychronisation (colonne syncro dans la table prepa_hist_reassort)
 
+      dd($datas_updated_succes);
+      
       $responseSyncr =  $this->reassort->updateColonneSyncro($datas_updated_succes, $identifiant_reassort);
+
 
       if ($datas_updated_succes) {
         if ($datas_updated_error) {
