@@ -690,10 +690,6 @@ class Order extends BaseController
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
       $order_id = explode(',', $request->post('order_id'))[0];
 
-      $from_dolibarr=false;
-      $transfers =false;
-      $order_id ="107101";
-
        if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
@@ -705,11 +701,11 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-       /*  if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
+         if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
           echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
           return;
         }
-      */
+      
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         if($is_distributor && !$from_dolibarr){
           $barcode_array = $request->post('pick_items');
