@@ -11,6 +11,7 @@ class CommandeidsRepository implements CommandeidsInterface
      
     private $ids = [];
     private $model = [];
+    private $ficfacture;
 
      public function __construct(Commandeid $model)
      {
@@ -57,6 +58,18 @@ class CommandeidsRepository implements CommandeidsInterface
          return $name_list;
  
       }
+
+      public function getIdsinvoices($id_commande){
+          $invoices_id= DB::table('fk_factures')->select('id_invoices')->Where('id_commande','=',$id_commande)->get();
+           // cree un tableau sous action
+            $name_list = json_encode($invoices_id);
+             $name_list = json_decode($invoices_id,true);
+              $result_id = $name_list[0]['id_invoices'];
+             return $result_id;
+
+      }
+
+
     
      public function deleteOrder($order_id){
       return $this->model::where('id_commande', $order_id)->delete();
