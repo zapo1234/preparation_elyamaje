@@ -112,6 +112,9 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
 
+    Route::get("/reinvoice", [Admin::class, "reinvoice"])->name('admin.reinvoice');
+    Route::post("/reInvoiceOrder", [Admin::class, "reInvoiceOrder"])->name('admin.reInvoiceOrder');
+
     // Email preview
     Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 

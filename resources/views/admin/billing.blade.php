@@ -12,7 +12,15 @@
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
 						<div class="breadcrumb-title pe-3">Facturation</div>
+						<div class="ps-3">
+							<nav aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0 p-0">
+									<li class="breadcrumb-item active" aria-current="page">Facturer</li>
+								</ol>
+							</nav>
+						</div>
 					</div>
+					
 				
 					@if(session()->has('success'))
 						<div class="alert alert-success border-0 bg-success alert-dismissible fade show">

@@ -271,6 +271,7 @@ class Controller extends BaseController
 
     function getVieuxSplay (){
 
+
              
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
@@ -286,17 +287,33 @@ class Controller extends BaseController
 
         $hist_reassort = DB::table('hist_reassort')->get()->toArray();
 
+
+
+
+
         $identifiant_unique = array();
         $data_reassort = array();
 
-        foreach ($hist_reassort as $key => $reasort) {
-            $identif = $reasort->identifiant_reassort;
 
-            if (!in_array($identif, $identifiant_unique)) {
-                array_push($data_reassort,$reasort);
-                array_push($identifiant_unique,$identif);
+        foreach ($hist_reassort as $key => $value) {
+            if (!isset($data_reassort[$value->identifiant_reassort])) {
+                $data_reassort[$value->identifiant_reassort] = [
+                    $value
+                ];
+            }else {
+                array_push($data_reassort[$value->identifiant_reassort],$value);
             }
         }
+
+        // foreach ($hist_reassort as $key => $reasort) {
+        //     $identif = $reasort->identifiant_reassort;
+
+        //     if (!in_array($identif, $identifiant_unique)) {
+        //         array_push($data_reassort,$reasort);
+        //         array_push($identifiant_unique,$identif);
+        //     }
+        // }
+
 
         $wh_id_name = array();
 
@@ -319,11 +336,20 @@ class Controller extends BaseController
         $etat = "";
         $val_etat = 0;
 
-    //    dump($data_reassort);
-
         foreach ($data_reassort as $key => $value) {
 
-           // dd($value);
+            // voir s'il y'a au moin un produit non synchronisé (syncro == 0)
+            $etatSyncro = 1;
+
+            foreach ($value as $k => $lineReassort) {
+
+                if ($lineReassort->syncro == 0 && !in_array($lineReassort->product_id,[4670,4674])) {
+                    $etatSyncro = 0;
+                    break;
+                }
+            }
+
+            $value = $value[0];
 
             $id_etrepot_source = (explode("to",$value->sense))[0];
             $id_etrepot_destination = (explode("to",$value->sense))[1];
@@ -365,7 +391,7 @@ class Controller extends BaseController
                 "origin_id_reassort" => $value->origin_id_reassort,
                 "attribue_a" => $value->user_id,
                 "disabled" => $disabled,
-                "syncro" => $value->syncro,
+                "syncro" => $etatSyncro,
                 "detail_reassort" => [],
             ];
         }

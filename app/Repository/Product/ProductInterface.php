@@ -23,6 +23,12 @@ interface ProductInterface
     
     public function getProductsByBarcode($array_barcode);
 
+    public function updateStockServiceWc($product_id_wc, $quantity);
+
+    public function constructKit($product_id_wc);
+
+   
+
 }
 
 
