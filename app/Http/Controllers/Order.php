@@ -1131,6 +1131,8 @@ class Order extends BaseController
   function updateStockWoocommerce($identifiant_reassort){
 
     $data = $this->reassort->getQteToTransfer($identifiant_reassort);
+    
+    
 
     // Enregistrez le temps de début
     $datas_updated_succes = array();
@@ -1139,13 +1141,10 @@ class Order extends BaseController
     // Récupérer les ids produit de woocommerce
     $ids_woocomerce = $this->product->getProductsByBarcode($data);
 
-    // dd($ids_woocomerce);
-
     if ($ids_woocomerce["response"]) {
       // on fait l'actualisation sur woocommerce
       $datas = $ids_woocomerce["ids_wc_vs_qte"];
 
-      // dd($datas);
       foreach ($datas as $key => $data) {
         // filtrer les kits comme les limes et construire les lots
         $product_id_wc = $data["id_product_wc"];
@@ -1161,6 +1160,10 @@ class Order extends BaseController
         }
 
       }
+
+      // changer le statut de sychronisation (colonne syncro dans la table prepa_hist_reassort)
+
+      $responseSyncr =  $this->reassort->updateColonneSyncro($datas_updated_succes, $identifiant_reassort);
 
       if ($datas_updated_succes) {
         if ($datas_updated_error) {

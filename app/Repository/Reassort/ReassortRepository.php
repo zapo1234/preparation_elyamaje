@@ -788,6 +788,26 @@ class ReassortRepository implements ReassortInterface
         }
     }
 
+    function updateColonneSyncro($datas_updated_succes, $identifiant_reassort){    
+
+        $id_dolibarr_syncro = array();
+  
+        if ($datas_updated_succes) {
+           foreach ($datas_updated_succes as $key => $value) {
+              array_push($id_dolibarr_syncro,$value["product_id"]);
+           }
+
+           $this->model::where('identifiant_reassort', $identifiant_reassort)
+           ->whereIn('product_id', $id_dolibarr_syncro)
+           ->update(['syncro' => 1]);
+
+           return count($datas_updated_succes);
+        }
+
+        return false;       
+  
+    }
+
 
 }
 

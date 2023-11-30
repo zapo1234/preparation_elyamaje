@@ -33,6 +33,8 @@ interface ReassortInterface
     public function getLastCategorie($cat, $catParent);
     public function updateUserReassort($id_user,$id_reassort);
     public function orderResetTransfers($order_id);
+
+    public function updateColonneSyncro($datas_updated_succes, $identifiant_reassort);
 }
 
 
