@@ -20,7 +20,7 @@ class OrderRepository implements OrderInterface
    }
 
 
-   public function insertOrdersByUsers($array_user, $distributors_list){
+   public function insertOrdersByUsers($array_user, $distributors_list = []){
 
       $is_distributor = false;
 
@@ -133,7 +133,7 @@ class OrderRepository implements OrderInterface
                      if(in_array($orderData['customer_id'], $distributors_list)){
                         $is_distributor = true;
                      }
-
+                     
                      // IF distributor add bag 30 for 1000 euros
                      if($is_distributor && $total_order >= 1000){
                         $montant_par_tranche = 1000;

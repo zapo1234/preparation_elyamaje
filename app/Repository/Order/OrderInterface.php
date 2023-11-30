@@ -14,7 +14,7 @@ interface OrderInterface
 
    public function getAllOrdersAndLabelByFilter($filters);
 
-   public function insertOrdersByUsers($array_user, $distributors_lis);
+   public function insertOrdersByUsers($array_user, $distributors_list = []);
 
    public function getOrdersByUsers();
 

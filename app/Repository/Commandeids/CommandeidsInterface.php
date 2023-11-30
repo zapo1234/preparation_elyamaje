@@ -12,5 +12,7 @@ interface CommandeidsInterface
 
    public function getIdcountry();// recupérer id du du pay client.
 
+   public function getIdsinvoices($id_commande);// recupérer id de la commande...
+
    public function deleteOrder($order_id); // Supprime une commande afin de pouvoir refacturer
 }
