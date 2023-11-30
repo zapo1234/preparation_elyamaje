@@ -168,11 +168,6 @@ class TransferOrder
       {
            
 
-           $inv=92077;
-           $this->getfacture($inv,$orders);
-
-           dd('zapo');
-    
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
