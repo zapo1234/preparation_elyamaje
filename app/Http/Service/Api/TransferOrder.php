@@ -1127,14 +1127,15 @@ class TransferOrder
                 }
 
                 
-                $xy = $this->commande->getrowidfacture();
-               dd($xy);
-
-                foreach($ref_pay as $vf){
+                $assoc_pay = $this->commande->getrowidfacture();
+              
+                 foreach($ref_pay as $vf){
                   foreach($vf as $va){
-                    $ref_py[] = $va['ref'];
+                     $ref_py[] = array_search($va['ref'],$assoc_pay);
                   }
                 }
+
+                dd($ref_py);
 
                   // mettre la facture en brouillons.
                  foreach($data_fk_facture as $valu){
