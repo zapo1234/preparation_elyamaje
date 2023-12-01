@@ -1126,10 +1126,10 @@ class TransferOrder
                   $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
                 }
 
-                dd($ref_pay);
-
                 foreach($ref_pay as $vf){
-                  $ref_py = $vf['ref'];
+                  foreach($vf as $va){
+                    $ref_py = $vf['ref'];
+                  }
                 }
 
               dd($ref_py);
