@@ -1122,7 +1122,14 @@ class TransferOrder
                 "idwarehouse"=>"6"
                ];
 
-               dd($ref_facture);
+               // recupérer la ref du paiement par facture pour les suprimer
+               foreach($data_fk_facture as $vb){
+                 $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"));
+
+              }
+
+              dd($ref_pay);
+        
                
                foreach($data_fk_facture as $valu){
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
