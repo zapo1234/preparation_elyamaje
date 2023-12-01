@@ -1154,8 +1154,6 @@ class TransferOrder
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
                 }
 
-                dd('zapo');
-
                 // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valus){
                       $ids_facture  = explode(',',$kyes);
