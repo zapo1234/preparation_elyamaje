@@ -1155,7 +1155,7 @@ class TransferOrder
                 }
 
                 // Mise à jours des ligne de product en masse(prix , quantité)
-                  foreach($result_finale as $kyes => $valus){
+                  foreach($result_finale as $kyes => $valuss){
                       $ids_facture  = explode(',',$kyes);
                        // mettre à jours les factures 
                        $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valuss));
