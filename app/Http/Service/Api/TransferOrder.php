@@ -1128,14 +1128,12 @@ class TransferOrder
 
                 foreach($ref_pay as $vf){
                   foreach($vf as $va){
-                    $ref_py = $vf['ref'];
+                    $ref_py[] = $va['ref'];
                   }
                 }
 
-              dd($ref_py);
-        
-               
-               foreach($data_fk_facture as $valu){
+                  // mettre la facture en brouillons.
+                 foreach($data_fk_facture as $valu){
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
 
@@ -1149,7 +1147,7 @@ class TransferOrder
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
                    // suprimer ecriture paiement
                 }
-                foreach($ref_facture as $ref){
+                foreach($ref_py as $ref){
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE num_paiement=$ref");
                 }
