@@ -167,7 +167,6 @@ class TransferOrder
       public function Transferorder($orders)
       {
            
-    
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -361,9 +360,7 @@ class TransferOrder
                           }
 
 
-
-
-                     if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
+                         if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -1083,7 +1080,10 @@ class TransferOrder
               // tableau associatve entre ref et label product....
            }
 
+       // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+           $ref_facture =[];
             foreach($json_data as  $key => $valus){
+               $ref_facture[] = $valus['ref'];
                foreach($valus['lines'] as $va){
                  // renvoyer les bon prix à partir du barcode 
                    $data_result[$va['fk_facture'].','.$va['rowid']][] =[
@@ -1118,25 +1118,47 @@ class TransferOrder
                $data_fact =[
                 "idwarehouse"=>"6"
                ];
-               foreach($data_fk_facture as $valu){
+
+               // recupérer la ref du paiement pour les  factures pour les suprimer
+               $ref_py =[];
+                foreach($data_fk_facture as $vb){
+                  $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
+                }
+
+                 $assoc_pay = $this->commande->getrowidfacture();// recupérer les id de paiment direcetement en base
+              
+                  foreach($ref_pay as $vf){
+                  foreach($vf as $va){
+                     $ref_py[] = array_search($va['ref'],$assoc_pay);
+                  }
+                }
+
+                 // mettre la facture en brouillons.
+                 foreach($data_fk_facture as $valu){
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
 
                }
 
-            
-              // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
-                // ici.
-                $list_fk_facture = implode(',',$data_fk_facture);
-               // $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN");
+               // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
+                // icie
+                
+                foreach($data_fk_facture as $lk){
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
+                   // suprimer ecriture paiement
+                }
 
-                 dd('zapo');
-          
-                 // Mise à jours des ligne de product en masse(prix , quantité)
-                  foreach($result_finale as $kyes => $valus){
-                    $ids_facture  = explode(',',$kyes);
-                      // mettre à jours les factures 
-                       $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valus));
+                // detruire la ligne du paiement
+                foreach($ref_py as $id){
+                   // suprimer les ligne d'ecriture de paiement avec la ref facture.
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
+                }
+
+                // Mise à jours des ligne de product en masse(prix , quantité)
+                  foreach($result_finale as $kyes => $valuss){
+                      $ids_facture  = explode(',',$kyes);
+                       // mettre à jours les factures 
+                       $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valuss));
                        
                      }  
                       // mettre la facture en validé et  attributeur un  moyen de paimement

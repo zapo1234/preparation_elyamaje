@@ -100,6 +100,20 @@ class CommandeidsRepository implements CommandeidsInterface
       }
 
 
+   public function getrowidfacture(){
+
+      $data = DB::connection('mysql2')->select("SELECT rowid,ref FROM llxyq_paiement");
+      $name_list = json_encode($data);
+      $name_list = json_decode($name_list,true);
+      foreach($name_list as $val){
+         $data_result[$val['rowid']] = $val['ref'];
+      }
+
+      return $data_result;
+
+   }
+
+
     
      public function deleteOrder($order_id){
       return $this->model::where('id_commande', $order_id)->delete();

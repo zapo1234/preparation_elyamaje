@@ -19,4 +19,6 @@ interface CommandeidsInterface
    public function createpaiementid();
 
    public function deleteOrder($order_id); // Supprime une commande afin de pouvoir refacturer
+
+   public function getrowidfacture();// recupere rowid de la table.
 }
