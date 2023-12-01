@@ -167,9 +167,6 @@ class TransferOrder
       public function Transferorder($orders)
       {
            
-           $this->getfacture($orders);
-
-           dd('zapo');
     
              $fk_commande="";
              $linkedObjectsIds =[];
@@ -942,7 +939,8 @@ class TransferOrder
 
 
          public function Updatefacture($orders){
-            
+          
+          
            // connexion api dolibar
              $method = "GET";
             $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
@@ -1115,7 +1113,7 @@ class TransferOrder
             }
            }
             
-            dd($data_fk_facture);
+            
              // Mettre les facture en brouillons et suprimer le compte lié
                $data_fact =[
                 "idwarehouse"=>"6"
@@ -1126,7 +1124,8 @@ class TransferOrder
 
                }
 
-                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
+            
+              // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // ici.
                 $list_fk_facture = implode(',',$data_fk_facture);
                // $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN");
