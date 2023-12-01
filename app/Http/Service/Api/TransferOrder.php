@@ -1081,9 +1081,7 @@ class TransferOrder
               // tableau associatve entre ref et label product....
            }
 
-           dd($json_data);
-           
-           // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+       // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
            $ref_facture =[];
             foreach($json_data as  $key => $valus){
                $ref_facture[] = $valus['ref'];
