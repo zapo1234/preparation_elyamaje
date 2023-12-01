@@ -1149,7 +1149,7 @@ class TransferOrder
                 }
                 foreach($ref_py as $ref){
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
-                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE num_paiement=$ref");
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE ref=$ref");
                 }
 
                 dd('zapo');
