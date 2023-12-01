@@ -1148,6 +1148,7 @@ class TransferOrder
                    // suprimer ecriture paiement
                 }
                 foreach($ref_py as $ref){
+                  dd($ref);
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE ref=$ref");
                 }
