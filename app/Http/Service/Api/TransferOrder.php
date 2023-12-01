@@ -1120,7 +1120,7 @@ class TransferOrder
                 "idwarehouse"=>"6"
                ];
 
-               // recupérer la ref du paiement par facture pour les suprimer
+               // recupérer la ref du paiement pour les  factures pour les suprimer
                $ref_py =[];
                 foreach($data_fk_facture as $vb){
                   $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
@@ -1128,7 +1128,7 @@ class TransferOrder
 
                  $assoc_pay = $this->commande->getrowidfacture();// recupérer les id de paiment direcetement en base
               
-                 foreach($ref_pay as $vf){
+                  foreach($ref_pay as $vf){
                   foreach($vf as $va){
                      $ref_py[] = array_search($va['ref'],$assoc_pay);
                   }
@@ -1155,9 +1155,7 @@ class TransferOrder
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
                 }
 
-                dd('zapo');
-
-                 // Mise à jours des ligne de product en masse(prix , quantité)
+                // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valus){
                       $ids_facture  = explode(',',$kyes);
                       // mettre à jours les factures 
