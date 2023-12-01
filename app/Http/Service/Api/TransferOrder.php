@@ -361,9 +361,7 @@ class TransferOrder
                           }
 
 
-
-
-                     if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
+                         if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
                                     $dat = explode('-', $date);
@@ -1128,7 +1126,7 @@ class TransferOrder
               // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // ici.
                 $list_fk_facture = implode(',',$data_fk_facture);
-               // $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN");
+                $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN ('.$list_fk_facture.')");
 
                  dd('zapo');
           
