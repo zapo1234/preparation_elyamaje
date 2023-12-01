@@ -1140,8 +1140,6 @@ class TransferOrder
 
                }
 
-               
-
                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // icie
                 
@@ -1156,17 +1154,15 @@ class TransferOrder
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
                 }
 
-                
-                dd($result_finale);
-                  // Mise à jours des ligne de product en masse(prix , quantité)
-                  foreach($result_finale as $kyes => $valuss){
-                    $ids_facture  = explode(',',$kyes);
-                     // mettre à jours les factures 
-                     $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valuss));
-                     
-                   }  
+                dd('zapo');
 
-              
+                // Mise à jours des ligne de product en masse(prix , quantité)
+                  foreach($result_finale as $kyes => $valus){
+                      $ids_facture  = explode(',',$kyes);
+                       // mettre à jours les factures 
+                       $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valuss));
+                       
+                     }  
                       // mettre la facture en validé et  attributeur un  moyen de paimement
                        foreach($newCommandeValider as $ks => $val){
                                 $chaine_reel = explode(',',$ks);
