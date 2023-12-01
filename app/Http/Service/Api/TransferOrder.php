@@ -1114,7 +1114,8 @@ class TransferOrder
                }
             }
            }
-
+            
+            dd($data_fk_facture);
              // Mettre les facture en brouillons et suprimer le compte lié
                $data_fact =[
                 "idwarehouse"=>"6"
