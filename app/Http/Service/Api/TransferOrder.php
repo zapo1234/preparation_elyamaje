@@ -948,10 +948,6 @@ class TransferOrder
             $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
             $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
 
-             // recupérer le label product
-             $products = DB::connection('mysql2')->select("SELECT rowid,label  FROM llxyq_product");
-             dd($products);
-
             // traiter le jeu de tableau
             // recupérer
             $datas= $this->commande->getIdsfkfacture();
@@ -1129,8 +1125,12 @@ class TransferOrder
 
                }
 
-                // detruire dans la table lyq_facture_apiement la ligne du fk_socid directement en connexion dolibarr
+                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // ici.
+                $list_fk_facture = implode(',',$data_fk_facture);
+               // $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN");
+
+                 dd('zapo');
           
                  // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valus){
