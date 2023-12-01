@@ -1147,6 +1147,8 @@ class TransferOrder
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
                    // suprimer ecriture paiement
                 }
+
+                $ref_py = array('PAY2312-91192','PAY2312-91191');
                 foreach($ref_py as $ref){
                   dd($ref);
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
