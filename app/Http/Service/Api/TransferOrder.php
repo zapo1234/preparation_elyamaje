@@ -1121,12 +1121,16 @@ class TransferOrder
                ];
 
                // recupérer la ref du paiement par facture pour les suprimer
-               foreach($data_fk_facture as $vb){
-                 $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"));
+               $ref_py =[];
+                foreach($data_fk_facture as $vb){
+                  $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
+                }
 
-              }
+                foreach($ref_pay as $vf){
+                  $ref_py = $vf['ref'];
+                }
 
-              dd($ref_pay);
+              dd($ref_py);
         
                
                foreach($data_fk_facture as $valu){
