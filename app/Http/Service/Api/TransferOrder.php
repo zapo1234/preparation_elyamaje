@@ -1080,8 +1080,11 @@ class TransferOrder
               }
               // tableau associatve entre ref et label product....
            }
-
+           
+           // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+           $ref_facture =[];
             foreach($json_data as  $key => $valus){
+               $ref_facture[] = $valus['ref'];
                foreach($valus['lines'] as $va){
                  // renvoyer les bon prix à partir du barcode 
                    $data_result[$va['fk_facture'].','.$va['rowid']][] =[
@@ -1116,6 +1119,8 @@ class TransferOrder
                $data_fact =[
                 "idwarehouse"=>"6"
                ];
+
+               dd($ref_facture);
                
                foreach($data_fk_facture as $valu){
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
