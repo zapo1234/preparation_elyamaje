@@ -1127,7 +1127,7 @@ class TransferOrder
                 // ici.
                 $list_fk_facture = implode(',',$data_fk_facture);
                 dump($list_fk_facture);
-                $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture IN ('.$list_fk_facture.')");
+                $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture = 92088");
 
                  dd('zapo');
           
