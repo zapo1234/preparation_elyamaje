@@ -100,16 +100,13 @@ class CommandeidsRepository implements CommandeidsInterface
       }
 
 
-   public function getrowidfacture(){
+   public function getrowidfacture($inv){
 
-      $data = DB::connection('mysql2')->select("SELECT rowid,ref FROM llxyq_paiement");
+      $data = DB::connection('mysql2')->select("SELECT fk_paiement FROM llxyq_paiement_facture WHERE fk_facture=$inv");
       $name_list = json_encode($data);
-      $name_list = json_decode($data,true);
-      foreach($name_list as $val){
-         $data_result['rowid'] = $val['ref'];
-      }
-
-      return $data_result;
+      $name_lists = json_decode($name_list,true);
+      
+      dd($name_lists);
 
    }
 
