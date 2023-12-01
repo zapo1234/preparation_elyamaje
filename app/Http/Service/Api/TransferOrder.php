@@ -1126,7 +1126,7 @@ class TransferOrder
               // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // ici.
                 $list_fk_facture = implode(',',$data_fk_facture);
-                $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE IN ('.$list_fk_facture.')");
+                $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture IN ('.$list_fk_facture.')");
 
                  dd('zapo');
           
