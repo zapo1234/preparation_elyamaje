@@ -1128,16 +1128,16 @@ class TransferOrder
                 $list_fk_facture = implode(',',$data_fk_facture);
                 
                 foreach($data_fk_facture as $lk){
-                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture='.$lk.'");
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
                    // suprimer ecriture paiement
-                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE fk_facture='.$lk.'");
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE fk_facture=$lk");
                 }
 
                 dd('zapo');
 
                  // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valus){
-                    $ids_facture  = explode(',',$kyes);
+                      $ids_facture  = explode(',',$kyes);
                       // mettre à jours les factures 
                        $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$ids_facture[0]."/lines/".$ids_facture[1]."",json_encode($valus));
                        
