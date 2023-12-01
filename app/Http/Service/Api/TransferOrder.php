@@ -1126,6 +1126,10 @@ class TransferOrder
                   $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
                 }
 
+                
+                $xy = $this->commande->getrowidfacture();
+               dd($xy);
+
                 foreach($ref_pay as $vf){
                   foreach($vf as $va){
                     $ref_py[] = $va['ref'];
@@ -1149,6 +1153,7 @@ class TransferOrder
                 }
 
                 $ref_py = array('PAY2312-91192','PAY2312-91191');
+
                 foreach($ref_py as $ref){
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE ref=$ref");
