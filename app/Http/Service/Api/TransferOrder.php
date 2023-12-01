@@ -1126,8 +1126,7 @@ class TransferOrder
                   $ref_pay[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vb."/payments"),true);
                 }
 
-                
-                $assoc_pay = $this->commande->getrowidfacture();
+                 $assoc_pay = $this->commande->getrowidfacture();// recupérer les id de paiment direcetement en base
               
                  foreach($ref_pay as $vf){
                   foreach($vf as $va){
@@ -1135,9 +1134,7 @@ class TransferOrder
                   }
                 }
 
-                dd($ref_py);
-
-                  // mettre la facture en brouillons.
+                 // mettre la facture en brouillons.
                  foreach($data_fk_facture as $valu){
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
@@ -1145,19 +1142,17 @@ class TransferOrder
                }
 
                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
-                // ici.
-                $list_fk_facture = implode(',',$data_fk_facture);
+                // icie
                 
                 foreach($data_fk_facture as $lk){
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
                    // suprimer ecriture paiement
                 }
 
-                $ref_py = array('PAY2312-91192','PAY2312-91191');
-
-                foreach($ref_py as $ref){
+                // detruire la ligne du paiement
+                foreach($ref_py as $id){
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
-                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE ref=$ref");
+                   $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
                 }
 
                 dd('zapo');
