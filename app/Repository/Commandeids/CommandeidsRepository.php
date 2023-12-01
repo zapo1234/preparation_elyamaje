@@ -106,7 +106,7 @@ class CommandeidsRepository implements CommandeidsInterface
       $name_list = json_encode($data);
       $name_list = json_decode($name_list,true);
       foreach($name_list as $val){
-         $data_result['rowid'] = $val['ref'];
+         $data_result[$val['rowid']] = $val['ref'];
       }
 
       return $data_result;
