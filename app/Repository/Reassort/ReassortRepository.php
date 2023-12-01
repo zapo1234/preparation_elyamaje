@@ -460,7 +460,7 @@ class ReassortRepository implements ReassortInterface
          }
     }
 
-    public function getQteToTransfer($identifiant_reassort){
+    public function getQteToTransfer($identifiant_reassort,$ids_ignore_tab){
 
         $transfer = $this->model::select('product_id', 'barcode', 'qty')
         ->where([
@@ -468,6 +468,7 @@ class ReassortRepository implements ReassortInterface
             ['qty','>', 0],
             ['syncro', 0],
         ])
+        ->whereNotIn('product_id', $ids_ignore_tab)
         ->get()
         ->toArray()
         ;
@@ -786,6 +787,26 @@ class ReassortRepository implements ReassortInterface
         } catch (\Throwable $th) {
            return ["response" => false,"message" => $th->getMessage()];
         }
+    }
+
+    function updateColonneSyncro($datas_updated_succes, $identifiant_reassort){    
+
+        $id_dolibarr_syncro = array();
+  
+        if ($datas_updated_succes) {
+           foreach ($datas_updated_succes as $key => $value) {
+              array_push($id_dolibarr_syncro,$value["product_id"]);
+           }
+
+           $this->model::where('identifiant_reassort', $identifiant_reassort)
+           ->whereIn('product_id', $id_dolibarr_syncro)
+           ->update(['syncro' => 1]);
+
+           return count($datas_updated_succes);
+        }
+
+        return false;       
+  
     }
 
 

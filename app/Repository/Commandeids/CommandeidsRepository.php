@@ -69,6 +69,36 @@ class CommandeidsRepository implements CommandeidsInterface
 
       }
 
+      public function  getIdsfkfacture(){
+         $invoices_id= DB::table('fk_factures')->select('id_invoices','id_commande')->get();
+           $name_list = json_encode($invoices_id);
+           $name_list = json_decode($invoices_id,true);
+           foreach($name_list as $values){
+               $result_data[$values['id_invoices']] = $values['id_commande'];
+            }
+
+            return $result_data;
+
+      }
+
+      public function createpaiementid(){
+
+           $data_array =[
+             '57,DONS'=>'DONS',
+             '107,stripe'=>'stripe',
+             '106,paypul'=>'payplug',
+             '6,CB'=>'CB',
+             '6,cod'=>'cod',
+             '6,bancontact'=>'bancontact',
+             '108,oney_x4_with_fees'=>'oney_x4_with_fees',
+             '3,bacs'=>'bacs',
+             '57,gift_card'=>'gift_card',
+             '6,apple_pay'=>'apple_pay',
+           ];
+
+           return $data_array;
+      }
+
 
     
      public function deleteOrder($order_id){

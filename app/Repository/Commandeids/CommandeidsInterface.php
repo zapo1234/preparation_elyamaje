@@ -14,5 +14,9 @@ interface CommandeidsInterface
 
    public function getIdsinvoices($id_commande);// recupérer id de la commande...
 
+   public function getIdsfkfacture();
+
+   public function createpaiementid();
+
    public function deleteOrder($order_id); // Supprime une commande afin de pouvoir refacturer
 }
