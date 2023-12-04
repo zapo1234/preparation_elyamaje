@@ -155,6 +155,14 @@ class Controller extends BaseController
         $orders_validate = [];
 
         foreach ($orders['orders'] as $order) {
+            if(isset($order['details']['discount'])){
+                $discount = 0;
+                foreach(explode(',',$order['details']['discount']) as $dis){
+                    $discount = floatval($discount) + floatval($dis);
+                }
+                $order['details']['discount'] = $discount;
+            }
+
             if ($order['details']['status'] == "waiting_to_validate") {
                 $orders_waiting_to_validate[] = $order;
             } else if ($order['details']['status'] == "waiting_validate") {
@@ -162,7 +170,7 @@ class Controller extends BaseController
             } else {
                 $order_process[] = $order;
             }
-        }   
+        }       
 
         return view('preparateur.index_preparateur', [
             'user' => Auth()->user()->name,
@@ -190,6 +198,14 @@ class Controller extends BaseController
         $orders_validate = [];
 
         foreach ($orders['orders'] as $order) {
+            if(isset($order['details']['discount'])){
+                $discount = 0;
+                foreach(explode(',',$order['details']['discount']) as $dis){
+                    $discount = floatval($discount) + floatval($dis);
+                }
+                $order['details']['discount'] = $discount;
+            }
+            
             if ($order['details']['status'] == "waiting_to_validate") {
                 $orders_waiting_to_validate[] = $order;
             } else if ($order['details']['status'] == "waiting_validate") {

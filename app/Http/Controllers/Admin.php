@@ -49,6 +49,7 @@ class Admin extends BaseController
     private $factorder;
     private $labelMissing;
     private $orderDolibarr;
+    private $transferorder;
 
     public function __construct(
         Api $api, 
@@ -64,7 +65,8 @@ class Admin extends BaseController
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
         LabelMissingRepository $labelMissing,
-        OrderDolibarrRepository $orderDolibarr
+        OrderDolibarrRepository $orderDolibarr,
+        TransferOrder $facture
     ){
         $this->api = $api;
         $this->category = $category;
@@ -80,6 +82,7 @@ class Admin extends BaseController
         $this->factorder = $factorder;
         $this->labelMissing = $labelMissing;
         $this->orderDolibarr = $orderDolibarr;
+        $this->facture = $facture;
     }
 
     public function syncCategories(){
@@ -572,7 +575,8 @@ class Admin extends BaseController
         if(count($orders) == 0){
             return redirect()->route('admin.reinvoice')->with('error', 'Commande inexistante !');
         } else{
-            dd($orders);
+            //dd($orders);
+            $this->facture->Updatefacture($orders);
         }
    
     }

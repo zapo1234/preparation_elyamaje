@@ -686,7 +686,7 @@ class Order extends BaseController
     public function validWrapOrder(Request $request){
       
       $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-      $transfers = $request->post('transfers') == "false" ? 0 : 1;
+       $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
       $order_id = explode(',', $request->post('order_id'))[0];
 
