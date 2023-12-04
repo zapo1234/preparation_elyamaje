@@ -758,7 +758,6 @@
                                                             [
                                                                 'identifiant' => $value["identifiant"],
                                                                 'detail_reassort' => $value["detail_reassort"],
-
                                                                 'entrepot_source' => $value["entrepot_source"],
                                                                 'entrepot_destination' => $value["entrepot_destination"],
                                                             ])
@@ -1003,38 +1002,38 @@
     });
 
     $('.example6').DataTable({
-    language: {
-        info: "_START_ à _END_ sur _TOTAL_ entrées",
-        infoEmpty: "Aucune données",
-        infoFiltered: "(filtrés sur un total de _MAX_ éléments)",
-        lengthMenu: "_MENU_",
-        search: "",
-        paginate: {
-            first: ">>",
-            last: "<<",
-            next: ">",
-            previous: "<"
-        }
-    },
+        language: {
+            info: "_START_ à _END_ sur _TOTAL_ entrées",
+            infoEmpty: "Aucune données",
+            infoFiltered: "(filtrés sur un total de _MAX_ éléments)",
+            lengthMenu: "_MENU_",
+            search: "",
+            paginate: {
+                first: ">>",
+                last: "<<",
+                next: ">",
+                previous: "<"
+            }
+        },
 
 
-    order: [[5, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
-    pageLength: 1000,
+        order: [[5, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
+        pageLength: 1000,
 
-    dom: 'Bfrtip',
+        dom: 'Bfrtip',
 
-    buttons: [
-        'copy',
-        'excel',
-        'csv',
-        'pdf',
-        'print'
-    ],
+        buttons: [
+            'copy',
+            'excel',
+            'csv',
+            'pdf',
+            'print'
+        ],
 
-    lengthMenu: [
-        [5,10, 25, 50, -1],
-        ['5','10', '25', '50', 'Tout']
-    ],
+        lengthMenu: [
+            [5,10, 25, 50, -1],
+            ['5','10', '25', '50', 'Tout']
+        ],
 
     });
 
