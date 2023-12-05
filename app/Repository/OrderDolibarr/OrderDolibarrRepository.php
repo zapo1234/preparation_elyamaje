@@ -109,6 +109,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->where('products.status', 'publish')
          ->where('orders_doli.user_id', $user_id)
          ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
          ->get();
