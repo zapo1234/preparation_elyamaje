@@ -1128,15 +1128,15 @@ class TransferOrder
                  $assoc_pay = $this->commande->getrowidfacture();// recupérer les id de paiment direcetement en base
               
                   foreach($ref_pay as $vf){
-                  foreach($vf as $va){
-                     $ref_py[] = array_search($va['ref'],$assoc_pay);
-                  }
+                     foreach($vf as $va){
+                      $ref_py[] = array_search($va['ref'],$assoc_pay);
+                   }
                 }
 
                  // mettre la facture en brouillons.
                  foreach($data_fk_facture as $valu){
-                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
-                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
+                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settounpaid",json_encode($data_fact));
+                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$valu."/settodraft");
 
                }
 
@@ -1153,6 +1153,13 @@ class TransferOrder
                    // suprimer les ligne d'ecriture de paiement avec la ref facture.
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement WHERE rowid=$id");
                 }
+
+                // detruire les ligne de produit dans la facture.
+                foreach($data_fk_facture as $vj){
+                  $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_facturedet WHERE fk_facture=$vj");
+                }
+
+                dd('zapo');
 
                 // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valuss){
