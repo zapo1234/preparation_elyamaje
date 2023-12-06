@@ -841,9 +841,7 @@ class Admin extends BaseController
 
 
             $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
-            $all_products = json_decode($all_products,true); 
-
-           
+            $all_products = json_decode($all_products,true);
 
             if ($all_products) {
                 foreach ($all_products as $key => $product) {
@@ -853,7 +851,7 @@ class Admin extends BaseController
                     array_push($products_dolibarrs_save, [
                         "product_id" => $product["id"],
                         "label" => $product["label"],
-                        "price_ttc" => $product["price"]*(($product["tva_tx"]*0.01)+1),
+                        "price_ttc" =>$product["price"]? ($product["price"]*(($product["tva_tx"]*0.01)+1)):$product["price_ttc"],
                         "barcode" => $product["barcode"],
                         "poids" => 0,
                         "warehouse_array_list" => json_encode($product["warehouse_array_list"])
