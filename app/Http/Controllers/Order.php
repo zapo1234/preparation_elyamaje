@@ -179,7 +179,7 @@ class Order extends BaseController
             } 
 
             // N'affiche pas les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
-            if($order['status'] == "prepared-order" || $order['status'] == "processing"){
+            if($order['status'] == "prepared-order"){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) == 0){
                 $take_order = false;
