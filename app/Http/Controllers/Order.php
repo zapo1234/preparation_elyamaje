@@ -178,8 +178,8 @@ class Order extends BaseController
               } 
             } 
 
-            // N'affiche pos les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
-            if($order['status'] == "prepared-order"){
+            // N'affiche pas les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
+            if($order['status'] == "prepared-order" || $order['status'] == "processing"){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) == 0){
                 $take_order = false;
@@ -187,7 +187,6 @@ class Order extends BaseController
             }
   
             if($take_order == true){
-
               // Check if is distributor
               if(in_array($order['customer_id'], $distributors_list)){
                 $orders[$key]['is_distributor'] = true;
