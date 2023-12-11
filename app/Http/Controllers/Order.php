@@ -701,10 +701,10 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-         if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
-          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-          return;
-        }
+        //  if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        //   return;
+        // }
       
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         if($is_distributor && !$from_dolibarr){
