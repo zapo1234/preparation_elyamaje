@@ -54,8 +54,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $order_lines[$key]['order_woocommerce_id'] = $order['ref_order'];
          $order_lines[$key]['from_dolibarr'] = true;
 
-      
-
          $order_lines[$key]['cost'] = $order['price'];
          $order_lines[$key]['total_order'] = $order['total_order_ttc'];
          $order_lines[$key]['status'] = $order['statut'];
