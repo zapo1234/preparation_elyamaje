@@ -14,22 +14,18 @@ class Api
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
-    file_put_contents('per_page.txt', $per_page);
-    file_put_contents('page.txt', $page);
-
-
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
       ->withHeaders([
           'Cache-Control' => 'no-cache, must-revalidate, max-age=0, no-store, private',
-          // 'Pragma' => 'no-cache',
-          'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
+          'Pragma' => 'no-cache',
+          'Expires' => '0',
       ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
           'per_page' => $per_page,
           'page' => $page,
-          'ver' => time(),
+          // 'ver' => time(),
       ]);
       return $response->json();
     } catch(Exception $e){
