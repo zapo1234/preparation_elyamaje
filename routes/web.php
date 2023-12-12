@@ -82,7 +82,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     
     // Route::get("/updateStockWoocommerce", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce');
 
-
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
     Route::get("/products", [Controller::class, "products"])->name('admin.products');
@@ -123,12 +122,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
     Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
     Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
-    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
-
-    
-
-    
-    
+    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr'); 
 });
 
 // PRÉPARATEUR

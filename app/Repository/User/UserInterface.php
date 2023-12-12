@@ -22,6 +22,8 @@ interface UserInterface
 
    public function deleteUser($user_id);
 
+   public function updateUserActive($email);
+
    public function insertToken($email, $token);
 
    public function getUserByToken($token);

@@ -23,10 +23,10 @@ class UserRepository implements UserInterface
       $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type')
          ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
+         ->where('users.active', 1)
          ->orderBy('users.id', 'ASC')
          ->get()
          ->toArray();
-      
       $userRole = [];
       $role = [];
 
@@ -87,7 +87,7 @@ class UserRepository implements UserInterface
       if($user_id){
          return $this->model->where('email', $email)->where('id', '!=', $user_id)->count();
       } else {
-         return $this->model->where('email', $email)->count();
+         return $this->model->where('email', $email)->get();
       }
    }
 
@@ -145,6 +145,7 @@ class UserRepository implements UserInterface
 
    public function createUser($user_name_last_name, $email, $role, $password, $poste, $type){
       try{
+         
          $user = $this->model->create([
             'name'=> $user_name_last_name,
             'email'=> $email,
@@ -207,9 +208,19 @@ class UserRepository implements UserInterface
       }
    }
 
+   public function updateUserActive($email){
+      try{
+         $this->model->where('email', $email)->update(['active' => 1]);
+
+         return true;
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+   }
+
    public function deleteUser($user_id){
       try{
-         $this->model->where('id', $user_id)->delete();
+         $this->model->where('id', $user_id)->update(['active' => 0]);
 
          return true;
       } catch(Exception $e){

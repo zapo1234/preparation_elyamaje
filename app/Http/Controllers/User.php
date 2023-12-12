@@ -41,20 +41,25 @@ class User extends BaseController
 
         if(!isset($input['role']) || !isset($input['email']) || !isset($input['name_last_name'])){
             return redirect()->back()->with('error',  'Veuillez renseigner les champs obligatoire');
-        }
+        }   
 
         $user_name_last_name =   $input['name_last_name'];
         $email =  $input['email'];
         $role =  $input['role'];
         $poste =  $input['poste'] ?? 0;
-        $type =  $input['type'] ?? null;
+        $type =  $input['type'] ?? "warehouse";
 
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email);
-        if($email_already_exist > 0){
-            return redirect()->back()->with('error',  'Cet email existe déjà !');
+        if(count($email_already_exist) > 0){
+            if($email_already_exist[0]->active == 0){
+                $this->users->updateUserActive($email);
+                return redirect()->back()->with('success',  'Le compte associé à cette adresse '.$email.' à été réactivé');
+            } else if($email_already_exist[0]->active == 1){
+                return redirect()->back()->with('error',  'Cet email existe déjà !');
+            }
         }
-
+       
         $rand_pass = rand(136,50000);
         $password = "elyamaje@$rand_pass";
         // crypter l'email.
