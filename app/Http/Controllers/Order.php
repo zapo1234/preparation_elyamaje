@@ -131,7 +131,7 @@ class Order extends BaseController
 
         if(!$orders){
           return array();
-        }
+        } 
         
         $count = count($orders);
   
