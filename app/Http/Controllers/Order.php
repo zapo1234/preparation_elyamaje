@@ -828,8 +828,8 @@ class Order extends BaseController
     //   }
     // }
 
-    public function leaderHistory(){
-      $histories = $this->history->getAllHistory();
+    public function leaderHistory(Request $request){
+      $histories = $this->history->getAllHistory($request->all());
       $histories_order = [];
 
       foreach($histories as $history){
@@ -858,7 +858,7 @@ class Order extends BaseController
         } 
       }
 
-      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order'), 'parameter' => $request->all()]);
     }
 
     public function generateHistory(Request $request){

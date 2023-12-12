@@ -502,7 +502,7 @@ class Label extends BaseController
 
                 // Update status local de la commande en terminée pour celles dont ce n'est pas le cas
                 if(count($order_to_update) > 0){
-                    $this->order->updateOrdersById([implode(',', $order_to_update)],"finished");
+                    $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
                 }
                 
                 // Récupère les status de chaque commande

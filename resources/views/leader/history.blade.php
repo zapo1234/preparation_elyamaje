@@ -45,6 +45,13 @@
 									</div>
 								</div>
 								<div class="table-responsive">
+								
+									<form method="GET" action="{{ route('leader.history') }}" class="d-flex d-none order_research">
+										<input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
+										<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
+										<button style="margin-left:10px" class="research_history_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
+									</form>
+
 									<table id="example" class="d-none w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
 
 										<div class="d-none loading_show_detail_order w-100 d-flex justify-content-center">

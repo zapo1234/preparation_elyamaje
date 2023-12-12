@@ -7,7 +7,7 @@ interface HistoryInterface
 {
    public function getHistoryByDate($date);
 
-   public function getAllHistory();
+   public function getAllHistory($request);
 
    public function getHistoryAdmin($date);
    

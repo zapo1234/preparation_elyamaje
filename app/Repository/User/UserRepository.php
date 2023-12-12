@@ -20,7 +20,7 @@ class UserRepository implements UserInterface
    }
 
    public function getUsersAndRoles(){
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type')
          ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
          ->orderBy('users.id', 'ASC')
@@ -52,7 +52,7 @@ class UserRepository implements UserInterface
 
    public function getUsersByRole($role){
 
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'type')
          ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
          ->whereIn('user_roles.role_id', $role)
@@ -143,13 +143,14 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function createUser($user_name_last_name, $email, $role, $password, $poste){
+   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type){
       try{
          $user = $this->model->create([
             'name'=> $user_name_last_name,
             'email'=> $email,
             'password'=> $password,
             'poste'=> $poste,
+            'type' => $type
          ]);
 
          $roles = [];
@@ -169,13 +170,14 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste){
+   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type){
       try{
          $delete_order = true;
          $this->model->where('id', $user_id)->update([
             'name'=> $user_name_last_name,
             'email'=> $email,
             'poste'=> !in_array('3', $role) ? 0 : $poste,
+            'type' => $type
          ]);
 
          DB::table('user_roles')->where('user_id', $user_id)->delete();

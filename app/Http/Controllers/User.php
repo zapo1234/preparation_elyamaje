@@ -47,6 +47,7 @@ class User extends BaseController
         $email =  $input['email'];
         $role =  $input['role'];
         $poste =  $input['poste'] ?? 0;
+        $type =  $input['type'] ?? null;
 
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email);
@@ -58,7 +59,7 @@ class User extends BaseController
         $password = "elyamaje@$rand_pass";
         // crypter l'email.
         $password_hash = Hash::make($password);
-        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste);
+        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste, $type);
 
         if($create){
             
@@ -113,6 +114,7 @@ class User extends BaseController
         $email =  $input['update_email'];
         $role =  $input['update_role'];
         $poste =  $input['update_poste'] ?? 0;
+        $type =  $input['update_type'] ?? null;
         
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email, $user_id);
@@ -120,7 +122,7 @@ class User extends BaseController
             return redirect()->back()->with('error',  'Cet email existe déjà !');
         }
   
-        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste);
+        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type);
 
         if($update){
             return redirect()->back()->with('success', 'Compte modifié avec succès !');

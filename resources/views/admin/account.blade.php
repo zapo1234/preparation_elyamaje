@@ -52,12 +52,19 @@
 												</div>
 												<div class="col-md-12">
 													<label for="role" class="form-label">Rôle*</label>
-													<select required name="role[]" id="role" class="form-select">
+													<select required name="role[]" id="role" class="form-select select">
 														@foreach($roles as $role)
 															@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																<option value="{{ $role->id }}">{{  $role->role }}</option>
 															@endif
 														@endforeach
+													</select>
+												</div>
+												<div class="col-md-12">
+													<label for="type" class="form-label">Type*</label>
+													<select required name="type" id="type" class="form-select">
+														<option value="warehouse">Entrepôt</option>
+														<option value="shop">Boutique</option>
 													</select>
 												</div>
 												<div class="poste_input d-none col-md-12">
@@ -97,11 +104,20 @@
 									<span class="visually-hidden">Loading...</span>
 								</div>
 							</div>
+
+							<!-- publish -->
+							<select class="d-none select2_custom type_dropdown input_form_type">
+								<option value="">Type</option>
+								<option selected value="Entrepôt">Entrepôt</option>
+								<option value="Boutique">Boutique</option>
+							</select>
+
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>Nom</th>
 										<th>Rôles</th>
+										<th>Type</th>
 										<th class="col-md-1">Action</th>
 									</tr>
 								</thead>
@@ -110,13 +126,14 @@
 									@foreach ($users as $user)
 										<tr>
 											<td data-label="Nom">{{ $user['name'] }}</td>
-											<td data-label="Status">	
+											<td data-label="Rôles">	
 												@foreach($roles as $role)
 													@if(in_array($role['id'], $user['role_id']))
 														<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
 													@endif
 												@endforeach
 											</td>
+											<td data-label="Type">{{ $user['type'] == "warehouse" ? "Entrepôt" : ($user['type'] == "shop" ? "Boutique" : "Non défini")}}</td>
 											<td class="d-flex justify-content-between" data-label="Action" >
 												@if(!$isAdmin && count(array_intersect([2,3,4,5], $user['role_id'])) == 0)
 													<div class="d-flex">
@@ -167,7 +184,7 @@
 																	<div class="col-md-12">
 																		<label for="update_role" class="form-label">Rôle*</label>
 																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
-																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" id="update_role" class="form-select">
+																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" id="update_role" class="select form-select">
 																			@foreach($roles as $role)
 																				@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																					<option value="{{ $role->id }}">{{  $role->role }}</option>
@@ -175,6 +192,21 @@
 																					<option selected disabled value="{{ $role->id }}">{{  $role->role }}</option>
 																				@endif
 																			@endforeach
+																		</select>
+																	</div>
+																	<div class="col-md-12">
+																		<label for="update_type" class="form-label">Type*</label>
+																		<select required name="update_type" id="update_type" class="form-select">
+																			@if($user['type'] === "warehouse")
+																				<option selected value="warehouse">Entrepôt</option>
+																				<option value="shop">Boutique</option>
+																			@elseif($user['type'] === "shop")
+																				<option selected value="shop">Boutique</option>
+																				<option selected value="warehouse">Entrepôt</option>
+																			@else 
+																				<option value="warehouse">Entrepôt</option>
+																				<option value="shop">Boutique</option>
+																			@endif
 																		</select>
 																	</div>
 																	<div class="poste_input d-none col-md-12">
@@ -192,7 +224,6 @@
 												</div>
 											</div>
 										</div>
-
 									@endforeach
 								</tbody>
 							</table>
@@ -244,20 +275,42 @@
 
 		$(document).ready(function() {
 
-			$("select").select2({multiple: true, maximumSelectionLength: 3})
-
-			$('select').val(null);
+			$(".select").select2({multiple: true, maximumSelectionLength: 3})
+			$('.select').val(null);
 			$('.select2-selection__rendered').html('');
 
 			$('#example').DataTable({
+				"columnDefs": [
+					{ "visible": false, "targets": 2 },
+				],
 				"initComplete": function(settings, json) {
-					$(".loading").hide()
 					$("#example").removeClass('d-none')
+           			$("#example_length select").css('margin-right', '10px')
+					$(".dataTables_length").css('display', 'flex')
+            		$(".dataTables_length").addClass('select2_custom')
+					$(".type_dropdown").appendTo('.dataTables_length')
+					$(".type_dropdown").removeClass('d-none')
+					$(".type_dropdown").select2({
+						width: '100px',
+					});
+					
+
+					$(".loading").hide()
 				}
 			})
+
+			$('.type_dropdown').trigger('change')
+			
 		})
 
-		$("select").on("change", function(){
+		$('.type_dropdown').on('change', function(e){
+			var type_dropdown = $(this).val();
+			$('#example').DataTable()
+			.column(2).search(type_dropdown, true, false)
+			.draw();
+		})
+
+		$(".select").on("change", function(){
 			showHidePoste($(this).val())
 		})
 

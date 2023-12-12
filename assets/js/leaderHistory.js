@@ -6,6 +6,12 @@ $(document).ready(function() {
     $('#example').DataTable({
         "ordering": false,
         "initComplete": function( settings, json ) {
+            $(".order_research").appendTo('.dataTables_length')
+            $(".dataTables_length").css('display', 'flex')
+            $(".dataTables_length").addClass('select2_custom')
+            $(".order_research").removeClass('d-none')
+            $(".order_research input").css('margin-left', '10px')
+
             $(".loading").addClass('d-none')
             $('#example').removeClass('d-none');
         }
