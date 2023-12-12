@@ -14,6 +14,9 @@ class Api
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
+    dump($per_page);
+    dump($page);
+
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
       ->withHeaders([
@@ -23,8 +26,8 @@ class Api
       ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
-          'per_page' => 100,
-          'page' => 1,
+          'per_page' => $per_page,
+          'page' => $page,
           'ver' => time(),
       ]);
       return $response->json();
