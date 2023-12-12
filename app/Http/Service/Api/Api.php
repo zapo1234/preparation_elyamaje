@@ -16,11 +16,9 @@ class Api
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
-      ->withHeaders([
-          'Cache-Control' => 'no-cache, no-store, must-revalidate',
-          'Pragma' => 'no-cache',
-          'Expires' => '0',
-      ])
+      ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+      ->header('Pragma', 'no-cache')
+      ->header('Expires', '0')
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
           'per_page' => $per_page,
