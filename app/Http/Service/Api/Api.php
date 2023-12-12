@@ -17,14 +17,9 @@ class Api
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
       ->withHeaders([
-          'Cache-Control' => 'no-cache, no-store, must-revalidate',
-          'Pragma' => 'no-cache',
-          'Expires' => '0',
-          'Keep-Alive' => 'timeout=5, max=100',
-          'x-robots-tag' => 'noindex',
-          'access-control-expose-headers' => 'X-WP-Total, X-WP-TotalPages, Link',
-          'access-control-allow-headers' => 'Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type',
-
+          'Cache-Control' => 'no-cache, must-revalidate, max-age=0, no-store, private',
+          // 'Pragma' => 'no-cache',
+          'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
       ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
