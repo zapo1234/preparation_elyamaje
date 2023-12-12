@@ -15,7 +15,18 @@ class Api
     $customer_secret = config('app.woocommerce_customer_secret');
 
     try{
-      $response = Http::withBasicAuth($customer_key, $customer_secret)->get(config('app.woocommerce_api_url')."wp-json/wc/v3/orders?status=".$status."&per_page=".$per_page."&page=".$page);
+      $response = Http::withBasicAuth($customer_key, $customer_secret)
+      ->withHeaders([
+          'Cache-Control' => 'no-cache, no-store, must-revalidate',
+          'Pragma' => 'no-cache',
+          'Expires' => '0',
+      ])
+      ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
+          'status' => $status,
+          'per_page' => $per_page,
+          'page' => $page,
+          'ver' => time(),
+      ]);
       return $response->json();
     } catch(Exception $e){
       return $e->getMessage();
