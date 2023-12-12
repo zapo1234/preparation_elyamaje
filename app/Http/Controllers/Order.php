@@ -128,6 +128,11 @@ class Order extends BaseController
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+
+        if(!$orders){
+          return array();
+        }
+        
         $count = count($orders);
   
         // Check if others page
