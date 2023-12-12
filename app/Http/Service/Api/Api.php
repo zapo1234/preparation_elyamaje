@@ -23,8 +23,8 @@ class Api
       ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
-          'per_page' => $per_page,
-          'page' => $page,
+          'per_page' => 100,
+          'page' => 1,
           'ver' => time(),
       ]);
       return $response->json();
