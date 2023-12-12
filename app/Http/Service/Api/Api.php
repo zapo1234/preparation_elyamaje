@@ -25,7 +25,7 @@ class Api
           'status' => $status,
           'per_page' => $per_page,
           'page' => $page,
-          // 'ver' => time(),
+          'ver' => time(),
       ]);
       return $response->json();
     } catch(Exception $e){
