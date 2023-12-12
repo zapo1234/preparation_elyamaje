@@ -14,8 +14,9 @@ class Api
     $customer_key = config('app.woocommerce_customer_key');
     $customer_secret = config('app.woocommerce_customer_secret');
 
-    dump($per_page);
-    dump($page);
+    file_put_contents('per_page.txt', $per_page);
+    file_put_contents('page.txt', $page);
+
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
