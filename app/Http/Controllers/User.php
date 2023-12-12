@@ -86,19 +86,12 @@ class User extends BaseController
         $user_id = $request->post("account_user");
 
         if($user_id != 1){
-            // Vérifie si l'utilisateur à des commandes en cours
-            $orders_users = $this->orders->getAllOrdersByIdUser($user_id)->toArray();
-           
-            if(count($orders_users) > 0){
-                return redirect()->back()->with('error',  'Cet utilisateur à des commandes en cours !');
-            } else {
-                $delete = $this->users->deleteUser($user_id);
+            $delete = $this->users->deleteUser($user_id);
 
-                if($delete){
-                    return redirect()->back()->with('success', 'Compte supprimé avec succès !');
-                } else {
-                    return redirect()->back()->with('error',  $delete);
-                }
+            if($delete){
+                return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+            } else {
+                return redirect()->back()->with('error',  $delete);
             }
         } else {
             return redirect()->back()->with('error',  'L\'administrateur principal ne peut pas être supprimé !');
