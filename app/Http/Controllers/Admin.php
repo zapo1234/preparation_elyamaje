@@ -143,7 +143,7 @@ class Admin extends BaseController
             $count = count($products_other);
           }
         }  
-
+        
         foreach($products as $product){
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];

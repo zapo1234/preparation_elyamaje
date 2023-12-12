@@ -16,11 +16,10 @@ class Api
 
     try{
       $response = Http::withBasicAuth($customer_key, $customer_secret)
-      ->withHeaders([
-          'Cache-Control' => 'no-cache, must-revalidate, max-age=0, no-store, private',
-          // 'Pragma' => 'no-cache',
-          'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
-      ])
+      // ->withHeaders([
+      //     'Cache-Control' => 'no-cache, must-revalidate, max-age=0, no-store, private',
+      //     'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
+      // ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
           'per_page' => $per_page,

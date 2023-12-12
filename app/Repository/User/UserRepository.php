@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserInterface
 {
-
    private $model;
 
    public function __construct(User $model){
@@ -145,7 +144,7 @@ class UserRepository implements UserInterface
 
    public function createUser($user_name_last_name, $email, $role, $password, $poste, $type){
       try{
-         
+
          $user = $this->model->create([
             'name'=> $user_name_last_name,
             'email'=> $email,
