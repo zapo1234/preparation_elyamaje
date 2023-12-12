@@ -20,6 +20,11 @@ class Api
           'Cache-Control' => 'no-cache, no-store, must-revalidate',
           'Pragma' => 'no-cache',
           'Expires' => '0',
+          'Keep-Alive' => 'timeout=5, max=100',
+          'x-robots-tag' => 'noindex',
+          'access-control-expose-headers' => 'X-WP-Total, X-WP-TotalPages, Link',
+          'access-control-allow-headers' => 'Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type',
+
       ])
       ->get(config('app.woocommerce_api_url') . "wp-json/wc/v3/orders", [
           'status' => $status,
