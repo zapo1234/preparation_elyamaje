@@ -754,6 +754,7 @@ class Order extends BaseController
                   $status_finished = "commande-distribu";
                 } 
               }
+              
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);

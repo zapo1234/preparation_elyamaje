@@ -15,7 +15,7 @@ class AddFieldIsProfessional extends Migration
     {
         Schema::table('orders_doli', function (Blueprint $table) {
             $table->integer('is_professional')->default(0);
-            $table->string('billing_code_postal')->default(null);
+            $table->string('billing_code_postal')->nullable();
             $table->dropColumn('billing_phone');
         });
     }
