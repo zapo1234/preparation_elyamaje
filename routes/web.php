@@ -171,6 +171,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/account", [Admin::class, "account"])->name('account');
     Route::post("/account", [User::class, "createAccount"])->name('account.create');
     Route::post("/deleteAccount", [User::class, "deleteAccount"])->name('account.delete');
+    Route::post("/activeAccount", [User::class, "activeAccount"])->name('account.active');
     Route::post("/updateAccount", [User::class, "updateAccount"])->name('account.update');
     Route::get("/user", [User::class, "getUser"])->name('account.user');
     Route::post("/deleteOrderProducts", [Order::class, "deleteOrderProducts"])->name('deleteOrderProducts');

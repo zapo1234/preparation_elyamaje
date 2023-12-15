@@ -105,11 +105,17 @@
 								</div>
 							</div>
 
-							<!-- publish -->
+							<!-- Type -->
 							<select class="d-none select2_custom type_dropdown input_form_type">
 								<option value="">Type</option>
 								<option selected value="Entrepôt">Entrepôt</option>
 								<option value="Boutique">Boutique</option>
+							</select>
+
+							<!-- Compte actif -->
+							<select class="d-none select2_custom actif_dropdown input_form_type">
+								<option selected value="1">Actif</option>
+								<option value="0">Inactif</option>
 							</select>
 
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
@@ -119,6 +125,7 @@
 										<th>Rôles</th>
 										<th>Type</th>
 										<th class="col-md-1">Action</th>
+										<th class="col-md-1">Actif</th>
 									</tr>
 								</thead>
 
@@ -127,33 +134,43 @@
 										<tr>
 											<td data-label="Nom">{{ $user['name'] }}</td>
 											<td data-label="Rôles">	
-												@foreach($roles as $role)
-													@if(in_array($role['id'], $user['role_id']))
-														<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
-													@endif
-												@endforeach
+												@if($user['active'] == 1)
+													@foreach($roles as $role)
+														@if(in_array($role['id'], $user['role_id']))
+															<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
+														@endif
+													@endforeach
+												@else
+													<span class="role_user_badge badge" style="background-color:#E1DDDD">Compte inactif</span>
+												@endif
+												
 											</td>
 											<td data-label="Type">{{ $user['type'] == "warehouse" ? "Entrepôt" : ($user['type'] == "shop" ? "Boutique" : "Non défini")}}</td>
 											<td class="d-flex justify-content-between" data-label="Action" >
-												@if(!$isAdmin && count(array_intersect([2,3,4,5], $user['role_id'])) == 0)
+												@if(!$isAdmin && count(array_intersect([2,3,4,5], $user['role_id'])) == 0 && $user['active'] == 1 )
 													<div class="d-flex">
 														<div class="action_table font-22 text-secondary">	
 															<i class="text-secondary fadeIn animated bx bx-edit"></i>
 														</div>
 													</div>
-												@else 
+												@elseif($user['active'] == 1)
 													<div class="d-flex">
 														<div data-id="{{ $user['user_id'] }}" class="update_action action_table font-22 text-primary">	
 															<i class="fadeIn animated bx bx-edit"></i>
 														</div>
-														@if($user['user_id'] != 1)
+														@if($user['user_id'] != 1 && $user['active'] == 1)
 															<div data-user="{{ $user['name'] }}" data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="delete_action action_table font-22 text-primary">	
 																<i class="text-danger fadeIn animated bx bx-trash-alt"></i>
 															</div>
 														@endif
 													</div>
+												@elseif($user['active'] == 0)
+													<div title="Activer le compte" data-user="{{ $user['name'] }}" data-id="{{ $user['user_id'] }}" style="margin-left:10px;" class="active_action action_table font-22 text-primary">	
+														<i class="text-success fadeIn animated bx bx-check"></i>
+													</div>
 												@endif
 											</td>
+											<td data-label="Actif">{{ $user['active'] }}</td>
 										</tr>
 
 
@@ -252,6 +269,25 @@
 				</div>
 			</div>
 
+			<!-- Modal d'activation -->
+			<div class="modal fade" id="activeAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<form method="POST" action="{{ route('account.active') }}">
+							@csrf
+							<div class="modal-body">
+								<h2 class="text-center">Activer le compte <br><span class="font-bold account_to_active"></span> ?</h2>
+								<input name="account_to_active" type="hidden" id="account_to_active" value="">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+								<button type="submit" class="btn btn-primary">Oui</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
 		@endsection
 
 	
@@ -282,10 +318,10 @@
 			$('#example').DataTable({
 				"columnDefs": [
 					{ "visible": false, "targets": 2 },
+					{ "visible": false, "targets": 4 },
 				],
 				"initComplete": function(settings, json) {
 					$("#example").removeClass('d-none')
-           			$("#example_length select").css('margin-right', '10px')
 					$(".dataTables_length").css('display', 'flex')
             		$(".dataTables_length").addClass('select2_custom')
 					$(".type_dropdown").appendTo('.dataTables_length')
@@ -293,20 +329,34 @@
 					$(".type_dropdown").select2({
 						width: '100px',
 					});
-					
 
+					$(".actif_dropdown select").css('margin-left', '10px')
+					$(".actif_dropdown").appendTo('.dataTables_length')
+					$(".actif_dropdown").removeClass('d-none')
+					$(".actif_dropdown").select2({
+						width: '100px',
+					});
+					
 					$(".loading").hide()
 				}
 			})
 
+			$(".select2-container").css('margin-left', '10px')
 			$('.type_dropdown').trigger('change')
-			
+			$('.actif_dropdown').trigger('change')			
 		})
 
 		$('.type_dropdown').on('change', function(e){
 			var type_dropdown = $(this).val();
 			$('#example').DataTable()
 			.column(2).search(type_dropdown, true, false)
+			.draw();
+		})
+
+		$('.actif_dropdown').on('change', function(e){
+			var actif_dropdown = $(this).val();
+			$('#example').DataTable()
+			.column(4).search(actif_dropdown, true, false)
 			.draw();
 		})
 
@@ -344,6 +394,15 @@
 			})
 			$("#updateAccount_user_"+id_account).modal('show')
 		});
+
+		// Activer le compte
+		$(".active_action").on('click', function(){
+			var id_account = $(this).attr('data-id')
+			var account_name = $(this).attr('data-user')
+			$("#account_to_active").val(id_account)
+			$(".account_to_active").text(account_name)
+			$("#activeAccount").modal('show')
+		})
 
 
 		</script>

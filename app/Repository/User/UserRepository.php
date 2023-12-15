@@ -18,11 +18,13 @@ class UserRepository implements UserInterface
       return $this->model->all();
    }
 
-   public function getUsersAndRoles(){
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type')
-         ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
-         ->join('roles', 'roles.id', '=', 'user_roles.role_id')
-         ->where('users.active', 1)
+   public function getUsersAndRoles($withInactive = false){
+      $status = $withInactive ? [0, 1] : [1];
+
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type', 'active')
+         ->Leftjoin('user_roles', 'user_roles.user_id', '=', 'users.id')
+         ->Leftjoin('roles', 'roles.id', '=', 'user_roles.role_id')
+         ->whereIn('users.active', $status)
          ->orderBy('users.id', 'ASC')
          ->get()
          ->toArray();
@@ -217,9 +219,22 @@ class UserRepository implements UserInterface
       }
    }
 
+   public function updateUserActiveById($id){
+      try{
+         $this->model->where('id', $id)->update(['active' => 1]);
+
+         return true;
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+   }
+
    public function deleteUser($user_id){
       try{
          $this->model->where('id', $user_id)->update(['active' => 0]);
+
+         // Supprime ses rôles
+         DB::table('user_roles')->where('user_id', $user_id)->delete();
 
          return true;
       } catch(Exception $e){
@@ -239,6 +254,18 @@ class UserRepository implements UserInterface
       try{ 
          $this->model->where('remember_token', $token)->update(['password' => $password_hash, 'remember_token' => null]);
          return true;
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+   }
+
+   public function addRole($id, $role_id){
+      $roles[] = [
+         'user_id' => $id,
+         'role_id' => $role_id,
+      ];
+      try{
+         return DB::table('user_roles')->insert($roles);
       } catch(Exception $e){
          return $e->getMessage();
       }

@@ -143,7 +143,7 @@ class Admin extends BaseController
             $count = count($products_other);
           }
         }  
-        
+
         foreach($products as $product){
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
@@ -295,7 +295,7 @@ class Admin extends BaseController
     }
 
     public function account(){
-        $users = $this->user->getUsersAndRoles();
+        $users = $this->user->getUsersAndRoles($withInactive = true);
         $rolesUser =  Auth()->user()->roles->toArray();
         $ids = array_column($rolesUser, "id");
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;

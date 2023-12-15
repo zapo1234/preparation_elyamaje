@@ -129,9 +129,9 @@ class Order extends BaseController
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
 
-        // if(!$orders){
-        //   return array();
-        // } 
+        if(!$orders){
+          return array();
+        } 
         
         $count = count($orders);
   
@@ -754,7 +754,7 @@ class Order extends BaseController
                   $status_finished = "commande-distribu";
                 } 
               }
-              
+
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);

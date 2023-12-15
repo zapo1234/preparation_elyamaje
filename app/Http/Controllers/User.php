@@ -95,8 +95,22 @@ class User extends BaseController
             }
         } else {
             return redirect()->back()->with('error',  'L\'administrateur principal ne peut pas être supprimé !');
+        }  
+    }
+
+    public function activeAccount(Request $request){
+        $user_id = $request->post("account_to_active");
+
+        if($user_id){
+            $update = $this->users->updateUserActiveById($user_id);
+            $role = $this->users->addRole($user_id, 5);
+
+            if($update && $role){
+                return redirect()->back()->with('success', 'Compte activé avec succès !');
+            } else {
+                return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+            }
         }
-       
     }
 
     public function updateAccount(Request $request){
