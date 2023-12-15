@@ -88,6 +88,10 @@ class User extends BaseController
         if($user_id != 1){
             $delete = $this->users->deleteUser($user_id);
 
+            if($delete == "haveOrder"){
+                return redirect()->back()->with('error',  'Cet utilisateur possède des commandes, veuillez d\'abord les réattribuer');
+            }
+
             if($delete){
                 return redirect()->back()->with('success', 'Compte supprimé avec succès !');
             } else {
