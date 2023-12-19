@@ -105,7 +105,7 @@
             </li>
             <li>
                 <a href="{{ url('orderfacturer') }}">
-                    <i class='bx bx-box'></i>
+                    <i class='bx bx-cloud-download'></i>
                     <span class="link_name">Dolibarr</span>
                 </a>
                 <ul class="sub-menu blank">

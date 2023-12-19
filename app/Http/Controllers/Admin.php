@@ -362,7 +362,7 @@ class Admin extends BaseController
 
     public function roles(){
         $roles = $this->role->getRoles();
-        $role_can_not_delete = [1,2,3,4];
+        $role_can_not_delete = [1,2,3,4,5,6];
         return view('admin.roles', ['roles' => $roles, 'role_can_not_delete' =>  $role_can_not_delete]);
     }
 
@@ -400,7 +400,7 @@ class Admin extends BaseController
     }
 
     public function deleteRole(Request $request){
-        $role_can_not_delete = [1,2,3,4];
+        $role_can_not_delete = [1,2,3,4,5,6];
         $role_id = $request->post('role_id');
 
         if(in_array($role_id, $role_can_not_delete)){
