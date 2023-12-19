@@ -19,6 +19,7 @@ class CreateFkFactures extends Migration
             $table->id();
             $table->integer('id_commande');
             $table->integer('id_invoices');
+            $table->timestamps();
         
         });
     }

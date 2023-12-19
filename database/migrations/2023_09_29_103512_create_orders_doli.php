@@ -32,6 +32,7 @@ class CreateOrdersDoli extends Migration
             $table->float('total_tax');
             $table->float('total_order_ttc');
             $table->integer('user_id')->default(0);
+            $table->string('vendeuse');
             $table->string('payment_methode');
             $table->string('statut')->default("processing");
 
