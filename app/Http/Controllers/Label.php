@@ -481,14 +481,18 @@ class Label extends BaseController
 
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
             try{
-
                 // Get all orders labels -10 jours
                 $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
                 $colissimo = [];
                 $chronopost = [];
+                $order_to_update = [];
                 
                 foreach($labels as $label){
+                    if($label->status == "prepared-order"){
+                        $order_to_update[] = $label->order_id;
+                    }
+                
                     if($label->origin == "colissimo"){
                         $colissimo[] = $label;
                     } else if($label->origin == "chronopost"){
@@ -496,7 +500,11 @@ class Label extends BaseController
                     }
                 }
 
-
+                // Update status local de la commande en terminée pour celles dont ce n'est pas le cas
+                // if(count($order_to_update) > 0){
+                //     $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
+                // }
+                
                 // Récupère les status de chaque commande
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
                 $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
@@ -510,6 +518,8 @@ class Label extends BaseController
 
                 return $update;
             } catch(Exception $e){
+                dd($e->getMessage());
+
                 $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
                 // dd($e->getMessage());
             }

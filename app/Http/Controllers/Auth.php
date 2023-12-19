@@ -62,8 +62,19 @@ class Auth extends BaseController
         ]);
 
 
-        if(auth()->attempt(array('email' =>$input['email'], 'password' =>$input['password']))){
-            return redirect()->route('/');
+        if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))){
+            if(auth()->user()->active == 0){
+                Auth()->guard()->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+             
+                // detruire toutes les session
+                $request->session()->flush();
+
+                return redirect()->route('login')->with('error','Votre compte est inactif !');
+            } else {
+                return redirect()->route('/');
+            }
         } else {
             return redirect()->route('login')->with('error','Identifiants incorrectes !');
         }
@@ -80,7 +91,7 @@ class Auth extends BaseController
         $email = $request->get('email');
         $user_email = $this->user->getUserByEmail($email);
 
-        if($user_email == 0){
+        if(count($user_email) == 0){
              return redirect()->route('authentication-forgot-password')->with('error','Aucun compte n\'est associé à cette adresse email');
         } else {
 

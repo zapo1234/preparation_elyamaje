@@ -63,7 +63,10 @@ class LabelRepository implements LabelInterface
 
    public function getAllLabelsByStatusAndDate($rangeDate){
       $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
-      return $this->model::where('created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
+      return $this->model 
+      ->select('orders.status', 'labels.*')
+      ->join('orders', 'orders.order_woocommerce_id', '=', 'labels.order_id')
+      ->where('labels.created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
    }
 
    public function updateLabelStatus($labels){

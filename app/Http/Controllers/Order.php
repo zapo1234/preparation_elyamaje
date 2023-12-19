@@ -128,6 +128,11 @@ class Order extends BaseController
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+
+        if(!$orders){
+          return array();
+        } 
+        
         $count = count($orders);
   
         // Check if others page
@@ -178,7 +183,7 @@ class Order extends BaseController
               } 
             } 
 
-            // N'affiche pos les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
+            // N'affiche pas les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
             if($order['status'] == "prepared-order"){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) == 0){
@@ -187,7 +192,6 @@ class Order extends BaseController
             }
   
             if($take_order == true){
-
               // Check if is distributor
               if(in_array($order['customer_id'], $distributors_list)){
                 $orders[$key]['is_distributor'] = true;
@@ -702,10 +706,10 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-         if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
-          echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
-          return;
-        }
+        //  if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        //   return;
+        // }
       
         $is_distributor = false; //$order[0]['is_distributor'] != null ? true : false;
         if($is_distributor && !$from_dolibarr){
@@ -751,6 +755,7 @@ class Order extends BaseController
                   $status_finished = "commande-distribu";
                 } 
               }
+
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);
@@ -830,8 +835,8 @@ class Order extends BaseController
     //   }
     // }
 
-    public function leaderHistory(){
-      $histories = $this->history->getAllHistory();
+    public function leaderHistory(Request $request){
+      $histories = $this->history->getAllHistory($request->all());
       $histories_order = [];
 
       foreach($histories as $history){
@@ -860,7 +865,7 @@ class Order extends BaseController
         } 
       }
 
-      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order')]);
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order'), 'parameter' => $request->all()]);
     }
 
     public function generateHistory(Request $request){

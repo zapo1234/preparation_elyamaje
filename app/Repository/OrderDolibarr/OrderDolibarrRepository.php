@@ -45,6 +45,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         ->where('products.status', 'publish')
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
@@ -52,8 +53,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $order_lines[$key]['name'] = $order['productName'];
          $order_lines[$key]['order_woocommerce_id'] = $order['ref_order'];
          $order_lines[$key]['from_dolibarr'] = true;
-
-      
 
          $order_lines[$key]['cost'] = $order['price'];
          $order_lines[$key]['total_order'] = $order['total_order_ttc'];

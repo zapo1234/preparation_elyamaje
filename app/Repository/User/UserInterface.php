@@ -8,6 +8,8 @@ interface UserInterface
 {
    public function getUsers();
 
+   public function getUsersAndRoles($withInactive = false);
+
    public function getUsersByRole($role);
 
    public function getUserById($user_id);
@@ -16,11 +18,15 @@ interface UserInterface
 
    public function updateRoleByUser($user_id, $role_id);
 
-   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste);
+   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type);
 
-   public function createUser($user_name_last_name, $email, $role, $password, $poste);
+   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type);
 
    public function deleteUser($user_id);
+
+   public function updateUserActive($email);
+
+   public function updateUserActiveById($id);
 
    public function insertToken($email, $token);
 

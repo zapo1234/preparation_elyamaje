@@ -50,6 +50,15 @@
                                     <a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
                                 </div>
                             </div>
+
+                     
+                            <div class="alert border-0 border-start border-5 border-info-custom alert-dismissible fade show">
+                                <div>{{ session('error') }}</div>
+                                <!-- <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> -->
+                            </div>
+                           
+
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-dark">Connexion</button>
                             </div>
