@@ -21,14 +21,15 @@ use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Label\LabelMissingRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -50,6 +51,8 @@ class Admin extends BaseController
     private $labelMissing;
     private $orderDolibarr;
     private $transferorder;
+    private $facture;
+    private $logError;
 
     public function __construct(
         Api $api, 
@@ -66,7 +69,8 @@ class Admin extends BaseController
         TransferOrder $factorder,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
-        TransferOrder $facture
+        TransferOrder $facture,
+        LogErrorRepository $logError
     ){
         $this->api = $api;
         $this->category = $category;
@@ -83,6 +87,7 @@ class Admin extends BaseController
         $this->labelMissing = $labelMissing;
         $this->orderDolibarr = $orderDolibarr;
         $this->facture = $facture;
+        $this->logError = $logError;
     }
 
     public function syncCategories(){
@@ -869,6 +874,11 @@ class Admin extends BaseController
         } catch (\Throwable $th) {
             return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
         }
+    }
+
+    public function errorLogs(){
+        $logs = $this->logError->getAllLogs();
+        return view('admin.logs', ['logs' => $logs]);
     }
 
 }

@@ -22,6 +22,10 @@ class LogErrorRepository implements LogErrorInterface
       ]);
    }
 
+   public function getAllLogs(){
+      return $this->model->orderBy('id', 'DESC')->get();
+   }
+
 }
 
 

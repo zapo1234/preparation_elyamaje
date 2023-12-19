@@ -122,7 +122,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
     Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
     Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
-    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr'); 
+    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
+    Route::get("/errorLogs", [Admin::class, "errorLogs"])->name('admin.logs'); 
 });
 
 // PRÉPARATEUR
