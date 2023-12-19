@@ -92,7 +92,7 @@ class TiersRepository implements TiersInterface
                
                   $produitParam = array(
                     'apikey' => $apiKey,
-                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-100 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
                      'limit' => 0,
                     'sortfield' => 'rowid',
                     'sortorder' => 'DESC',
