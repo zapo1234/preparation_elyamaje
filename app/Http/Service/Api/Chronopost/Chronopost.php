@@ -13,7 +13,7 @@ class Chronopost
     public function generateLabelChrono($order, $weight, $order_id, $colissimo){
 
         $productCode = $this->getProductCode();
-        $format = "PDF"; //$colissimo ? $colissimo->format : "PDF";
+        $format = "ZPL"; //$colissimo ? $colissimo->format : "PDF";
         $SaturdayShipping = 1;
 
         $shipping_params = [ 
