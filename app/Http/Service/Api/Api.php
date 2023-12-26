@@ -26,6 +26,7 @@ class Api
           'page' => $page,
           'ver' => time(),
       ]);
+
       return $response->json();
     } catch(Exception $e){
       return $e->getMessage();
