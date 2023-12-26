@@ -149,6 +149,11 @@ class Order extends BaseController
           }
         }  
 
+        if(isset($orders['message'])){
+          $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
+          return false;
+        }
+      
         // Liste des distributeurs
         $distributors = $this->distributor->getDistributors();
         $distributors_list = [];

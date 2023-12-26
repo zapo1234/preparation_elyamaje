@@ -484,6 +484,7 @@ class Label extends BaseController
                 // Get all orders labels -10 jours
                 $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+
                 $colissimo = [];
                 $chronopost = [];
                 $order_to_update = [];
@@ -518,8 +519,6 @@ class Label extends BaseController
 
                 return $update;
             } catch(Exception $e){
-                dd($e->getMessage());
-
                 $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
                 // dd($e->getMessage());
             }
