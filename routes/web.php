@@ -255,4 +255,4 @@ Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatu
 // Route test validation emballage à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
 
-Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
+// Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
