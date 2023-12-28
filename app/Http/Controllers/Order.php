@@ -1262,9 +1262,7 @@ class Order extends BaseController
 
   }
 
-  
   function uploadFile(Request $request){
-
     if ($request->hasFile('file_reassort') && $request->file('file_reassort')->isValid()) {
         $file = $request->file('file_reassort');
 
@@ -1274,13 +1272,29 @@ class Order extends BaseController
 
         $csvDataArray = iterator_to_array($reader->getRecords());
 
-        dd($csvDataArray);
-
-        
+        dd($csvDataArray); 
     }
 
     // Retournez une réponse en cas d'erreur
     return response()->json(['message' => 'Erreur lors du téléchargement du fichier CSV'], 400);
+  }
+
+  public function syncHistoriesTotalProduct(){
+    $orders_id = [];
+    $orders = DB::table('orders')->select('order_woocommerce_id')->get();
+
+    foreach($orders as $order){
+      $orders_id[] = $order->order_woocommerce_id;
+    }
+
+    $line = DB::table('products_order')->select(DB::raw('SUM(prepa_products_order.quantity) as qty'), 'order_id')->whereIn('order_id', $orders_id)->groupBy('order_id')->get();
+    $cases = collect($line)->map(function ($item) {
+      return sprintf("WHEN %d THEN '%s'", $item->order_id, intval($item->qty));
+    })->implode(' ');
+
+    $query = "UPDATE prepa_histories SET total_product = (CASE order_id {$cases} END)";
+    DB::statement($query);
+    dd("Ok !");
   }
 }
 
