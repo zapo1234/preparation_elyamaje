@@ -39,7 +39,7 @@
 							<h5>Nom</h5>
 							<h5>Commandes Préparées</h5>
 							<h5>Commandes Emballées</h5>
-							<h5>Produits Bippés</h5>
+							<!-- <h5>Produits Bippés</h5> -->
 							<h5>Date</h5>
 						</div>
 					</div>
@@ -52,11 +52,11 @@
 								<!-- <tbody></tbody> -->
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
-										<tr class="loading_table">
+										<tr class="loading_table_analytics">
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
-											<td class="td-3"><span></span></td>
+											<!-- <td class="td-3"><span></span></td> -->
 											<td class="td-3"><span></span></td>
 										</tr>
 									@endfor
@@ -66,7 +66,7 @@
 					</div>
 				</div>
 
-				<!-- <div class="mobile_padding  col">
+				<div class="mobile_padding  col">
 					<div class="card radius-10">
 						<div class="header_title d-flex align-items-center">
 							<div class="w-100 d-flex justify-content-between">
@@ -86,7 +86,7 @@
 							</div>
 						</div>
 					</div>
-				</div> -->
+				</div>
 
 			</div>
 		</div>

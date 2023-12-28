@@ -62,10 +62,10 @@ class HistoryRepository implements HistoryInterface
    // Uniquement utilisé par l'admin
    public function getHistoryAdmin($date){
       return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
-         DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
-         'products_order.product_woocommerce_id', 'histories.created_at')
+         // DB::raw('SUM(prepa_products_order.quantity) as total_quantity'), 'products_order.product_woocommerce_id', 
+         'histories.created_at')
          ->leftJoin('users', 'users.id', '=', 'histories.user_id')
-         ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
+         // ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
          ->groupBy('histories.id')
          ->where('histories.created_at', 'LIKE', '%'.$date.'%')
          ->get()
@@ -75,10 +75,10 @@ class HistoryRepository implements HistoryInterface
    public function getAllHistoryAdmin(){
       $data = Cache::remember('histories', 3600, function () {
          return  $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
-            DB::raw('SUM(prepa_products_order.quantity) as total_quantity'),
-            'products_order.product_woocommerce_id', 'histories.created_at')
+            // DB::raw('SUM(prepa_products_order.quantity) as total_quantity'), 'products_order.product_woocommerce_id', 
+            'histories.created_at')
             ->leftJoin('users', 'users.id', '=', 'histories.user_id')
-            ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
+            // ->leftJoin('products_order', 'products_order.order_id', '=', 'histories.order_id')
             ->groupBy('histories.id')
             ->get()
             ->toArray();

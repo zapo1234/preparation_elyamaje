@@ -1,19 +1,19 @@
 $(document).ready(function() {
 
     // Affiche la moyenne de préparation de chaque users
-    // $.ajax({
-    //     url: "getAverage",
-    //     method: "GET",
-    //     async: true,
-    // }).done(function(data) {
-    //     if(JSON.parse(data).success){
-    //         var data = JSON.parse(data)
-    //         $(".loading_chart").remove()
+    $.ajax({
+        url: "getAverage",
+        method: "GET",
+        async: true,
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data = JSON.parse(data)
+            $(".loading_chart").remove()
 
-    //         // Créer le chart js
-    //         chartAverage(data.average_by_name)
-    //     }
-    // });
+            // Créer le chart js
+            chartAverage(data.average_by_name)
+        }
+    });
 
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
@@ -49,7 +49,8 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return row.items_picked
+                    return ""
+                    // return row.items_picked
                 }
             },
             {data: null, 
@@ -62,7 +63,7 @@ $(document).ready(function() {
             loadingRecords: ""
         },
         "initComplete": function(settings, json) {
-            $(".loading_table").remove()
+            $(".loading_table_analytics").remove()
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -160,13 +161,13 @@ function chartAverage(average){
     var list_name = []
     var order_prepared = []
     var order_finished = []
-    var items_picked = []
+    // var items_picked = []
     
     Object.entries(average).forEach(([key, value]) => {
         list_name.push(key)
         order_prepared.push(value.avg_prepared)
         order_finished.push(value.avg_finished)
-        items_picked.push(value.avg_items_picked)
+        // items_picked.push(value.avg_items_picked)
     });
    
     // chart 6
@@ -201,10 +202,11 @@ function chartAverage(average){
             name: 'Commandes emballées',
             data: order_finished
         }
-        ,{
-            name: 'Produits bippés',
-            data: items_picked,
-        }]
+        // ,{
+        //     name: 'Produits bippés',
+        //     data: items_picked,
+        // }
+        ]
     });
 }
 

@@ -8,6 +8,7 @@ class WoocommerceService
     public function transformArrayOrder($order, $specific_product = []){
         $order_new_array = [];
         $products = [];
+        $total_product = 0;
 
         $order[0]['order_id'] = $order[0]['order_woocommerce_id'];
         $billing = [
@@ -44,6 +45,8 @@ class WoocommerceService
             $order[$key]['discount'] = 0;
             $order[$key]['discount_amount'] = 0;
           }
+
+          $total_product = $total_product + intval($or['quantity']);
 
           // Récupère que des produits spécifique de la commande
           if(count($specific_product) > 0){
@@ -105,6 +108,7 @@ class WoocommerceService
         }
 
         $order_new_array =  $order[0];
+        $order_new_array['total_product'] = $total_product;
         $order_new_array['line_items'] = $products['line_items'];
         $order_new_array['billing'] = $billing;
         $order_new_array['shipping'] = $shipping;
@@ -125,7 +129,8 @@ class WoocommerceService
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
     $transformOrder = [];
     $newArray = [];
-    
+    $total_product = 0;
+
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'];
     $transformOrder['date'] = $orderDolibarr[0]['date'];
     $transformOrder['date_created'] = $orderDolibarr[0]['date'];
@@ -173,6 +178,9 @@ class WoocommerceService
     $transformOrder['shipping'] =  $transformOrder['billing'];
 
     foreach($orderDolibarr as $order){
+
+      $total_product = $total_product + intval($order['quantity']);
+
       if($product_to_add_label){
         if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {
           $transformOrder['line_items'][]= [
@@ -214,6 +222,8 @@ class WoocommerceService
           ]
         ];
       }
+
+      $transformOrder['total_product'] = $total_product;
     }
 
     $newArray[] = $transformOrder;

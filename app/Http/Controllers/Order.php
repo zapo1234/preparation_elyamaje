@@ -148,7 +148,7 @@ class Order extends BaseController
             $count = count($orders_other);
           }
         }  
-
+        
         if(isset($orders['message'])){
           $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
           return false;
@@ -587,8 +587,8 @@ class Order extends BaseController
 
         $number_order_attributed = $this->order->getOrdersByUsers();
 
-         // Pusher notification order attribution updated  
-         $notification_push = [
+        // Pusher notification order attribution updated  
+        $notification_push = [
           'role' => 2,
           'order_id' => $order_id,
           'type' => 'order_attribution_updated',
@@ -698,7 +698,7 @@ class Order extends BaseController
         $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
        $order_id = explode(',', $request->post('order_id'))[0];
-       
+
 
        if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -745,7 +745,8 @@ class Order extends BaseController
               'user_id' => Auth()->user()->id,
               'status' => 'finished',
               'poste' => Auth()->user()->poste,
-              'created_at' => date('Y-m-d H:i:s')
+              'created_at' => date('Y-m-d H:i:s'),
+              'total_product' => isset($orders[0]['total_product']) ? $orders[0]['total_product'] : null
             ];
 
             $this->history->save($data);
@@ -1059,14 +1060,13 @@ class Order extends BaseController
           $data_save = array();
           $incrementation = 0;
           $decrementation = 0;
+          $total_product = 0;
           $i = 1;
           $ids="";
           $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
           foreach ($tabProduitReassort as $key => $line) {
-
-              
-
-              if ($line["qty"] != 0) {           
+              if ($line["qty"] != 0) {   
+                  $total_product = $total_product + intval($line["qty"]);
                   $data = array(
                       'product_id' => $line["product_id"],
                       'warehouse_id' => $line["warehouse_id"], 
@@ -1107,7 +1107,8 @@ class Order extends BaseController
             'user_id' => Auth()->user()->id,
             'status' => 'finished',
             'poste' => Auth()->user()->poste,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'total_product' => $total_product ?? null
           ];
 
           $this->history->save($data);
