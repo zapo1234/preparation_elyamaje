@@ -17,7 +17,7 @@
 						Préparées : 
 						<div class="align-items-center d-flex breadcrumb-title pe-3" style="margin-right: 15px">
 							<span class="ml-1 data_number order_prepared">	</span>
-							<div class="ml-1 text-success load_spinner  spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+							<div style="border-width:0.18em" class="ml-1 text-success load_spinner  spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 						</div>
 
 						Emballées : 
