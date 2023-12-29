@@ -39,7 +39,7 @@
 							<h5>Nom</h5>
 							<h5>Commandes Préparées</h5>
 							<h5>Commandes Emballées</h5>
-							<!-- <h5>Produits Bippés</h5> -->
+							<h5>Produits Bippés</h5>
 							<h5>Date</h5>
 						</div>
 					</div>
@@ -56,7 +56,7 @@
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
-											<!-- <td class="td-3"><span></span></td> -->
+											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
 										</tr>
 									@endfor

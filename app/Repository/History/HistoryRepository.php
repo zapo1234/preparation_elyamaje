@@ -61,7 +61,7 @@ class HistoryRepository implements HistoryInterface
 
    // Uniquement utilisé par l'admin
    public function getHistoryAdmin($date){
-      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
+      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'total_product',
          // DB::raw('SUM(prepa_products_order.quantity) as total_quantity'), 'products_order.product_woocommerce_id', 
          'histories.created_at')
          ->leftJoin('users', 'users.id', '=', 'histories.user_id')
@@ -74,7 +74,7 @@ class HistoryRepository implements HistoryInterface
 
    public function getAllHistoryAdmin(){
       $data = Cache::remember('histories', 3600, function () {
-         return  $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 
+         return  $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'total_product',
             // DB::raw('SUM(prepa_products_order.quantity) as total_quantity'), 'products_order.product_woocommerce_id', 
             'histories.created_at')
             ->leftJoin('users', 'users.id', '=', 'histories.user_id')

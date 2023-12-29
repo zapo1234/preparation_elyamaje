@@ -49,8 +49,7 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return ""
-                    // return row.items_picked
+                    return row.items_picked ?? "?"
                 }
             },
             {data: null, 
@@ -161,13 +160,13 @@ function chartAverage(average){
     var list_name = []
     var order_prepared = []
     var order_finished = []
-    // var items_picked = []
+    var items_picked = []
     
     Object.entries(average).forEach(([key, value]) => {
         list_name.push(key)
         order_prepared.push(value.avg_prepared)
         order_finished.push(value.avg_finished)
-        // items_picked.push(value.avg_items_picked)
+        items_picked.push(value.avg_items_picked)
     });
    
     // chart 6
@@ -202,10 +201,10 @@ function chartAverage(average){
             name: 'Commandes emballées',
             data: order_finished
         }
-        // ,{
-        //     name: 'Produits bippés',
-        //     data: items_picked,
-        // }
+        ,{
+            name: 'Produits bippés',
+            data: items_picked,
+        }
         ]
     });
 }

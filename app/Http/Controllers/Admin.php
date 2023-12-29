@@ -334,25 +334,26 @@ class Admin extends BaseController
             $average = [];
             foreach($list_histories as $list){
                 foreach($list as $l){
-                $average[$l['name']][$l['date']] = ['finished_count' => $l['finished_count'], 'prepared_count' => $l['prepared_count'] /*, 'items_picked' => $l['items_picked']*/];
+                $average[$l['name']][$l['date']] = ['finished_count' => $l['finished_count'], 'prepared_count' => $l['prepared_count'] , 'items_picked' => $l['items_picked']];
                 }
             }
 
             $average_by_name = [];
             $number_prepared = 0;
             $number_finished = 0;
-            // $number_items_picked = 0;
+            $number_items_picked = 0;
 
             foreach($average as $key => $avg){
                 foreach($avg as $av){
                     $number_prepared = $number_prepared + $av['prepared_count'];
                     $number_finished = $number_finished + $av['finished_count'];
-                    // $number_items_picked = $number_items_picked + $av['items_picked'];
+                    $number_items_picked = $number_items_picked + $av['items_picked'];
                 }
-            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2) /*, 'avg_items_picked' => round($number_items_picked / count($avg), 2)*/];
+
+            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
                 $number_prepared = 0;
                 $number_finished = 0;
-                // $number_items_picked = 0;
+                $number_items_picked = 0;
             }
 
             echo json_encode(['success' => true, 'average_by_name' => $average_by_name]);
@@ -661,7 +662,7 @@ class Admin extends BaseController
                     'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
                     'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
                     'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-                    //'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_quantity'] : 0,
+                    'items_picked' => $histo['status'] == "prepared" ? $histo['total_product'] : 0,
                     'date' => date('d/m/Y', strtotime($histo['created_at']))
                 ];
             } else {
@@ -672,7 +673,7 @@ class Admin extends BaseController
                 $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
                 $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
                 $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
-                // $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_quantity'] : 0;
+                $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_product'] : 0;
             }
         }
 
