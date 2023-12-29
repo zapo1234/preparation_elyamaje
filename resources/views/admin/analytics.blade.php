@@ -13,9 +13,18 @@
 					<div class="breadcrumb-title pe-3">
 						Analytics
 					</div>
-					<div class="d-flex pe-3 analytics_data_title">
-						Préparées : <span class="ml-1 mr-2 order_prepared breadcrumb-title pe-3"></span>
-						Emballées : <span class="ml-1 order_finished"></span>
+					<div class="d-flex pe-3 analytics_data_title align-items-center">
+						Préparées : 
+						<div class="align-items-center d-flex breadcrumb-title pe-3" style="margin-right: 15px">
+							<span class="ml-1 data_number order_prepared">	</span>
+							<div class="ml-1 text-success load_spinner  spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+						</div>
+
+						Emballées : 
+						<div class="align-items-center d-flex">
+							<span class="ml-1 data_number order_finished">	</span>
+							<div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+						</div>
 					</div>
 					<div style="width:105px"></div>
 				</div>

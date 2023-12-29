@@ -62,7 +62,7 @@ $(document).ready(function() {
             loadingRecords: ""
         },
         "initComplete": function(settings, json) {
-            $(".loading_table_analytics").remove()
+            $(".loading_table_analytics").hide()
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -113,7 +113,8 @@ $(document).ready(function() {
 
             })
 
-            $(".data_number").removeClass('d-none')
+            $(".data_number").show()
+            $(".load_spinner").hide()
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
         }
@@ -125,7 +126,9 @@ $(document).ready(function() {
 
 
 $('.date_dropdown').on('change', function(e){
-    $(".data_number").addClass('d-none')
+    $(".load_spinner").show()
+    $(".data_number").hide()
+    $(".loading_table_analytics").show()
     $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
