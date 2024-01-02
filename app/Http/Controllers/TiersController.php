@@ -75,14 +75,15 @@ class TiersController extends BaseController
          $lists = json_decode($data,true);
           // compter le nombre de ligne par date.
            $orders_line = DB::table('commandeids')
-               ->select('date',DB::raw('COUNT(date) as total'))
-                ->groupBy('date')
+               ->select('date',DB::raw('COUNT(date) as total'), 'id')
+               ->groupBy('date')
                ->get();
          
+
            $details_facture = json_encode($orders_line);
            $details_factures = json_decode($orders_line,true);
            $list_result =[];
-           
+
            foreach($details_factures as $values){
                
                $date = explode('-',$values['date']);
@@ -93,10 +94,11 @@ class TiersController extends BaseController
                     'date' => $line_date,
                     'nombre'=>$values['total'],
                     'dat'=>$values['date'],
-                   
+                    'id'=>$values['id'],
                    ];
            }
 
+      
         return view('tiers.orderfacturer',['list_result'=>$list_result]);
     }
     
@@ -189,7 +191,7 @@ class TiersController extends BaseController
          $datet = $request->get('id') ?? date('Y-m-d');
          $from_js = $request->get('from_js') ? $request->get('from_js') : false;
          $data = $this->tiers->getinvoices($datet);
-   
+         
          $list_result =[];
          $ids_commande = [];
    
@@ -246,7 +248,8 @@ class TiersController extends BaseController
             $nombre = count($diff_array);
             $alert="Attention nous avons $nombre commandes non facturées dans dolibarr le $datet, voir les N° suivants : $list_commande";
          }
-   
+         
+
          if($from_js == "true" || $from_js == true){
             if(count($diff_array)==0){
                echo json_encode(['success' => true, 'message' => $alert, 'diff' => false]);
@@ -261,8 +264,12 @@ class TiersController extends BaseController
             dd('Demande bien excutée');  
          } 
       } catch (Exception $e){
-         echo json_encode(['success' => false, 'message' => 'Oups ! Quelque chose s\'est mal passé']);
-         return;
+         if($from_js == "true" || $from_js == true){
+            echo json_encode(['success' => false, 'message' => 'Oups ! Quelque chose s\'est mal passé']);
+            return;
+         } else {
+            dump($e->getMessage()); 
+         }
       }
     
    }
