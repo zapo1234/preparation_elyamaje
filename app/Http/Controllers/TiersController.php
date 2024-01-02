@@ -184,6 +184,7 @@ class TiersController extends BaseController
 
     public function getinvoices(Request $request) {
 
+
       try{
          $datet = $request->get('id') ?? date('Y-m-d');
          $from_js = $request->get('from_js') ? $request->get('from_js') : false;
@@ -215,8 +216,8 @@ class TiersController extends BaseController
          $status ="finished";
    
          // recupérer les ids de produits dans ce intervale.
-         $posts = History::where('status','=',"finished")->whereBetween('created_at', ["2023-01-01", "2023-12-31"])->whereRaw('LENGTH(order_id) < 10')->get();
-      
+         $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->whereRaw('LENGTH(order_id) < 10')->get();
+
          $name_list = json_encode($posts);
          $name_lists = json_decode($posts,true);
    
