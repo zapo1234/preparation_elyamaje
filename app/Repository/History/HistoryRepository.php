@@ -17,11 +17,8 @@ class HistoryRepository implements HistoryInterface
    }
 
    public function getHistoryByDate($date){
-      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'products_order.quantity',
-      'products_order.product_woocommerce_id')
+      return $this->model::select('users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'histories.total_product')
          ->join('users', 'users.id', '=', 'histories.user_id')
-         ->join('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
-         ->join('products_order', 'products_order.order_id', '=', 'histories.order_id')
          ->where('histories.created_at', 'LIKE', '%'.$date.'%')
          ->get()
          ->toArray();

@@ -8356,3 +8356,7 @@ select option[disabled] {
 .new_line input{
 	border-right: 0px;
 }
+
+.response_close_day{
+	font-size: 1.3em;
+}

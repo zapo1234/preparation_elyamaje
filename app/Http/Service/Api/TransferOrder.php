@@ -579,7 +579,7 @@ class TransferOrder
                                          $account="";
                                          $this->setAccountpay($account);
                                           echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble être déjà facturée, signalez au service informatique !']);
-                                            exit;
+                                          exit;
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {

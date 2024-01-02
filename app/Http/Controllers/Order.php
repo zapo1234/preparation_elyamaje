@@ -148,7 +148,7 @@ class Order extends BaseController
             $count = count($orders_other);
           }
         }  
-        
+
         if(isset($orders['message'])){
           $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
           return false;
@@ -893,7 +893,7 @@ class Order extends BaseController
               'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
               'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
               'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_product'] : 0
             ];
           } else {
             $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
@@ -906,7 +906,7 @@ class Order extends BaseController
 
             $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
             $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
-            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['total_product'] : '';
           }
       }
       
@@ -919,7 +919,7 @@ class Order extends BaseController
       $date = date('Y-m-d');
       $histories = $this->history->getHistoryByDate($date);
       $list_histories = [];
-
+      
       if(count($histories) == 0){
         return redirect()->route('index')->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
@@ -933,7 +933,7 @@ class Order extends BaseController
               'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
               'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
               'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_product'] : 0
             ];
           } else {
             $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
@@ -946,7 +946,7 @@ class Order extends BaseController
 
             $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
             $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
-            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['total_product'] : '';
           }
       }
 
