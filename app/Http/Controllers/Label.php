@@ -482,17 +482,17 @@ class Label extends BaseController
         if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
             try{
                 // Get all orders labels -10 jours
-                $rangeDate = 60;
+                $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
 
                 $colissimo = [];
                 $chronopost = [];
-                $order_to_update = [];
+                // $order_to_update = [];
                 
                 foreach($labels as $label){
-                    if($label->status == "prepared-order"){
-                        $order_to_update[] = $label->order_id;
-                    }
+                    // if($label->status == "prepared-order"){
+                    //     $order_to_update[] = $label->order_id;
+                    // }
                 
                     if($label->origin == "colissimo"){
                         $colissimo[] = $label;
