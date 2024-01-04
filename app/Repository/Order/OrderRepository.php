@@ -969,12 +969,32 @@ class OrderRepository implements OrderInterface
    }
 
    public function getProductOrder($order_id){
-      return $this->model::select('products.name', 'products.weight', 
+      $products = $this->model::select('products.name', 'products.weight', 
          'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost', 'orders.status', 'orders.shipping_method')
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('orders.order_woocommerce_id', $order_id)
          ->get();
+
+      // Merge les quantity si plusieurs fois le même produit
+      $products = json_decode(json_encode($products), true);
+      $array_product_id = [];
+      $new_array_product = [];
+
+      foreach($products as $product){
+        if(!in_array($product['product_woocommerce_id'], $array_product_id)){
+            $array_product_id[] = $product['product_woocommerce_id'];
+            $new_array_product[] = $product;
+        } else {
+            $ids = array_column($new_array_product, "product_woocommerce_id");
+            $clesRecherchees = array_keys($ids,  $product['product_woocommerce_id']);
+            if(count($clesRecherchees) > 0){
+               $new_array_product[$clesRecherchees[0]]['quantity'] = intval($new_array_product[$clesRecherchees[0]]['quantity']) + intval($product['quantity']);
+            }
+        }
+      }
+
+      return $new_array_product;
    }
 
    public function unassignOrders(){

@@ -175,7 +175,6 @@ class Label extends BaseController
 
     public function labelShow(Request $request){
         $blob = $this->label->getLabelById($request->post('label_id'));
-        $colissimo = $this->colissimoConfiguration->getConfiguration();
 
         // Traitement selon format étiquette
         switch ($blob[0]->label_format) {
@@ -304,7 +303,7 @@ class Label extends BaseController
             $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
             $product_order[0]['shipping_method'] = "lpc_sign";
         } else {
-            $product_order = $this->order->getProductOrder($order_id)->toArray();
+            $product_order = $this->order->getProductOrder($order_id);
         }
 
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;

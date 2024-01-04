@@ -528,23 +528,33 @@ class Admin extends BaseController
 
     public function colissimo(){
         $colissimo = $this->colissimoConfiguration->getConfiguration();
-        $list_format = [
+        $list_format_colissimo = [
             'PDF_A4_300dpi' => 'Impression bureautique en PDF, de dimension A4 et de résolution 300dpi',
             'PDF_10x15_300dpi' => 'Impression bureautique en PDF, de dimension 10cm par 15cm, et de résolution 300dpi',
             'ZPL_10x15_203dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi',
             'ZPL_10x15_300dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 300dpi'
         ];
 
-        return view('admin.colissimo', ['list_format' => $list_format, 'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);
+        $list_format_chronopost = [
+            'PDF' => 'LT avec preuve de dépôt destinée à être imprimée sur une imprimante papier, format A4',
+            'ZPL' => 'LT au format 11x15 pour impression sur imprimante thermique compatible ZPL (sans preuve de dépôt)',
+            'ZPL_300' => 'LT au format ZPL et destinée à être imprimée sur une imprimante thermique 300dp',
+        ];
+
+        return view('admin.colissimo', ['list_format_colissimo' => $list_format_colissimo, 'list_format_chronopost' => $list_format_chronopost, 
+        'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);
     }
 
     public function updateColissimo(Request $request){
-        $format = $request->post('format');
+        $format_colissimo = $request->post('format_colissimo');
+        $format_chronopost = $request->post('format_chronopost');
+
         $address_ip = $request->post('address_ip');
         $port = $request->post('port');
 
         $data = [
-            'format' => $format,
+            'format_colissimo' => $format_colissimo,
+            'format_chronopost' => $format_chronopost,
             'address_ip' => $address_ip,
             'port' => $port,
         ];
@@ -623,7 +633,7 @@ class Admin extends BaseController
                     }
                 }
             }
-            
+
             try {
                 $this->factorder->Transferorder($order);  
 

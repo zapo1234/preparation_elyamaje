@@ -29,7 +29,7 @@ class Colissimo
 
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
-        $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
+        $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
         if($productCode){
