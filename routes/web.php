@@ -122,7 +122,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
     Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
     Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
-    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr'); 
+    Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
+    Route::get("/errorLogs", [Admin::class, "errorLogs"])->name('admin.logs'); 
 });
 
 // PRÉPARATEUR
@@ -201,7 +202,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 
     // Téléchargement de fichier de réassort
     Route::post("/uploadFile", [Order::class, "uploadFile"])->name('uploadFile');
-
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -246,7 +246,6 @@ Route::post('/resetPassword', [Auth::class, 'resetPassword'])->name('password.re
 Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->name('auth.passwords.reset');
 Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage'])->name('auth.passwords.reset');
 
-
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
@@ -254,10 +253,6 @@ Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name(
 Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
 // Route test validation emballage à enlever par la suite
-Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder'); 
+Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
 
-
-// Route::get("test", function(){
-//     event(New App\Events\NotificationPusher('Test'));
-//     return "Event has been sent !";
-// });
+// Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');

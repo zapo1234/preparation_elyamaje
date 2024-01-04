@@ -30,6 +30,8 @@
 										<th>Détails(journée de préparation)</th>
 										<th>Controle sur les commandes facturés</th>
 										<th></th>
+										<th>ID</th>
+
 									</tr>
 								</thead>
 								<tbody>
@@ -40,6 +42,8 @@
 												<td class="finished_column" data-label="Commandes Emballées"> <button type="button" class="p-2 px-3 verificode" data-id1="{{ $val['dat'] }}" style="background-color:#333333;color:white;width:auto;border-radius:5px;border:2px solid black">Voir détails</button></td>
 												<td data-label="Produits bippés"><button type="button" class="p-2 px-3 verificodes" data-id2="{{ $val['dat'] }}" style="background-color:#333333;color:white;width:auto;border-radius:5px;border:2px solid black">voir</button></td>
 												<td data-label="Date"></td>
+												<td data-label="ID">{{ $val['id'] }}</td>
+
 											</tr>
 										
 								         @endforeach
@@ -91,7 +95,13 @@
 
 		<script>
 			$(document).ready(function() {
-				$('#example').DataTable()
+				$('#example').DataTable({
+					"order": [[5, 'desc']],
+					"columnDefs": [
+						{ "visible": false, "targets": 4 },
+						{ "visible": false, "targets": 5 }
+					],
+				})
 			})
 
           $('.verificode').click(function(){

@@ -14,5 +14,6 @@ class History extends Model
         'user_id',
         'status',
         'poste',
+        'total_product'
     ];
 }

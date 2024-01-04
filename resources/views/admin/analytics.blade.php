@@ -13,9 +13,18 @@
 					<div class="breadcrumb-title pe-3">
 						Analytics
 					</div>
-					<div class="d-flex pe-3 analytics_data_title">
-						Préparées : <span class="ml-1 mr-2 order_prepared breadcrumb-title pe-3"></span>
-						Emballées : <span class="ml-1 order_finished"></span>
+					<div class="d-flex pe-3 analytics_data_title align-items-center">
+						Préparées : 
+						<div class="align-items-center d-flex breadcrumb-title pe-3" style="margin-right: 15px">
+							<span class="ml-1 data_number order_prepared">	</span>
+							<div style="border-width:0.18em" class="ml-1 text-success load_spinner  spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+						</div>
+
+						Emballées : 
+						<div class="align-items-center d-flex">
+							<span class="ml-1 data_number order_finished">	</span>
+							<div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+						</div>
 					</div>
 					<div style="width:105px"></div>
 				</div>
@@ -52,7 +61,7 @@
 								<!-- <tbody></tbody> -->
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
-										<tr class="loading_table">
+										<tr class="loading_table_analytics">
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
 											<td class="td-3"><span></span></td>
@@ -66,7 +75,7 @@
 					</div>
 				</div>
 
-				<!-- <div class="mobile_padding  col">
+				<div class="mobile_padding  col">
 					<div class="card radius-10">
 						<div class="header_title d-flex align-items-center">
 							<div class="w-100 d-flex justify-content-between">
@@ -86,7 +95,7 @@
 							</div>
 						</div>
 					</div>
-				</div> -->
+				</div>
 
 			</div>
 		</div>

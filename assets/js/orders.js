@@ -49,6 +49,14 @@ $(document).ready(function() {
 
                 // Récupérer les données des commandes (orders)
                 var orders = json.orders;
+
+                if(!orders){
+                    $(".page-breadcrumb").after(`<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                        <div class="text-white">Oops ! Quelque chose s'est mal passé. Contactez le service informatique si cela persiste.</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`)
+                }
+
                 // Récupère la liste des produits déjà pick
                 var products_pick = json.products_pick
                 // Récupère la liste des status
@@ -56,7 +64,7 @@ $(document).ready(function() {
                 // Récupérer les données des utilisateurs (users)
                 var users = json.users;
                 // Combiner les données des commandes (orders) et des utilisateurs (users)
-                var combinedData = orders.map(function(order) {
+                var combinedData = orders ? orders.map(function(order) {
                 var coupons = false;
                 var coupons_amount = false;
                 var shipping_amount = 0
@@ -76,7 +84,7 @@ $(document).ready(function() {
                             shipping_method = sp['method_id'];
                         })
                     }
-
+                    
                     if(order.line_items.length == 1){
                         Object.entries(order.line_items).forEach(([key, value]) => {
                             if(value.name.includes("Carte Cadeau")){
@@ -118,7 +126,7 @@ $(document).ready(function() {
                         return false;
                     }
                     
-                }).filter(Boolean);;
+                }).filter(Boolean) : false;
 
                 return combinedData;
             }
@@ -491,7 +499,7 @@ $(document).ready(function() {
                 var data = row.data();
 
                 data.name != "Non attribuée" && typeof data.name != "undefined" ? attribution = attribution + 1 : attribution = attribution
-                data.status == "processing" || data.status == "waiting_validate" || data.status == "order-new-distrib" || data.status == "en-attente-de-pai" ? order_progress = order_progress + 1 : order_progress = order_progress 
+                data.status == "processing" || data.status == "waiting_validate" || data.status == "waiting_to_validate" || data.status == "order-new-distrib" || data.status == "en-attente-de-pai" ? order_progress = order_progress + 1 : order_progress = order_progress 
             } );
             
             $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')

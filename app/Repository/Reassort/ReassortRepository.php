@@ -315,6 +315,11 @@ class ReassortRepository implements ReassortInterface
 
         $transfer = json_decode(json_encode($transfer), true);
 
+        $total_product = 0;
+        foreach($products_quantity as $product){
+            $total_product = $total_product + intval($product);
+        }
+
         // Cas de produits double si par exemple 1 en cadeau et 1 normal
         $product_double = [];
         foreach($transfer as $key_barcode => $list){
@@ -402,11 +407,13 @@ class ReassortRepository implements ReassortInterface
 
                 // Insert la commande dans histories
                 DB::table('histories')->insert([
-                'order_id' => $order_id,
-                'user_id' => Auth()->user()->id,
-                'status' => 'prepared',
-                'created_at' => date('Y-m-d H:i:s')
+                    'order_id' => $order_id,
+                    'user_id' => Auth()->user()->id,
+                    'status' => 'prepared',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'total_product' => $total_product ?? null
                 ]);
+
                 return true;
             } else {
                 return false;

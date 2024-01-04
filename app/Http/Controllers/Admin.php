@@ -21,14 +21,15 @@ use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Label\LabelMissingRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -50,6 +51,8 @@ class Admin extends BaseController
     private $labelMissing;
     private $orderDolibarr;
     private $transferorder;
+    private $facture;
+    private $logError;
 
     public function __construct(
         Api $api, 
@@ -66,7 +69,8 @@ class Admin extends BaseController
         TransferOrder $factorder,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
-        TransferOrder $facture
+        TransferOrder $facture,
+        LogErrorRepository $logError
     ){
         $this->api = $api;
         $this->category = $category;
@@ -83,6 +87,7 @@ class Admin extends BaseController
         $this->labelMissing = $labelMissing;
         $this->orderDolibarr = $orderDolibarr;
         $this->facture = $facture;
+        $this->logError = $logError;
     }
 
     public function syncCategories(){
@@ -310,6 +315,7 @@ class Admin extends BaseController
     public function getAnalytics(Request $request){
         $date = $request->get('date') ?? date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
+
         $list_histories = [];
         try{
             $list_histories = $this->buildHistory($histories);
@@ -328,7 +334,7 @@ class Admin extends BaseController
             $average = [];
             foreach($list_histories as $list){
                 foreach($list as $l){
-                    $average[$l['name']][$l['date']] = ['finished_count' => $l['finished_count'], 'prepared_count' => $l['prepared_count'], 'items_picked' => $l['items_picked']];
+                $average[$l['name']][$l['date']] = ['finished_count' => $l['finished_count'], 'prepared_count' => $l['prepared_count'] , 'items_picked' => $l['items_picked']];
                 }
             }
 
@@ -343,7 +349,8 @@ class Admin extends BaseController
                     $number_finished = $number_finished + $av['finished_count'];
                     $number_items_picked = $number_items_picked + $av['items_picked'];
                 }
-                $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
+
+            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
                 $number_prepared = 0;
                 $number_finished = 0;
                 $number_items_picked = 0;
@@ -357,7 +364,7 @@ class Admin extends BaseController
 
     public function roles(){
         $roles = $this->role->getRoles();
-        $role_can_not_delete = [1,2,3,4];
+        $role_can_not_delete = [1,2,3,4,5,6];
         return view('admin.roles', ['roles' => $roles, 'role_can_not_delete' =>  $role_can_not_delete]);
     }
 
@@ -395,7 +402,7 @@ class Admin extends BaseController
     }
 
     public function deleteRole(Request $request){
-        $role_can_not_delete = [1,2,3,4];
+        $role_can_not_delete = [1,2,3,4,5,6];
         $role_id = $request->post('role_id');
 
         if(in_array($role_id, $role_can_not_delete)){
@@ -521,23 +528,33 @@ class Admin extends BaseController
 
     public function colissimo(){
         $colissimo = $this->colissimoConfiguration->getConfiguration();
-        $list_format = [
+        $list_format_colissimo = [
             'PDF_A4_300dpi' => 'Impression bureautique en PDF, de dimension A4 et de résolution 300dpi',
             'PDF_10x15_300dpi' => 'Impression bureautique en PDF, de dimension 10cm par 15cm, et de résolution 300dpi',
             'ZPL_10x15_203dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 203dpi',
             'ZPL_10x15_300dpi' => 'Impression thermique en ZPL, de dimension 10cm par 15cm, et de résolution 300dpi'
         ];
 
-        return view('admin.colissimo', ['list_format' => $list_format, 'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);
+        $list_format_chronopost = [
+            'PDF' => 'LT avec preuve de dépôt destinée à être imprimée sur une imprimante papier, format A4',
+            'ZPL' => 'LT au format 11x15 pour impression sur imprimante thermique compatible ZPL (sans preuve de dépôt)',
+            'ZPL_300' => 'LT au format ZPL et destinée à être imprimée sur une imprimante thermique 300dp',
+        ];
+
+        return view('admin.colissimo', ['list_format_colissimo' => $list_format_colissimo, 'list_format_chronopost' => $list_format_chronopost, 
+        'colissimo' => count($colissimo) > 0 ? $colissimo[0] : null]);
     }
 
     public function updateColissimo(Request $request){
-        $format = $request->post('format');
+        $format_colissimo = $request->post('format_colissimo');
+        $format_chronopost = $request->post('format_chronopost');
+
         $address_ip = $request->post('address_ip');
         $port = $request->post('port');
 
         $data = [
-            'format' => $format,
+            'format_colissimo' => $format_colissimo,
+            'format_chronopost' => $format_chronopost,
             'address_ip' => $address_ip,
             'port' => $port,
         ];
@@ -626,7 +643,8 @@ class Admin extends BaseController
                     'user_id' => Auth()->user()->id,
                     'status' => 'finished',
                     'poste' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'total_product' => isset($order[0]['total_product']) ? $order[0]['total_product'] : null
                 ];
           
                 $this->history->save($data);
@@ -654,7 +672,7 @@ class Admin extends BaseController
                     'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
                     'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
                     'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-                    'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_quantity'] : 0,
+                    'items_picked' => $histo['status'] == "prepared" ? $histo['total_product'] : 0,
                     'date' => date('d/m/Y', strtotime($histo['created_at']))
                 ];
             } else {
@@ -665,7 +683,7 @@ class Admin extends BaseController
                 $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
                 $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
                 $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
-                $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_quantity'] : 0;
+                $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_product'] : 0;
             }
         }
 
@@ -684,24 +702,29 @@ class Admin extends BaseController
         $orders = [];
         $orders_with_date = [];
 
-        foreach($missingLabels as $order){
-            $orders[] = $order->order_woocommerce_id;
-            $orders_with_date[$order->order_woocommerce_id] = date('d/m/Y', strtotime($order->date));
-        }
-
-        $checkWoocommerceOrders= [];
-        $checkWoocommerce = $this->api->getLabelsfromOrder($orders); 
-
-        if($checkWoocommerce){
-            foreach($checkWoocommerce as $check){
-                $checkWoocommerceOrders[] = intval($check['order_id']);
+        if(count($missingLabels) > 0){
+            foreach($missingLabels as $order){
+                $orders[] = $order->order_woocommerce_id;
+                $orders_with_date[$order->order_woocommerce_id] = date('d/m/Y', strtotime($order->date));
             }
     
-            $missingLabels = array_diff($orders, $checkWoocommerceOrders);
-            return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date, 'labelMissingStatusArray' => $labelMissingStatusArray]);
+            $checkWoocommerceOrders= [];
+            $checkWoocommerce = $this->api->getLabelsfromOrder($orders); 
+    
+            if($checkWoocommerce){
+                foreach($checkWoocommerce as $check){
+                    $checkWoocommerceOrders[] = intval($check['order_id']);
+                }
+        
+                $missingLabels = array_diff($orders, $checkWoocommerceOrders);
+                return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => $orders_with_date, 'labelMissingStatusArray' => $labelMissingStatusArray]);
+            } else {
+                return redirect()->route('labels')->with('error', 'Problème base de données woocommerce');        
+            }
         } else {
-            return redirect()->route('labels')->with('error', 'Problème base de données woocommerce');        
+            return view('admin.missing_labels', ['missingLabels' => $missingLabels, 'orders_with_date' => [], 'labelMissingStatusArray' => []]);
         }
+       
        
     }
 
@@ -869,6 +892,11 @@ class Admin extends BaseController
         } catch (\Throwable $th) {
             return redirect()->back()->with('error',  "Une érreur s'est produite => ".$th->getMessage());
         }
+    }
+
+    public function errorLogs(){
+        $logs = $this->logError->getAllLogs();
+        return view('admin.logs', ['logs' => $logs]);
     }
 
 }

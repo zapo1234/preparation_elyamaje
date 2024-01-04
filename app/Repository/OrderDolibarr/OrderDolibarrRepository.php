@@ -165,6 +165,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
 
+      $total_product = 0;
+      foreach($products_quantity as $product){
+         $total_product = $total_product + intval($product);
+      }
+
       $list_products = [];
       foreach($list_product_orders as $list){
          // Ne prend pas en compte les produits déjà bippé
@@ -233,7 +238,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                'order_id' => $order_id,
                'user_id' => Auth()->user()->id,
                'status' => 'prepared',
-               'created_at' => date('Y-m-d H:i:s')
+               'created_at' => date('Y-m-d H:i:s'),
+               'total_product' => $total_product ?? null
             ]);
             return true;
          } else {
