@@ -636,14 +636,14 @@ class TransferOrder
                               // insert 
                               if(isset($tiers_exist[$data_infos_order['email']])==false){
                                 $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                               // JOINTRE les produits.
-                         }
+                                // JOINTRE les produits.
+                               }
                       }
                           // Ajouter le client dans la base de données interne 
-                          if(count($info_tiers_flush)!=0){
+                           //if(count($info_tiers_flush)!=0){
                              // 
-                             $this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['city'],$info_tiers_flush['date_created']);
-                          }
+                             //$this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['city'],$info_tiers_flush['date_created']);
+                           // }
                            // recupérer les cadeaux associé a l'utilisateur......
                           if(count($data_kdo)!=0){
                             $this->dons->inserts($data_kdo);
@@ -790,7 +790,7 @@ class TransferOrder
                    }
                    
                    elseif($account_name=="apple_pay"){
-                        $mode_reglement_id =6;
+                        $mode_reglement_id = 6;
                    }
                    
                     elseif($account_name=="bancontact"){
@@ -836,17 +836,22 @@ class TransferOrder
                        $paimentid =4;// PROD
                    }
 
-                   if(in_array($account_name,$array_paiments)){
+                   elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
                        $account_id=6; // PROD
                        $paimentid =6;// PROD
                     }
 
-                    if(in_array($account_name,$array_paimentss)){
+                   elseif(in_array($account_name,$array_paimentss)){
                         // dons 
                          $account_id=3; // PROD
                          $paimentid =3;// PROD
+                    }
+                    else{
+                            // dons 
+                          $account_id=3; // PROD
+                          $paimentid =3;// PROD
                     }
 
 

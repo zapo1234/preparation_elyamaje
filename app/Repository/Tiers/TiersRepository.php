@@ -15,10 +15,13 @@ class TiersRepository implements TiersInterface
 
    private $model;
 
+   private $emails =[];
+
    public function __construct(Tier $model,Api $api){
 
       $this->model = $model;
       $this->api = $api;
+      
    }
 
 
@@ -34,6 +37,23 @@ class TiersRepository implements TiersInterface
        }
     }
 
+    
+
+       /**
+   * @return array
+    */
+    public function getEmails(): array
+    {
+      return $this->emails;
+    }
+   
+   
+    public function setEmails(array $emails)
+    {
+       $this->emails = $emails;
+       return $this;
+     }
+
     public function getalltiers()
     {
       // recupérer 
@@ -41,7 +61,7 @@ class TiersRepository implements TiersInterface
        // transformer les retour objets en tableau
        $list = json_encode($data);
        $lists = json_decode($data,true);
-
+         
        
        return $lists;
 
@@ -65,15 +85,19 @@ class TiersRepository implements TiersInterface
 
     public function getallsocid()
     {
-        $data =  DB::table('tiers')->select('socid')->get();
+        $data =  DB::table('tiers')->select('socid','email')->get();
         // transformer les retour objets en tableau
         $list = json_encode($data);
         $lists = json_decode($data,true);
         $list_code =[];
+        $list_mail=[];
         
         foreach($lists as $key =>  $values){
             $list_code[$values['socid']] = $key;
+            $list_mail[$values['email']] = $key;
         }
+         
+          $this->setEmails($list_mail);
           return $list_code;
       }
 
@@ -83,6 +107,8 @@ class TiersRepository implements TiersInterface
            // $method = "GET";
                //    $apiKey = env('KEY_API_DOLIBAR'); 
                //   $apiUrl = env('KEY_API_URL');
+
+              
              
                 $method = "GET";
                // key et url api
@@ -108,12 +134,13 @@ class TiersRepository implements TiersInterface
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
              // recupérer les données essentiel
              $array_tiers = $this->getallsocid();
+             $array_email = $this->getEmails();
 
             foreach($lists as $key=>$values){
                
                if($this->testing($array_tiers,$values['id'])==false){
                
-                 if(!in_array($values['id'],$data_ids)) {
+                   if(!in_array($values['id'],$data_ids)) {
                     
                     if($values['client']==1 OR $values['client']==3){
                           $x = date('Y-m-d H:i:s', $values['date_creation']);
@@ -135,11 +162,11 @@ class TiersRepository implements TiersInterface
                             // save clients
                            $tier->save();
                  
-                    }
+                      }
                 
-                }
+                  }
                 
-               }
+            }
                
              
            }
