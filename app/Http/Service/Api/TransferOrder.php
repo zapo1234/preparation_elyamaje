@@ -816,8 +816,12 @@ class TransferOrder
                        $mode_reglement_id = 57;
                    }
 
-                   elseif($account_name=="DONS"){
-                      $mode_reglement_id = 57;
+                   elseif($account_name=="PAYP"){
+                      $mode_reglement_id = 106;
+                  }
+
+                  elseif($account_name=="DONS"){
+                    $mode_reglement_id = 57;
                   }
 
                    else{
@@ -825,7 +829,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
+                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
 
