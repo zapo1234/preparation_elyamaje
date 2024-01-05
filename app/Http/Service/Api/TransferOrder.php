@@ -909,7 +909,7 @@ class TransferOrder
                        $indice = substr($response['ref'],0,2); // recupérer le prefixe de la facture ces deux premiere lettre.
                     
                         if($indice==$index_facture1){
-                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture resté impayée  !']);
+                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
                           exit;
                        }
                        
