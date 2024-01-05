@@ -831,8 +831,13 @@ class Admin extends BaseController
         try {
 
             $products_dolibarrs_save = array();
+
             $apiUrl = env('KEY_API_URL');
             $apiKey = env('KEY_API_DOLIBAR');
+
+            // $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
+            // $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd";
+
 
             $produitParamProduct = array(
                 'apikey' => $apiKey,
@@ -846,6 +851,21 @@ class Admin extends BaseController
             if ($all_products) {
                 foreach ($all_products as $key => $product) {
 
+                    $qte = 0;
+
+                    if ($product["warehouse_array_list"]) {
+                        // if ($product["id"] == 4981) {
+                        //     dd($product["warehouse_array_list"][$product["id"]]);
+                        // }
+                        foreach ($product["warehouse_array_list"][$product["id"]] as $key => $value) {
+                            if ($value["warehouse"] == "Entrepôt Malpassé") {
+                                if ($qte == 0) {
+                                    $qte = $value["stock"];
+                                }
+                            }
+                        }
+                    }
+
                     
 
                     array_push($products_dolibarrs_save, [
@@ -854,7 +874,7 @@ class Admin extends BaseController
                         "price_ttc" =>$product["price"]? ($product["price"]*(($product["tva_tx"]*0.01)+1)):$product["price_ttc"],
                         "barcode" => $product["barcode"],
                         "poids" => 0,
-                        "warehouse_array_list" => json_encode($product["warehouse_array_list"])
+                        "warehouse_array_list" => $qte
                     ]);
 
                 }
