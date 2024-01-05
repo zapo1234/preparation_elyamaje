@@ -694,7 +694,6 @@ document.addEventListener("keydown", function(e) {
     if(e.key.length == 1 && !$(".modal_order").hasClass('show') && $("#validWrapper").length == 0){
             $("#detail_order").val($("#detail_order").val()+e.key)
             var array = $("#detail_order").val().split(',')
-            console.log($("#detail_order").val())
             if(array.length == 3 && !scan){
                 scan = true
                 $("#order_id").val(array[0].split(',')[0])

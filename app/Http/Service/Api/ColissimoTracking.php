@@ -18,7 +18,7 @@ class ColissimoTracking
                     'parcelNumber' => $trackingNumber->tracking_number,
                     'lang' => 'fr_FR'
                 ];
-    
+                
                 $url = "https://ws.colissimo.fr/tracking-timeline-ws/rest/tracking/timelineCompany/";
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
@@ -26,9 +26,10 @@ class ColissimoTracking
 
 
             } catch(Exception $e){
+                return;
                 // dd($e->getMessage());
             }
-            
+
             try {
 
                 if ($response->status() === 200) {
@@ -54,6 +55,7 @@ class ColissimoTracking
                     
                 }
             } catch(Exception $e){
+                return;
                 // dd($e->getMessage());
             }
         }

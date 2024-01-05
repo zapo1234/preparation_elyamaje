@@ -48,11 +48,28 @@
 									<hr>
 									<form class="row g-3" data-bitwarden-watching="1">
 										<div class="col-md-12 mt-2">
-											<label for="format" class="form-label">Format d'impression des étiquettes</label>
-											<select name="format" id="format" class="form-select">
-												@foreach($list_format as $key => $format)
+											<label for="format_colissimo" class="form-label">Format d'impression des étiquettes <span class="font-bold">Colissimo</span></label>
+											<select name="format_colissimo" id="format_colissimo" class="form-select">
+												@foreach($list_format_colissimo as $key => $format)
 													@if($colissimo)	
-														@if($colissimo->format == $key)
+														@if($colissimo->format_colissimo == $key)
+															<option selected value="{{ $key }}">{{ $format }}</option>
+														@else 
+															<option value="{{ $key }}">{{ $format }}</option>
+														@endif
+													@else
+														<option value="{{ $key }}">{{ $format }}</option>
+													@endif
+												@endforeach
+											</select>
+										</div>
+
+										<div class="col-md-12" style="margin-top: 25px">
+											<label for="format_chronopost" class="form-label">Format d'impression des étiquettes <span class="font-bold">Chronopost</span></label>
+											<select name="format_chronopost" id="format_chronopost" class="form-select">
+												@foreach($list_format_chronopost as $key => $format)
+													@if($colissimo)	
+														@if($colissimo->format_chronopost == $key)
 															<option selected value="{{ $key }}">{{ $format }}</option>
 														@else 
 															<option value="{{ $key }}">{{ $format }}</option>

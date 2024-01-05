@@ -1,19 +1,19 @@
 $(document).ready(function() {
 
     // Affiche la moyenne de préparation de chaque users
-    // $.ajax({
-    //     url: "getAverage",
-    //     method: "GET",
-    //     async: true,
-    // }).done(function(data) {
-    //     if(JSON.parse(data).success){
-    //         var data = JSON.parse(data)
-    //         $(".loading_chart").remove()
+    $.ajax({
+        url: "getAverage",
+        method: "GET",
+        async: true,
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data = JSON.parse(data)
+            $(".loading_chart").remove()
 
-    //         // Créer le chart js
-    //         chartAverage(data.average_by_name)
-    //     }
-    // });
+            // Créer le chart js
+            chartAverage(data.average_by_name)
+        }
+    });
 
     $('#example').DataTable({
         "order": [[ 4, 'desc' ]],
@@ -49,7 +49,7 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return row.items_picked
+                    return row.items_picked ?? "?"
                 }
             },
             {data: null, 
@@ -62,7 +62,7 @@ $(document).ready(function() {
             loadingRecords: ""
         },
         "initComplete": function(settings, json) {
-            $(".loading_table").remove()
+            $(".loading_table_analytics").hide()
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -113,7 +113,8 @@ $(document).ready(function() {
 
             })
 
-            $(".data_number").removeClass('d-none')
+            $(".data_number").show()
+            $(".load_spinner").hide()
             $('.order_prepared').text(order_prepared)
             $('.order_finished').text(order_finished)
         }
@@ -125,7 +126,9 @@ $(document).ready(function() {
 
 
 $('.date_dropdown').on('change', function(e){
-    $(".data_number").addClass('d-none')
+    $(".load_spinner").show()
+    $(".data_number").hide()
+    $(".loading_table_analytics").show()
     $('#example').DataTable().ajax.url('getAnalytics?date=' + $(".date_dropdown").val()).load();
  })
 
@@ -204,7 +207,8 @@ function chartAverage(average){
         ,{
             name: 'Produits bippés',
             data: items_picked,
-        }]
+        }
+        ]
     });
 }
 

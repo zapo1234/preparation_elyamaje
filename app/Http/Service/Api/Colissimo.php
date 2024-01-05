@@ -29,9 +29,8 @@ class Colissimo
 
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
-        $format = $colissimo ? $colissimo->format : "PDF_A4_300dpi";
+        $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
-
 
         if($productCode){
             try {
@@ -403,21 +402,25 @@ class Colissimo
     }
 
     protected function getMobilePhone($mobile, $country){
-      
-        if($mobile != "" && $mobile != null && !str_contains($mobile, '+')){
-            if($country == "FR"){
-                $mobile = $mobile;
-            } else if($country == "BE"){
-                $mobile = "+32".substr($mobile, 1);
-            } else if($country == "CH"){
-                $mobile = "+41".substr($mobile, 1);
-            } else {
-                $mobile = $mobile;
-            }
 
-            return $mobile;
-        } else if(str_contains($mobile, '+')){
-            return $mobile;
+        if($mobile != "" && $mobile != null){
+            if(!str_contains($mobile, '+') && substr($mobile, 0, 2) != "00"){
+                if($country == "FR"){
+                    $mobile = $mobile;
+                } else if($country == "BE"){
+                    $mobile = "+32".substr($mobile, 1);
+                } else if($country == "CH"){
+                    $mobile = "+41".substr($mobile, 1);
+                } else {
+                    $mobile = $mobile;
+                }
+    
+                return $mobile;
+            } else if(str_contains($mobile, '+') || substr($mobile, 0, 2) == "00"){
+                return $mobile;
+            } else {
+                return "";
+            }
         } else {
             return "";
         }

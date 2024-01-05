@@ -5,7 +5,43 @@ $(function () {
 
 	// Clôture d ejournée
 	$(".close_day").on('click', function(){
+		$(".footer_1").removeClass('d-none')
+		$(".footer_2").addClass('d-none')
+		$(".response_close_day").text('')
 		$("#closeDayModal").modal('show')
+	})
+
+	$(".valid_close_day").on('click', function(){
+		$(".loading_close_day").removeClass('d-none')
+		$(".close_day_text").addClass('d-none')
+		$(".valid_close_day").attr('disabled', true)
+	
+		$.ajax({
+			url: "orderinvoices?from_js=true",
+			method: 'GET',
+		}).done(function(data) {
+			$(".loading_close_day").addClass('d-none')
+			$(".close_day_text").removeClass('d-none')
+			$(".valid_close_day").attr('disabled', false)
+			$(".footer_1").addClass('d-none')
+			$(".footer_2").removeClass('d-none')
+			$(".response_close_day").removeClass('text-success')
+			$(".response_close_day").removeClass('text-danger')
+			$(".response_close_day").removeClass('text-warning')
+
+			if(JSON.parse(data).success){
+				if(!JSON.parse(data).diff){
+					$(".response_close_day").addClass('text-success')
+					$(".response_close_day").text(JSON.parse(data).message)
+				} else {
+					$(".response_close_day").addClass('text-warning')
+					$(".response_close_day").text(JSON.parse(data).message)
+				}
+			} else {
+				$(".response_close_day").addClass('text-danger')
+				$(".response_close_day").text(JSON.parse(data).message)
+			}
+		});
 	})
 
 	// search bar

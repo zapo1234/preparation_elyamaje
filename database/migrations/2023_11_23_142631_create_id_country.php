@@ -22,6 +22,8 @@ class CreateIdCountry extends Migration
             $table->string('label');
             $table->integer('active');
             $table->integer('eec');
+            $table->timestamps();
+            
         });
     }
 

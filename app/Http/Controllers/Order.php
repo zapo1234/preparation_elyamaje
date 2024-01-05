@@ -129,9 +129,9 @@ class Order extends BaseController
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
 
-        // if(!$orders){
-        //   return array();
-        // } 
+        if(!$orders){
+          return array();
+        } 
         
         $count = count($orders);
   
@@ -149,6 +149,11 @@ class Order extends BaseController
           }
         }  
 
+        if(isset($orders['message'])){
+          $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
+          return false;
+        }
+      
         // Liste des distributeurs
         $distributors = $this->distributor->getDistributors();
         $distributors_list = [];
@@ -582,8 +587,8 @@ class Order extends BaseController
 
         $number_order_attributed = $this->order->getOrdersByUsers();
 
-         // Pusher notification order attribution updated  
-         $notification_push = [
+        // Pusher notification order attribution updated  
+        $notification_push = [
           'role' => 2,
           'order_id' => $order_id,
           'type' => 'order_attribution_updated',
@@ -689,10 +694,11 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
       
-      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-       $transfers = $request->post('transfers') == "false" ? 0 : 1;
+       $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+        $transfers = $request->post('transfers') == "false" ? 0 : 1;
       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-      $order_id = explode(',', $request->post('order_id'))[0];
+       $order_id = explode(',', $request->post('order_id'))[0];
+
 
        if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -739,7 +745,8 @@ class Order extends BaseController
               'user_id' => Auth()->user()->id,
               'status' => 'finished',
               'poste' => Auth()->user()->poste,
-              'created_at' => date('Y-m-d H:i:s')
+              'created_at' => date('Y-m-d H:i:s'),
+              'total_product' => isset($orders[0]['total_product']) ? $orders[0]['total_product'] : null
             ];
 
             $this->history->save($data);
@@ -754,6 +761,7 @@ class Order extends BaseController
                   $status_finished = "commande-distribu";
                 } 
               }
+
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);
@@ -885,7 +893,7 @@ class Order extends BaseController
               'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
               'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
               'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_product'] : 0
             ];
           } else {
             $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
@@ -898,7 +906,7 @@ class Order extends BaseController
 
             $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
             $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
-            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['total_product'] : '';
           }
       }
       
@@ -911,7 +919,7 @@ class Order extends BaseController
       $date = date('Y-m-d');
       $histories = $this->history->getHistoryByDate($date);
       $list_histories = [];
-
+      
       if(count($histories) == 0){
         return redirect()->route('index')->with('error', 'Aucune commande préparée ou emballée n\'a été trouvée !');
       }
@@ -925,7 +933,7 @@ class Order extends BaseController
               'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
               'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
               'finished_count' => $histo['status'] == "finished" ? 1 : 0,
-              'items_picked' =>  $histo['status'] == "prepared" ? $histo['quantity'] : 0
+              'items_picked' =>  $histo['status'] == "prepared" ? $histo['total_product'] : 0
             ];
           } else {
             $histo['status'] == "prepared" ? array_push($list_histories[$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$histo['id']]['finished_order'],$histo['order_id']);
@@ -938,7 +946,7 @@ class Order extends BaseController
 
             $list_histories[$histo['id']]['prepared_count'] = count($list_histories[$histo['id']]['prepared_order']);
             $list_histories[$histo['id']]['finished_count'] = count($list_histories[$histo['id']]['finished_order']);
-            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['quantity'] : '';
+            $histo['status'] == "prepared" ? $list_histories[$histo['id']]['items_picked'] = $list_histories[$histo['id']]['items_picked'] + $histo['total_product'] : '';
           }
       }
 
@@ -1052,14 +1060,13 @@ class Order extends BaseController
           $data_save = array();
           $incrementation = 0;
           $decrementation = 0;
+          $total_product = 0;
           $i = 1;
           $ids="";
           $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
           foreach ($tabProduitReassort as $key => $line) {
-
-              
-
-              if ($line["qty"] != 0) {           
+              if ($line["qty"] != 0) {   
+                  $total_product = $total_product + intval($line["qty"]);
                   $data = array(
                       'product_id' => $line["product_id"],
                       'warehouse_id' => $line["warehouse_id"], 
@@ -1100,7 +1107,8 @@ class Order extends BaseController
             'user_id' => Auth()->user()->id,
             'status' => 'finished',
             'poste' => Auth()->user()->poste,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'total_product' => $total_product ?? null
           ];
 
           $this->history->save($data);
@@ -1254,9 +1262,7 @@ class Order extends BaseController
 
   }
 
-  
   function uploadFile(Request $request){
-
     if ($request->hasFile('file_reassort') && $request->file('file_reassort')->isValid()) {
         $file = $request->file('file_reassort');
 
@@ -1266,13 +1272,29 @@ class Order extends BaseController
 
         $csvDataArray = iterator_to_array($reader->getRecords());
 
-        dd($csvDataArray);
-
-        
+        dd($csvDataArray); 
     }
 
     // Retournez une réponse en cas d'erreur
     return response()->json(['message' => 'Erreur lors du téléchargement du fichier CSV'], 400);
+  }
+
+  public function syncHistoriesTotalProduct(){
+    $orders_id = [];
+    $orders = DB::table('orders')->select('order_woocommerce_id')->get();
+
+    foreach($orders as $order){
+      $orders_id[] = $order->order_woocommerce_id;
+    }
+
+    $line = DB::table('products_order')->select(DB::raw('SUM(prepa_products_order.quantity) as qty'), 'order_id')->whereIn('order_id', $orders_id)->groupBy('order_id')->get();
+    $cases = collect($line)->map(function ($item) {
+      return sprintf("WHEN %d THEN '%s'", $item->order_id, intval($item->qty));
+    })->implode(' ');
+
+    $query = "UPDATE prepa_histories SET total_product = (CASE order_id {$cases} END)";
+    DB::statement($query);
+    dd("Ok !");
   }
 }
 

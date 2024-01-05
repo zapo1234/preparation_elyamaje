@@ -105,7 +105,7 @@
             </li>
             <li>
                 <a href="{{ url('orderfacturer') }}">
-                    <i class='bx bx-box'></i>
+                    <i class='bx bx-cloud-download'></i>
                     <span class="link_name">Dolibarr</span>
                 </a>
                 <ul class="sub-menu blank">
@@ -150,6 +150,15 @@
                     <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
                 </ul>
             </li>
+            <li>
+                <a href="{{ url('errorLogs') }}">
+                    <i class='bx bx-news'></i>
+                    <span class="link_name">Journaux d'erreurs</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="{{ url('errorLogs') }}">Journaux d'erreurs</a></li>
+                </ul>
+            </li> 
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>

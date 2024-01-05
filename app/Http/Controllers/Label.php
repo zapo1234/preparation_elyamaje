@@ -175,7 +175,6 @@ class Label extends BaseController
 
     public function labelShow(Request $request){
         $blob = $this->label->getLabelById($request->post('label_id'));
-        $colissimo = $this->colissimoConfiguration->getConfiguration();
 
         // Traitement selon format étiquette
         switch ($blob[0]->label_format) {
@@ -304,7 +303,7 @@ class Label extends BaseController
             $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
             $product_order[0]['shipping_method'] = "lpc_sign";
         } else {
-            $product_order = $this->order->getProductOrder($order_id)->toArray();
+            $product_order = $this->order->getProductOrder($order_id);
         }
 
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
@@ -484,14 +483,15 @@ class Label extends BaseController
                 // Get all orders labels -10 jours
                 $rangeDate = 10;
                 $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+
                 $colissimo = [];
                 $chronopost = [];
-                $order_to_update = [];
+                // $order_to_update = [];
                 
                 foreach($labels as $label){
-                    if($label->status == "prepared-order"){
-                        $order_to_update[] = $label->order_id;
-                    }
+                    // if($label->status == "prepared-order"){
+                    //     $order_to_update[] = $label->order_id;
+                    // }
                 
                     if($label->origin == "colissimo"){
                         $colissimo[] = $label;
@@ -501,9 +501,9 @@ class Label extends BaseController
                 }
 
                 // Update status local de la commande en terminée pour celles dont ce n'est pas le cas
-                if(count($order_to_update) > 0){
-                    $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
-                }
+                // if(count($order_to_update) > 0){
+                //     $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
+                // }
                 
                 // Récupère les status de chaque commande
                 $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
@@ -518,8 +518,6 @@ class Label extends BaseController
 
                 return $update;
             } catch(Exception $e){
-                dd($e->getMessage());
-
                 $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
                 // dd($e->getMessage());
             }

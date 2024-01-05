@@ -119,27 +119,30 @@
             <!-- Modal clôture de journée -->
             <div class="modal fade" id="closeDayModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
-                    <form class="w-100" method="POST" action="{{ route('leader.closeDay') }}">
-                        @csrf
+                    <!-- <form class="w-100" method="POST" action="{{ route('leader.closeDay') }}">
+                        @csrf -->
                         <div class="modal-content">
                             <div class="modal-body">
                                 <h2 class="text-center">Clôturer la journée ?</h2>
+                                <div class="w-100 text-center d-flex justify-content-center">
+                                    <span class="w-75 response_close_day"></span>
+                                </div>
                             </div>
-                            <div class="modal-footer d-flex justify-content-center">
+                            <div class="modal-footer d-flex justify-content-center footer_1">
                                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Non</button>
-                                <button type="submit" class="valid_close_day btn btn-primary" data-bs-dismiss="modal">Oui</button>
+                                <button type="button" class="valid_close_day btn btn-primary">
+                                    <div class="loading_close_day d-none spinner-border spinner-border-sm text-light" role="status"> <span class="visually-hidden">Loading...</span></div>
+                                    <span class="close_day_text">Oui</span>
+                                </button>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center d-none footer_2">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
                             </div>
                         </div>
-                    </form>
+                    <!-- </form> -->
                 </div>
             </div>
         @endif
-
-
-        
-
-
-
 
 
         

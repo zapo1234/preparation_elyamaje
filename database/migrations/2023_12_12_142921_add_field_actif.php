@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateColissimoTable extends Migration
+class AddFieldActif extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateColissimoTable extends Migration
      */
     public function up()
     {
-        Schema::create('colissimo', function (Blueprint $table) {
-            $table->id();
-            $table->string('format_colissimo');
-            $table->string('address_ip')->nullable();
-            $table->string('port')->nullable();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('active')->default(true);
         });
     }
 
@@ -29,6 +25,8 @@ class CreateColissimoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('colissimo');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

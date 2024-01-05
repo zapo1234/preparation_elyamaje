@@ -201,6 +201,7 @@ class TransferOrder
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
 
+
                 if(count($listproduct)==0){
                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
@@ -578,7 +579,7 @@ class TransferOrder
                                          $account="";
                                          $this->setAccountpay($account);
                                           echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble être déjà facturée, signalez au service informatique !']);
-                                            exit;
+                                          exit;
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
@@ -607,6 +608,7 @@ class TransferOrder
                            }
                          }
                         */
+
                          
                         // echo json_encode($data_lines);
                         // Create le client via Api...
@@ -634,14 +636,14 @@ class TransferOrder
                               // insert 
                               if(isset($tiers_exist[$data_infos_order['email']])==false){
                                 $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                               // JOINTRE les produits.
-                         }
+                                // JOINTRE les produits.
+                               }
                       }
                           // Ajouter le client dans la base de données interne 
-                          if(count($info_tiers_flush)!=0){
+                           //if(count($info_tiers_flush)!=0){
                              // 
-                             $this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['city'],$info_tiers_flush['date_created']);
-                          }
+                             //$this->tiers->insert($info_tiers_flush['name'],$info_tiers_flush['name_alias'],$info_tiers_flush['socid'],$info_tiers_flush['code_client'],$info_tiers_flush['email'],$info_tiers_flush['phone'],$info_tiers_flush['address'],$info_tiers_flush['zip'],$info_tiers_flush['city'],$info_tiers_flush['date_created']);
+                           // }
                            // recupérer les cadeaux associé a l'utilisateur......
                           if(count($data_kdo)!=0){
                             $this->dons->inserts($data_kdo);
@@ -788,7 +790,7 @@ class TransferOrder
                    }
                    
                    elseif($account_name=="apple_pay"){
-                        $mode_reglement_id =6;
+                        $mode_reglement_id = 6;
                    }
                    
                     elseif($account_name=="bancontact"){
@@ -814,8 +816,12 @@ class TransferOrder
                        $mode_reglement_id = 57;
                    }
 
-                   elseif($account_name=="DONS"){
-                      $mode_reglement_id = 57;
+                   elseif($account_name=="PAYP"){
+                      $mode_reglement_id = 106;
+                  }
+
+                  elseif($account_name=="DONS"){
+                    $mode_reglement_id = 57;
                   }
 
                    else{
@@ -823,7 +829,7 @@ class TransferOrder
                    }
 
                   
-                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
+                   $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
 
@@ -834,17 +840,22 @@ class TransferOrder
                        $paimentid =4;// PROD
                    }
 
-                   if(in_array($account_name,$array_paiments)){
+                   elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
                        $account_id=6; // PROD
                        $paimentid =6;// PROD
                     }
 
-                    if(in_array($account_name,$array_paimentss)){
+                   elseif(in_array($account_name,$array_paimentss)){
                         // dons 
                          $account_id=3; // PROD
                          $paimentid =3;// PROD
+                    }
+                    else{
+                            // dons 
+                          $account_id=3; // PROD
+                          $paimentid =3;// PROD
                     }
 
 
@@ -936,8 +947,6 @@ class TransferOrder
 
 
          public function Updatefacture($orders){
-          
-          
            // connexion api dolibar
              $method = "GET";
             $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
@@ -955,6 +964,8 @@ class TransferOrder
            $newCommandepaye =[];
            $newbank =[];// attributeur un compte id de paiement
            $newCommandeValider =[];// valider les facture en cas du valid=1(mettre en impayes pour ditributeur);
+           $product_construct_post =[];// construire le jeu de produit à envoyer.
+           $data_construct =[];
            // le tableau pour valider les facture sur l'entrepot preics.
            // traiter les moyens de paimen
             // crée laccount paiement à partir de la methode de paiment.
@@ -962,12 +973,26 @@ class TransferOrder
             $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
             $array_paimentss = array('DONS');
             $valid="";
+            $remise_percent="";
            foreach($orders as $values){
                 // recupérer le fk_facture.
                 $fk_facture = array_search($values['order_woocommerce_id'],$datas);
                 // recupérer le moyen de payament
                 $moyen_paid =  array_search($values['payment_method'],$moyen_card);
                 $moyen_paids = explode(',',$moyen_paid);
+
+                // recupérer le coupons si il existe
+                $coupons = $values['coupons'];
+                if($coupons==""){
+                   $remise_percent="0";
+                }else{
+                     $chaine="fem";
+                     if(strpos($coupons,$chaine)==true){
+                        $remise_percent =0;
+                     }else{
+                          $remise_percent =10;
+                     }
+                }
                 // recupérer le status de la commande(cas de distributeur);
                  $status_distributeur = $values['is_distributor'];
                  if($status_distributeur==""){
@@ -1015,12 +1040,22 @@ class TransferOrder
                   }
 
                    $data_fk_facture[]= $fk_facture;// recupérer les id de facture depuis dolibar.
+                   $data_product_construct =[];
                    foreach($values['line_items'] as $val){
-                    $chaine = $val['quantity'].','.$val['subtotal'].','.$val['meta_data'][0]['value'];
-                    $test_data[$chaine] = $val['meta_data'][0]['value'].','.$fk_facture;
+                      $chaine = $val['quantity'].','.$val['subtotal'].','.$val['meta_data'][0]['value'];
+                      $chaines = $values['order_woocommerce_id'].','.$val['quantity'].','.$val['subtotal'].','.$val['meta_data'][0]['value'];
+                      $test_data[$chaine] = $val['meta_data'][0]['value'].','.$fk_facture;
+                      
+                       $data_construct[$chaines] = $values['order_woocommerce_id'].','.$val['meta_data'][0]['value'];
+                        $product_construct_post[$values['order_woocommerce_id'].','.$fk_facture][] =[
+                            'barcode'=>$values['order_woocommerce_id'].','.$val['meta_data'][0]['value']
+                      ];
+
                   }
 
-                   // array pour paimement de la facture.
+                
+
+                    // array pour paimement de la facture.
                     $newCommandepaye[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                     "total_ht"  =>$values['total_order']-$values['total_tax_order'],
                     "total_tva" =>$values['total_tax_order'],
@@ -1060,28 +1095,64 @@ class TransferOrder
                   ];
  
            }
-
+           
           
            // aller chercher les correspondances lines associé à ces factures dans dolibar pour line product.
              foreach($data_fk_facture as $vc){
-              $json_data[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vc),true);
-            }
+                  $json_data[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vc),true);
+              }
       
-            // recupérer les prdoduct avec leur barcode pour utiliser plutard(important)
-            $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
-            $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-            // reference ref_client dans dolibar
-            $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
-            $data_list_product =[];
-            foreach($listproduct as $values) {
+             // recupérer les prdoduct avec leur barcode pour utiliser plutard(important)
+              $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
+             $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
+              // reference ref_client dans dolibar
+              $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
+              $data_list_product =[];
+             $data_list_products =[];// recuperer les bon id de produit.
+              foreach($listproduct as $values) {
                    if($values['barcode']!=""){
                    $data_list_product[$values['barcode']] = $values['id'];
+                   $data_list_products[$values['id']] = $values['barcode'];
               }
               // tableau associatve entre ref et label product....
            }
+          
 
-       // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+          
+           // recupérer et construire un tableau des products pour les réecrire dans la facture
+           $data_update_product =[];
+           foreach($product_construct_post as $keys=> $val){
+                 foreach($val as $vad){
+                   // recupérer le barcode pour aller le chercher le fk_product
+                    $code = explode(',',$vad['barcode']);
+                    $barcode = $code[1];
+                    $fk_product =array_search($barcode,$data_list_products);
+                    
+                    $chaine_data = array_search($vad['barcode'],$data_construct);
+                       if($chaine_data!=""){
+                          $ch = explode(',',$chaine_data);
+                            $data_update_product[$keys][] =[
+                            "desc"=>"Desc",
+                           'fk_product'=> $fk_product,
+                           'qty'=> $ch[0],
+                           'tva_tx'=> 20,
+                           'subprice'=>$ch[1],
+                           'remise_percent'=>$remise_percent,
+                           'product_type'=> 1,
+                           'rang'=> -1,
+                           'fk_code_ventilation'=>0
+                        
+                      ];
+                 }
+             }
+          }
+
+          dd($data_update_product);
+
+          // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+          $data_result =[];
            $ref_facture =[];
+           $product_data =[];// construire un tableau pour un post (réécriture des lines products dans dolibarr)
             foreach($json_data as  $key => $valus){
                $ref_facture[] = $valus['ref'];
                foreach($valus['lines'] as $va){
@@ -1108,6 +1179,8 @@ class TransferOrder
                       "qty"=>$donnees[0],
                       "tva_tx"=>20,
                   ];
+
+                  // recupérer
 
                }
             }
@@ -1155,9 +1228,9 @@ class TransferOrder
                 }
 
                 // detruire les ligne de produit dans la facture.
-                foreach($data_fk_facture as $vj){
-                  $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_facturedet WHERE fk_facture=$vj");
-                }
+             //   foreach($data_fk_facture as $vj){
+             //     $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_facturedet WHERE fk_facture=$vj");
+             //   }
 
                 dd('zapo');
 

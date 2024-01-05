@@ -352,7 +352,11 @@ class OrderRepository implements OrderInterface
          ->toArray();
 
       $list_product_orders = json_decode(json_encode($list_product_orders), true);
-      
+
+      $total_product = 0;
+      foreach($products_quantity as $product){
+         $total_product = $total_product + intval($product);
+      }
 
       // Tout est bippé donc on valide
       if(count($list_product_orders) == 0){
@@ -362,7 +366,8 @@ class OrderRepository implements OrderInterface
                'order_id' => $order_id,
                'user_id' => Auth()->user()->id,
                'status' => 'prepared',
-               'created_at' => date('Y-m-d H:i:s')
+               'created_at' => date('Y-m-d H:i:s'),
+               'total_product' => $total_product ?? null
             ]);
 
             $this->updateOrdersById([$order_id], "prepared-order");
@@ -462,7 +467,8 @@ class OrderRepository implements OrderInterface
                'order_id' => $order_id,
                'user_id' => Auth()->user()->id,
                'status' => 'prepared',
-               'created_at' => date('Y-m-d H:i:s')
+               'created_at' => date('Y-m-d H:i:s'),
+               'total_product' => $total_product ?? null
             ]);
             
             // Modifie le status de la commande sur Woocommerce en "Commande préparée"
@@ -963,12 +969,32 @@ class OrderRepository implements OrderInterface
    }
 
    public function getProductOrder($order_id){
-      return $this->model::select('products.name', 'products.weight', 
+      $products = $this->model::select('products.name', 'products.weight', 
          'products_order.quantity', 'products_order.product_woocommerce_id', 'products_order.cost', 'orders.status', 'orders.shipping_method')
          ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
          ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->where('orders.order_woocommerce_id', $order_id)
          ->get();
+
+      // Merge les quantity si plusieurs fois le même produit
+      $products = json_decode(json_encode($products), true);
+      $array_product_id = [];
+      $new_array_product = [];
+
+      foreach($products as $product){
+        if(!in_array($product['product_woocommerce_id'], $array_product_id)){
+            $array_product_id[] = $product['product_woocommerce_id'];
+            $new_array_product[] = $product;
+        } else {
+            $ids = array_column($new_array_product, "product_woocommerce_id");
+            $clesRecherchees = array_keys($ids,  $product['product_woocommerce_id']);
+            if(count($clesRecherchees) > 0){
+               $new_array_product[$clesRecherchees[0]]['quantity'] = intval($new_array_product[$clesRecherchees[0]]['quantity']) + intval($product['quantity']);
+            }
+        }
+      }
+
+      return $new_array_product;
    }
 
    public function unassignOrders(){
@@ -989,18 +1015,22 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrdersWithoutLabels(){
+      $date = date("Y-m-d H:i:s", strtotime("-2 month"));
+
       return $this->model::select('orders.order_woocommerce_id', 'orders.date')
       ->leftJoin('labels', 'orders.order_woocommerce_id', 'labels.order_id')
       ->leftJoin('distributors', 'distributors.customer_id', 'orders.customer_id')
-      ->where('labels.label', NULL)
       ->where([
          ['labels.label', NULL],
          ['orders.status', 'finished'],
          ['orders.shipping_method', '!=', 'local_pickup'],
-         ['distributors.role', NULL]
+         ['distributors.role', NULL],
+         ['orders.date', '>', $date],
      ])
       ->orderBy('orders.updated_at', 'DESC')
       ->get();
+
+
    }
 
    public function update($data, $order_id){
