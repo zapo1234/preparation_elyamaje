@@ -68,8 +68,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
     //traitement ajax des commande facture 
     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
-    // ajax verification des commandes api dolibar factures.
-    Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
+    
     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
     Route::post("/updateStockWoocommerce/{identifiant}", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce'); 
@@ -202,6 +201,9 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 
     // Téléchargement de fichier de réassort
     Route::post("/uploadFile", [Order::class, "uploadFile"])->name('uploadFile');
+
+    // ajax verification des commandes api dolibar factures.
+    Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
