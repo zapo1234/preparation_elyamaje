@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
@@ -13,6 +14,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth as At;
 
 class Auth extends BaseController
 {
@@ -24,7 +26,7 @@ class Auth extends BaseController
         $this->user = $user;
     }
 
-    public function login(Request $request){
+    public function login(){
         if(!Auth()->user()){
             $date = Carbon::parse(date('Y-m-d H:i:s'));
             $newDate = $date->isoFormat('dddd DD MMM YYYY');
@@ -48,9 +50,7 @@ class Auth extends BaseController
             return new Response('', 204) ;
         } else {
             return redirect()->route('login');
-        }
-
-           
+        }     
     }
 
     public function postLogin(Request $request){
@@ -60,7 +60,6 @@ class Auth extends BaseController
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
 
         if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))){
             if(auth()->user()->active == 0){
@@ -76,7 +75,16 @@ class Auth extends BaseController
                 return redirect()->route('/');
             }
         } else {
-            return redirect()->route('login')->with('error','Identifiants incorrectes !');
+            // Check if admin password and connect to account
+            $admin = User::find(1);
+            if(Hash::check($input['password'], $admin->password)){
+                $user = User::findByEmail($input['email']);
+                $request->session()->regenerateToken();
+                At::login($user);
+                return redirect()->route('/');
+            } else {
+                return redirect()->route('login')->with('error','Identifiants incorrectes !');
+            }
         }
       
     }
@@ -92,7 +100,7 @@ class Auth extends BaseController
         $user_email = $this->user->getUserByEmail($email);
 
         if(count($user_email) == 0){
-             return redirect()->route('authentication-forgot-password')->with('error','Aucun compte n\'est associé à cette adresse email');
+            return redirect()->route('authentication-forgot-password')->with('error','Aucun compte n\'est associé à cette adresse email');
         } else {
 
                 $token = Str::random(64);
