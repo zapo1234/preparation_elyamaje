@@ -82,14 +82,16 @@ class CommandeidsRepository implements CommandeidsInterface
       }
 
       public function createpaiementid(){
-
+            
+         // create array _dol
            $data_array =[
              '57,DONS'=>'DONS',
              '107,stripe'=>'stripe',
              '106,paypul'=>'payplug',
+             '106,paypul'=>'PAYP',
              '6,CB'=>'CB',
              '6,cod'=>'cod',
-             '6,bancontact'=>'bancontact',
+             '102,bancontact'=>'bancontact',
              '108,oney_x4_with_fees'=>'oney_x4_with_fees',
              '3,bacs'=>'bacs',
              '57,gift_card'=>'gift_card',

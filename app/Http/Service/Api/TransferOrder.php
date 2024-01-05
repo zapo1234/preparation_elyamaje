@@ -609,20 +609,27 @@ class TransferOrder
                          }
                         */
 
-                         
-                        // echo json_encode($data_lines);
-                        // Create le client via Api...
+      
+                         // Create le client via Api...
+                       
                           foreach($data_tiers as $data) {
-                          
                            // insérer les données tiers dans dolibar
-                            $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                             $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                             
                           }
                     
+                          $retour_create_facture="";// gerer le retour de la création api.
                           foreach($data_lines as $donnes){
-                          // insérer les details des données de la facture dans dolibarr
-                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                        }
-                     
+                            // insérer les details des données de la facture dans dolibarr
+                             $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                           }
+                            // traiter la réponse de l'api
+                             $response = json_decode($retour_create, true);
+                            if(isset($response['error']['message'])){
+                               $message = $response['error']['message'];
+                               echo json_encode(['success' => false, 'message'=> $message]);
+                               exit;
+                            }
 
                           // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
@@ -638,7 +645,7 @@ class TransferOrder
                                 $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
                                 // JOINTRE les produits.
                                }
-                      }
+                            }
                           // Ajouter le client dans la base de données interne 
                            //if(count($info_tiers_flush)!=0){
                              // 
@@ -654,8 +661,8 @@ class TransferOrder
                 
         }
         
-        public function invoicespay($orders)
-        {
+         public function invoicespay($orders)
+         {
            
              $method = "GET";
              $apiKey = env('KEY_API_DOLIBAR'); 
@@ -773,62 +780,20 @@ class TransferOrder
                   $account_name = $this->getAccountpay();
                   // recupérer le status
                   $status_dist = $this->getDistristatus();
+                   // recupération les méthode de paiement.
+                   $moyen_card = $this->commande->createpaiementid();
 
-                 
-                  if($account_name==""){
-                    $account_name="vir_card";
-                  }
-                    // Moyens de paiments....id 4............
-                    elseif($account_name=="stripe"){
-                      // le mode de reglement !!
-                      $mode_reglement_id=107; // prod.....
+                   $moyen_paid =  array_search($account_name,$moyen_card);
+
+                   if($moyen_paid!=false){
+                       $moyen_paids = explode(',',$moyen_paid);
+                       $mode_reglement_id = $moyen_paids[0];
+                   }else{
+                        $account_name="vir_card";
+                        $mode_reglement_id =6;// fournir un CB par defaut. au cas il trouve pas.
                    }
 
-                   elseif($account_name=="payplug"){
-                      // le mode de paiment.
-                       $mode_reglement_id =106;// prod.....
-                   }
-                   
-                   elseif($account_name=="apple_pay"){
-                        $mode_reglement_id = 6;
-                   }
-                   
-                    elseif($account_name=="bancontact"){
-                        $mode_reglement_id =6;
-                   }
 
-                   elseif($account_name=="cod"){
-                      $mode_reglement_id =6;
-                    }
-
-                   elseif($account_name=="CB"){
-                      $mode_reglement_id =6;
-                   }
-                   
-                    elseif($account_name=="oney_x4_with_fees"){
-                      $mode_reglement_id=108; // payplug 4x..
-                   }
-                    elseif($account_name=="bacs"){
-                      $mode_reglement_id=3; // ordre de prelevement......
-                   }
-
-                   elseif($account_name=="gift_card"){
-                       $mode_reglement_id = 57;
-                   }
-
-                   elseif($account_name=="PAYP"){
-                      $mode_reglement_id = 106;
-                  }
-
-                  elseif($account_name=="DONS"){
-                    $mode_reglement_id = 57;
-                  }
-
-                   else{
-                       $mode_reglement_id=3;
-                   }
-
-                  
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
@@ -853,14 +818,12 @@ class TransferOrder
                          $paimentid =3;// PROD
                     }
                     else{
-                            // dons 
+                          // dons 
                           $account_id=3; // PROD
                           $paimentid =3;// PROD
                     }
 
-
-                     
-                    // si c'est un distributeur (mettre la facture impayé)
+                      // si c'est un distributeur (mettre la facture impayé)
                     if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
                         "paye"	=> 1,
@@ -906,8 +869,8 @@ class TransferOrder
                        "notrigger"=>0,
                      ];
 
-                  // recupérer la datetime et la convertir timestamp
-                  // liée la facture à un mode de rélgement
+                   // recupérer la datetime et la convertir timestamp
+                   // liée la facture à un mode de rélgement
                   // convertir la date en datetime en timestamp.....
                   $datetime = date('d-m-Y H:i:s');
                   $d = DateTime::createFromFormat(
@@ -922,25 +885,45 @@ class TransferOrder
                 $date_finale =  $d->getTimestamp(); // conversion de date.
                }
       
-               $newbank = [
-                "datepaye"=>$date_finale,
-                "paymentid"=>6,
-                "closepaidinvoices"=> "yes",
-                "accountid"=> $account_id, // id du compte bancaire.
-               ];
+                 $newbank = [
+                 "datepaye"=>$date_finale,
+                 "paymentid"=>6,
+                 "closepaidinvoices"=> "yes",
+                 "accountid"=> $account_id, // id du compte bancaire.
+                 ];
 
-              // valider les facture dans dolibar....
-               if($valid==1){
-                 // valider la facture en impayée.
-                  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+                // valider les facture dans dolibar....
+                if($valid==1){
+                   // valider la facture en impayée.
+                   $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                }
                else{
-                     // valider et mettre en payée la facture.
-                     $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-                     // Lier les factures dolibar  à un moyen de paiement et bank.
-                     $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                    // mettre le statut en payé dans la facture  dolibar
-                    $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                      // valider et mettre en payée la facture.
+                      // traiter les retour de réponse api
+                       $validate_facture =""; // retour de traitement de l'api.
+                       $validate_facture =  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+                       // traiter la réponse de l'api
+                       $response = json_decode($validate_facture, true);
+                       $index_facture ="FA";// facture valide
+                       $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
+                       $indice = substr($response['ref'],0,2); // recupérer le prefixe de la facture ces deux premiere lettre.
+                    
+                        if($indice==$index_facture1){
+                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture resté impayée  !']);
+                          exit;
+                       }
+                       
+                        if(isset($response['error']['message'])){
+                          $message = $response['error']['message'];
+                           echo json_encode(['success' => false, 'message'=> $message]);
+                           exit;
+                          
+                      }
+                       
+                        // Lier les factures dolibar  à un moyen de paiement et bank.
+                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                        // mettre le statut en payé dans la facture  dolibar
+                        $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
               }
 
         }
