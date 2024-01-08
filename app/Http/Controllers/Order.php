@@ -129,6 +129,11 @@ class Order extends BaseController
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
 
+        if(isset($orders['message'])){
+          $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
+          return false;
+        }
+
         if(!$orders){
           return array();
         } 
@@ -149,10 +154,6 @@ class Order extends BaseController
           }
         }  
 
-        if(isset($orders['message'])){
-          $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
-          return false;
-        }
       
         // Liste des distributeurs
         $distributors = $this->distributor->getDistributors();
