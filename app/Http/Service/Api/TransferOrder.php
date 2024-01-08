@@ -1,22 +1,23 @@
 <?php
 namespace App\Http\Service\Api;
 
-use Illuminate\Support\Facades\Http;
-use App\Models\Commandeid;
-use App\Models\Productdiff;
-use App\Models\Transfertrefunded;
-use App\Models\Transfertsucce;
-use App\Models\Don;
-use App\Models\Distributeur\Invoicesdistributeur;
-use App\Repository\Commandeids\CommandeidsRepository;
-use App\Repository\Don\DonRepository;
-use App\Repository\Don\DonsproductRepository;
-use App\Repository\Tiers\TiersRepository;
-use Automattic\WooCommerce\Client;
-use Automattique\WooCommerce\HttpClient\HttpClientException;
 use DateTime;
 use DateTimeZone;
+use App\Models\Don;
+use App\Models\Commandeid;
+use App\Models\Productdiff;
+use App\Models\Transfertsucce;
+use App\Models\Transfertrefunded;
+use Automattic\WooCommerce\Client;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use App\Repository\Don\DonRepository;
+use App\Repository\Tiers\TiersRepository;
+use App\Repository\Don\DonsproductRepository;
+use App\Repository\LogError\LogErrorRepository;
+use App\Models\Distributeur\Invoicesdistributeur;
+use App\Repository\Commandeids\CommandeidsRepository;
+use Automattique\WooCommerce\HttpClient\HttpClientException;
 
 class TransferOrder
 {
@@ -31,13 +32,18 @@ class TransferOrder
       private $accountpay;
       private $distristatus;
       private $ficfacture;
+      private $logError;
+      private $don;
+      private $dons;
+      private $tiers;
     
        public function __construct(
         Api $api,
         CommandeidsRepository $commande,
         TiersRepository $tiers,
         DonRepository $don,
-        DonsproductRepository $dons
+        DonsproductRepository $dons,
+        LogErrorRepository $logError
        )
        {
          $this->api=$api;
@@ -45,6 +51,7 @@ class TransferOrder
          $this->tiers = $tiers;
          $this->don = $don;
          $this->dons = $dons;
+         $this->logError = $logError;
        }
     
     
@@ -166,7 +173,6 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-           
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -202,10 +208,13 @@ class TransferOrder
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans doliba.
 
 
-                if(count($listproduct)==0){
-                   echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
+                  if(count($listproduct)==0){
+                    $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'la facture n\'a pas été crée signalé au service informatique !']);
+                    
+                    echo json_encode(['success' => false, 'message'=> ' la facture n\'a pas été crée signalé au service informatique !']);
                     exit;
                   }
+
                   //Recuperer les ref_client existant dans dolibar
 	                $tiers_ref = "";
                   // recupérer directement les tiers de puis bdd.
@@ -627,6 +636,9 @@ class TransferOrder
                              $response = json_decode($retour_create, true);
                             if(isset($response['error']['message'])){
                                $message = $response['error']['message'];
+
+                               $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
+
                                echo json_encode(['success' => false, 'message'=> $message]);
                                exit;
                             }
@@ -909,14 +921,17 @@ class TransferOrder
                        $indice = substr($response['ref'],0,2); // recupérer le prefixe de la facture ces deux premiere lettre.
                     
                         if($indice==$index_facture1){
+                          $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
                           exit;
                        }
                        
                         if(isset($response['error']['message'])){
                           $message = $response['error']['message'];
-                           echo json_encode(['success' => false, 'message'=> $message]);
-                           exit;
+                          $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
+                          
+                          echo json_encode(['success' => false, 'message'=> $message]);
+                          exit;
                           
                       }
                        
