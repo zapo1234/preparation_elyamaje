@@ -87,8 +87,8 @@ class CommandeidsRepository implements CommandeidsInterface
            $data_array =[
              '57,DONS'=>'DONS',
              '107,stripe'=>'stripe',
-             '106,paypul'=>'payplug',
-             '106,paypul'=>'PAYP',
+             '106,payplug'=>'payplug',
+             '106,payplug'=>'PAYP',
              '6,CB'=>'CB',
              '6,cod'=>'cod',
              '102,bancontact'=>'bancontact',
