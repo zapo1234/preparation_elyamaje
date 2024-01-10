@@ -26,7 +26,8 @@ $(".validate_order").on("click", function(){
     $.ajax({
         url: "checkExpedition",
         metho: 'GET',
-        data : {order_id: $("#order_id").val()}
+        data : {order_id: $("#order_id").val()},
+        async: false
     }).done(function(data) {
         if(JSON.parse(data).success){
 
