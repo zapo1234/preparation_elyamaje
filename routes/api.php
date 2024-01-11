@@ -29,5 +29,13 @@ Route::post("/login", [ApiController::class, "login"]);
 
 
 
+// Route api mise à jour d'étiquettes
+Route::get("/getLabels", [ApiController::class, "getLabels"]);
+Route::post("/updateLabelsStatus", [ApiController::class, "updateLabelsStatus"]);
+
+
+
+
+
 
 

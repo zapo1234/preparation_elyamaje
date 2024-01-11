@@ -27,6 +27,7 @@ class LabelRepository implements LabelInterface
          'created_at' => date('Y-m-d H:i:s'),
          'tracking_status' => 0,
          'cn23' => $label['cn23'] ?? null,
+         'weight' => $label['weight'] ?? null
      ]);
    }
 
@@ -74,13 +75,22 @@ class LabelRepository implements LabelInterface
       $order_id = [];
       $updateQuery = "UPDATE prepa_labels SET tracking_status = (CASE order_id";
 
-      foreach ($labels as  $value) {
+      // Colissimo
+      foreach ($labels['colissimo'] as  $value) {
+         $order_id[] = $value['order_id'];
+         $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
+      }
+
+      // Chronopost
+      foreach ($labels['chronopost'] as  $value) {
          $order_id[] = $value['order_id'];
          $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
       }
 
       $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";
       $response = DB::update($updateQuery);
+
+      return $response;
    }
 
    public function updateLabel($data, $label_id){
