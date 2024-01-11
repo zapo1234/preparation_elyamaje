@@ -5,21 +5,22 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
+use App\Http\Service\PDF\CreatePdf;
 use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Http\Service\Api\ColissimoTracking;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Service\Api\Chronopost\Chronopost;
+use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Bordereau\BordereauRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repository\LabelProductOrder\LabelProductOrderRepository;
-use App\Repository\LogError\LogErrorRepository;
-use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 
 class Label extends BaseController
 {
@@ -37,6 +38,7 @@ class Label extends BaseController
     private $colissimoTracking;
     private $api;
     private $logError;
+    private $pdf;
 
     public function __construct(
         LabelRepository $label, 
@@ -49,7 +51,8 @@ class Label extends BaseController
         ColissimoRepository $colissimoConfiguration,
         Chronopost $chronopost,
         ColissimoTracking $colissimoTracking,
-        LogErrorRepository $logError
+        LogErrorRepository $logError,
+        CreatePdf $pdf
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -62,6 +65,7 @@ class Label extends BaseController
         $this->chronopost = $chronopost;
         $this->colissimoTracking = $colissimoTracking;
         $this->logError = $logError;
+        $this->pdf = $pdf;
     }
 
     public function getlabels(Request $request){
@@ -112,6 +116,7 @@ class Label extends BaseController
                 ];
             }
         }
+
         // Liste des status commandes
         $status_list = __('status_order');
         return view('labels.label', ['orders' => $array_order, 'status_list' => $status_list, 'parameter' => $request->all(), 'result' => count($array_order)]);
@@ -260,27 +265,94 @@ class Label extends BaseController
     }
 
      public function generateBordereau(Request $request){
-
         $date = $request->post('date');
-        // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
-        $parcelNumbers = $this->label->getParcelNumbersyDate($date);
-        $parcelNumbers_array = [];
+        $origin =  $request->post('origin') ?? [];
+        $error = [];
+        $success = [];
 
-        foreach($parcelNumbers as $parcel){
-            $parcelNumbers_array[] = $parcel->tracking_number;
+        if(in_array('colissimo', $origin)){
+            // Récupère l'ensemble des commandes en fonction de la date et qui n'ont pas de bordereau généré
+            $parcelNumbers = $this->label->getParcelNumbersyDate($date);
+            $parcelNumbers_array = [];
+
+            foreach($parcelNumbers as $parcel){
+                $parcelNumbers_array[] = $parcel->tracking_number;
+            }
+
+            if(count($parcelNumbers_array) == 0){
+                $error['Colissimo'] = "Bordereau déjà généré ou aucune étiquette pour cette date !";
+            } else {
+                $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array, $date);
+                if($bordereau['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
+                    $success['Colissimo'] = 'Borderau généré avec succès !';
+                } else {
+                    $error['Colissimo'] = $bordereau['<jsonInfos>']['messages'][0]['messageContent'];
+                }
+            }
         }
 
-        if(count($parcelNumbers_array) == 0){
-            return redirect()->route('bordereaux')->with('error', 'Bordereau déjà généré ou aucune étiquette pour cette date !');
-        } else {
-            $bordereau = $this->colissimo->generateBordereauByParcelsNumbers($parcelNumbers_array, $date);
-            
-            if($bordereau['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
-                return redirect()->route('bordereaux')->with('success', 'Borderau généré avec succès !');
-                // return Response::make($pdf, 200, $headers);
+        if(in_array('chronopost', $origin)){
+            $orders = $this->order->getChronoLabelByDate($date)->toArray();
+            $order_detail = [];
+            $tracking_number = [];
+            $total_weight = 0;
+
+            if(count($orders) > 0){
+                foreach($orders as $key => $order){
+                    $tracking_number[] = $order['tracking_number'];
+                    $total_weight = floatval($total_weight) + floatval($order['weight']);
+        
+                    // Par envoie 
+                    $order_detail['orders'][$order['shipping_customer_country']]['orders'][$order['order_woocommerce_id']] = [
+                        'order_id' => $order['order_woocommerce_id'],
+                        'weight' => $order['weight'],
+                        'tracking_number' => $order['tracking_number'],
+                        'shipping_method' => $order['shipping_method'],
+                        'product_code' => $order['product_code'],
+                        'billing_customer_company' => $order['shipping_customer_company'] != "" ? $order['shipping_customer_company'] : $order['shipping_customer_last_name'].' '.$order['shipping_customer_first_name'],
+                        'first_name' => $order['shipping_customer_first_name'],
+                        'last_name' => $order['shipping_customer_last_name'],
+                        'postcode' => $order['shipping_customer_postcode'],
+                        'city' => $order['shipping_customer_city'],
+                        'country' => $order['shipping_customer_country'],
+                        'customer_id' => $order['customer_id'],
+                        'insured' => $order['total_order'] > 250 ? '> 250' : 250
+                    ];  
+        
+                   
+                    $weight = $order_detail['orders'][$order['shipping_customer_country']]['orders'][$order['order_woocommerce_id']]['weight'];
+        
+                    $order_detail['orders'][$order['shipping_customer_country']]['total_weight'] = 
+                    isset($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) ? 
+                    floatval($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) + floatval($weight): 
+                    floatval($weight);
+                    $order_detail['orders'][$order['shipping_customer_country']]['total_order'] = count($order_detail['orders'][$order['shipping_customer_country']]['orders']);
+        
+                    $order_detail['total_weight'] = $total_weight;
+                }
+        
+                $order_detail['total_order'] = count($orders);
+                $pdf = $this->pdf->generateBordereauChrono($order_detail);
+
+                if($pdf){
+                    if($this->label->saveBordereau(time(), $tracking_number) && $this->bordereau->save(time(), $pdf, $date, "chronopost")){
+                        $success['Chronopost'] = "Borderau généré avec succès !";
+                    }  
+                } else {
+                    $error['Chronopost'] = "Erreur génération d'étiquette !";
+                }
             } else {
-                return redirect()->route('bordereaux')->with('error', $bordereau['<jsonInfos>']['messages'][0]['messageContent']);
+                $error['Chronopost'] = "Bordereau déjà généré ou aucune étiquette pour cette date !";
             }
+        }
+
+        // Retour réponse
+        if(count($success) > 0 && count($error) > 0){
+            return redirect()->route('bordereaux')->with('message', ['type' => 'warning', 'message' => array_merge($error, $success)]);
+        } else if(count($success) > 0 && count($error) == 0){
+            return redirect()->route('bordereaux')->with('message', ['type' => 'success', 'message' => $success]);
+        } else {
+            return redirect()->route('bordereaux')->with('message', ['type' => 'error', 'message' => $error]);
         }
     }
 
@@ -476,51 +548,51 @@ class Label extends BaseController
         }
     }
     
-    public function getTrackingLabelStatus($token){
+    // public function getTrackingLabelStatus($token){
 
-        if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
-            try{
-                // Get all orders labels -10 jours
-                $rangeDate = 10;
-                $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
+    //     if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
+    //         try{
+    //             // Get all orders labels -10 jours
+    //             $rangeDate = 10;
+    //             $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate);
 
-                $colissimo = [];
-                $chronopost = [];
-                // $order_to_update = [];
+    //             $colissimo = [];
+    //             $chronopost = [];
+    //             // $order_to_update = [];
                 
-                foreach($labels as $label){
-                    // if($label->status == "prepared-order"){
-                    //     $order_to_update[] = $label->order_id;
-                    // }
+    //             foreach($labels as $label){
+    //                 // if($label->status == "prepared-order"){
+    //                 //     $order_to_update[] = $label->order_id;
+    //                 // }
                 
-                    if($label->origin == "colissimo"){
-                        $colissimo[] = $label;
-                    } else if($label->origin == "chronopost"){
-                        $chronopost[] = $label;
-                    }
-                }
+    //                 if($label->origin == "colissimo"){
+    //                     $colissimo[] = $label;
+    //                 } else if($label->origin == "chronopost"){
+    //                     $chronopost[] = $label;
+    //                 }
+    //             }
 
-                // Update status local de la commande en terminée pour celles dont ce n'est pas le cas
-                // if(count($order_to_update) > 0){
-                //     $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
-                // }
+    //             // Update status local de la commande en terminée pour celles dont ce n'est pas le cas
+    //             // if(count($order_to_update) > 0){
+    //             //     $this->order->updateOrdersById([implode(',', $order_to_update)], "finished");
+    //             // }
                 
-                // Récupère les status de chaque commande
-                $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
-                $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
+    //             // Récupère les status de chaque commande
+    //             $trackingLabelColissimo = $this->colissimoTracking->getStatus($colissimo);
+    //             $trackingLabelChronopost = $this->chronopost->getStatus($chronopost);
 
-                // Update status sur Wordpress pour les colis livré
-                $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
-                $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
-                $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
-                // Update en local
-                $this->label->updateLabelStatus($trackingLabel);
+    //             // Update status sur Wordpress pour les colis livré
+    //             $update = $this->colissimo->trackingStatusLabel($trackingLabelColissimo);
+    //             $update2 = $this->chronopost->trackingStatusLabel($trackingLabelChronopost);
+    //             $trackingLabel = array_merge($trackingLabelColissimo, $trackingLabelChronopost);
+    //             // Update en local
+    //             $this->label->updateLabelStatus($trackingLabelColissimo);
 
-                return $update;
-            } catch(Exception $e){
-                $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
-                // dd($e->getMessage());
-            }
-        }
-    }
+    //             return $update;
+    //         } catch(Exception $e){
+    //             $this->logError->insert(['order_id' => null, 'message' => 'Error function getTrackingLabelStatus '.$e->getMessage()]);
+    //             // dd($e->getMessage());
+    //         }
+    //     }
+    // }
 }

@@ -11,7 +11,7 @@
     <div class="page-wrapper">
         <div class="page-content">
             <div class="page-breadcrumb d-sm-flex align-items-center mb-3">
-                <div class="breadcrumb-title pe-3">Colissimo</div>
+                <div class="breadcrumb-title pe-3">Expédition</div>
                 <div class="ps-3">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
@@ -45,17 +45,47 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <form method="POST" action="{{ route('bordereau.generate') }}">
-                                @csrf
-                                <h2 class="text-center">Choisir la date</h2>
-                                <div class="d-flex justify-content-center w-100">
-                                    <input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
+                            <div class="d-flex w-100 justify-content-end">
+                                <i style="z-index:10; cursor:pointer;position:absolute" data-bs-dismiss="modal" class="font-20 bx bx-x"></i>
+                            </div>
+                            <div class="container_multy_step">
+                                <form method="POST" action="{{ route('bordereau.generate') }}">
+                                    @csrf
+                                    <div class="step_form" id="form1">
+                                        <h3 class="text-dark">Bordereau</h3>
+                                    
+                                        <div class="w-100 d-flex justify-content-center align-items-center mb-3 mt-3">
+                                        <span class="d-flex align-items-center" style="gap: 10px">
+                                            <label class="text-dark font-20">Chronopost</label>
+                                            <input name="origin[]" style="width:1.5em; height: 1.5em; cursor: pointer" class="form-check-input check_all" type="checkbox" value="chronopost">
+                                        </span>
+                                        <span class="d-flex align-items-center" style="gap: 10px; margin-left: 25px">
+                                            <label class="text-dark font-20">Colissimo</label>
+                                            <input name="origin[]" style="width:1.5em; height: 1.5em; cursor: pointer" class="form-check-input check_all" type="checkbox" value="colissimo">
+                                        </span>
+                                        </div>
+
+                                        <div class="btn_box">
+                                            <button class="btn btn-dark px-5" id="next1" type="button">Suivant</button>
+                                        </div>
+                                    </div>
+                                    <div class="step_form" id="form2">
+                                        <h3 class="text-dark">Date</h3>
+                                        <div class="d-flex justify-content-center w-100">
+                                            <input style="border: 1px solid black" class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
+                                        </div>
+                                        <div class="btn_box">
+                                        <button class="btn btn-dark px-5" id="back1" type="button">Retour</button>
+                                        <button class="btn btn-dark px-5" id="next2" type="submit">Valider</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="progress_container">
+                                    <div class="progress" id="progress"></div>
+                                    <div class="circle active_progress">1</div>
+                                    <div class="circle">2</div>
                                 </div>
-                                <div class="d-flex justify-content-center mt-3 w-100">
-                                    <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-                                    <button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Générer</button>
-                                </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -70,6 +100,17 @@
             @if(session()->has('error'))
                 <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                     <div class="text-white">{{ session()->get('error') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+
+            @if(session('message'))
+                <div class="alert alert-{{ session('message')['type'] != 'error' ? session('message')['type'] : 'danger' }} 
+                border-0 bg-{{ session('message')['type'] != 'error' ? session('message')['type'] : 'danger' }} alert-dismissible fade show">
+                    @foreach(session('message')['message'] as $key => $message)
+                        <div class="text-white {{ count(session('message')['message']) > 1 ? 'mb-1' : '' }}"><span class="font-18" style="font-weight:bold;" >{{ $key }} : </span>{{ $message }}</div>
+                    @endforeach
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -149,6 +190,76 @@
     <script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
     <script src="assets/plugins/select2/js/select2.min.js"></script>
     <script>
+
+        "use strict";
+
+        const form1 = document.getElementById("form1");
+        const form2 = document.getElementById("form2");
+        const progressEl = document.getElementById("progress");
+        const circles = document.querySelectorAll(".circle");
+        let currectActive = 1;
+        //============== Next Form===============
+        function nextOne() {
+            if($(".check_all").is(':checked')){
+                $(".check_all").css('border', '1px solid black')
+                form1.style.left = "-500px";
+                form2.style.left = "0px";
+                //next slide
+                increamentNumber();
+                // update progress bar
+                update();
+            } else {
+                $(".check_all").css('border', '1px solid red')
+            }
+        }
+        //=============== Back One==================
+        function backOne() {
+            form1.style.left = "0px";
+            form2.style.left = "500px";
+            // back slide
+            decreametNumber();
+            // update progress bar
+            update();
+        }
+        //============= Progress update====================
+        function update() {
+            circles.forEach((circle, indx) => {
+                if (indx < currectActive) {
+                circle.classList.add("active_progress");
+                } else {
+                circle.classList.remove("active_progress");
+                }
+                // get all of active classes
+                const active_progress = document.querySelectorAll(".active_progress");
+                progressEl.style.width =
+                ((active_progress.length - 1) / (circles.length - 1)) * 100 + "%";
+            });
+        }
+        //================== Increament Number===============
+        function increamentNumber() {
+            // next progress number
+            currectActive++;
+                if (currectActive > circles.length) {
+                    currectActive = circles.length;
+                }
+        }
+        //================ Decreament Number=================
+        function decreametNumber() {
+            currectActive--;
+                if (currectActive < 1) {
+                    currectActive = 1;
+                }
+        }
+        //================= btn Events===================
+        const btnsEvents = () => {
+            const next1 = document.getElementById("next1");
+            const back1 = document.getElementById("back1");
+            //next1
+            next1.addEventListener("click", nextOne);
+            // back1
+            back1.addEventListener("click", backOne);
+        };
+        document.addEventListener("DOMContentLoaded", btnsEvents);
 
         $(document).ready(function() {
             $('#example').DataTable({

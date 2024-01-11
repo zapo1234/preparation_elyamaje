@@ -328,7 +328,7 @@ function validWrapOrder(label, redirection = false, error = false){
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        weight_product = value.weight != "" ? value.weight : 0
+                        var weight_product = value.weight != "" ? value.weight : 0
                         total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 

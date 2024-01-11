@@ -47,7 +47,7 @@ class Auth extends BaseController
         $request->session()->flush();
 
         if($request->wantsJson()){
-            return new Response('', 204) ;
+            return new Response('', 204);
         } else {
             return redirect()->route('login');
         }     

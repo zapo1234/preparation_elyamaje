@@ -11,6 +11,7 @@ use App\Http\Service\Api\Api;
 use App\Http\Controllers\Order;
 use App\Models\ProductDolibarr;
 use Illuminate\Support\Facades\DB;
+use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
@@ -21,6 +22,7 @@ use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Categorie\CategoriesRepository;
+use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
@@ -42,6 +44,8 @@ class Controller extends BaseController
     private $reassort;
     private $tiersRepository;
     private $orderDolibarr;
+    private $pdf;
+    private $woocommerce;
 
     public function __construct(
         Order $orderController,
@@ -54,7 +58,9 @@ class Controller extends BaseController
         Api $api,
         ReassortRepository $reassort,
         TiersRepository $tiersRepository,
-        OrderDolibarrRepository $orderDolibarr
+        OrderDolibarrRepository $orderDolibarr,
+        CreatePdf $pdf,
+        WoocommerceService $woocommerce
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -67,6 +73,8 @@ class Controller extends BaseController
         $this->reassort = $reassort;
         $this->tiersRepository = $tiersRepository;
         $this->orderDolibarr = $orderDolibarr;
+        $this->pdf = $pdf;
+        $this->woocommerce = $woocommerce;
     }
 
     // INDEX ADMIN
@@ -1693,7 +1701,54 @@ class Controller extends BaseController
        
         return $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
     }
+
+
+    function bordereauChrono(){
+
+        $date = date('Y-m-d');
+        $orders = $this->orders->getChronoLabelByDate($date)->toArray();
+        $order_detail = [];
+        $total_weight = 0;
+
+        if(count($orders) > 0){
+            foreach($orders as $key => $order){
+                $total_weight = floatval($total_weight) + floatval($order['weight']);
+    
+                // Par envoie 
+                $order_detail['orders'][$order['shipping_customer_country']]['orders'][$order['order_woocommerce_id']] = [
+                    'weight' => $order['weight'],
+                    'tracking_number' => $order['tracking_number'],
+                    'shipping_method' => $order['shipping_method'],
+                    'product_code' => $order['product_code'],
+                    'billing_customer_company' => $order['shipping_customer_company'] != "" ? $order['shipping_customer_company'] : $order['shipping_customer_last_name'].' '.$order['shipping_customer_first_name'],
+                    'first_name' => $order['shipping_customer_first_name'],
+                    'last_name' => $order['shipping_customer_last_name'],
+                    'postcode' => $order['shipping_customer_postcode'],
+                    'city' => $order['shipping_customer_city'],
+                    'country' => $order['shipping_customer_country'],
+                    'customer_id' => $order['customer_id'],
+                ];  
+    
+               
+                $weight = $order_detail['orders'][$order['shipping_customer_country']]['orders'][$order['order_woocommerce_id']]['weight'];
+    
+                $order_detail['orders'][$order['shipping_customer_country']]['total_weight'] = 
+                isset($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) ? 
+                floatval($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) + floatval($weight): 
+                floatval($weight);
+                $order_detail['orders'][$order['shipping_customer_country']]['total_order'] = count($order_detail['orders'][$order['shipping_customer_country']]['orders']);
+    
+                $order_detail['total_weight'] = $total_weight;
+            }
+    
+            $order_detail['total_order'] = count($orders);
+            return $this->pdf->generateBordereauChrono($order_detail);
+        } else {
+            return redirect()->route('bordereaux')->with('error', 'Aucune étiquette chronopost générées aujourd\'hui');
+        }
+
+       
+    }
     
 
 }
-    

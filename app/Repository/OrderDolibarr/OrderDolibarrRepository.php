@@ -287,6 +287,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                $haveFilter = true;
                if($key == "created_at"){
                   $query->where("labels.".$key."","LIKE",  "%".$filter."%");
+               } else if($key == "origin"){
+                  $query->where("labels.".$key , $filter);
                } else {
                   $query->where("orders_doli.".$key."", $filter);
                }

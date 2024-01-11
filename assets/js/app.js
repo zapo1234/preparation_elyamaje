@@ -1,3 +1,57 @@
+
+function filter_mobile(width){
+    if(width < 900 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 0 || $("#example_length .select2_custom").length > 0)){
+        if($(".filter_mobile").length == 0){
+            $(".table_mobile_responsive").before(`
+            <div class="filter_mobile">
+                <div class="box_filter">
+                    <i class="font-20 bx bx-filter-alt"></i>
+                </div>
+            </div>
+        `)
+
+        if($(".modal_filter_mobile").length == 0){
+            $("body").append(`
+                <div class="modal modal_filter_mobile" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-fullscreen" role="document">
+                        <div class="modal-content">
+                        <div class="modal-body">
+                        
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            `)
+
+            setTimeout(function(){
+                $("#example_wrapper > .row:first-child").appendTo('.modal-body')
+                $('select[name="example_length"]').parent().last().appendTo('.filter_mobile')
+            },0)
+        }
+
+            $('body').on('click', '.box_filter', function () {
+                $(".modal_filter_mobile").modal('show')
+            })
+        }
+    } else {
+        if($(".filter_mobile").length > 0){
+            
+            $(".modal-backdrop").remove()
+            $(".modal-body > .row").last().prependTo('#example_wrapper')
+            $('select[name="example_length"]').parent().last().prependTo('.dataTables_length')
+          
+            $(".filter_mobile").remove()
+            $(".modal_filter_mobile").remove()
+        }
+    }
+}
+$(window).resize(function(){
+    filter_mobile($( window ).width())
+})
+
 $(function () {
 
 	"use strict";
@@ -224,6 +278,10 @@ $(function () {
 
 $( document ).ready(function() {
 
+	$('body').on( 'init.dt', function ( e, ctx ) {
+		filter_mobile($( window ).width())
+	})
+
 	if($.fn.dataTable){
 		$.extend(true, $.fn.dataTable.defaults, {
 			"showNEntries" : false,
@@ -241,6 +299,8 @@ $( document ).ready(function() {
 			"oLanguage": {
 				"sInfo" : "Affichage des entrées de _START_ à _END_ sur un total de _TOTAL_ ",
 			},
+			
+		
 		});
 	}
 
@@ -328,4 +388,3 @@ function notificationsListener(user_role_logged){
 		}
 	});
 }
-

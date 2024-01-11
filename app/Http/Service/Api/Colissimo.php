@@ -124,7 +124,8 @@ class Colissimo
                         'label_format' => explode('_', $format)[0],
                         'label_created_at' => date('Y-m-d h:i:s'),
                         'tracking_number' => $trackingNumber,
-                        'cn23' => $cn23
+                        'cn23' => $cn23,
+                        'weight' => $weight ?? null
                     ];
 
 
@@ -184,7 +185,7 @@ class Colissimo
                     if($content['<jsonInfos>']['messages'][0]['messageContent'] == "La requête a été traitée avec succès"){
                         $bordereau_id = $content['<jsonInfos>']['bordereauHeader']['bordereauNumber'];
                         $this->label->saveBordereau($bordereau_id, $array);
-                        $this->bordereau->save($bordereau_id, $content['<deliveryPaper>'], $date);
+                        $this->bordereau->save($bordereau_id, $content['<deliveryPaper>'], $date, "colissimo");
 
                         if($key == (count($new_array) -1)){
                             return $content;

@@ -18,10 +18,10 @@ class Chronopost
 
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
-            'password'                      => config('app.chronopost_password'), 
+            'password'                      => "255562", //config('app.chronopost_password'), 
             // Chronopost account / Compte client chronopost
             'headerValue'                   => [
-                "accountNumber"             => config('app.chronopost_accountNumber'),
+                "accountNumber"             => "19869502", //config('app.chronopost_accountNumber'),                
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
@@ -86,8 +86,10 @@ class Chronopost
                 'content4'                  => '',
                 'content5'                  => '',
                 "customsCurrency"           => config('app.currency'),
+                "customsValue"              => intval($order['total_order']),
                 "evtCode"                   => 'DC', 
                 "insuredCurrency"           => config('app.currency'),
+                "insuredValue"              => intval($order['total_order']) *100,
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
                 "service"                   => $SaturdayShipping,          
@@ -102,8 +104,10 @@ class Chronopost
             ],
             // client's ref. value / Code barre client
             'refValue' => [
-                "shipperRef"                => $order['order_id'],            
-                "recipientRef"              => $order['customer_id'],      
+                "customerSkybillNumber"     => $order['order_id'], 
+                "recipientRef"              => $order['customer_id'], // Ref destinataire, champ libre
+                "shipperRef"                => $order['order_id'],  // Libre ou mettre code point relais          
+                    
             ],
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
@@ -128,7 +132,8 @@ class Chronopost
                     'origin' => 'chronopost',
                     'label_format' => explode('_', $format)[0],
                     'label_created_at' => date('Y-m-d h:i:s'),
-                    'tracking_number' => $result->return->skybillNumber
+                    'tracking_number' => $result->return->skybillNumber,
+                    'weight' => $weight ?? null
                 ];
 
                 return $data;
