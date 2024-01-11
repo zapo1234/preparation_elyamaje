@@ -173,6 +173,10 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
+             
+           
+          dd($orders);
+        
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -200,6 +204,7 @@ class TransferOrder
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
                  $apiUrl = env('KEY_API_URL');
+
 
 
                  $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
@@ -802,7 +807,7 @@ class TransferOrder
                        $mode_reglement_id = $moyen_paids[0];
                    }else{
                         $account_name="vir_card";
-                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.
+                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas...
                    }
 
 
@@ -918,14 +923,12 @@ class TransferOrder
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
                        $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
-                       $indice = substr($response['ref'],0,2); // recupérer le prefixe de la facture ces deux premiere lettre.
-                    
-                        if($indice==$index_facture1){
-                          $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
-                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                       if(!isset($response['ref'])){
+                            $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
                           exit;
-                       }
-                       
+                        }  // recupérer le prefixe de la facture ces deux premiere lettre.
+                    
                         if(isset($response['error']['message'])){
                           $message = $response['error']['message'];
                           $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
