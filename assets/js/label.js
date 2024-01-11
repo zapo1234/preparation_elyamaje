@@ -167,9 +167,10 @@ $(".generate_label_button").on('click', function(){
                     if(value.quantity - value.total_quantity == 0){
                         total_weight = parseFloat(total_weight)
                     } else {
-                        weight_product = value.weight != "" ? value.weight : 0
+                        var weight_product = value.weight != "" ? value.weight : 0
                         total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
+
 
                     innerHtml +=
                         `<div class="${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
