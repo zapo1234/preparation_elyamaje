@@ -97,11 +97,11 @@ class WoocommerceService
           }
 
           foreach($or as $key2 => $or2){
-            if (str_contains($key2, 'billing')) {
+            if (str_contains($key2, 'billing_customer')) {
               unset($order[$key][$key2]);
             }
 
-            if (str_contains($key2, 'shipping') && !str_contains($key2, 'method')) {
+            if (str_contains($key2, 'shipping_customer')) {
               unset($order[$key][$key2]);
             }
           }
@@ -119,6 +119,9 @@ class WoocommerceService
         } else {
           $distributor = false;
         }
+
+        // Frais d'expédition et détails expéditeurs
+        $order_new_array['shipping_method_name'] = $this->getShippingMethod($order[0]['shipping_method']);
 
         $order_new_array['is_distributor'] = $distributor;
         $orders[] = $order_new_array;
@@ -228,6 +231,18 @@ class WoocommerceService
 
     $newArray[] = $transformOrder;
     return $newArray;
+  }
+
+  private function getShippingMethod($shippingMeyhod = false){
+    if(str_contains($shippingMeyhod, 'lpc')){
+      return "Colissimo";
+    } else if(str_contains($shippingMeyhod, 'chrono')){
+      return" Chronopost";
+    } else if(str_contains($shippingMeyhod, 'local')){
+      return "Retrait distributeur";
+    } else {
+      return "Other";
+    }
   }
 }
 
