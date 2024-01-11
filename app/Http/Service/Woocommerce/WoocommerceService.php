@@ -229,6 +229,7 @@ class WoocommerceService
       $transformOrder['total_product'] = $total_product;
     }
 
+    $transformOrder['shipping_method_name'] = $this->getShippingMethod($transformOrder['shipping_method']);
     $newArray[] = $transformOrder;
     return $newArray;
   }
