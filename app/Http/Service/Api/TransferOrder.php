@@ -546,7 +546,7 @@ class TransferOrder
                            }
                                  
                                    // gérer les moyens de transport de collisimo
-                                   $array_line_product =[];
+                                      $array_line_product =[];
                                        $total_a_tva = $donnees['shipping_amount']*20/100;
                                         $array_line_product[]=[
                                           "desc"=>$chaine_name_shipping,
@@ -561,8 +561,7 @@ class TransferOrder
                                            "fk_product" =>'',//  insert id product dans dolibar.
                                             "tva_tx" => floatval($tva_product),
                                             "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
-
-                                             ];
+                                         ];
 
                                      
                                     $result_data_product = array_merge($array_line_product,$data_product);
