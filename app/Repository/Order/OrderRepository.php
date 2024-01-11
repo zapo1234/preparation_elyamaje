@@ -787,6 +787,8 @@ class OrderRepository implements OrderInterface
             $haveFilter = true;
             if($key == "created_at"){
                $query->where("labels.".$key."","LIKE",  "%".$filter."%");
+            } else if($key == "origin"){
+               $query->where("labels.origin", $filter);
             } else {
                $query->where("orders.".$key."", $filter);
             }
@@ -1040,6 +1042,19 @@ class OrderRepository implements OrderInterface
       } catch(Exception $e){
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       }
+   }
+
+   public function getChronoLabelByDate($date){
+      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 
+      DB::raw("SUM(prepa_products.weight * prepa_label_product_order.quantity) as weight"))
+      ->leftJoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->leftJoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->leftJoin('products', 'products.product_woocommerce_id', '=', 'label_product_order.product_id')
+      ->where('labels.origin', 'chronopost')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
+      ->where('labels.bordereau_id', null)
+      ->groupBy('orders.id')
+      ->get();
    }
 }
 

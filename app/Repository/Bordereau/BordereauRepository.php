@@ -25,12 +25,13 @@ class BordereauRepository implements BordereauInterface
       ->get();
    }
 
-   public function save($bordereau_id, $bordereau, $date){
+   public function save($bordereau_id, $bordereau, $date, $origin){
       return $this->model::insert([
          'parcel_number' => $bordereau_id,
          'bordereau' => $bordereau,
          'label_date' => $date,
-         'created_at' => date('Y-m-d H:i:s')
+         'created_at' => date('Y-m-d H:i:s'),
+         'origin' => $origin
       ]);
    }
 

@@ -5,14 +5,18 @@ namespace App\Http\Service\PDF;
 use Exception;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Barryvdh\DomPDF\PDF;
 
 class CreatePdf
 {
 
     private $dompdf; 
+    private $loadPDF; 
 
-    public function __construct(Dompdf $dompdf, Options $options){
+
+    public function __construct(Dompdf $dompdf, Options $options, PDF $loadPDF){
         $this->dompdf = $dompdf;
+        $this->loadPDF = $loadPDF;
         $options->set('defaultFont', 'Arial');
         $dompdf->setOptions($options);
     }
@@ -63,6 +67,11 @@ class CreatePdf
             dd($e->getMessage());
         }
     } 
+
+    public function generateBordereauChrono($order_detail){
+        $pdf = $this->loadPDF->loadView('admin.bordereauChrono', compact('order_detail'));
+        return $pdf->stream('invoice.pdf');
+    }
 }
 
 

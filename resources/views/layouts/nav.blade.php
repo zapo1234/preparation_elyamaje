@@ -137,7 +137,7 @@
                     <li><a href="{{ url('roles') }}">Roles</a></li>
                     <li><a href="{{ url('distributors') }}">Distributeurs</a></li>
                     <li><a href="{{ url('printers') }}">Imprimantes</a></li>
-                    <li><a href="{{ url('colissimo') }}">Colissimo</a></li>
+                    <li><a href="{{ url('colissimo') }}">Étiquettes</a></li>
                     <li><a href="{{ url('configDolibarr') }}">Dolibarr</a></li>
                 </ul>
             </li>
@@ -196,12 +196,12 @@
                 <div class="iocn-link">
                 <a href="#">
                     <i class='lni lni-delivery'></i>
-                    <span class="link_name">Colissimo</span>
+                    <span class="link_name">Étiquette</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a class="link_name" href="#">Colissimo</a></li>
+                    <li><a class="link_name" href="#">Expédition</a></li>
                     <li><a href="{{ url('labels') }}">Étiquettes</a></li>
                         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
                         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)

@@ -11,7 +11,7 @@
 			<div class="page-wrapper">
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
-						<div class="breadcrumb-title pe-3">Colissimo</div>
+						<div class="breadcrumb-title pe-3">Expéditions</div>
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb mb-0 p-0">
@@ -46,17 +46,47 @@
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="modal-body">
-									<form method="POST" action="{{ route('bordereau.generate') }}">
-										@csrf
-										<h2 class="text-center">Choisir la date</h2>
-										<div class="d-flex justify-content-center w-100">
-											<input class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
+									<div class="d-flex w-100 justify-content-end">
+										<i style="z-index:10; cursor:pointer;position:absolute" data-bs-dismiss="modal" class="font-20 bx bx-x"></i>
+									</div>
+									<div class="container_multy_step">
+										<form method="POST" action="{{ route('bordereau.generate') }}">
+											@csrf
+											<div class="step_form" id="form1">
+												<h3 class="text-dark">Bordereau</h3>
+											
+												<div class="w-100 d-flex justify-content-center align-items-center mb-3 mt-3">
+												<span class="d-flex align-items-center" style="gap: 10px">
+													<label class="text-dark font-20">Chronopost</label>
+													<input name="origin[]" style="width:1.5em; height: 1.5em; cursor: pointer" class="form-check-input check_all" type="checkbox" value="chronopost">
+												</span>
+												<span class="d-flex align-items-center" style="gap: 10px; margin-left: 25px">
+													<label class="text-dark font-20">Colissimo</label>
+													<input name="origin[]" style="width:1.5em; height: 1.5em; cursor: pointer" class="form-check-input check_all" type="checkbox" value="colissimo">
+												</span>
+												</div>
+
+												<div class="btn_box">
+													<button class="btn btn-dark px-5" id="next1" type="button">Suivant</button>
+												</div>
+											</div>
+											<div class="step_form" id="form2">
+												<h3 class="text-dark">Date</h3>
+												<div class="d-flex justify-content-center w-100">
+													<input style="border: 1px solid black" class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
+												</div>
+												<div class="btn_box">
+												<button class="btn btn-dark px-5" id="back1" type="button">Retour</button>
+												<button class="btn btn-dark px-5" id="next2" type="submit">Valider</button>
+												</div>
+											</div>
+										</form>
+										<div class="progress_container">
+											<div class="progress" id="progress"></div>
+											<div class="circle active_progress">1</div>
+											<div class="circle">2</div>
 										</div>
-										<div class="d-flex justify-content-center mt-3 w-100">
-											<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-											<button style="margin-left:15px" type="submit" class="btn btn-dark px-5">Générer</button>
-										</div>
-									</form>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -76,7 +106,7 @@
 					@endif
 
 					<div class="show_messages"></div>
-					<div class="card card_table_mobile_responsive">
+					<div class="card card_table_mobile_responsive label_table">
 						<div class="card-body">
 							<div class="d-flex justify-content-center">
 								<div class="loading spinner-border text-dark" role="status"> 
@@ -84,8 +114,23 @@
 								</div>
 							</div>
 
-							<form method="GET" action="{{ route('labels.filter') }}" class="d-flex d-none order_research">
-								<select name="status" class="select2_custom status_dropdown input_form_type">
+							<form method="GET" action="{{ route('labels.filter') }}" class="d-flex d-none order_research">								
+								<select name="origin" class="select2_custom type_dropdown input_form_type">
+									<option value="">Expéditeur</option>
+									@if(isset($parameter['origin']))
+										@if($parameter['origin'] == "colissimo")
+											<option selected value="colissimo">Colissimo</option>
+											<option value="chronopost">Chronopost</option>
+										@else if($parameter['origin'] == "chronopost")
+											<option selected value="chronopost">Chronopost</option>
+											<option value="colissimo">Colissimo</option>
+										@endif
+									@else 
+										<option value="colissimo">Colissimo</option>
+										<option value="chronopost">Chronopost</option>
+									@endif
+								</select>
+								<select name="status" class="select2_custom status_dropdown input_form_type h-100">
 									<option value="">Status</option>
 										@foreach($status_list as $keyStatus => $status)
 											@if(isset($parameter['status']))

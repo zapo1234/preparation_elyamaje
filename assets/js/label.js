@@ -1,5 +1,76 @@
-$(document).ready(function() {
+"use strict";
 
+        const form1 = document.getElementById("form1");
+        const form2 = document.getElementById("form2");
+        const progressEl = document.getElementById("progress");
+        const circles = document.querySelectorAll(".circle");
+        let currectActive = 1;
+        //============== Next Form===============
+        function nextOne() {
+            if($(".check_all").is(':checked')){
+                $(".check_all").css('border', '1px solid black')
+                form1.style.left = "-500px";
+                form2.style.left = "0px";
+                //next slide
+                increamentNumber();
+                // update progress bar
+                update();
+            } else {
+                $(".check_all").css('border', '1px solid red')
+            }
+        }
+        //=============== Back One==================
+        function backOne() {
+            form1.style.left = "0px";
+            form2.style.left = "500px";
+            // back slide
+            decreametNumber();
+            // update progress bar
+            update();
+        }
+        //============= Progress update====================
+        function update() {
+            circles.forEach((circle, indx) => {
+                if (indx < currectActive) {
+                circle.classList.add("active_progress");
+                } else {
+                circle.classList.remove("active_progress");
+                }
+                // get all of active classes
+                const active_progress = document.querySelectorAll(".active_progress");
+                progressEl.style.width =
+                ((active_progress.length - 1) / (circles.length - 1)) * 100 + "%";
+            });
+        }
+        //================== Increament Number===============
+        function increamentNumber() {
+            // next progress number
+            currectActive++;
+                if (currectActive > circles.length) {
+                    currectActive = circles.length;
+                }
+        }
+        //================ Decreament Number=================
+        function decreametNumber() {
+            currectActive--;
+                if (currectActive < 1) {
+                    currectActive = 1;
+                }
+        }
+        //================= btn Events===================
+        const btnsEvents = () => {
+            const next1 = document.getElementById("next1");
+            const back1 = document.getElementById("back1");
+            //next1
+            next1.addEventListener("click", nextOne);
+            // back1
+            back1.addEventListener("click", backOne);
+        };
+        document.addEventListener("DOMContentLoaded", btnsEvents);
+
+
+$(document).ready(function() {
+    
     var cn23_not_download = false
     $(".cn23_label").each(function(index){
         console.log($(this).val())
@@ -28,25 +99,29 @@ $(document).ready(function() {
             $(".loading").hide()
             $("#example").removeClass('d-none')
             $("#example_filter").parent().remove()
-            $("#example_length select").css('margin-right', '10px')
-            // $(".status_dropdown").appendTo('.dataTables_length')
-            // $(".date_research").appendTo('.dataTables_length')
+            // $("#example_length select").css('margin-right', '10px')
             $(".order_research").appendTo('.dataTables_length')
-
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
-            // $(".status_dropdown").removeClass('d-none')
             $(".order_research").removeClass('d-none')
-            // $(".date_research").removeClass('d-none')
-            // $(".date_research input").css('margin-left', '10px')
-            $(".order_research input").css('margin-left', '10px')
-
+            // $(".order_research input").css('margin-left', '10px')
 
             $(".status_dropdown").select2({
             	width: '150px', 
             });
 
+            $(".type_dropdown").select2({
+            	width: '125px', 
+            }); 
+
+            $(".select2-container").css('height', '100%')
+            $(".select2-container").css('margin-left', '10px')
+            $(".custom_input").css('margin-left', '10px')
+
             
+
+            
+
         },
     })
 })
