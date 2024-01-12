@@ -163,16 +163,25 @@ class TransferOrder
          return $socid;
          
     }
-     
-     
-   
 
+    public function getnameshippingmethod(){
+          
+        $array_name =[
+          '1,Colissimo,Colissiomo avec signature'=>'Colissimo',
+          '2,Chronopost,Chronopost avec '=>'Chronopost',
+          '3,Retraitdistributeur,Retrait distributeur'=>'Retraitdistributeur',
+          '4,Other,Autre méthode'=>'Other'
+        ];
 
+        return $array_name;
+    }
+     
      /** 
      *@return array
      */
       public function Transferorder($orders)
       {
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -200,6 +209,7 @@ class TransferOrder
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
                  $apiUrl = env('KEY_API_URL');
+
 
 
                  $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
@@ -487,22 +497,39 @@ class TransferOrder
 
                                                $tva_product = 20;
                                                $data_product[] = [
-                                               "remise_percent"=> $donnees['discount_amount'],
-                                               "multicurrency_subprice"=> floatval($values['subtotal']),
-                                               "multicurrency_total_ht" => floatval($values['subtotal']),
-                                               "multicurrency_total_tva" => floatval($values['total_tax']),
-                                               "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
-                                               "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                               "product_label" =>$values['name'],
-                                               "qty" => $values['quantity'],
-                                               "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                               "tva_tx" => floatval($tva_product),
+                                                "desc"=>'',
+                                                "remise_percent"=> $donnees['discount_amount'],
+                                                "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                "product_label" =>$values['name'],
+                                                "qty" => $values['quantity'],
+                                                "fk_product" => $fk_product,//  insert id product dans dolibar.
+                                                "tva_tx" => floatval($tva_product),
                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
-                                     }
+                                           // recupérer la methode shipping_method_name
+                                            $chaine_name_shipping = $donnees['shipping_method_detail'];
+                                            /*$shipping_true = str_replace(' ', '', $chaine_name_shipping);
+                                            dump($shipping_true);
+                                            $array_shipping = $this->getnameshippingmethod();
+                                            dump($array_shipping);
+                                            $result = array_search($shipping_true,$array_shipping);
+                                            $result_s = explode(',',$result);
+                                            $indice_ship = $result_s[1];
+                                            dd($result_s[2]);
 
-                                      if($fk_product=="") {
+                                          */
+                                            // transformer en minuscule les valeur qui arrive
+                                            
+                                       }
+
+                                      
+
+                                     if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
                                         $info = 'Numero de comande '.$donnees['order_id'].'';
                                         $data_echec[] = $values['name'].','.$info;
@@ -517,11 +544,30 @@ class TransferOrder
                                      }
                                  }
                            }
-                           
-            
-                               // verifier si la commande n'est pas encore traité..
-                               $id_true ="";
-                                if(isset($key_commande[$donnees['order_id']])==false) {
+                                 
+                                   // gérer les moyens de transport de collisimo
+                                      $array_line_product =[];
+                                       $total_a_tva = $donnees['shipping_amount']*20/100;
+                                        $array_line_product[]=[
+                                          "desc"=>$chaine_name_shipping,
+                                          "multicurrency_subprice"=> floatval($donnees['shipping_amount']),
+                                          "multicurrency_total_ht" => floatval($donnees['shipping_amount']),
+                                          "multicurrency_total_tva" => floatval($total_a_tva),
+                                          "multicurrency_total_ttc" => floatval($donnees['shipping_amount']+$total_a_tva),
+                                          "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                          "product_type"=>'1',
+                                          "product_label" =>'',
+                                           "qty" => '1',
+                                           "fk_product" =>'',//  insert id product dans dolibar.
+                                            "tva_tx" => floatval($tva_product),
+                                            "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                         ];
+
+                                     
+                                    $result_data_product = array_merge($array_line_product,$data_product);
+                                  // verifier si la commande n'est pas encore traité..
+                                  $id_true ="";
+                                  if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                     
@@ -544,7 +590,7 @@ class TransferOrder
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                         "total_ttc" =>floatval($donnees['total_order']),
                                         "paye"=>"1",
-                                        "lines" =>$data_product,
+                                        "lines" =>$result_data_product,
                                         'array_options'=> $data_options,
                                         'linkedObjectsIds' => $linkedObjectsIds, // ajouter cette ligne si la facture d'une commande
                                     
@@ -802,7 +848,7 @@ class TransferOrder
                        $mode_reglement_id = $moyen_paids[0];
                    }else{
                         $account_name="vir_card";
-                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.
+                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas...
                    }
 
 
@@ -918,14 +964,12 @@ class TransferOrder
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
                        $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
-                       $indice = substr($response['ref'],0,2); // recupérer le prefixe de la facture ces deux premiere lettre.
-                    
-                        if($indice==$index_facture1){
-                          $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
-                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                       if(!isset($response['ref'])){
+                            $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
                           exit;
-                       }
-                       
+                        }  // recupérer le prefixe de la facture ces deux premiere lettre.
+                    
                         if(isset($response['error']['message'])){
                           $message = $response['error']['message'];
                           $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
