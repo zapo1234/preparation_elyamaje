@@ -24,6 +24,8 @@ interface LabelInterface
 
    public function getAllLabelsByStatusAndDate($rangeDate);
 
+   public function getAllLabelsByStatusAndDateApi($rangeDate);
+
    public function updateLabelStatus($labels);
 
    public function updateLabel($data, $label_id);

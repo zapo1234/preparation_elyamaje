@@ -35,10 +35,9 @@ class ApiController extends Controller
    }
 
    public function getLabels(Request $request){
-
       try{
          $rangeDate = $request->get('rangeDate') ?? 15;
-         $labels = $this->label->getAllLabelsByStatusAndDate($rangeDate)->toArray();
+         $labels = $this->label->getAllLabelsByStatusAndDateApi($rangeDate)->toArray();
          return response()->json(['success' => true, 'labels' => $labels]);
       } catch(Exception $e){
          return response()->json(['success' => false, 'message' => $e->getMessage()]);

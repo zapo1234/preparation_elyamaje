@@ -70,6 +70,14 @@ class LabelRepository implements LabelInterface
       ->where('labels.created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
    }
 
+   public function getAllLabelsByStatusAndDateApi($rangeDate){
+      $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
+      return $this->model 
+      ->select('labels.order_id', 'labels.tracking_status')
+      ->join('orders', 'orders.order_woocommerce_id', '=', 'labels.order_id')
+      ->where('labels.created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
+   }
+
    public function updateLabelStatus($labels){
 
       $order_id = [];
