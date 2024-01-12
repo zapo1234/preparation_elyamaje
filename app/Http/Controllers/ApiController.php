@@ -48,18 +48,16 @@ class ApiController extends Controller
    public function updateLabelsStatus(Request $request){
       // Liste des étiquettes à mettre à jour
       $labels = $request->all();
-
       $response_coli = 1;
       $response_chrono = 1;
-
-
-      return response()->json(['success' => true, 'colissimo' => $labels['colissimo'], 'chronopost' => $labels['chronopost']]);
 
       try{
          // MISE A JOUR SUR WOOCOMMERCE
          if(count($labels['colissimo']) > 0){
             $response_coli = $this->colissimo->trackingStatusLabel($labels['colissimo']);
          }
+
+         return response()->json(['success' => true, 'colissimo' => $response_coli, 'chronopost' => $response_chrono]);
 
          if(count($labels['chronopost']) > 0){
             $response_chrono = $this->chronopost->trackingStatusLabel($labels['chronopost']);
