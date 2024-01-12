@@ -84,7 +84,8 @@ class LabelRepository implements LabelInterface
    public function updateLabelStatus($labels){
 
       $order_id = [];
-      $updateQuery = "UPDATE prepa_labels SET updated_at = ".date('Y-m-d H:i:s').", tracking_status = (CASE order_id";
+      $updateQuery = "UPDATE prepa_labels SET updated_at = '".date('Y-m-d H:i:s')."', tracking_status = (CASE order_id";
+      
 
       // Colissimo
       foreach ($labels['colissimo'] as  $value) {
@@ -100,7 +101,7 @@ class LabelRepository implements LabelInterface
 
       $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";
       $response = DB::update($updateQuery);
-
+      
       return $response;
    }
 
