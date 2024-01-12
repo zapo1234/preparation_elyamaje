@@ -77,7 +77,7 @@ class LabelRepository implements LabelInterface
       ->join('orders', 'orders.order_woocommerce_id', '=', 'labels.order_id')
       ->where('labels.created_at', '>', $current_date)
       ->where('tracking_status', '!=', 5)
-      ->orderBy('updated_at', 'ASC')
+      ->orderBy('labels.updated_at', 'ASC')
       ->get();
    }
 
