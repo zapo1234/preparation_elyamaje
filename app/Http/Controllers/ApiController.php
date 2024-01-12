@@ -57,13 +57,9 @@ class ApiController extends Controller
             $response_coli = $this->colissimo->trackingStatusLabel($labels['colissimo']);
          }
 
-         return response()->json(['success' => true, 'colissimo' => $response_coli, 'chronopost' => $response_chrono]);
-
          if(count($labels['chronopost']) > 0){
             $response_chrono = $this->chronopost->trackingStatusLabel($labels['chronopost']);
          }
-
-         return response()->json(['success' => true, 'colissimo' => $response_coli, 'chronopost' => $response_chrono]);
 
          // MISE A JOUR EN LOCAL
          $local = $this->label->updateLabelStatus($labels);
