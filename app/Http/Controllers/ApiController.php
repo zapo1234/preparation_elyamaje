@@ -52,6 +52,9 @@ class ApiController extends Controller
       $response_coli = 1;
       $response_chrono = 1;
 
+
+      return response()->json(['success' => true, 'colissimo' => $labels['colissimo'], 'chronopost' => $labels['chronopost']]);
+
       try{
          // MISE A JOUR SUR WOOCOMMERCE
          if(count($labels['colissimo']) > 0){
