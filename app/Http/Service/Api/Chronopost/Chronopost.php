@@ -18,10 +18,10 @@ class Chronopost
 
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
-            'password'                      => "255562", //config('app.chronopost_password'), 
+            'password'                      => config('app.chronopost_password'), 
             // Chronopost account / Compte client chronopost
             'headerValue'                   => [
-                "accountNumber"             => "19869502", //config('app.chronopost_accountNumber'),                
+                "accountNumber"             => config('app.chronopost_accountNumber'),                
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
