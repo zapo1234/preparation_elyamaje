@@ -48,8 +48,8 @@ class ApiController extends Controller
    public function updateLabelsStatus(Request $request){
       // Liste des étiquettes à mettre à jour
       $labels = $request->all();
-      $response_coli = 1;
-      $response_chrono = 1;
+      $response_coli = true;
+      $response_chrono = true;
 
       try{
          // MISE A JOUR SUR WOOCOMMERCE

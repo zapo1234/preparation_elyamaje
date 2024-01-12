@@ -316,12 +316,10 @@ class Label extends BaseController
                         'city' => $order['shipping_customer_city'],
                         'country' => $order['shipping_customer_country'],
                         'customer_id' => $order['customer_id'],
-                        'insured' => $order['total_order'] > 250 ? '> 250' : 250
+                        'insured' => intval($order['total_order']) < 450 ? 0 : intval($order['total_order'])
                     ];  
         
-                   
                     $weight = $order_detail['orders'][$order['shipping_customer_country']]['orders'][$order['order_woocommerce_id']]['weight'];
-        
                     $order_detail['orders'][$order['shipping_customer_country']]['total_weight'] = 
                     isset($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) ? 
                     floatval($order_detail['orders'][$order['shipping_customer_country']]['total_weight']) + floatval($weight): 
