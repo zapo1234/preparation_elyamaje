@@ -12,7 +12,7 @@ class Chronopost
 {
     public function generateLabelChrono($order, $weight, $order_id, $colissimo){
 
-        $productCode = $this->getProductCode();
+        $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
         $SaturdayShipping = 1;
 
@@ -89,7 +89,7 @@ class Chronopost
                 "customsValue"              => intval($order['total_order']),
                 "evtCode"                   => 'DC', 
                 "insuredCurrency"           => config('app.currency'),
-                "insuredValue"              => intval($order['total_order']) *100,
+                "insuredValue"              => intval($order['total_order']) < 450 ? 0 : intval($order['total_order']) * 100,
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
                 "service"                   => $SaturdayShipping,          
@@ -195,10 +195,24 @@ class Chronopost
         }
     }
 
-    protected function getProductCode(){
-        return "01";
-        // If return from abroad (not France) : 3T
-        // If return from France : 4T
+    protected function getProductCode($method = false){
+        
+        if($method){
+            $code = [
+                'chrono10' => "02",
+                'chrono13' => "01",
+                'chrono18' => "16",
+                'chronorelais' => "86",
+                'chronorelaiseurope' => "49",
+                'chronotoshopdirect' => "86",
+                'chronotoshopeurope' => "49",
+                'chronoprecise' => "20",
+            ];
+            return isset($code[$method]) ? $code[$method] : "01";
+        } else {
+            die;
+            return '01';
+        }
     }
 
 
