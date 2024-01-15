@@ -847,7 +847,7 @@ class TransferOrder
                        $moyen_paids = explode(',',$moyen_paid);
                        $mode_reglement_id = $moyen_paids[0];
                    }else{
-                        $account_name="vir_card";
+                        $account_name="payplug";
                         $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas...
                    }
 
@@ -881,8 +881,8 @@ class TransferOrder
                           $paimentid =3;// PROD
                     }
 
-                      // si c'est un distributeur (mettre la facture impayé)
-                    if($status_dist=="true" && $account_name=="bacs"){
+                   // si c'est un distributeur (mettre la facture impayé)
+                      if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
                         "paye"	=> 1,
                         "statut"	=> 2,
