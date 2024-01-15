@@ -640,7 +640,7 @@ class Order extends BaseController
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
-              $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+              $this->api->updateOrdersWoocommerce("completed", $order_id);
             } else {
               $this->api->updateOrdersWoocommerce($status, $order_id);
             } 
@@ -754,12 +754,16 @@ class Order extends BaseController
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {
+
               // Status différent selon type de commande
               $status_finished = "lpc_ready_to_ship";
+   
               if(isset($orders[0]['shipping_method'])){
-                if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
+                if(str_contains('chrono', $orders[0]['shipping_method'])){
+                  $status_finished = "chronopost-pret";
+                } else if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
                   $status_finished = "commande-distribu";
-                } 
+                }  
               }
 
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"

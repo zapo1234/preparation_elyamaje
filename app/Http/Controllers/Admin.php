@@ -650,7 +650,14 @@ class Admin extends BaseController
                 $this->history->save($data);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 $this->order->updateOrdersById([$order_id], "finished");
-                $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+               
+                $status_finished = " lpc_ready_to_ship";
+                if(isset($order[0]['shipping_method'])){
+                    if(str_contains('chrono', $order[0]['shipping_method'])){
+                        $status_finished = "chronopost-pret";
+                    }
+                }
+                $this->api->updateOrdersWoocommerce($status_finished, $order_id);
 
                 return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
             } catch(Exception $e){
