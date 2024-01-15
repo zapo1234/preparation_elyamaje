@@ -848,7 +848,7 @@ class TransferOrder
                        $mode_reglement_id = $moyen_paids[0];
                    }else{
                         $account_name="payplug";
-                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas...
+                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
                    }
 
 
