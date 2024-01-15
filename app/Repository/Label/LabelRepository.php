@@ -70,10 +70,22 @@ class LabelRepository implements LabelInterface
       ->where('labels.created_at', '>', $current_date)->where('tracking_status', '!=', 5)->get();
    }
 
+   public function getAllLabelsByStatusAndDateApi($rangeDate){
+      $current_date = date('Y-m-d H:i:s',strtotime("-".$rangeDate." days"));
+      return $this->model 
+      ->select('labels.order_id', 'labels.tracking_number', 'labels.origin')
+      ->join('orders', 'orders.order_woocommerce_id', '=', 'labels.order_id')
+      ->where('labels.created_at', '>', $current_date)
+      ->where('tracking_status', '!=', 5)
+      ->orderBy('labels.updated_at', 'ASC')
+      ->get();
+   }
+
    public function updateLabelStatus($labels){
 
       $order_id = [];
-      $updateQuery = "UPDATE prepa_labels SET tracking_status = (CASE order_id";
+      $updateQuery = "UPDATE prepa_labels SET updated_at = '".date('Y-m-d H:i:s')."', tracking_status = (CASE order_id";
+      
 
       // Colissimo
       foreach ($labels['colissimo'] as  $value) {
@@ -82,14 +94,14 @@ class LabelRepository implements LabelInterface
       }
 
       // Chronopost
-      foreach ($labels['chronopost'] as  $value) {
-         $order_id[] = $value['order_id'];
-         $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
+      foreach ($labels['chronopost'] as  $value2) {
+         $order_id[] = $value2['order_id'];
+         $updateQuery.= " WHEN ".$value2['order_id']." THEN ". $value2['step'];         
       }
 
       $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";
       $response = DB::update($updateQuery);
-
+      
       return $response;
    }
 
