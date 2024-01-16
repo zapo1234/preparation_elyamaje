@@ -737,7 +737,7 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-            // $this->factorder->Transferorder($orders);
+            $this->factorder->Transferorder($orders);
 
             // Insert la commande dans histories
             $data = [
@@ -765,7 +765,7 @@ class Order extends BaseController
                   $status_finished = "commande-distribu";
                 }  
               }
-              
+
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);
