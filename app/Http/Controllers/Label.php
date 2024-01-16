@@ -255,7 +255,8 @@ class Label extends BaseController
                     'created_at' => $newDate,
                     'label_date' => $newDateLabel,
                     'number_order' => $bordereau['number_order'],
-                    'bordereauId' => $bordereau['bordereauId']
+                    'bordereauId' => $bordereau['bordereauId'],
+                    'origin'    => $bordereau['origin'] ?? 'colissimo',
                 ];
             }
             return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);

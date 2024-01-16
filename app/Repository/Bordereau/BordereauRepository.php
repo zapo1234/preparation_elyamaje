@@ -18,7 +18,8 @@ class BordereauRepository implements BordereauInterface
    }
 
    public function getBordereaux(){
-      return $this->model::select(DB::raw('COUNT(prepa_labels.bordereau_id) as number_order'), 'bordereau.parcel_number', 'bordereau.id as bordereauId',  'bordereau.bordereau', 'bordereau.created_at as bordereau_created_at', 'bordereau.label_date')
+      return $this->model::select(DB::raw('COUNT(prepa_labels.bordereau_id) as number_order'), 'bordereau.parcel_number', 'bordereau.id as bordereauId',  
+      'bordereau.bordereau', 'bordereau.created_at as bordereau_created_at', 'bordereau.label_date', 'bordereau.origin')
       ->join('labels', 'labels.bordereau_id', '=', 'bordereau.parcel_number')
       ->orderBy('bordereau.created_at', 'DESC')
       ->groupBy('labels.bordereau_id')
