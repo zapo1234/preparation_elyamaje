@@ -737,7 +737,7 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-            $this->factorder->Transferorder($orders);
+            // $this->factorder->Transferorder($orders);
 
             // Insert la commande dans histories
             $data = [
@@ -759,13 +759,13 @@ class Order extends BaseController
               $status_finished = "lpc_ready_to_ship";
    
               if(isset($orders[0]['shipping_method'])){
-                if(str_contains('chrono', $orders[0]['shipping_method'])){
+                if(str_contains($orders[0]['shipping_method'], 'chrono')){
                   $status_finished = "chronopost-pret";
                 } else if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
                   $status_finished = "commande-distribu";
                 }  
               }
-
+              
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
               $this->order->updateOrdersById([$order_id], "finished");
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);

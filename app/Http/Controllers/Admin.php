@@ -653,7 +653,7 @@ class Admin extends BaseController
                
                 $status_finished = " lpc_ready_to_ship";
                 if(isset($order[0]['shipping_method'])){
-                    if(str_contains('chrono', $order[0]['shipping_method'])){
+                    if(str_contains($order[0]['shipping_method'], 'chrono')){
                         $status_finished = "chronopost-pret";
                     }
                 }
