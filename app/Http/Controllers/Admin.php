@@ -350,11 +350,16 @@ class Admin extends BaseController
                     $number_items_picked = $number_items_picked + $av['items_picked'];
                 }
 
-            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
+            $average_by_name[$key] = ['name' => $key, 'avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
                 $number_prepared = 0;
                 $number_finished = 0;
                 $number_items_picked = 0;
             }
+
+            // Trie par commandes préparées
+            usort($average_by_name, function($a, $b) {
+                return $b['avg_prepared'] <=> $a['avg_prepared'];
+            });
 
             echo json_encode(['success' => true, 'average_by_name' => $average_by_name]);
         } catch (Exception $e){

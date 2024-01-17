@@ -166,7 +166,7 @@ function chartAverage(average){
     var items_picked = []
     
     Object.entries(average).forEach(([key, value]) => {
-        list_name.push(key)
+        list_name.push(value.name)
         order_prepared.push(value.avg_prepared)
         order_finished.push(value.avg_finished)
         items_picked.push(value.avg_items_picked)
