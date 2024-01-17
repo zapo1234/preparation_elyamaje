@@ -27,7 +27,7 @@ function filter_mobile(width){
             `)
 
             setTimeout(function(){
-                $("#example_wrapper > .row:first-child").appendTo('.modal-body')
+                $("#example_wrapper > .row:first-child").appendTo('.modal_filter_mobile .modal-body')
                 $('select[name="example_length"]').parent().last().appendTo('.filter_mobile')
             },0)
         }
