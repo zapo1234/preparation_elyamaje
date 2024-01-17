@@ -451,7 +451,7 @@ class Colissimo
                 $customsArticle[] = [
                     'description'   => $item['name'],
                     'quantity'      => $item['quantity'],
-                    'value'         => $item['total'] != 0 ? $item['total'] : ($item['real_price'] ?? 1),
+                    'value'         => $item['total'] > 0 ? $item['total'] : ($item['real_price'] != 0 ? $item['real_price'] : 0.01),
                     'currency'      => config('app.currency'),
                     'artref'        => $item['ref'] ?? '',
                     'originalIdent' => 'A',
