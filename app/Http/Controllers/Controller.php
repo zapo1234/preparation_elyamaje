@@ -1746,8 +1746,10 @@ class Controller extends BaseController
         } else {
             return redirect()->route('bordereaux')->with('error', 'Aucune étiquette chronopost générées aujourd\'hui');
         }
+    }
 
-       
+    public function shop(){
+        return view('shop.index');
     }
     
 

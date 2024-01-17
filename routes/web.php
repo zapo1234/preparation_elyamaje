@@ -50,6 +50,9 @@ Route::group(['middleware' => ['auth']], function () {
             case 6 :
                 return redirect()->route('labels');
                 break;
+            case 8 :
+                return redirect()->route('shop');
+                break;
             default:
                 return redirect()->route('logout');
                 break;
@@ -227,7 +230,10 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
 });
 
-
+// Vendeuse
+Route::group(['middleware' =>  ['auth', 'role:8']], function () {
+    Route::get("/shop", [Controller::class, "shop"])->name('shop');
+});
 
 // TOUS LES ROLES
 Route::group(['middleware' =>  ['auth']], function () {
