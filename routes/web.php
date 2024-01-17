@@ -217,7 +217,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3,6']], function () {
 });
 
 // ADMIN - CHEF D'ÉQUIPE & SAV
-Route::group(['middleware' => ['auth', 'role:6']], function () {
+Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/sav", [Controller::class, "sav"])->name('sav');
     Route::get("/getDetailsOrder", [Order::class, "getDetailsOrder"])->name('getDetailsOrder');
     // Update details order billing and shipping
