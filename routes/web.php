@@ -48,7 +48,7 @@ Route::group(['middleware' => ['auth']], function () {
                 return redirect()->route('noRole');
                 break;
             case 6 :
-                return redirect()->route('sav');
+                return redirect()->route('labels');
                 break;
             default:
                 return redirect()->route('logout');
@@ -151,16 +151,9 @@ Route::group(['middleware' => ['auth', 'role:4']], function () {
     Route::get("/dashboard", [Controller::class, "dashboard"])->name('leader.dashboard');
 });
 
-// SAV
-Route::group(['middleware' => ['auth', 'role:6']], function () {
-    Route::get("/sav", [Controller::class, "sav"])->name('sav');
-});
-
-
 // ADMIN ET CHEF D'ÉQUIPE
 Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get("/getAllOrders", [Order::class, "getAllOrders"])->name('getAllOrders');
-    Route::get("/getDetailsOrder", [Order::class, "getDetailsOrder"])->name('getDetailsOrder');
     Route::post("/updateRole", [User::class, "updateRole"])->name('updateRole');
     Route::post("/updateAttributionOrder", [Order::class, "updateAttributionOrder"])->name('updateAttributionOrder');
     Route::post("/updateOneOrderAttribution", [Order::class, "updateOneOrderAttribution"])->name('updateOneOrderAttribution');
@@ -178,9 +171,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteOrderProductsDolibarr", [Order::class, "deleteOrderProductsDolibarr"])->name('deleteOrderProductsDolibarr');
     Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
     Route::post("/closeDay", [Order::class, "closeDay"])->name('leader.closeDay');
-    Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
-    Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
-    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
+   
     // CRUD Imprimantes
     Route::get("/printers", [Admin::class, "printers"])->name('printers');
     Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
@@ -207,7 +198,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
-Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
+Route::group(['middleware' =>  ['auth', 'role:1,4,3,6']], function () {
     Route::get("/labels", [Label::class, "getlabels"])->name('labels');
     Route::post("/labels", [Label::class, "getlabels"])->name('labels.filter');
     Route::post("/labelDownload", [Label::class, "labelDownload"])->name('label.download');
@@ -222,9 +213,21 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3']], function () {
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
     
+   
+});
+
+// ADMIN - CHEF D'ÉQUIPE & SAV
+Route::group(['middleware' => ['auth', 'role:6']], function () {
+    Route::get("/sav", [Controller::class, "sav"])->name('sav');
+    Route::get("/getDetailsOrder", [Order::class, "getDetailsOrder"])->name('getDetailsOrder');
     // Update details order billing and shipping
     Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
+    Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
+    Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
+    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
 });
+
+
 
 // TOUS LES ROLES
 Route::group(['middleware' =>  ['auth']], function () {

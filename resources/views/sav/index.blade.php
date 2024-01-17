@@ -14,7 +14,16 @@
 							<div class="breadcrumb-title pe-3">Sav</div>
 							<div class="pe-3 number_order_pending"></div>
 						</div>
+
+						
+
 					</div>
+
+					<div class="row row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1 d-flex justify-content-center">
+						<h4 class="text-center">En développement...</h4>
+						<img src="assets/images/comming_soon.svg" style="width: 80vh">
+					</div>
+
 				</div>
 			</div>
 		@endsection
