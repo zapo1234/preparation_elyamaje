@@ -757,13 +757,19 @@ class Order extends BaseController
 
               // Status différent selon type de commande
               $status_finished = "lpc_ready_to_ship";
-   
+              
+              //
               if(isset($orders[0]['shipping_method'])){
                 if(str_contains($orders[0]['shipping_method'], 'chrono')){
                   $status_finished = "chronopost-pret";
-                } else if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
+                }
+              }
+
+              // Check if order distributor
+              if(isset($orders[0]['shipping_method_detail'])){
+                if(str_contains($orders[0]['shipping_method_detail'], 'Distributeur') && $orders[0]['is_distributor']){
                   $status_finished = "commande-distribu";
-                }  
+                }
               }
 
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
