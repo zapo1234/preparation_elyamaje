@@ -154,7 +154,6 @@ class Order extends BaseController
           }
         }  
 
-      
         // Liste des distributeurs
         $distributors = $this->distributor->getDistributors();
         $distributors_list = [];
@@ -190,7 +189,7 @@ class Order extends BaseController
             } 
 
             // N'affiche pas les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
-            if($order['status'] == "prepared-order"){
+            if($order['status'] == "prepared-order" && !str_contains($order['id'], 'BP') && !str_contains($order['id'], 'CO')){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) == 0){
                 $take_order = false;
@@ -634,8 +633,7 @@ class Order extends BaseController
         $number_order_attributed = $this->order->getOrdersByUsers();
 
         // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
-        $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
-
+        $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
@@ -881,7 +879,14 @@ class Order extends BaseController
         } 
       }
 
-      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order'), 'parameter' => $request->all()]);
+      // Change prepared to order-prepared
+      foreach($histories_order as $key => $hist){
+        if($hist['status'] == "prepared"){
+          $histories_order[$key]['status'] = "prepared-order";
+        }
+      }
+
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status'), 'parameter' => $request->all()]);
     }
 
     public function generateHistory(Request $request){
@@ -1140,8 +1145,12 @@ class Order extends BaseController
         $data = [
           $field => $field_value
         ];
-  
-        $this->order->update($data, $order_id);
+
+        if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+          $this->orderDolibarr->updateCustomerDetail($data, $order_id);
+        } else {
+          $this->order->update($data, $order_id);
+        }
     } else {
       echo json_encode(['success' => false]);
     }
@@ -1213,7 +1222,7 @@ class Order extends BaseController
   public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
-    if(str_contains($order_id, 'CO')){
+    if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
     } else if(strlen($order_id) == 10){
       $order = $this->reassort->getReassortById($order_id);

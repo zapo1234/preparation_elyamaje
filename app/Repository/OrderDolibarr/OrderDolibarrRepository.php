@@ -21,10 +21,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'lines_commande_doli.id_product as product_dolibarr_id', 'users.name as preparateur')
-         ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
-         ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
+         ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
-         ->where('orders_doli.statut', '!=', 'finished')
+         ->whereNotIn('orders_doli.statut', ['pending', 'finished'])
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -266,11 +266,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-         $query = $this->model::select('orders_doli.ref_order as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+         $query = $this->model::select('orders_doli.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
          'labels.cn23', 'labels.download_cn23')
-         ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
+         ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
          ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
-      
+
+        
          $haveFilter = false;
          foreach($filters as $key => $filter){
 
@@ -295,6 +296,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          }
    
+
          if(!$haveFilter){
             $date = date('Y-m-d');
             $query->where("labels.created_at","LIKE",  "%".$date."%");
@@ -303,12 +305,45 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $query->orderBy('labels.created_at', 'DESC');
          $query->limit(500);
          $results = $query->get();
+
+         foreach($results as $key => $result){
+
+            $results[$key]['id'] = $result->ref_order;
+            $results[$key]['order_woocommerce_id'] = $result->ref_order;
+            $results[$key]['status'] = $result->statut;
+            $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
+
+            // Billing
+            $results[$key]['billing_customer_first_name'] = $result->billing_name;
+            $results[$key]['billing_customer_last_name'] = $result->billing_pname;
+            $results[$key]['billing_customer_company'] = $result->billing_company;
+            $results[$key]['billing_customer_address_1'] = $result->billing_adresse;
+            $results[$key]['billing_customer_address_2'] = "";
+            $results[$key]['billing_customer_city'] = $result->billing_city;
+            $results[$key]['billing_customer_state'] = "";
+            $results[$key]['billing_customer_postcode'] = $result->billing_code_postal;
+            $results[$key]['billing_customer_country'] = $result->billing_country;
+            $results[$key]['billing_customer_email'] = $result->email;
+            $results[$key]['billing_customer_phone'] = $result->phone;
+
+            // Shipping
+            $results[$key]['shipping_customer_first_name'] = $result->name;
+            $results[$key]['shipping_customer_last_name'] = $result->pname;
+            $results[$key]['shipping_customer_company'] = $result->company;
+            $results[$key]['shipping_customer_address_1'] = $result->adresse;
+            $results[$key]['shipping_customer_address_2'] = "";
+            $results[$key]['shipping_customer_city'] = $result->city;
+            $results[$key]['shipping_customer_state'] = "";
+            $results[$key]['shipping_customer_postcode'] = $result->code_postal;
+            $results[$key]['shipping_customer_country'] = $result->contry;
+         }
+         
          return $results;
    }
 
    public function getAllOrdersAndLabel(){
       $date = date('Y-m-d');
-      return $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
@@ -316,6 +351,41 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       ->orderBy('labels.created_at', 'DESC')
       // ->limit(50)
       ->get();
+
+
+      foreach($results as $key => $result){
+
+         $results[$key]['id'] = $result->ref_order;
+         $results[$key]['order_woocommerce_id'] = $result->ref_order;
+         $results[$key]['status'] = $result->statut;
+         $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
+
+         // Billing
+         $results[$key]['billing_customer_first_name'] = $result->billing_name;
+         $results[$key]['billing_customer_last_name'] = $result->billing_pname;
+         $results[$key]['billing_customer_company'] = $result->billing_company;
+         $results[$key]['billing_customer_address_1'] = $result->billing_adresse;
+         $results[$key]['billing_customer_address_2'] = "";
+         $results[$key]['billing_customer_city'] = $result->billing_city;
+         $results[$key]['billing_customer_state'] = "";
+         $results[$key]['billing_customer_postcode'] = $result->billing_code_postal;
+         $results[$key]['billing_customer_country'] = $result->billing_country;
+         $results[$key]['billing_customer_email'] = $result->email;
+         $results[$key]['billing_customer_phone'] = $result->phone;
+
+         // Shipping
+         $results[$key]['shipping_customer_first_name'] = $result->name;
+         $results[$key]['shipping_customer_last_name'] = $result->pname;
+         $results[$key]['shipping_customer_company'] = $result->company;
+         $results[$key]['shipping_customer_address_1'] = $result->adresse;
+         $results[$key]['shipping_customer_address_2'] = "";
+         $results[$key]['shipping_customer_city'] = $result->city;
+         $results[$key]['shipping_customer_state'] = "";
+         $results[$key]['shipping_customer_postcode'] = $result->code_postal;
+         $results[$key]['shipping_customer_country'] = $result->contry;
+      }
+
+      return $results;
    }
 
    public function orderResetDolibarr($order_id){
@@ -356,6 +426,44 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          return true;
       } catch(Exception $e){
          return false;
+      }
+   }
+
+   public function updateCustomerDetail($data, $order_id){
+
+      // Converto to field of order_doli
+      $array_conversion_fields = [
+         'billing_customer_first_name' => 'billing_name',
+         'billing_customer_last_name' => 'billing_pname',
+         'billing_customer_company' => 'billing_company',
+         'billing_customer_address_1' => 'billing_adresse',
+         'billing_customer_address_2' => 'billing_adresse',
+         'billing_customer_city' => 'billing_city',
+         'billing_customer_postcode' => 'billing_code_postal',
+         'billing_customer_country' => 'billing_country',
+         'billing_customer_email' => 'email',
+         'billing_customer_phone' => 'phone',
+         'shipping_customer_first_name' => 'name',
+         'shipping_customer_last_name' => 'pname',
+         'shipping_customer_company' => 'company',
+         'shipping_customer_address_1' => 'adresse',
+         'shipping_customer_address_2' => 'adresse',
+         'shipping_customer_city' => 'city',
+         'shipping_customer_postcode' => 'code_postal',
+         'shipping_customer_country' => 'contry',
+      ];
+
+      $new_array = [];
+      foreach($data as $key => $dt){
+         $new_array[$array_conversion_fields[$key]] = $dt;
+      }
+
+
+      try{
+         $this->model->where('ref_order', $order_id)->update($new_array);
+         echo json_encode(['success' => true]);
+      } catch(Exception $e){
+         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       }
    }
 }

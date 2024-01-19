@@ -251,7 +251,7 @@
 																		</div>
 																	</div>
 																@else 
-																	<span class="badge rounded-pill bg-secondary">Non nécéssaire</span>
+																	<span class="no_necessary badge rounded-pill bg-secondary">Non nécéssaire</span>
 																@endif
 															</div>
 														</div>
@@ -260,8 +260,8 @@
 											</td>
 											<td data-label="Expédition">
 
-												@if(!isset($order[0]['fk_commande']))
-													<i onclick="showCustomerOrderDetail({{ $order[0]['order_woocommerce_id'] }})" class="show_detail_customer lni lni-delivery"></i>
+												
+													<i onclick="showCustomerOrderDetail('{{ $order[0]['order_woocommerce_id'] }}')" class="show_detail_customer lni lni-delivery"></i>
 													<div class="modal fade" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 														<div class="modal-dialog modal-dialog-centered" role="document">
 															<div class="modal-content">
@@ -434,7 +434,7 @@
 															</div>
 														</div>
 													</div>
-												@endif
+												
 											</td>
 										</tr>
 									@endforeach

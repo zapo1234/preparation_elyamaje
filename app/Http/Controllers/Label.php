@@ -424,6 +424,7 @@ class Label extends BaseController
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 
+
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
         } else {
@@ -441,9 +442,6 @@ class Label extends BaseController
                 $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             }
 
-            if($from_dolibarr){
-                $order[0]['shipping_method'] = "lpc_sign";
-            }
             $weight = 0; // Kg
             $subtotal = 0;
             $items = [];
@@ -467,6 +465,7 @@ class Label extends BaseController
             } 
 
             $order[0]['total_order'] = $subtotal;
+
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){

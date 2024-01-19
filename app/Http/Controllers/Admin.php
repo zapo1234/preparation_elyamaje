@@ -611,7 +611,7 @@ class Admin extends BaseController
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
 
-            if(str_contains($order_id, 'CO')){
+            if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
                 $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
                 if(count($order) > 0){
                     $order = $this->woocommerce->transformArrayOrderDolibarr($order);

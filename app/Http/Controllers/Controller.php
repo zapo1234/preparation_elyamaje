@@ -1751,6 +1751,4 @@ class Controller extends BaseController
     public function shop(){
         return view('shop.index');
     }
-    
-
 }

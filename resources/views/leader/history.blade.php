@@ -94,7 +94,7 @@
 													</td>
 													<td data-label="Status">
 														@if($histo['order_status'] || $histo['order_dolibarr_status'])
-															<select data-from_dolibarr="{{ $histo['order_dolibarr_status'] ? 'true' : 'false' }}" data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }} select_status select_user">
+															<select style="width: 180px; font-weight: bold;	font-size: 0.9em; " data-from_dolibarr="{{ str_contains($histo['order_id'], 'BP') || str_contains($histo['order_id'], 'CO') ? 'true' : 'false' }}" data-order="{{ $histo['order_id'] }}" class="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }} select_status select_user">
 																@foreach($list_status as $key => $list)
 																	@if($key == $histo['order_status'] || $key == $histo['order_dolibarr_status'])
 																		<option selected value="{{ $histo['order_status'] ?? $histo['order_dolibarr_status'] }}">

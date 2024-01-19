@@ -228,6 +228,7 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
+    Route::get("/ordersDetails", [Order::class, "ordersDetails"])->name('ordersDetails');
 });
 
 // Vendeuse

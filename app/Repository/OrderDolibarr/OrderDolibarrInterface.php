@@ -36,6 +36,8 @@ interface OrderDolibarrInterface
     public function  updateProductOrder($order_id, $product_id, $data);
 
     public function  deleteProductOrder($order_id, $product_id);
+
+    public function updateCustomerDetail($data, $order_id);
 }
 
 

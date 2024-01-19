@@ -6794,37 +6794,46 @@ select:focus, input:focus{
 }
 
 .bg-light-waiting_to_validate,
-.bg-light-waiting_validate{
+.bg-light-waiting_validate,
+.bg-light-pending{
 	color: #94660c !important;
 	background-color: #f8dda7 !important;
+	padding: .5rem!important;
 }
 
 .bg-light-processing{
 	color: #5b841b !important;
-	background-color: #c6e1c6!important
+	background-color: #c6e1c6!important;
+	padding: .5rem!important;
 }
 
 .bg-light-en-attente-de-pai{
 	color: rgba(255,255,255,0.7) !important;
 	background-color: #039fe2 !important;
+	padding: .5rem!important;
 }
 
 .bg-light-prepared-order{
-	color: #0dcaf0 !important;
-	background-color: rgb(13 202 240 / 18%) !important;
+	border: none;
+    color: #089dbb !important;
+    background-color: rgb(13 202 240 / 18%);
+	padding: .5rem!important;
 }	
 
 .bg-light-finished{
 	color: white !important;
 	background-color: #cdc9c9 !important;
+	padding: .5rem!important;
 }
 
 .bg-private, .bg-processing{
 	background-color: #212529;
+	padding: .5rem!important;
 }
 
 .bg-publish, .bg-finished{
 	background-color: #29cc39;
+	padding: .5rem!important;
 }
 
 .detail_footer_order{
@@ -7055,7 +7064,8 @@ textarea:focus{
 	right: 0px;
 }
 
-.prepared-order{
+.prepared-order,
+.prepared{
 	border: none;
     color: #089dbb;
     background-color: rgb(13 202 240 / 18%);
@@ -7090,7 +7100,7 @@ textarea:focus{
 	background-color: #039fe2;
 }
 
-.waiting_validate, .waiting_to_validate{
+.waiting_validate, .waiting_to_validate, .pending {
 	border: 1px solid #f8dda7;
 	color: #94660c;
 	background-color: #f8dda7;
@@ -7932,9 +7942,9 @@ select option[disabled] {
 	margin-left: 5px;
 }
 
-.from_dolibarr_order_detail .edit_detail_order{
+/* .from_dolibarr_order_detail .edit_detail_order{
 	display: none;
-}
+} */
 
 .editableContent{
 	border: 1px solid #999;
@@ -8538,4 +8548,8 @@ select option[disabled] {
 	border-color: black;
 	color: white;
 	background-color: black;
+  }
+
+  .no_necessary{
+	padding: 0.5rem;
   }
