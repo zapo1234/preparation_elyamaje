@@ -80,8 +80,12 @@ class Auth extends BaseController
             if(Hash::check($input['password'], $admin->password)){
                 $user = User::findByEmail($input['email']);
                 $request->session()->regenerateToken();
-                At::login($user);
-                return redirect()->route('/');
+                if($user){
+                    At::login($user);
+                    return redirect()->route('/');
+                } else {
+                    return redirect()->route('login')->with('error','Identifiants incorrectes !');
+                }
             } else {
                 return redirect()->route('login')->with('error','Identifiants incorrectes !');
             }
