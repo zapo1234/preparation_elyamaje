@@ -159,7 +159,7 @@ class WoocommerceService
     $transformOrder['preparateur'] = isset($orderDolibarr[0]['preparateur']) ? $orderDolibarr[0]['preparateur'] : '';
 
     // On force la méthode d'expédition en livraison à domicile avec signature
-    $transformOrder['shipping_method'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "chrono13" : "lpc_sign";
+    $transformOrder['shipping_method'] = $orderDolibarr[0]['shipping_method'] ?? "lpc_sign";
     $transformOrder['product_code'] = null;
     $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost - Livraison express à domicile avant 13h offert dès 100€ d'achats" 
     : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
