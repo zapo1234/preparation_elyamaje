@@ -4,18 +4,20 @@ namespace App\Http\Service\Api\Chronopost;
 
 use Exception;
 use Illuminate\Support\Facades\Http;
-
-// Simplified array for Chronopost Soap api client
-
+use App\Http\Service\Api\Chronopost\Countries;
 
 class Chronopost
 {
     public function generateLabelChrono($order, $weight, $order_id, $colissimo){
+       
+        // CODE ISO TO COUNTY NAME
+        $countries = new Countries() ?? [];
+        $countryName = strtoupper($countries->countries()[$order['shipping']['country']]) ?? '';
 
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
         $SaturdayShipping = 1;
-
+        
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
             'password'                      => config('app.chronopost_password'), 
@@ -25,6 +27,7 @@ class Chronopost
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
+
             // Shipper / Expediteur
             'shipperValue' => [
                 "shipperCivility"           => 'M',
@@ -42,7 +45,8 @@ class Chronopost
                 "shipperMobilePhone"        => config('app.companyMobilePhone'),
                 "shipperPreAlert"           => '',
             ],
-               // Customer / Client
+
+            // Customer / Client
             'customerValue' => [
                 "customerCivility"          => ' ',
                 "customerName"              => $this->getFilledValue($order['shipping']['company'] ?? ''),
@@ -53,12 +57,13 @@ class Chronopost
                 "customerCity"              => $this->getFilledValue($order['shipping']['city']),
                 "customerZipCode"           => $order['shipping']['postcode'],
                 "customerCountry"           => $order['shipping']['country'],
-                // "customerCountryName"       => 'FRANCE',                                                                                       
+                "customerCountryName"       => $countryName,                                                                                       
                 "customerEmail"             => $order['billing']['email'],
                 "customerMobilePhone"       => str_replace(" ", "", $order['billing']['phone']),
                 "customerPhone"             => str_replace(" ", "", $order['billing']['phone']),
-                "customerPreAlert"          => '',
+                "customerPreAlert"          => 22,
             ],
+
             // Recipient / Destinataire
             'recipientValue' => [
                 "recipientCivility"         => ' ',
@@ -70,12 +75,13 @@ class Chronopost
                 "recipientCity"             => $this->getFilledValue($order['shipping']['city']),
                 "recipientZipCode"          => $order['shipping']['postcode'],
                 "recipientCountry"          => $order['shipping']['country'],
-                // "recipientCountryName"      => 'FRANCE',
+                "recipientCountryName"      => $countryName,
                 "recipientEmail"            => $order['billing']['email'],
                 "recipientMobilePhone"      => str_replace(" ", "", $order['billing']['phone']),
                 "recipientPhone"            => str_replace(" ", "", $order['billing']['phone']),
-                "recipientPreAlert"         => '',  
+                "recipientPreAlert"         => 22,  
             ],
+
             // Sky Bill / Etiquette de livraison / Caractéristique du colis
             'skybillValue' => [
                 "codCurrency"               => config('app.currency'),
@@ -102,6 +108,7 @@ class Chronopost
 				'length'                    => 0,
 				'width'                     => 0,
             ],
+
             // client's ref. value / Code barre client
             'refValue' => [
                 "customerSkybillNumber"     => $order['order_id'], 
@@ -109,6 +116,7 @@ class Chronopost
                 "shipperRef"                => $order['order_id'],  // Libre ou mettre code point relais          
                     
             ],
+
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
                 "mode"           => explode('_', $format)[0],

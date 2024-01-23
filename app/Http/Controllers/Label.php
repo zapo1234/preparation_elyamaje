@@ -11,6 +11,7 @@ use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Http\Service\Api\ColissimoTracking;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Service\Api\Chronopost\Countries;
 use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Bordereau\BordereauRepository;
@@ -39,6 +40,7 @@ class Label extends BaseController
     private $api;
     private $logError;
     private $pdf;
+    private $countries;
 
     public function __construct(
         LabelRepository $label, 
@@ -52,7 +54,8 @@ class Label extends BaseController
         Chronopost $chronopost,
         ColissimoTracking $colissimoTracking,
         LogErrorRepository $logError,
-        CreatePdf $pdf
+        CreatePdf $pdf,
+        Countries $countries
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -66,6 +69,7 @@ class Label extends BaseController
         $this->colissimoTracking = $colissimoTracking;
         $this->logError = $logError;
         $this->pdf = $pdf;
+        $this->countries = $countries;
     }
 
     public function getlabels(Request $request){
@@ -298,6 +302,8 @@ class Label extends BaseController
             $tracking_number = [];
             $total_weight = 0;
 
+            $countries = $this->countries->countries();
+
             if(count($orders) > 0){
                 foreach($orders as $key => $order){
                     $tracking_number[] = $order['tracking_number'];
@@ -316,6 +322,7 @@ class Label extends BaseController
                         'postcode' => $order['shipping_customer_postcode'],
                         'city' => $order['shipping_customer_city'],
                         'country' => $order['shipping_customer_country'],
+                        'countryName' => strtoupper($countries[$order['shipping_customer_country']]) ?? $order['shipping_customer_country'],
                         'customer_id' => $order['customer_id'],
                         'insured' => intval($order['total_order']) < 450 ? 0 : intval($order['total_order'])
                     ];  
@@ -465,7 +472,7 @@ class Label extends BaseController
             } 
 
             $order[0]['total_order'] = $subtotal;
-
+            
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){

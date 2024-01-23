@@ -61,25 +61,25 @@ class Order extends BaseController
     private $commandeids;
 
     public function __construct(Api $api, UserRepository $user, 
-    OrderRepository $order,
-    TransferOrder $factorder,
-    HistoryRepository $history,
-    CreatePdf $pdf,
-    Colissimo $colissimo,
-    LabelRepository $label,
-    LabelProductOrderRepository $labelProductOrder,
-    ProductOrderRepository $productOrder,
-    NotificationRepository $notification,
-    WoocommerceService $woocommerce,
-    DistributorRepository $distributor,
-    PrinterRepository $printer,
-    ColissimoRepository $colissimoConfiguration,
-    ProductRepository $product,
-    Chronopost $chronopost,
-    LogErrorRepository $logError,
-    ReassortRepository $reassort,
-    OrderDolibarrRepository $orderDolibarr,
-    CommandeidsRepository $commandeids
+      OrderRepository $order,
+      TransferOrder $factorder,
+      HistoryRepository $history,
+      CreatePdf $pdf,
+      Colissimo $colissimo,
+      LabelRepository $label,
+      LabelProductOrderRepository $labelProductOrder,
+      ProductOrderRepository $productOrder,
+      NotificationRepository $notification,
+      WoocommerceService $woocommerce,
+      DistributorRepository $distributor,
+      PrinterRepository $printer,
+      ColissimoRepository $colissimoConfiguration,
+      ProductRepository $product,
+      Chronopost $chronopost,
+      LogErrorRepository $logError,
+      ReassortRepository $reassort,
+      OrderDolibarrRepository $orderDolibarr,
+      CommandeidsRepository $commandeids
     ){
       $this->api = $api;
       $this->user = $user;
@@ -756,7 +756,6 @@ class Order extends BaseController
               // Status différent selon type de commande
               $status_finished = "lpc_ready_to_ship";
               
-              //
               if(isset($orders[0]['shipping_method'])){
                 if(str_contains($orders[0]['shipping_method'], 'chrono')){
                   $status_finished = "chronopost-pret";

@@ -74,10 +74,10 @@
 													<td data-label="Préparée">
 														<div class="d-flex flex-column">
 															<div class="d-flex flex-wrap histo_order align-items-center">
-																<span class="badge bg-dark">{{ $histo['prepared'] }}</span>
-																@if($histo['prepared'])
+																<span class="badge bg-dark">{{ $histo['prepared'] ?? ($histo['finished'] ?'Un autre jour' : '') }}</span>
+																<!-- @if($histo['prepared']) -->
 																	<span class="date_prepared">le {{ $histo['prepared_date'] }}</span>  
-																@endif
+																<!-- @endif -->
 															</div>
 															
 														</div>

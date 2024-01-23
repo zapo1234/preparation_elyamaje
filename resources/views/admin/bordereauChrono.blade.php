@@ -87,7 +87,7 @@
                     <td style="border: 1px solid #000; padding: 8px;">{{ $order['last_name'] }} {{ $order['first_name'] }}</td>
                     <td style="border: 1px solid #000; padding: 8px;">{{ $order['postcode'] }}</td>
                     <td style="border: 1px solid #000; padding: 8px;">{{ $order['city'] }}</td>
-                    <td style="border: 1px solid #000; padding: 8px;">{{ $order['country'] }}</td>
+                    <td style="border: 1px solid #000; padding: 8px;">{{ $order['countryName'] }}</td>
                     <td style="border: 1px solid #000; padding: 8px;">{{ $order['insured'] }}</td>
                 </tr>
             @endforeach
@@ -126,7 +126,7 @@
                                 <td style="border: 1px solid #000; padding: 8px;">{{ $ord['last_name'] }} {{ $ord['first_name'] }}</td>
                                 <td style="border: 1px solid #000; padding: 8px;">{{ $ord['postcode'] }}</td>
                                 <td style="border: 1px solid #000; padding: 8px;">{{ $ord['city'] }}</td>
-                                <td style="border: 1px solid #000; padding: 8px;">{{ $ord['country'] }}</td>
+                                <td style="border: 1px solid #000; padding: 8px;">{{ $ord['countryName'] }}</td>
                                 <td style="border: 1px solid #000; padding: 8px;">{{ $ord['insured'] }}</td>
                             </tr>
                         @endforeach
