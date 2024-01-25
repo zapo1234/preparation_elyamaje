@@ -302,6 +302,7 @@ class TransferOrder
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
+                     $data_gift_card =[];// data liee au commande des gift_card acheté.
                      $data_product =[]; // data article details sur commande facture
                      $data = [];
                      $lines =[]; // le details des articles produit achétés par le client
@@ -323,7 +324,10 @@ class TransferOrder
                       $int_incr = 1;
                       $int_text ="00$int_incr";
                       $ref_ext ="WC-$jour$mm-$int_text";
-
+                      
+                       // preparation des données gift_card pour les cartes cadeaux.
+                        $array_data_gift_card =[];
+                        $montant_carte_kdo = [];
                         foreach($orders as $k => $donnees) {
                                 // créer des tiers pour dolibarr via les datas woocomerce. 
                                 // créer le client via dolibarr à partir de woocomerce...
@@ -466,16 +470,44 @@ class TransferOrder
                                    ];
                               }
 
-                              
+                                // recupére des lines pour des gift card
                                 foreach($donnees['line_items'] as $key => $values){
+                                   // traiter le cas des cartes cadeaux
+                                    $index_name ="CarteCadeau";
+                                    $chaine_index = explode(' ',$values['name']);
+                                    //
+                                    $chaine_details = $chaine_index[0].''.$chaine_index[1];
+                                  
+                                        if($chaine_details==$index_name){
+                                           // detruire 
+                                           unset($donnees['line_items'][$key]);
+                                           $array_data_gift_card[]=[
+                                            "desc"=>$values['name'],
+                                            "multicurrency_subprice"=> floatval($values['subtotal']),
+                                            "multicurrency_total_ht" => floatval($values['subtotal']),
+                                            "multicurrency_total_tva" => floatval($values['total_tax']),
+                                            "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                            "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                            "product_type"=>'1',
+                                            "product_label" =>'',
+                                             "qty" => '1',
+                                             "fk_product" =>'',//  insert id product dans dolibar.
+                                              "tva_tx" => '20',
+                                              "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                           ];
+                                          
+                                           $montant_carte_kdo[] = $values['total'];
 
-                                  foreach($values['meta_data'] as $val) {
+                                      }
+
+                                     foreach($values['meta_data'] as $val) {
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
                                           $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
                                        }
                                        else{
                                          $fk_product="";
+                                           
                                       }
                                       $ref="";
                                      
@@ -569,23 +601,32 @@ class TransferOrder
                                   $id_true ="";
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
-                                     // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
+                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
+                                      // veifier si la commande a facturé vient d'une beauty proof BPP
+                                      /* $chaine_ext ="BPP";
+                                       $result_int ="";// eviter que les commande de la BPP sois prise en compte.
+                                       if(strpos($chaine_ext,$donnees['order_id'])==false){
+                                            $result_int='';
+                                       }else{
+                                             $result_int=1;
+                                       }
+
+                                       */
                                     
-                                      $data_options = [
+                                       $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$coupons,
                                        "options_prepa" => $preparateur,
                                        "options_emba" => $emballeur,
-                                       
-                                       ];
+                                        ];
                                       
-                                      // liée la facture à l'utilisateur via un socid et le details des produits
-
+                                       // liée la facture à l'utilisateur via un socid et le details des produits
+                                       // data normale de la facture sans bon cadeaux ou achat via bon gift cart.
                                         $data_lines[] = [
-                                       'socid'=> $socid,
-                                       'ref_client' =>$ref,
-                                       'date'=> $new_date,
-                                       "email" => $donnees['billing']['email'],
+                                        'socid'=> $socid,
+                                        'ref_client' =>$ref,
+                                        'date'=> $new_date,
+                                        "email" => $donnees['billing']['email'],
                                         "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
                                         "total_tva" =>floatval($donnees['total_tax_order']),
                                         "total_ttc" =>floatval($donnees['total_order']),
@@ -596,6 +637,70 @@ class TransferOrder
                                     
                                       ];
 
+                                      // tableau de construction des facture de gift_cart lorqu'elle sont détecter.
+                                      // créer les facture pour le gift cart.
+                                       $ext_traitement = 0;
+                                       if(count($array_data_gift_card)!=0){
+                                             //
+                                             $data_options = [
+                                             "options_idw"=>'cdo-'.$donnees['order_id'].'',
+                                            "options_idc"=>$coupons,
+                                            "options_fid"=>1,
+                                            "options_prepa" => $preparateur,
+                                            "options_emba" => $emballeur,
+                                            
+                                             ];
+                                         
+                                              $data_gift_card[]=[
+                                             'socid'=> $socid,
+                                              'ref_client' =>$ref,
+                                             'date'=> $new_date,
+                                             "paye"=>"1",
+                                             "lines" =>$array_data_gift_card,
+                                            'array_options'=> $data_options,
+
+                                          ];
+
+                                             // crér le facture et la mettre en payée directement 
+                                            foreach($data_gift_card as $donnes){
+                                             // insérer les details des données de la facture dans dolibarr
+                                              $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                                             }
+                                             
+                                             $inv = $retour_create;
+                                              // valider les commandes
+                                              $newCommandepaye = [
+                                              "paye"	=> 1,
+                                              "statut"	=> 2,
+                                              "mode_reglement_id"=>57,
+                                              "idwarehouse"=>6,
+                                              "notrigger"=>0,
+                                              ];
+
+                                              // attribuer le compte bancaire.
+                                               $newbank = [
+                                               "datepaye"=>$date_finale,
+                                               "paymentid"=>13,
+                                               "closepaidinvoices"=> "yes",
+                                               "accountid"=> $account_id, // id du compte bancaire.
+                                              ];
+
+                                                // valider invoice
+                                               $newCommandeValider = [
+                                                "idwarehouse"	=> "6",
+                                                "notrigger" => "0",
+                                               ];
+                                             
+                                               // la valide et la mettre en payé......
+                                              // Lier les factures dolibar  à un moyen de paiement et bank.
+                                              $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
+                                               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                                              // mettre le statut en payé dans la facture  dolibar
+                                              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+
+                                         }
+
+                                       // construire mon tableau de ma seconde facture au cas il existe des bon d'achat gift_card ou des cadeaux line
                                         // Récupérer pour les cadeaux.
                                         $data_options_kdo = [
                                         "order_id"=>$donnees['order_id'],
@@ -620,9 +725,9 @@ class TransferOrder
                                         $date = date('Y-m-d');
                                         $historique = new Commandeid();
                                         $historique->id_commande = $donnees['order_id'];
-                                       $historique->date = $date;
+                                        $historique->date = $date;
                                         // insert to
-                                       $historique->save();
+                                        $historique->save();
                                       
                                    }
                                     else{
@@ -663,8 +768,8 @@ class TransferOrder
                            }
                          }
                         */
-
-      
+                          
+                        
                          // Create le client via Api...
                        
                           foreach($data_tiers as $data) {
@@ -836,6 +941,7 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
+                  
                   // recupérer le status
                   $status_dist = $this->getDistristatus();
                    // recupération les méthode de paiement.
@@ -983,6 +1089,8 @@ class TransferOrder
                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
                         // mettre le statut en payé dans la facture  dolibar
                         $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+
+                        // traiter les factures 
               }
 
         }
@@ -1313,6 +1421,50 @@ class TransferOrder
                                 }
 
                dd('succees');
+         }
+
+         public function addpayments()
+         {
+             $method = "GET";
+             $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
+             $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+
+               // recupérer les bank account 
+                // recupérer les prdoduct avec leur barcode pour utiliser plutard(important)
+              $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
+              $listbank = $this->api->CallAPI("GET", $apiKey, $apiUrl."bankaccounts", $produitParam);
+               // reference ref_client dans dolibar
+               $listbanks = json_decode($listbank, true);// la liste des produits dans doliba. 
+
+               $datetime = date('d-m-Y H:i:s');
+               $d = DateTime::createFromFormat(
+               'd-m-Y H:i:s',
+                $datetime,
+                new DateTimeZone('UTC')
+            );
+  
+              if($d === false) {
+                  die("Incorrect date string");
+               } else {
+               $date_finale =  $d->getTimestamp(); // conversion de date.
+              }
+               // ecrire dans la banque card kdo. id 13
+               $array_data =[
+                 "date"=> $date_finale,
+                 "type"=>"CADO",
+                 "label"=>"Distribution de bon cadeau par Martial N° TC1-2310-37090",
+                 "amount"=>50,
+                 "cheque_number"=>"TC1-2310-37090",
+                 "datev" => $date_finale,
+                 ];
+
+              // ecrire la ligne dans la bank 
+                 $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/13/lines/",json_encode($array_data));
+                dd('opreration reussie');
+               return $listbanks;
+              
+           
+
          }
 
   }
