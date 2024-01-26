@@ -158,7 +158,7 @@
 										<th>Générée le</th>
 										<th class="col-md-2">Visualiser</th>
 										<th class="col-md-2">Imprimer</th>
-										<th class="col-md-2">Déclaration douanière</th>
+										<th class="col-md-2">Douane</th>
 										<th class="col-md-1">Expédition</th>
 									</tr>
 								</thead>
@@ -180,7 +180,7 @@
 																<form class="d-flex" method="POST" action="{{ route('label.show') }}">
 																	@csrf
 																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
-																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i>{{ $label['tracking_number'] }}</button>
+																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																</form>
 															</div>
 															<div>
@@ -209,11 +209,11 @@
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
 																		<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
 
-																		<button type="submit" class="d-flex download_label_button print_pdf_file"><i class="bx bx-download"></i>{{ $label['tracking_number'] }}</button>
+																		<button type="submit" class="d-flex download_label_button print_pdf_file"><i class="bx bx-download"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																	</form>
 																@elseif($label['label_format'] == "ZPL")
 																<div class="d-flex">
-																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="bx bx-printer"></i>{{ $label['tracking_number'] }}</button>
+																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="bx bx-printer"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																</div>
 																@endif
 															</div>

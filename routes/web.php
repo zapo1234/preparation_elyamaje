@@ -215,8 +215,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3,6']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
-    
-   
 });
 
 // ADMIN - CHEF D'ÉQUIPE & SAV
