@@ -1767,7 +1767,7 @@ class Controller extends BaseController
     public function giftCardOrders(){
         $status = "completed";
         $after = false; //date('Y-m-d H:i:s', strtotime('-1 day'));
-        $per_page = 100;
+        $per_page = 10;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
 
@@ -1825,7 +1825,7 @@ class Controller extends BaseController
 
                 if(count($order_to_billing) == 4){
                     // Envoie à la facturation par 4
-
+                  
 
                     // Réinitialise le tableau
                     $order_to_billing = [];
@@ -1833,5 +1833,11 @@ class Controller extends BaseController
                 // Remplacer par fonction qui facture plusieurs fois
             }
         } 
+
+
+        if(count($order_to_billing) > 0){
+            // Envoie à la facturation par 4
+          
+        }
     }
 }
