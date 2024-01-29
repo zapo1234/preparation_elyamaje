@@ -197,7 +197,7 @@
                 <div class="iocn-link">
                 <a href="#">
                     <i class='lni lni-delivery'></i>
-                    <span class="link_name">Étiquette</span>
+                    <span class="link_name">Expédition</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
                 </div>
