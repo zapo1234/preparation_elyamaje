@@ -259,6 +259,10 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 // Tache crons mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
+// Tache cron récupère les commandes avec carte cadeaux seulement
+Route::get("/giftCardOrders", [Controller::class, "giftCardOrders"]);
+
+
 
 // Route test validation emballage à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');

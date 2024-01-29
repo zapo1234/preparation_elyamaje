@@ -178,6 +178,7 @@ class Order extends BaseController
         
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){
+
             $take_order = true;
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
@@ -203,6 +204,11 @@ class Order extends BaseController
               } else {
                 $orders[$key]['is_distributor'] = false;
               }
+
+              // Check if is only gift card order
+              // if(!isset($order['from_dolibarr'])){
+              //   $this->checkGiftCard($orders[$key]);
+              // }
 
               $clesRecherchees = array_keys($ids,  $order['id']);
               
@@ -254,10 +260,8 @@ class Order extends BaseController
                   $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
                 }
               }
-             
               $list_orders[] = $orders[$key];
             }
-       
           }
         } else {
           foreach($orders as $key => $order){
@@ -268,6 +272,11 @@ class Order extends BaseController
             } else {
               $orders[$key]['is_distributor'] = false;
             }
+
+            // Check if is only gift card order
+            // if(!isset($order['from_dolibarr'])){
+            //   $this->checkGiftCard($orders[$key]);
+            // }
 
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
@@ -1314,6 +1323,40 @@ class Order extends BaseController
     DB::statement($query);
     dd("Ok !");
   }
+
+  // private function checkGiftCard($order){
+
+    // $item_gift_card = 0;
+    // foreach($order['line_items'] as $keyOrder => $or){
+    //   if(str_contains($or['name'], 'Carte Cadeau')){
+    //     $item_gift_card = $item_gift_card + 1;
+    //   }
+    // }
+
+    // if($item_gift_card == count($order['line_items'])){
+
+    //   // Facturer ici la commande contenant uniquement une ou des carte cadeaux
+    //   $order['coupons'] = '';
+    //   $order['preparateur'] = 'Aucun';
+    //   $order['emballeur'] = 'Aucun';
+    //   $order['order_woocommerce_id'] = $order['id'];
+    //   $order['order_id'] =  $order['id'];
+    //   $order['total_order'] =  $order['total'];
+    //   $order['total_tax_order'] =  $order['total_tax'];
+    //   $order['date'] =  $order['date_created'];
+    //   $order['gift_card_amount'] = 0;
+    //   $order['shipping_amount'] = 0;
+    //   $order['shipping_method_detail'] = "";
+    //   $order['discount_amount'] = 0;
+
+
+
+    //   // dd($order);
+
+    //   // On facture directement
+    //   $this->factorder->Transferorder([$order]);
+    // }
+  // }
 }
 
 
