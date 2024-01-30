@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use Exception;
 use Mike42\Escpos\Printer;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
-use App\Models\ProductDolibarr;
 
+use App\Models\ProductDolibarr;
 use App\Models\Categorie_dolibarr;
 use Illuminate\Support\Facades\DB;
 use App\Models\products_categories;
@@ -679,7 +680,7 @@ class Admin extends BaseController
             if(!isset($list_histories[$id][$histo['id']])){
                 $list_histories[date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
                     'name' => $histo['name'],
-                    'poste' => [$histo['poste']],
+                    'poste' => isset($histo['poste']) ? [$histo['poste']] : null,
                     'prepared_order' => $histo['status'] == "prepared" ? [$histo['order_id']] : [],
                     'finished_order' => $histo['status'] == "finished" ? [$histo['order_id']] : [],
                     'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
@@ -689,7 +690,7 @@ class Admin extends BaseController
                 ];
             } else {
                 $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);
-                $list_histories[$id][$histo['id']]['poste'][] = $histo['poste'];
+                $list_histories[$id][$histo['id']]['poste'][] = $histo['poste'] ?? null;
                 $list_histories[$id][$histo['id']]['prepared_order'] = array_unique($list_histories[$id][$histo['id']]['prepared_order']);
                 $list_histories[$id][$histo['id']]['finished_order'] = array_unique($list_histories[$id][$histo['id']]['finished_order']);
                 $list_histories[$id][$histo['id']]['poste'] = array_unique($list_histories[$id][$histo['id']]['poste']);
@@ -929,6 +930,134 @@ class Admin extends BaseController
     public function errorLogs(){
         $logs = $this->logError->getAllLogs();
         return view('admin.logs', ['logs' => $logs]);
+    }
+
+
+    /* ------------ Beauty Prof details ------------ */
+    public function seller(Request $request){
+        return view('admin.seller');
+    }
+
+    // Details orders 
+    public function analyticsSeller(Request $request){
+        $date = $request->get('date') ?? date('Y-m-d');
+        $ordersBeautyProf = $this->orderDolibarr->getOrdersBeautyProf($date);
+        
+        $list_histories = [];
+        try{
+            $list_histories = $this->buildHistoryBeautyProf($ordersBeautyProf);
+            echo json_encode(['success' => true, 'histories' => $list_histories['details'], 'status' => $list_histories['status']]);
+        } catch(Exception $e){
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function analyticsSellerTotal(){
+        try{
+            $histories = $this->orderDolibarr->getAllOrdersBeautyProf();
+            $order_by_name = [];
+   
+            foreach($histories as $histo){
+                if(!isset($order_by_name[$histo['id']])){
+                    $order_by_name[$histo['id']] = [
+                        'name' => $histo['name'],
+                        'total_order' => 1,
+                        'total_amount' => $histo['total_order_ttc'],
+                    ];
+                } else {
+                    $order_by_name[$histo['id']]['total_order']++;
+                    $order_by_name[$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+                }
+            }
+
+            
+            // Trie par commandes préparées
+            usort($order_by_name, function($a, $b) {
+                return $b['total_order'] <=> $a['total_order'];
+            });
+
+            echo json_encode(['success' => true, 'average' => $order_by_name]);
+        } catch (Exception $e){
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    private function buildHistoryBeautyProf($histories){
+        $list_histories['details'] = [];
+        $pending = 0;
+        $paid = 0;
+
+        // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
+        foreach($histories as $histo){
+            $id = date('d/m/Y', strtotime($histo['created_at']));
+
+            $pending =  $histo['status'] == "pending" ? $pending + 1 : $pending;
+            $paid    =  $histo['status'] != "pending" && $histo['status'] != "canceled" ? $paid + 1 : $paid;
+            
+            if(!isset($list_histories['details'][$id][$histo['id']])){
+                $list_histories['details'][date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
+                    'name' => $histo['name'],
+                    'number_order' => 1,
+                    'date' => date('d/m/Y', strtotime($histo['created_at'])),
+                    'total_amount' => $histo['total_order_ttc']
+                ];
+            } else {
+                $list_histories['details'][$id][$histo['id']]['number_order']++;
+                $list_histories['details'][$id][$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+            }
+        }
+
+        // Calcule moyenne du panier
+        foreach($list_histories['details'] as $key => $data) {
+            foreach($data as $key2 => $dt) {
+                $list_histories['details'][$key][$key2]['average'] =  floatval(number_format($dt['total_amount'] / $dt['number_order'], 2));
+            }
+            
+        }
+
+        $list_histories['status'] = 
+        [
+            'pending' => $pending,
+            'paid'    => $paid
+        ];
+
+        return $list_histories;
+    }
+
+    public function cashier(Request $request){
+        $ref_order = $request->get('ref_order') ?? false;
+        $date = $request->get('created_at') ?? false;
+        $orders_status = ['pending', 'processing', 'canceled'];
+        $orders = $this->orderDolibarr->getAllOrdersPendingBeautyProf($ref_order, $date);
+
+        // Check if order date time is older than 2 hours
+        foreach($orders as $ord => $or){
+            $date1 = new DateTime(date('Y-m-d H:i:s'));
+            $date2 = new DateTime($or['created_at']);
+            $diff = $date1->diff($date2);
+
+            if($diff->h >= 2 || $diff->y > 0 || $diff->m > 0 || $diff->d > 0){
+                $orders[$ord]['need_action'] = true;
+            } else {
+                $orders[$ord]['need_action'] = false;
+            }
+        }
+
+        foreach(__('status') as $key => $st){
+            if(in_array($key, $orders_status)){
+                $new_orders_status[$key] = $st;
+            }
+        }
+
+        return view('admin.cashier', ['orders' => $orders, 'list_status' => $new_orders_status, 'parameter' => $request->all()]);
+    }
+
+    public function cashierList(){
+        dd("dd");
+    }
+
+    public function beautyProfHistory(){
+        dd("c");
     }
 
 }

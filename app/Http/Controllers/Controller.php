@@ -1825,6 +1825,7 @@ class Controller extends BaseController
 
                 if(count($order_to_billing) == 4){
                     // Envoie à la facturation par 4
+                    dd($order_to_billing);
                   
 
                     // Réinitialise le tableau
