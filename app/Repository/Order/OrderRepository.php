@@ -50,7 +50,7 @@ class OrderRepository implements OrderInterface
 
                   if(isset($orderData['meta_data'])){
                      $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
-                     $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId");
+                     $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId") ?? $this->getValueByKey($orderData['meta_data'], "_shipping_method_chronorelais", "chrono");
                      $is_professional = $this->getValueByKey($orderData['meta_data'], "billing_customer_is_professional");
                   } else {
                      $productCode = null;
@@ -58,8 +58,6 @@ class OrderRepository implements OrderInterface
                      $is_professional = false;
                   }
                  
-   
-   
                   if(isset($orderData['cart_hash'])){
                      $ordersToInsert[] = [
                         'order_woocommerce_id' => $orderData['id'],
@@ -628,7 +626,7 @@ class OrderRepository implements OrderInterface
                // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
                if(isset($insert_order_by_user['meta_data'])){
                   $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
-                  $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId");
+                  $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId") ?? $this->getValueByKey($insert_order_by_user['meta_data'], "_shipping_method_chronorelais", "chrono");
                   $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
                } else {
                   $productCode = null;
@@ -955,13 +953,17 @@ class OrderRepository implements OrderInterface
 
 
    // Fonction pour récupérer la valeur avec une clé spécifique
-   private function getValueByKey($array, $key) {
+   private function getValueByKey($array, $key, $type = false) {
        foreach ($array as $item) {
-           if ($item['key'] === $key) {
+         if ($item['key'] === $key) {
+            if($type == "chrono"){
+               return $item['value']['id'];
+            } else {
                return $item['value'];
-           }
-       }
-       return null; // Si la clé n'est pas trouvée
+            }
+         }
+      }
+      return null; // Si la clé n'est pas trouvée
    }
 
    public function updateTotalOrders($data){

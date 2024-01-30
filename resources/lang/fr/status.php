@@ -18,6 +18,7 @@ return [
     'prepared-order'                    => 'Commande préparée',
     'finished'                          => 'Terminée',
     'pending'                           => 'En attente',
+    'canceled'                           => 'Annulée',
     "partial_prepared_order"            => "Commande partielle",
     "partial_prepared_order_validate"   => "Commande validée",
     "order-new-distrib"                 => "Commmande futur distibuteur",

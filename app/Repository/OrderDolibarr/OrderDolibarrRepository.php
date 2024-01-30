@@ -5,6 +5,7 @@ namespace App\Repository\OrderDolibarr;
 use Exception;
 use App\Models\OrderDolibarr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 
 class OrderDolibarrRepository implements OrderDolibarrInterface
@@ -465,6 +466,54 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       } catch(Exception $e){
          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       }
+   }
+
+   public function getOrdersBeautyProf($date){
+      return $this->model::select('users.id','users.name', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+      'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc')
+      ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
+      ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
+      ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+      ->get()
+      ->toArray();
+   }
+
+
+   public function getAllOrdersBeautyProf(){
+      // $data = Cache::remember('historiesBP', 3600, function () {
+         return $this->model::select('users.id','users.name', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+         'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc')
+         ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
+         ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+         ->get()
+         ->toArray();
+      // });
+
+      // return $data;
+   }
+
+   public function getAllOrdersPendingBeautyProf($ref_order, $date){
+
+      $date = $date ?? date('Y-m-d');
+
+      if($ref_order){
+         return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+            'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+            ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
+            ->where('orders_doli.statut', 'pending')
+            ->where('orders_doli.ref_order', $ref_order)
+            ->get()
+            ->toArray();
+      } else {
+         return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+            ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
+            ->where('orders_doli.statut', 'pending')
+            ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
+            ->get()
+            ->toArray();
+      }
+      
    }
 }
 

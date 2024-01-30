@@ -19,7 +19,7 @@
                 </ul>
             </li>
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-history' ></i>
                     <span class="link_name">Historiques</span>
@@ -33,7 +33,7 @@
                 </ul>
             </li>
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-cog'></i>
                     <span class="link_name">Configuration</span>
@@ -76,7 +76,7 @@
                 </ul>
             </li>
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                     <a href="#">
                         <i class='bx bx-credit-card-front'></i>
                         <span class="link_name">Facturation</span>
@@ -90,7 +90,7 @@
                 </ul>
             </li>
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-history' ></i>
                     <span class="link_name">Historiques</span>
@@ -122,7 +122,7 @@
                 </ul>
             </li>
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-cog'></i>
                     <span class="link_name">Configuration</span>
@@ -162,7 +162,7 @@
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-box'></i>
                     <span class="link_name">Préparation</span>
@@ -194,7 +194,7 @@
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)) > 0)
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='lni lni-delivery'></i>
                     <span class="link_name">Expédition</span>
@@ -211,12 +211,27 @@
                     <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
                 </ul>
             </li>
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('seller') }}">Vendeuse</a></li>
+                    <li><a href="{{ url('cashier') }}">Caisse</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                </ul>
+            </li>
         @endif
 
         <!-- Espace Sav -->
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
             <li>
-                <div class="iocn-link">
+                <div class="icon-link">
                 <a href="#">
                     <i class='bx bx-history' ></i>
                     <span class="link_name">Historiques</span>

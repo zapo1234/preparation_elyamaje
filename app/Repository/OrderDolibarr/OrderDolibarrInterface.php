@@ -38,6 +38,12 @@ interface OrderDolibarrInterface
     public function  deleteProductOrder($order_id, $product_id);
 
     public function updateCustomerDetail($data, $order_id);
+
+    public function getOrdersBeautyProf($date);
+
+    public function getAllOrdersBeautyProf();
+
+    public function getAllOrdersPendingBeautyProf($ref_order, $date);
 }
 
 
