@@ -9,7 +9,7 @@ use App\Http\Service\Api\Chronopost\Countries;
 class Chronopost
 {
     public function generateLabelChrono($order, $weight, $order_id, $colissimo){
-       
+        
         // CODE ISO TO COUNTY NAME
         $countries = new Countries() ?? [];
         $countryName = strtoupper($countries->countries()[$order['shipping']['country']]) ?? '';
@@ -113,7 +113,8 @@ class Chronopost
             'refValue' => [
                 "customerSkybillNumber"     => $order['order_id'], 
                 "recipientRef"              => $order['customer_id'], // Ref destinataire, champ libre
-                "shipperRef"                => $order['order_id'],  // Libre ou mettre code point relais          
+                "shipperRef"                => $order['pick_up_location_id'] ?? $order['order_id'],  // Libre ou mettre code point relais     
+                "idRelais"                  => $order['pick_up_location_id'] ?? ''
                     
             ],
 
