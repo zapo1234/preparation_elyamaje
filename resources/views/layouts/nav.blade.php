@@ -191,12 +191,13 @@
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0 || 
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0 || 
-        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
+        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
+        count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)) > 0)
             <li>
                 <div class="iocn-link">
                 <a href="#">
                     <i class='lni lni-delivery'></i>
-                    <span class="link_name">Étiquette</span>
+                    <span class="link_name">Expédition</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
                 </div>
@@ -214,6 +215,20 @@
 
         <!-- Espace Sav -->
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
+            <li>
+                <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-history' ></i>
+                    <span class="link_name">Historiques</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Historiques</a></li>
+                    <li><a href="{{ url('leaderHistoryOrder') }}">Préparées</a></li>
+                    <li><a href="{{ url('leaderHistory') }}">Commandes</a></li>
+                </ul>
+            </li>
             <li>
                 <a href="{{ url('sav') }}">
                     <i class='bx bx-support'></i>

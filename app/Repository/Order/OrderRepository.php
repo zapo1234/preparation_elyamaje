@@ -112,7 +112,11 @@ class OrderRepository implements OrderInterface
                      // Insert produits
                      $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
                      foreach($orderData['line_items'] as $value){
-                        if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
+
+                        // Check for gift card
+                        $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
+
+                        if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
                            $productsToInsert[] = [
                               'order_id' => $orderData['id'],
                               'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -123,7 +127,7 @@ class OrderRepository implements OrderInterface
                               'subtotal_tax' =>  $value['subtotal_tax'],
                               'total_tax' =>  $value['total_tax'],
                               'total_price' => $value['total'],
-                              'pick' => 0,
+                              'pick' => $is_virtual ? $value['quantity'] : 0,
                               'line_item_id' => $value['id'],
                               'pick_control' => 0
                            ];
@@ -682,7 +686,11 @@ class OrderRepository implements OrderInterface
                // Insert produits
                $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
                foreach($insert_order_by_user['line_items'] as $value){
-                  if($value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau')){
+
+                  // Check for gift card
+                  $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
+
+                  if (!$is_virtual || ($is_virtual && count($insert_order_by_user['line_items']) != 1)){
                      $productsToInsert[] = [
                         'order_id' => $insert_order_by_user['id'],
                         'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
@@ -693,7 +701,7 @@ class OrderRepository implements OrderInterface
                         'subtotal_tax' =>  $value['subtotal_tax'],
                         'total_tax' =>  $value['total_tax'],
                         'total_price' => $value['total'],
-                        'pick' => 0,
+                        'pick' =>  $is_virtual ? $value['quantity'] : 0,
                         'line_item_id' => $value['id'],
                         'pick_control' => 0
                      ];

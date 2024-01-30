@@ -11,6 +11,7 @@ use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Http\Service\Api\ColissimoTracking;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Service\Api\Chronopost\Countries;
 use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Bordereau\BordereauRepository;
@@ -39,6 +40,7 @@ class Label extends BaseController
     private $api;
     private $logError;
     private $pdf;
+    private $countries;
 
     public function __construct(
         LabelRepository $label, 
@@ -52,7 +54,8 @@ class Label extends BaseController
         Chronopost $chronopost,
         ColissimoTracking $colissimoTracking,
         LogErrorRepository $logError,
-        CreatePdf $pdf
+        CreatePdf $pdf,
+        Countries $countries
     ){
         $this->label = $label;
         $this->colissimo = $colissimo;
@@ -66,6 +69,7 @@ class Label extends BaseController
         $this->colissimoTracking = $colissimoTracking;
         $this->logError = $logError;
         $this->pdf = $pdf;
+        $this->countries = $countries;
     }
 
     public function getlabels(Request $request){
@@ -255,7 +259,8 @@ class Label extends BaseController
                     'created_at' => $newDate,
                     'label_date' => $newDateLabel,
                     'number_order' => $bordereau['number_order'],
-                    'bordereauId' => $bordereau['bordereauId']
+                    'bordereauId' => $bordereau['bordereauId'],
+                    'origin'    => $bordereau['origin'] ?? 'colissimo',
                 ];
             }
             return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);
@@ -297,6 +302,8 @@ class Label extends BaseController
             $tracking_number = [];
             $total_weight = 0;
 
+            $countries = $this->countries->countries();
+
             if(count($orders) > 0){
                 foreach($orders as $key => $order){
                     $tracking_number[] = $order['tracking_number'];
@@ -315,6 +322,7 @@ class Label extends BaseController
                         'postcode' => $order['shipping_customer_postcode'],
                         'city' => $order['shipping_customer_city'],
                         'country' => $order['shipping_customer_country'],
+                        'countryName' => strtoupper($countries[$order['shipping_customer_country']]) ?? $order['shipping_customer_country'],
                         'customer_id' => $order['customer_id'],
                         'insured' => intval($order['total_order']) < 450 ? 0 : intval($order['total_order'])
                     ];  
@@ -423,6 +431,7 @@ class Label extends BaseController
         $product_to_add_label = $request->post('label_product');
         $order_id = $request->post('order_id');
 
+
         if($from_dolibarr){
             $order_by_id = $this->orderDolibarr->getOrdersDolibarrById($order_id);
         } else {
@@ -440,9 +449,6 @@ class Label extends BaseController
                 $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
             }
 
-            if($from_dolibarr){
-                $order[0]['shipping_method'] = "lpc_sign";
-            }
             $weight = 0; // Kg
             $subtotal = 0;
             $items = [];
@@ -466,6 +472,7 @@ class Label extends BaseController
             } 
 
             $order[0]['total_order'] = $subtotal;
+            
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
@@ -488,7 +495,7 @@ class Label extends BaseController
                     }
 
                     if($from_js){
-                        echo json_encode(['success' => true, 'file' => false, 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
+                        echo json_encode(['success' => true, 'file' => base64_encode($labelChrono['label']), 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
                         return;
                     } else {
                         return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);

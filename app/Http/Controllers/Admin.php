@@ -350,11 +350,16 @@ class Admin extends BaseController
                     $number_items_picked = $number_items_picked + $av['items_picked'];
                 }
 
-            $average_by_name[$key] = ['avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
+            $average_by_name[$key] = ['name' => $key, 'avg_prepared' => round($number_prepared / count($avg), 2), 'avg_finished' => round($number_finished / count($avg), 2), 'avg_items_picked' => round($number_items_picked / count($avg), 2)];
                 $number_prepared = 0;
                 $number_finished = 0;
                 $number_items_picked = 0;
             }
+
+            // Trie par commandes préparées
+            usort($average_by_name, function($a, $b) {
+                return $b['avg_prepared'] <=> $a['avg_prepared'];
+            });
 
             echo json_encode(['success' => true, 'average_by_name' => $average_by_name]);
         } catch (Exception $e){
@@ -606,7 +611,7 @@ class Admin extends BaseController
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
 
-            if(str_contains($order_id, 'CO')){
+            if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
                 $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
                 if(count($order) > 0){
                     $order = $this->woocommerce->transformArrayOrderDolibarr($order);
@@ -650,7 +655,14 @@ class Admin extends BaseController
                 $this->history->save($data);
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 $this->order->updateOrdersById([$order_id], "finished");
-                $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+               
+                $status_finished = " lpc_ready_to_ship";
+                if(isset($order[0]['shipping_method'])){
+                    if(str_contains($order[0]['shipping_method'], 'chrono')){
+                        $status_finished = "chronopost-pret";
+                    }
+                }
+                $this->api->updateOrdersWoocommerce($status_finished, $order_id);
 
                 return redirect()->route('admin.billing')->with('success', 'Commande facturée avec succès !');
             } catch(Exception $e){
@@ -851,11 +863,15 @@ class Admin extends BaseController
 
             $products_dolibarrs_save = array();
 
-            $apiUrl = env('KEY_API_URL');
-            $apiKey = env('KEY_API_DOLIBAR');
+            // $apiUrl = env('KEY_API_URL');
+            // $apiKey = env('KEY_API_DOLIBAR');
 
-            // $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
-            // $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd";
+            // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd'
+            // $apiUrl = 'https://www.poserp.elyamaje.com/api/index.php/'
+
+
+            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
+            $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd";
 
 
             $produitParamProduct = array(
@@ -868,8 +884,10 @@ class Admin extends BaseController
             $all_products = json_decode($all_products,true);
 
             if ($all_products) {
+                
                 foreach ($all_products as $key => $product) {
 
+                  if ($product["status"] == 1) {
                     $qte = 0;
 
                     if ($product["warehouse_array_list"]) {
@@ -895,6 +913,9 @@ class Admin extends BaseController
                         "poids" => 0,
                         "warehouse_array_list" => $qte
                     ]);
+                  }
+
+                   
 
                 }
     

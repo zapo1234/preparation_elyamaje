@@ -11,8 +11,8 @@
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
 						<div class="d-flex flex-wrap justify-content-center">
-							<div class="breadcrumb-title pe-3">Sav</div>
-							<div class="pe-3 number_order_pending"></div>
+							<!-- <div class="breadcrumb-title pe-3"></div>
+							<div class="pe-3 number_order_pending"></div> -->
 						</div>
 
 						
@@ -20,8 +20,8 @@
 					</div>
 
 					<div class="row row-cols-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-1 d-flex justify-content-center">
-						<h4 class="text-center">En développement...</h4>
-						<img src="assets/images/comming_soon.svg" style="width: 80vh">
+						<h4 class="text-center">Vous êtes vendeur, connectez-vous sur l'application pour créer des commandes</h4>
+						<img src="assets/images/shop.svg" style="width: 80vh">
 					</div>
 
 				</div>

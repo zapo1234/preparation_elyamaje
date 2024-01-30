@@ -13,10 +13,11 @@ return [
     |
     */
 
-    'processing' => 'Transfert en cours',
-    'waiting_to_validate' => 'Transfert attente de validation',
-    'waiting_validate' => 'Transfert en attente validé',
-    'prepared-order' => 'Transfert préparé',
-    'finished' => 'Transfert terminé',
-    'canceled' => 'Transfert annulé',
+    'processing'            => 'Transfert en cours',
+    'waiting_to_validate'   => 'Transfert attente de validation',
+    'waiting_validate'      => 'Transfert en attente validé',
+    'prepared-order'        => 'Transfert préparé',
+    'pending'               => 'En attente',
+    'finished'              => 'Transfert terminé',
+    'canceled'              => 'Transfert annulé',
 ];

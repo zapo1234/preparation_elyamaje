@@ -121,6 +121,13 @@
                         <div class="loading spinner-border text-dark" role="status"> 
                             <span class="visually-hidden">Loading...</span>
                         </div>
+
+                        <select name="origin" class="select2_custom type_dropdown input_form_type d-none">
+                            <option value="">Type de bordereau</option>
+                            <option value="colissimo">Colissimo</option>
+                            <option value="chronopost">Chronopost</option>
+                        </select>
+
                     </div>
                     <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
                         <thead>
@@ -130,6 +137,7 @@
                                 <th class="col-md-2">Nombre de colis</th>
                                 <th class="col-md-3">Bordereau</th>
                                 <th class="col-md-3">ID</th>
+                                <th class="col-md-3">Origine</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,7 +159,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td data-label="Généré le">{{ $bordereau['bordereauId'] }}</td>
+                                    <td data-label="ID">{{ $bordereau['bordereauId'] }}</td>
+                                    <td data-label="Origine">{{ $bordereau['origin'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -265,14 +274,35 @@
             $('#example').DataTable({
                 "order": [[4, 'DESC']],
                 "columnDefs": [
-                    { "visible": false, "targets": 4 }
+                    { "visible": false, "targets": 4 },
+                    { "visible": false, "targets": 5 },
                 ],
                 "initComplete": function(settings, json) {
                     $(".loading").hide()
                     $("#example").removeClass('d-none')
+                    $("#example_filter").parent().remove()
+                    // $("#example_length select").css('margin-right', '10px')
+                    $(".type_dropdown").appendTo('.dataTables_length')
+                    $(".dataTables_length").css('display', 'flex')
+                    $(".dataTables_length").addClass('select2_custom')
+                    $(".type_dropdown").removeClass('d-none')
+
+                    $(".type_dropdown").select2({
+                        width: '175px', 
+                    }); 
+
+                    $(".select2-container").css('margin-left', '10px')
+                    $(".custom_input").css('margin-left', '10px')
                 }
             })
         })
+
+        $('.type_dropdown').on('change', function(e){
+			var type_dropdown = $(this).val();
+			$('#example').DataTable()
+			.column(5).search(type_dropdown, true, false)
+			.draw();
+		})
 
         $("#show_modal_bordereau").on('click', function(){
             $("#modalBordereau").modal('show')

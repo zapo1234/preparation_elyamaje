@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+          
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -479,14 +479,16 @@ class TransferOrder
                                    ];
                               }
 
+
                                 // recupére des lines pour des gift card
                                 foreach($donnees['line_items'] as $key => $values){
                                    // traiter le cas des cartes cadeaux..
 
                                      foreach($values['meta_data'] as $val) {
+
                                      //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                        if($val['value']!=null) {
-                                          $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
+                                          $fk_product = array_search($val['value'], $data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
                                        }
                                        else{
                                          $fk_product="";
@@ -494,6 +496,7 @@ class TransferOrder
                                       }
                                       $ref="";
                                      
+                                      
                                       if($fk_product!=""){
                                              // recupérer les données du kdo 
                                             if($values['total'] == 0){
@@ -529,6 +532,7 @@ class TransferOrder
                                            // recupérer la methode shipping_method_name
                                            
                                             $chaine_name_shipping = $donnees['shipping_method_detail'];
+                                            
                                             /*$shipping_true = str_replace(' ', '', $chaine_name_shipping);
                                             dump($shipping_true);
                                             $array_shipping = $this->getnameshippingmethod();
@@ -697,24 +701,24 @@ class TransferOrder
                          }
                         */
                           
-                         
+                          
                           // Create le client via Api.....
-                       
-                          foreach($data_tiers as $data) {
+                           foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                              
                           }
 
-                          
-                       // traiter les commande achété avec des bon d'achat ici.
+                          // traiter les commande achété avec des bon d'achat ici.
+                  
                           foreach($data_lines[0]['lines'] as $keys => $val){
-
-                            if($val['product_label']!=""){
-                               $chaine_index = explode(' ',$val['product_label']);
-                               //
-                               $index_name ="CarteCadeau";
-                              $chaine_details = $chaine_index[0].''.$chaine_index[1];
+                            $chainex ="Carte Cadeau";
+                             if(strpos($val['product_label'],$chainex)!=false){
+                                 if($val['product_label']!=""){
+                                   $chaine_index = explode(' ',$val['product_label']);
+                                 //
+                                $index_name ="CarteCadeau";
+                                $chaine_details = $chaine_index[0].''.$chaine_index[1];
                                  
                               if($chaine_details==$index_name){
                                   // detruire les articles du tableau.
@@ -737,10 +741,12 @@ class TransferOrder
                              
                               $montant_carte_kdo[] = $val['multicurrency_total_ttc'];
                         }
+                      }
                      }
 
-                            // construire les données du clients a attacher a la facture.
-                            // on ne cree pas l'attache de la seconde facture si la condition est respecté...
+                      // construire les données du clients a attacher a la facture.
+
+                           // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
                               $data_gift_card =[];
                               $data_options1 =[];
@@ -852,10 +858,12 @@ class TransferOrder
                            
                             }
 
+                          
+
                             if($reel_indice==1){
                                // bloquer la suite....
                                $message ="la commande est bien facturée et comporte uniquement que des  carte cadeaux";
-                               echo json_encode(['success' => false, 'message'=> $message]);
+                               echo json_encode(['success' => true, 'message'=> $message]);
                                exit;
                            }
                     
@@ -1622,7 +1630,7 @@ class TransferOrder
         }
 
 
-      }
+         }
 
   }
 

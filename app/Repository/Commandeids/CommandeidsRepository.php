@@ -93,9 +93,12 @@ class CommandeidsRepository implements CommandeidsInterface
              '6,cod'=>'cod',
              '102,bancontact'=>'bancontact',
              '108,oney_x4_with_fees'=>'oney_x4_with_fees',
+             '108,oney_x3_with_fees'=>'oney_x3_with_fees',
              '3,bacs'=>'bacs',
              '57,gift_card'=>'gift_card',
              '6,apple_pay'=>'apple_pay',
+             '6,wc-scalapay-payin3' => 'wc-scalapay-payin3',
+             '6,wc-scalapay-payin4' => 'wc-scalapay-payin4'
            ];
 
            return $data_array;

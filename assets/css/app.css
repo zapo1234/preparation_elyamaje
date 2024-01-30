@@ -356,6 +356,22 @@ a {
 	border-radius: 10px;
 }
 
+@media (min-width: 950px) and (max-width: 1350px) {
+	.label_tracking_responsive{
+		display: none;
+	}
+
+	.download_label_button i,
+	.delete_label i{
+		font-size: 1.3em;
+	}
+
+	.table_mobile_responsive th{
+		font-size: 0.9em !important;
+	}
+
+}
+
 @media (max-width:900px) { 
 
 	.dataTables_wrapper .col-md-6{
@@ -5073,11 +5089,6 @@ input::placeholder {
 
 @media screen and (max-width: 1280px) {
 
-	.form-control-sm{
-		padding: .75rem .5rem !important;
-	}
-
-
 	.col-md-6:has(.dataTables_length){
 		width: 70%;
 	}
@@ -5085,16 +5096,6 @@ input::placeholder {
 	.col-md-6:has(.dataTables_filter){
 		width: 30%;
 	}
-
-	/* #example_length, #example_length label,  */
-	/* #example_length label select,  */
-	/* .select2_custom .selection,
-	.select2_custom .select2-selection,
-	.custom_dropdown,
-	.dataTables_length .custom_input,
-	.dataTables_length form button{
-		height: 100% !important;
-	} */
 
 	.select2_custom .select2-selection{
 		display: flex;
@@ -6794,37 +6795,46 @@ select:focus, input:focus{
 }
 
 .bg-light-waiting_to_validate,
-.bg-light-waiting_validate{
+.bg-light-waiting_validate,
+.bg-light-pending{
 	color: #94660c !important;
 	background-color: #f8dda7 !important;
+	padding: .5rem!important;
 }
 
 .bg-light-processing{
 	color: #5b841b !important;
-	background-color: #c6e1c6!important
+	background-color: #c6e1c6!important;
+	padding: .5rem!important;
 }
 
 .bg-light-en-attente-de-pai{
 	color: rgba(255,255,255,0.7) !important;
 	background-color: #039fe2 !important;
+	padding: .5rem!important;
 }
 
 .bg-light-prepared-order{
-	color: #0dcaf0 !important;
-	background-color: rgb(13 202 240 / 18%) !important;
+	border: none;
+    color: #089dbb !important;
+    background-color: rgb(13 202 240 / 18%);
+	padding: .5rem!important;
 }	
 
 .bg-light-finished{
 	color: white !important;
 	background-color: #cdc9c9 !important;
+	padding: .5rem!important;
 }
 
 .bg-private, .bg-processing{
 	background-color: #212529;
+	padding: .5rem!important;
 }
 
 .bg-publish, .bg-finished{
 	background-color: #29cc39;
+	padding: .5rem!important;
 }
 
 .detail_footer_order{
@@ -7055,7 +7065,8 @@ textarea:focus{
 	right: 0px;
 }
 
-.prepared-order{
+.prepared-order,
+.prepared{
 	border: none;
     color: #089dbb;
     background-color: rgb(13 202 240 / 18%);
@@ -7090,7 +7101,7 @@ textarea:focus{
 	background-color: #039fe2;
 }
 
-.waiting_validate, .waiting_to_validate{
+.waiting_validate, .waiting_to_validate, .pending {
 	border: 1px solid #f8dda7;
 	color: #94660c;
 	background-color: #f8dda7;
@@ -7932,9 +7943,9 @@ select option[disabled] {
 	margin-left: 5px;
 }
 
-.from_dolibarr_order_detail .edit_detail_order{
+/* .from_dolibarr_order_detail .edit_detail_order{
 	display: none;
-}
+} */
 
 .editableContent{
 	border: 1px solid #999;
@@ -8538,4 +8549,8 @@ select option[disabled] {
 	border-color: black;
 	color: white;
 	background-color: black;
+  }
+
+  .no_necessary{
+	padding: 0.5rem;
   }

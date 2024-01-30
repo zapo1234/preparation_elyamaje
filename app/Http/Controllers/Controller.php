@@ -13,6 +13,7 @@ use App\Models\ProductDolibarr;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\PdoDolibarr;
+use App\Http\Service\Api\TransferOrder;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
@@ -20,13 +21,16 @@ use App\Repository\Tiers\TiersRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Repository\LogError\LogErrorRepository;
 use App\Repository\Reassort\ReassortRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
+use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Service\Api\Transferkdo;
 
 
 class Controller extends BaseController
@@ -46,6 +50,10 @@ class Controller extends BaseController
     private $orderDolibarr;
     private $pdf;
     private $woocommerce;
+    private $logError;
+    private $factorder;
+    private $commandeids;
+    private $transferko;
 
     public function __construct(
         Order $orderController,
@@ -60,7 +68,11 @@ class Controller extends BaseController
         TiersRepository $tiersRepository,
         OrderDolibarrRepository $orderDolibarr,
         CreatePdf $pdf,
-        WoocommerceService $woocommerce
+        WoocommerceService $woocommerce,
+        LogErrorRepository $logError,
+        TransferOrder $factorder,
+        CommandeidsRepository $commandeids,
+        Transferkdo $transferkdo
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -75,6 +87,10 @@ class Controller extends BaseController
         $this->orderDolibarr = $orderDolibarr;
         $this->pdf = $pdf;
         $this->woocommerce = $woocommerce;
+        $this->logError = $logError;
+        $this->factorder = $factorder;
+        $this->commandeids = $commandeids;
+        $this->transferkdo = $transferkdo;
     }
 
     // INDEX ADMIN
@@ -1746,9 +1762,92 @@ class Controller extends BaseController
         } else {
             return redirect()->route('bordereaux')->with('error', 'Aucune étiquette chronopost générées aujourd\'hui');
         }
+    }
+
+    public function shop(){
+        return view('shop.index');
+    }
+
+    public function giftCardOrders(){
+        $status = "completed";
+        $after = false; //date('Y-m-d H:i:s', strtotime('-1 day'));
+        $per_page = 10;
+        $page = 1;
+        $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+
+        if(isset($orders['message'])){
+          $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
+          return false;
+        }
+
+        if(!$orders){
+          return array();
+        } 
+        
+        $count = count($orders);
+  
+        // Check if others page
+        if($count == 100){
+          while($count == 100){
+            $page = $page + 1;
+            $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+           
+            if(count($orders_other ) > 0){
+              $orders = array_merge($orders, $orders_other);
+            }
+          
+            $count = count($orders_other);
+          }
+        }  
+
+        $order_to_billing = [];
+
+        // Check if just gift card in order
+        foreach($orders as $order){
+            $item_gift_card = 0;
+            foreach($order['line_items'] as $or){
+                if(str_contains($or['name'], 'Carte Cadeau')){
+                  $item_gift_card = $item_gift_card + 1;
+                }
+            }
+
+            if($item_gift_card == count($order['line_items'])){
+                $order['coupons'] = '';
+                $order['preparateur'] = 'Aucun';
+                $order['emballeur'] = 'Aucun';
+                $order['order_woocommerce_id'] = $order['id'];
+                $order['order_id'] =  $order['id'];
+                $order['total_order'] =  $order['total'];
+                $order['total_tax_order'] =  $order['total_tax'];
+                $order['date'] =  $order['date_created'];
+                $order['gift_card_amount'] = 0;
+                $order['shipping_amount'] = 0;
+                $order['shipping_method_detail'] = "";
+                $order['discount_amount'] = 0;
+
+                $order_to_billing[] = $order;
+
+                
+
+                if(count($order_to_billing) == 4){
+                    // Envoie à la facturation par 4
+                    $order_to_billing;
+                
+                    $this->transferkdo->transferkdo($order_to_billing);
+
+                    // Réinitialise le tableau
+                    $order_to_billing = [];
+                }
+                // Remplacer par fonction qui facture plusieurs fois
+            }
+        } 
+
+
+        if(count($order_to_billing) > 0){
+            // Envoie à la facturation par 4
+          
+        }
 
        
     }
-    
-
 }

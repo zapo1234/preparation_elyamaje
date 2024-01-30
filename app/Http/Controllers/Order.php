@@ -61,25 +61,25 @@ class Order extends BaseController
     private $commandeids;
 
     public function __construct(Api $api, UserRepository $user, 
-    OrderRepository $order,
-    TransferOrder $factorder,
-    HistoryRepository $history,
-    CreatePdf $pdf,
-    Colissimo $colissimo,
-    LabelRepository $label,
-    LabelProductOrderRepository $labelProductOrder,
-    ProductOrderRepository $productOrder,
-    NotificationRepository $notification,
-    WoocommerceService $woocommerce,
-    DistributorRepository $distributor,
-    PrinterRepository $printer,
-    ColissimoRepository $colissimoConfiguration,
-    ProductRepository $product,
-    Chronopost $chronopost,
-    LogErrorRepository $logError,
-    ReassortRepository $reassort,
-    OrderDolibarrRepository $orderDolibarr,
-    CommandeidsRepository $commandeids
+      OrderRepository $order,
+      TransferOrder $factorder,
+      HistoryRepository $history,
+      CreatePdf $pdf,
+      Colissimo $colissimo,
+      LabelRepository $label,
+      LabelProductOrderRepository $labelProductOrder,
+      ProductOrderRepository $productOrder,
+      NotificationRepository $notification,
+      WoocommerceService $woocommerce,
+      DistributorRepository $distributor,
+      PrinterRepository $printer,
+      ColissimoRepository $colissimoConfiguration,
+      ProductRepository $product,
+      Chronopost $chronopost,
+      LogErrorRepository $logError,
+      ReassortRepository $reassort,
+      OrderDolibarrRepository $orderDolibarr,
+      CommandeidsRepository $commandeids
     ){
       $this->api = $api;
       $this->user = $user;
@@ -154,7 +154,6 @@ class Order extends BaseController
           }
         }  
 
-      
         // Liste des distributeurs
         $distributors = $this->distributor->getDistributors();
         $distributors_list = [];
@@ -179,6 +178,7 @@ class Order extends BaseController
         
         if(count($orders_distributed) > 0){
           foreach($orders as $key => $order){
+
             $take_order = true;
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
@@ -190,7 +190,7 @@ class Order extends BaseController
             } 
 
             // N'affiche pas les commandes préparées qui sont en réalité finis, du au cache de l'api woocommerce les status sont pas forcément actualisées
-            if($order['status'] == "prepared-order"){
+            if($order['status'] == "prepared-order" && !str_contains($order['id'], 'BP') && !str_contains($order['id'], 'CO')){
               $clesRecherchees = array_keys($ids,  $order['id']);
               if(count($clesRecherchees) == 0){
                 $take_order = false;
@@ -204,6 +204,11 @@ class Order extends BaseController
               } else {
                 $orders[$key]['is_distributor'] = false;
               }
+
+              // Check if is only gift card order
+              // if(!isset($order['from_dolibarr'])){
+              //   $this->checkGiftCard($orders[$key]);
+              // }
 
               $clesRecherchees = array_keys($ids,  $order['id']);
               
@@ -255,10 +260,8 @@ class Order extends BaseController
                   $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
                 }
               }
-             
               $list_orders[] = $orders[$key];
             }
-       
           }
         } else {
           foreach($orders as $key => $order){
@@ -269,6 +272,11 @@ class Order extends BaseController
             } else {
               $orders[$key]['is_distributor'] = false;
             }
+
+            // Check if is only gift card order
+            // if(!isset($order['from_dolibarr'])){
+            //   $this->checkGiftCard($orders[$key]);
+            // }
 
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
@@ -634,13 +642,12 @@ class Order extends BaseController
         $number_order_attributed = $this->order->getOrdersByUsers();
 
         // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
-        $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate'];
-
+        $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
-              $this->api->updateOrdersWoocommerce("lpc_ready_to_ship", $order_id);
+              $this->api->updateOrdersWoocommerce("completed", $order_id);
             } else {
               $this->api->updateOrdersWoocommerce($status, $order_id);
             } 
@@ -695,14 +702,14 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
       
-       // $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-      //  $transfers = $request->post('transfers') == "false" ? 0 : 1;
+        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
        // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-      //  $order_id = explode(',', $request->post('order_id'))[0];
+      $order_id = explode(',', $request->post('order_id'))[0];
 
-        $from_dolibarr=false;
-        $transfers =false;
-        $order_id = 124020;
+       // $from_dolibarr=false;
+      //  $transfers =false;
+      //  $order_id = 133708;
        
        if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -758,12 +765,21 @@ class Order extends BaseController
             if($from_dolibarr){
               $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
             } else {
+
               // Status différent selon type de commande
               $status_finished = "lpc_ready_to_ship";
+              
               if(isset($orders[0]['shipping_method'])){
-                if($orders[0]['shipping_method'] == "local_pickup" && $orders[0]['is_distributor']){
+                if(str_contains($orders[0]['shipping_method'], 'chrono')){
+                  $status_finished = "chronopost-pret";
+                }
+              }
+
+              // Check if order distributor
+              if(isset($orders[0]['shipping_method_detail'])){
+                if(str_contains($orders[0]['shipping_method_detail'], 'Distributeur') && $orders[0]['is_distributor']){
                   $status_finished = "commande-distribu";
-                } 
+                }
               }
 
               // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
@@ -875,7 +891,14 @@ class Order extends BaseController
         } 
       }
 
-      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status_order'), 'parameter' => $request->all()]);
+      // Change prepared to order-prepared
+      foreach($histories_order as $key => $hist){
+        if($hist['status'] == "prepared"){
+          $histories_order[$key]['status'] = "prepared-order";
+        }
+      }
+
+      return view('leader.history', ['histories' => $histories_order, 'list_status' => __('status'), 'parameter' => $request->all()]);
     }
 
     public function generateHistory(Request $request){
@@ -1134,8 +1157,12 @@ class Order extends BaseController
         $data = [
           $field => $field_value
         ];
-  
-        $this->order->update($data, $order_id);
+
+        if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+          $this->orderDolibarr->updateCustomerDetail($data, $order_id);
+        } else {
+          $this->order->update($data, $order_id);
+        }
     } else {
       echo json_encode(['success' => false]);
     }
@@ -1207,7 +1234,7 @@ class Order extends BaseController
   public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
-    if(str_contains($order_id, 'CO')){
+    if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
     } else if(strlen($order_id) == 10){
       $order = $this->reassort->getReassortById($order_id);
@@ -1300,6 +1327,40 @@ class Order extends BaseController
     DB::statement($query);
     dd("Ok !");
   }
+
+  // private function checkGiftCard($order){
+
+    // $item_gift_card = 0;
+    // foreach($order['line_items'] as $keyOrder => $or){
+    //   if(str_contains($or['name'], 'Carte Cadeau')){
+    //     $item_gift_card = $item_gift_card + 1;
+    //   }
+    // }
+
+    // if($item_gift_card == count($order['line_items'])){
+
+    //   // Facturer ici la commande contenant uniquement une ou des carte cadeaux
+    //   $order['coupons'] = '';
+    //   $order['preparateur'] = 'Aucun';
+    //   $order['emballeur'] = 'Aucun';
+    //   $order['order_woocommerce_id'] = $order['id'];
+    //   $order['order_id'] =  $order['id'];
+    //   $order['total_order'] =  $order['total'];
+    //   $order['total_tax_order'] =  $order['total_tax'];
+    //   $order['date'] =  $order['date_created'];
+    //   $order['gift_card_amount'] = 0;
+    //   $order['shipping_amount'] = 0;
+    //   $order['shipping_method_detail'] = "";
+    //   $order['discount_amount'] = 0;
+
+
+
+    //   // dd($order);
+
+    //   // On facture directement
+    //   $this->factorder->Transferorder([$order]);
+    // }
+  // }
 }
 
 

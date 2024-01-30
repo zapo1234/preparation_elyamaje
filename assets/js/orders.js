@@ -194,7 +194,7 @@ $(document).ready(function() {
                     return `
                         <div id="order_total_${row.id}" class="${row.shipping_method.includes("chrono") ? "chronopost_shipping" : ""} w-100 d-flex flex-column">
                             ${row.total != 0.00 ? '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total - row.total_tax).toFixed(2)+'</strong></span>' : '<span>Total (HT): <strong class="total_ht_order">' +parseFloat(row.total).toFixed(2)+'</strong></span>'}
-                            <span>TVA: <strong class="total_tax_order">` +row.total_tax+`</strong></span>
+                            <span>TVA: <strong class="total_tax_order">` +parseFloat(row.total_tax).toFixed(2)+`</strong></span>
                             <span>Payé: <strong class="total_ttc_order">`+parseFloat(row.total).toFixed(2)+`</strong></span>
                         </div>`;
                 }
