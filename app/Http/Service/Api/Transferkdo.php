@@ -293,9 +293,7 @@ class Transferkdo
                       // tableau associatve entre ref et label product....
                   }
 
-                  
-                    
-                  // recupére les orders des données provenant de  woocomerce
+                    // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -474,8 +472,7 @@ class Transferkdo
 
                                      }
                                      
-
-                                       $ref="";
+                                     $ref="";
                                      
                                        if($fk_product!=""){
                                              // recupérer les données du kdo 
@@ -609,11 +606,7 @@ class Transferkdo
                           // Create le client via Api.....
                         // fitrer les ids de commande .qui sont deja facture et les enlever.
                           $array_tab = []; // au recupere les socid
-
-                          dump($data_tiers);
-                          dd($unique_arr);
-
-                        if(count($unique_arr)!=0){
+                         if(count($unique_arr)!=0){
 
                             foreach($unique_arr as $key =>$van){
                                 // if le tableau des lines est vide ne pas considére
@@ -724,12 +717,12 @@ class Transferkdo
           ];
     
           
-          $newCommandepaye = [
-          "paye"	=> 1,
-          "statut"	=> 2,
-          "mode_reglement_id"=>6,
-          "idwarehouse"=>6,
-          "notrigger"=>0,
+           $newCommandepaye = [
+            "paye"	=> 1,
+            "statut"	=> 2,
+            "mode_reglement_id"=>6,
+            "idwarehouse"=>6,
+            "notrigger"=>0,
       
          ];
         
@@ -755,7 +748,25 @@ class Transferkdo
            "paymentid"=>6,
            "closepaidinvoices"=> "yes",
            "accountid"=> 32, // id du compte bancaire.
-        ];
+           ];
+
+           // contruire le tableau newbank
+           for($i=$nombre_count; $i<$inv+2; $i++){
+                foreach($orders as $val){
+                $new_bank [$i]=[
+                         "datepaye"=>$date_finale,
+                          "paymentid"=>6,
+                         "closepaidinvoices"=> "yes",
+                         "accountid"=> 32, // id du compte bancaire. 
+                         "num_payment"=>$val['id'],
+                  ];
+             
+                }
+           }
+
+           dd($new_bank);
+
+
 
            // valider les facture dans dolibar
            for($i=$nombre_count; $i<$inv+2; $i++) {
