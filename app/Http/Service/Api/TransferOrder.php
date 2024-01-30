@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-          
+            dd($orders);
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -712,30 +712,31 @@ class TransferOrder
                           // traiter les commande achété avec des bon d'achat ici.
                   
                           foreach($data_lines[0]['lines'] as $keys => $val){
-                            $chainex ="Carte Cadeau";
-                             if(strpos($val['product_label'],$chainex)!=false){
+                            $chainex ="Carte";
+                            $chainex1 ="Cadeau";
+                             if(strpos($val['product_label'],$chainex)!=false && strpos($val['product_label'],$chainex1)!=false){
                                  if($val['product_label']!=""){
                                    $chaine_index = explode(' ',$val['product_label']);
                                  //
                                 $index_name ="CarteCadeau";
                                 $chaine_details = $chaine_index[0].''.$chaine_index[1];
                                  
-                              if($chaine_details==$index_name){
+                                  if($chaine_details==$index_name){
                                   // detruire les articles du tableau.
-                                   unset($data_lines[0]['lines'][$keys]);
-                                  $array_data_gift_card[]=[
-                                  "desc"=>'',
-                                  "multicurrency_subprice"=> floatval($val['multicurrency_subprice']),
-                                  "multicurrency_total_ht" => floatval($val['multicurrency_total_ht']),
-                                  "multicurrency_total_tva" => floatval($val['multicurrency_total_tva']),
-                                  "multicurrency_total_ttc" => floatval($val['multicurrency_total_ttc']),
-                                  "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                  "product_type"=>'',
-                                  "product_label" =>$val['product_label'],
-                                  "qty" => $val['qty'],
-                                  "fk_product" =>$val['fk_product'],//  insert id product dans dolibar.
-                                  "tva_tx" => '0',
-                                  "ref_ext" => $val['ref_ext'], // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                    unset($data_lines[0]['lines'][$keys]);
+                                     $array_data_gift_card[]=[
+                                     "desc"=>'',
+                                     "multicurrency_subprice"=> floatval($val['multicurrency_subprice']),
+                                     "multicurrency_total_ht" => floatval($val['multicurrency_total_ht']),
+                                     "multicurrency_total_tva" => floatval($val['multicurrency_total_tva']),
+                                     "multicurrency_total_ttc" => floatval($val['multicurrency_total_ttc']),
+                                     "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                     "product_type"=>'',
+                                     "product_label" =>$val['product_label'],
+                                      "qty" => $val['qty'],
+                                     "fk_product" =>$val['fk_product'],//  insert id product dans dolibar.
+                                     "tva_tx" => '0',
+                                      "ref_ext" => $val['ref_ext'], // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                               ];
                              }
                              
