@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+          
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -701,24 +701,24 @@ class TransferOrder
                          }
                         */
                           
-                         
+                          
                           // Create le client via Api.....
-                       
-                          foreach($data_tiers as $data) {
+                           foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                              
                           }
 
-                          
-                       // traiter les commande achété avec des bon d'achat ici.
+                          // traiter les commande achété avec des bon d'achat ici.
+                  
                           foreach($data_lines[0]['lines'] as $keys => $val){
-
-                            if($val['product_label']!=""){
-                               $chaine_index = explode(' ',$val['product_label']);
-                               //
-                               $index_name ="CarteCadeau";
-                              $chaine_details = $chaine_index[0].''.$chaine_index[1];
+                            $chainex ="Carte Cadeau";
+                             if(strpos($val['product_label'],$chainex)!=false){
+                                 if($val['product_label']!=""){
+                                   $chaine_index = explode(' ',$val['product_label']);
+                                 //
+                                $index_name ="CarteCadeau";
+                                $chaine_details = $chaine_index[0].''.$chaine_index[1];
                                  
                               if($chaine_details==$index_name){
                                   // detruire les articles du tableau.
@@ -741,13 +741,10 @@ class TransferOrder
                              
                               $montant_carte_kdo[] = $val['multicurrency_total_ttc'];
                         }
+                      }
                      }
 
-                       
-
-                       
-                           
-                          // construire les données du clients a attacher a la facture.
+                      // construire les données du clients a attacher a la facture.
 
                            // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
@@ -1295,9 +1292,7 @@ class TransferOrder
 
                   }
 
-                
-
-                    // array pour paimement de la facture.
+                  // array pour paimement de la facture.
                     $newCommandepaye[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                     "total_ht"  =>$values['total_order']-$values['total_tax_order'],
                     "total_tva" =>$values['total_tax_order'],

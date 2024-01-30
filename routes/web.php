@@ -71,7 +71,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
     //traitement ajax des commande facture 
     Route::get("/ordercommande", [TiersController::class, "getidscommande"])->name('tiers.getidscommande');
+
+    // Log des erreurs
+    Route::get("/errorLogs", [Admin::class, "errorLogs"])->name('admin.logs'); 
     
+    // Transfert
     Route::post("/postReassort", [Controller::class, "postReassort"])->name('postReassort'); 
     Route::post("/delete_transfert/{identifiant}", [Controller::class, "delete_transfert"])->name('delete_transfert'); 
     Route::post("/updateStockWoocommerce/{identifiant}", [Order::class, "updateStockWoocommerce"])->name('updateStockWoocommerce'); 
@@ -110,22 +114,30 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/colissimo", [Admin::class, "colissimo"])->name('colissimo');
     Route::post("/colissimo", [Admin::class, "updateColissimo"])->name('colissimo.update');
 
+    // Facturation
     Route::get("/billing", [Admin::class, "billing"])->name('admin.billing');
     Route::post("/billingOrder", [Admin::class, "billingOrder"])->name('admin.billingOrder');
-
     Route::get("/reinvoice", [Admin::class, "reinvoice"])->name('admin.reinvoice');
     Route::post("/reInvoiceOrder", [Admin::class, "reInvoiceOrder"])->name('admin.reInvoiceOrder');
 
     // Email preview
     Route::get("/email-preview", [Admin::class, "emailPreview"])->name('email.preview'); 
 
-    // Cofiguration dolibarr
+    // Configuration dolibarr
     Route::get("/configDolibarr", [Admin::class, "configDolibarr"])->name('configDolibarr');
     Route::get("/updatePrepaCategoriesDolibarr", [Admin::class, "updatePrepaCategoriesDolibarr"])->name('updatePrepaCategoriesDolibarr');
     Route::get("/updatePrepaProductsCategories", [Admin::class, "updatePrepaProductsCategories"])->name('updatePrepaProductsCategories');
     Route::get("/updatePrepaProductsAssociation", [Admin::class, "updatePrepaProductsAssociation"])->name('updatePrepaProductsAssociation');
     Route::get("/updatePrepaProductsDolibarr", [Admin::class, "updatePrepaProductsDolibarr"])->name('updatePrepaProductsDolibarr');
-    Route::get("/errorLogs", [Admin::class, "errorLogs"])->name('admin.logs'); 
+
+    // Beauty Prof détails
+    Route::get("/seller", [Admin::class, "seller"])->name('admin.seller'); 
+    Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
+    Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
+    Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
+    Route::get("/cashierList", [Admin::class, "cashierList"])->name('admin.cashierList'); 
+
+    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 });
 
 // PRÉPARATEUR

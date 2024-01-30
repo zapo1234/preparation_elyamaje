@@ -30,6 +30,7 @@ use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Service\Api\Transferkdo;
 
 
 class Controller extends BaseController
@@ -52,6 +53,7 @@ class Controller extends BaseController
     private $logError;
     private $factorder;
     private $commandeids;
+    private $transferko;
 
     public function __construct(
         Order $orderController,
@@ -69,7 +71,8 @@ class Controller extends BaseController
         WoocommerceService $woocommerce,
         LogErrorRepository $logError,
         TransferOrder $factorder,
-        CommandeidsRepository $commandeids
+        CommandeidsRepository $commandeids,
+        Transferkdo $transferkdo
     ) {
         $this->orderController = $orderController;
         $this->users = $users;
@@ -87,6 +90,7 @@ class Controller extends BaseController
         $this->logError = $logError;
         $this->factorder = $factorder;
         $this->commandeids = $commandeids;
+        $this->transferkdo = $transferkdo;
     }
 
     // INDEX ADMIN
@@ -1823,10 +1827,13 @@ class Controller extends BaseController
 
                 $order_to_billing[] = $order;
 
+                
+
                 if(count($order_to_billing) == 4){
                     // Envoie à la facturation par 4
-                    dd($order_to_billing);
-                  
+                    $order_to_billing;
+                
+                    $this->transferkdo->transferkdo($order_to_billing);
 
                     // Réinitialise le tableau
                     $order_to_billing = [];
@@ -1840,5 +1847,7 @@ class Controller extends BaseController
             // Envoie à la facturation par 4
           
         }
+
+       
     }
 }
