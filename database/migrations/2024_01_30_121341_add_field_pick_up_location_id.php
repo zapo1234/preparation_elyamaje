@@ -14,7 +14,7 @@ class AddFieldPickUpLocationId extends Migration
     public function up()
     {
         Schema::table('orders_doli', function (Blueprint $table) {
-            $table->string('pick_up_location_id')->after('shipping_method')->nullable();
+            $table->string('pick_up_location_id')->after('shipping_method')->nullable(); 
         });
     }
 
