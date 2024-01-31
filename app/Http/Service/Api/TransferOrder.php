@@ -182,6 +182,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
             
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1188,9 +1189,10 @@ class TransferOrder
 
          public function Updatefacture($orders){
            // connexion api dolibar
+             
              $method = "GET";
-            $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+            $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd"; 
+            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
 
             // traiter le jeu de tableau
             // recupérer
@@ -1333,6 +1335,9 @@ class TransferOrder
                   ];
  
            }
+
+
+           
            
           
            // aller chercher les correspondances lines associé à ces factures dans dolibar pour line product.
@@ -1355,7 +1360,8 @@ class TransferOrder
               // tableau associatve entre ref et label product....
            }
           
-
+           
+           
           
            // recupérer et construire un tableau des products pour les réecrire dans la facture
            $data_update_product =[];
@@ -1385,9 +1391,9 @@ class TransferOrder
              }
           }
 
-          dd($data_update_product);
+          
 
-          // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+         // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
           $data_result =[];
            $ref_facture =[];
            $product_data =[];// construire un tableau pour un post (réécriture des lines products dans dolibarr)
@@ -1405,6 +1411,9 @@ class TransferOrder
 
                 }
              }
+
+
+            
              // construire un jeu de données pour recupérer les prix provenant de la commande woocomerce
              foreach($data_result as $lm => $val){
                foreach($val as $valis){
@@ -1423,6 +1432,7 @@ class TransferOrder
                }
             }
            }
+
             
             
              // Mettre les facture en brouillons et suprimer le compte lié
@@ -1453,6 +1463,8 @@ class TransferOrder
 
                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // icie
+
+              
                 
                 foreach($data_fk_facture as $lk){
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
@@ -1470,8 +1482,7 @@ class TransferOrder
              //     $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_facturedet WHERE fk_facture=$vj");
              //   }
 
-                dd('zapo');
-
+             
                 // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valuss){
                       $ids_facture  = explode(',',$kyes);

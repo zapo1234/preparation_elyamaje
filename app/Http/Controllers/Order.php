@@ -707,8 +707,7 @@ class Order extends BaseController
        // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
         $order_id = explode(',', $request->post('order_id'))[0];
       
-
-      if($from_dolibarr){
+     if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
       } else if($transfers){
