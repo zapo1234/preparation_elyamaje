@@ -517,10 +517,10 @@ class TransferOrder
                                                $data_product[] = [
                                                 "desc"=>'',
                                                 "remise_percent"=> $donnees['discount_amount'],
-                                                "multicurrency_subprice"=> floatval($donnees['subtotal']),
-                                                "multicurrency_total_ht" => floatval($donnees['subtotal']),
-                                                "multicurrency_total_tva" => floatval($donnees['total_tax']),
-                                                "multicurrency_total_ttc" => floatval($donnees['total']+$donnees['total_tax']),
+                                                "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$values['name'],
                                                 "qty" => $values['quantity'],
