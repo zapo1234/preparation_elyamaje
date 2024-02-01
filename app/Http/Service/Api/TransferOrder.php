@@ -1324,7 +1324,7 @@ class TransferOrder
                      "paye"	=> 1,
                      "statut"	=> 2,
                      "mode_reglement_id"=>$mode_reglement_id,
-                     "idwarehouse"=>16,
+                     "idwarehouse"=>17,
                      "notrigger"=>0,
                  ];
 
@@ -1353,7 +1353,7 @@ class TransferOrder
           
                  // tableau pour valider les  factures
                   $newCommandeValider[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
-                  "idwarehouse"	=> "16",
+                  "idwarehouse"	=> "17",
                    "notrigger" => "0",
                   ];
  
