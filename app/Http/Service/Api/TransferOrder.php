@@ -1068,14 +1068,14 @@ class TransferOrder
                     }
 
                    elseif(in_array($account_name,$array_paimentss)){
-                        // dons 
-                         $account_id=3; // PROD
-                         $paimentid =3;// PROD
+                        // CB
+                         $account_id=4; // PROD
+                         $paimentid =4;// PROD
                     }
                     else{
-                          // dons 
-                          $account_id=3; // PROD
-                          $paimentid =3;// PROD
+                          // CB
+                          $account_id=4; // PROD
+                          $paimentid =4;// PROD
                     }
 
                    // si c'est un distributeur (mettre la facture impayé)
