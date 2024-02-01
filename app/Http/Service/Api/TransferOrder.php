@@ -1324,7 +1324,7 @@ class TransferOrder
                      "paye"	=> 1,
                      "statut"	=> 2,
                      "mode_reglement_id"=>$mode_reglement_id,
-                     "idwarehouse"=>6,
+                     "idwarehouse"=>16,
                      "notrigger"=>0,
                  ];
 
