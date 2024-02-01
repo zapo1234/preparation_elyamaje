@@ -1341,17 +1341,19 @@ class TransferOrder
                  } else {
                    $date_finale =  $d->getTimestamp(); // conversion de date.
                   }
+
+                  $account_id=6;
     
-          /*         $newbank[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
+                  $newbank[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                      "datepaye"=>$date_finale,
                      "paymentid"=>6,
                      "closepaidinvoices"=> "yes",
                      "accountid"=> $account_id, // id du compte bancaire.
                 ];
-          */
+          
                  // tableau pour valider les  factures
                   $newCommandeValider[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
-                  "idwarehouse"	=> "6",
+                  "idwarehouse"	=> "16",
                    "notrigger" => "0",
                   ];
  
@@ -1419,7 +1421,7 @@ class TransferOrder
          // dd($data_update_product);
 
           // insert dans bdd
-          foreach($data_update_product as $key=> $vacc){
+       /*   foreach($data_update_product as $key=> $vacc){
               foreach($vacc as $vl){
 
                   $array_data[] =[
@@ -1431,7 +1433,8 @@ class TransferOrder
 
           }
 
-             
+
+          
               // compter le nombre de id_live 
               $result = DB::table('data_lines_facts')
              ->select('fk_product' ,DB::raw('SUM(qty) as nombre_vente'))
@@ -1443,17 +1446,15 @@ class TransferOrder
 
 
              $this->csvcreateentrepot($name_list);
+             DB::table('data_lines_facts')->insert($array_data);
 
+             dd('fin process');
+             
              dd('fin');
 
-             
+               dd('succes');
 
-           //DB::table('data_lines_facts')->insert($array_data);
-
-           // faire une requete sur les données
-           
-
-          dd('succes');
+        */
 
 
 
