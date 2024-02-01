@@ -1070,7 +1070,7 @@ class TransferOrder
                    elseif(in_array($account_name,$array_paimentss)){
                         // CB
                          $account_id=4; // PROD
-                         $paimentid =4;// PROD
+                         $paimentid=4;// PROD
                     }
                     else{
                           // CB
@@ -1204,8 +1204,8 @@ class TransferOrder
 
              
              $method = "GET";
-            $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+            $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd"; 
+            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
 
             // traiter le jeu de tableau
             // recupérer
@@ -1290,13 +1290,13 @@ class TransferOrder
 
                 elseif(in_array($moyen_paiement,$array_paimentss)){
                     // dons 
-                     $account_id=3; // PROD
-                      $paimentid =3;// PROD
+                     $account_id=4; // PROD
+                      $paimentid =4;// PROD
                   }
 
                   else{
-                    $account_id=3; // PROD
-                    $paimentid =3;// PROD
+                    $account_id=4; // PROD
+                    $paimentid =4;// PROD
 
                   }
 
@@ -1342,7 +1342,7 @@ class TransferOrder
                    $date_finale =  $d->getTimestamp(); // conversion de date.
                   }
 
-                  $account_id=6;
+                  $account_id=4;
     
                   $newbank[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                      "datepaye"=>$date_finale,
