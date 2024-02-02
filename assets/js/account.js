@@ -12,56 +12,13 @@ $(document).ready(function() {
         checkPassword()
 	})
 
+    $(".avatar").on('click', function(){
+        updateProfilImage($(this).attr('data-value'), $(this).attr('src'), true)
+    })
+
 
     $('#editProfilImage').on('shown.bs.modal', function () {
-        var f = new File([""], $("#display_image_data").attr('data-value'), {lastModified: Date(), size: 0, type: "image/jpeg"})
-        if($("#display_image_data")){
-            var files = f;
-            var done = function(url) {
-                $('#display_image_div').html('');
-                $("#display_image_div").html('<img name="display_image_data" id="display_image_data" src="'+$("#display_image_data").attr('src')+'" alt="Uploaded Picture">')
-            }
-            if (files && files.length > 0) {
-                var file = files;
-                if (URL) {
-                    done(URL.createObjectURL(file));
-                } else if (FileReader) {
-                    reader = new FileReader();
-                    reader.onload = function(e) {
-                        done(reader.result);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            }
-            var image = document.getElementById('display_image_data');
-            var button = document.getElementById('crop_button');
-            var result = document.getElementById('cropped_image_data');
-            var croppable = false;
-            var cropper = new Cropper(image, {
-                aspectRatio: 1,
-                viewMode: 1,
-                ready: function() {
-                    croppable = true;
-                },
-            });
-    
-            button.onclick = function() {
-    
-                var croppedCanvas;
-                var roundedCanvas;
-                var roundedImage;
-                if (!croppable) {
-                    return;
-                }
-                // Crop
-                croppedCanvas = cropper.getCroppedCanvas();
-                // Round
-                roundedCanvas = getRoundedCanvas(croppedCanvas);
-                result.value = roundedCanvas.toDataURL()
-                $("#crop_button").attr('disabled', true)
-                $(".updateImageProfil").submit()
-            };
-        }
+        updateProfilImage($("#display_image_data").attr('data-value'), $("#display_image_data").attr('src'))
     });
 
    
@@ -149,5 +106,55 @@ $(document).ready(function() {
                 $(".pass").addClass('text-success')
             }
         }	
+    }
+
+
+    function updateProfilImage(value, src, load = false){
+
+        var files = new File([""], value, {lastModified: Date(), size: 0, type: "image/jpeg"})
+        var done = function(url) {
+            $('#display_image_div').html('');
+            $("#display_image_div").html('<img name="display_image_data" id="display_image_data" src="'+src+'" alt="Uploaded Picture">')
+        }
+        if (files && files.length > 0 || (files && load)) {
+            var file = files;
+            if (URL) {
+                done(URL.createObjectURL(file));
+            } else if (FileReader) {
+                reader = new FileReader();
+                reader.onload = function(e) {
+                    done(reader.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        var image = document.getElementById('display_image_data');
+        var button = document.getElementById('crop_button');
+        var result = document.getElementById('cropped_image_data');
+        var croppable = false;
+        var cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            ready: function() {
+                croppable = true;
+            },
+        });
+
+        button.onclick = function() {
+
+            var croppedCanvas;
+            var roundedCanvas;
+            var roundedImage;
+            if (!croppable) {
+                return;
+            }
+            // Crop
+            croppedCanvas = cropper.getCroppedCanvas();
+            // Round
+            roundedCanvas = getRoundedCanvas(croppedCanvas);
+            result.value = roundedCanvas.toDataURL()
+            $("#crop_button").attr('disabled', true)
+            $(".updateImageProfil").submit()
+        };
     }
 })

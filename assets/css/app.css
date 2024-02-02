@@ -8703,3 +8703,17 @@ select option[disabled] {
 #display_image_div{
 	min-height: 150px;
 }
+
+.default_avatar_choice{
+	margin-top: 25px;
+}
+
+.default_avatar_choice img{
+	cursor: pointer;
+	transition: 0.3s;
+	padding: 5px;
+}
+
+.default_avatar_choice img:hover{
+	transform: scale(1.2);
+}

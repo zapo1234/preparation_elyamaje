@@ -272,7 +272,20 @@
                                             <input type="hidden" name="user_id" value="{{ $user['user_id'] }}">
                                             <input type="file" name="browse_image" id="browse_image" class="form-control" style="display: none;">
                                             <button id="upload_file" type="button" class="btn btn-primary mt-3" >Sélectionnez un fichier</button>
+
+
+                                            
                                         </div> 
+                                        <div class="col-lg-12 default_avatar_choice" align="center">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_1.png" width="65px" id="avatar_1" src="{{'assets/images/avatars/avatar_1.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_2.png" width="65px" id="avatar_2" src="{{'assets/images/avatars/avatar_2.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_3.png" width="65px" id="avatar_3" src="{{'assets/images/avatars/avatar_3.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_4.png" width="65px" id="avatar_4" src="{{'assets/images/avatars/avatar_4.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_5.png" width="65px" id="avatar_5" src="{{'assets/images/avatars/avatar_5.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_6.png" width="65px" id="avatar_6" src="{{'assets/images/avatars/avatar_6.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_7.png" width="65px" id="avatar_7" src="{{'assets/images/avatars/avatar_7.png'}}" alt="Picture">
+                                            <img name="avatar[]" class="avatar" data-value="avatar_8.png" width="65px" id="avatar_8" src="{{'assets/images/avatars/avatar_8.png'}}" alt="Picture">
+                                        </div>
                                     </div>
                                 </form>
                             </div>
