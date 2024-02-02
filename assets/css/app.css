@@ -8719,7 +8719,7 @@ select option[disabled] {
 }
 
 .block_display_image{
-	max-width: 150px;
+	max-width: 200px;
     height: 250px !important;
     justify-content: center;
     display: flex;
