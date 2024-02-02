@@ -29,6 +29,7 @@ class Transferkdo
       private $status; // vartiable string pour statuts(customer et distributeur)
       private $countd = []; // les clients distributeur
       private $countc = [];// les clients non distributeur.
+      private $idcommande =[];// recupérer les commandes....
       private $accountpay;
       private $distristatus;
       private $ficfacture;
@@ -63,8 +64,7 @@ class Transferkdo
       }
       
       
-      
-      /**
+     /**
    * @return array
     */
    public function getDataidcommande(): array
@@ -76,7 +76,21 @@ class Transferkdo
    public function setDataidcommande(array $dataidcommande)
    {
      $this->dataidcommande = $dataidcommande;
-    return $this;
+     return $this;
+   }
+
+
+   public function getIdcommande(): array
+   {
+         return $this->idcommande;
+
+   }
+
+   public function setIdcommande(array $idcommande)
+   {
+       $this->idcommande = $idcommande;
+       return $this;
+
    }
    
    /**
@@ -171,7 +185,7 @@ class Transferkdo
      */
       public function Transferkdo($orders)
       {
-             
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -293,9 +307,7 @@ class Transferkdo
                       // tableau associatve entre ref et label product....
                   }
 
-                  
-                    
-                  // recupére les orders des données provenant de  woocomerce
+                    // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
@@ -474,8 +486,7 @@ class Transferkdo
 
                                      }
                                      
-
-                                       $ref="";
+                                     $ref="";
                                      
                                        if($fk_product!=""){
                                              // recupérer les données du kdo 
@@ -534,14 +545,15 @@ class Transferkdo
                                  
                                   // verifier si la commande n'est pas encore traité..
                                   $id_true ="";
+                                  $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                       $data_options = [
-                                       "options_idw"=>$donnees['order_id'].'-cdo',
-                                       "option_fid"=>1,
-                                       "options_idc"=>$coupons,
-                                       "options_prepa" => $preparateur,
-                                       "options_emba" => $emballeur,
+                                        "options_idw"=>$donnees['order_id'].'-cado',
+                                        "options_idc"=>$coupons,
+                                        "options_fid"=>$fid,
+                                        "options_prepa" => $preparateur,
+                                        "options_emba" => $emballeur,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
@@ -562,26 +574,7 @@ class Transferkdo
                                     
                                        ];
 
-                                         // construire mon tableau de ma seconde facture au cas il existe des bon d'achat gift_card ou des cadeaux line
-                                        // Récupérer pour les cadeaux.
-                                        $data_options_kdo = [
-                                        "order_id"=>$donnees['order_id'].'-cdo',
-                                        "coupons"=>$coupons,
-                                        "total_order"=> floatval($donnees['total_order']),
-                                        "date_order" => $donnees['date'],
-                                       ];
-                                      
-                                        // recupérer le moyen de paiment dans la variable accountpay
-                                        $this->setAccountpay($donnees['payment_method']);
-                                        // recupérer le status si c'est un distributeur 
-                                        if(isset($donnees['is_distributor'])){
-                                            $status_distributeur = $donnees['is_distributor'];
-                                        }
-                                        else{
-                                            $status_distributeur="no";
-                                        }
-                                        $this->setDistristatus($status_distributeur);
-
+                                        
                                         $this->setFicfacture($donnees['order_id']);
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
@@ -606,8 +599,7 @@ class Transferkdo
 
 
                          if(count($data_lines)!=0){
-  
-                           // renvoyer un tableau unique par tiers via le socid...au cas de creation multiple de facture...
+                              // renvoyer un tableau unique par tiers via le socid...au cas de creation multiple de facture...
                           $temp = array_unique(array_column($data_lines, 'socid'));
                            $unique_arr = array_intersect_key($data_lines, $temp);
                           // trier les produits qui ne sont pas en kdo
@@ -621,25 +613,27 @@ class Transferkdo
                         }
                          else{
                                $message ="Aucune datas de facture recupérer";
-                              echo json_encode(['success' => false, 'message'=> $message]);
-                              exit;
+                               echo json_encode(['success' => false, 'message'=> $message]);
+                               exit;
                             }
                       
                           // Create le client via Api.....
                         // fitrer les ids de commande .qui sont deja facture et les enlever.
                           $array_tab = []; // au recupere les socid
-
-                        if(count($unique_arr)!=0){
+                          $ids_commande =[];// recupérer les ids dans commande.
+                         if(count($unique_arr)!=0){
 
                             foreach($unique_arr as $key =>$van){
                                 // if le tableau des lines est vide ne pas considére
                                  if(count($van['lines'])==0){
                                       $array_tab[] = $key;
+                                      
                                   }
                               }
                             // les retirer du tableau.
                              foreach($array_tab as $clef=>$val){
                                 unset($unique_arr[$clef]);
+
                               }
 
 
@@ -649,11 +643,12 @@ class Transferkdo
                              
                                }
 
-                              $retour_create_facture="";// gerer le retour de la création api.
+                               $retour_create_facture="";// gerer le retour de la création api.
                              foreach($unique_arr as $donnes){
                               // insérer les details des données de la facture dans dolibarr
-                              $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                           }
+                               $ids_commande[] = $donnes['ref_client'];
+                               $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                             }
                             // traiter la réponse de l'api
                              $response = json_decode($retour_create, true);
                             if(isset($response['error']['message'])){
@@ -665,8 +660,11 @@ class Transferkdo
                                exit;
                             }
 
+                             // recupérer les commande a facture
+                             $this->setIdcommande($ids_commande);
+
                              // mettre la facture en status en payé et l'attribue un compte bancaire.
-                             if(count($data_lines)!=0){
+                             if(count($unique_arr)!=0){
                                  $this->invoicespay($orders);
                              }
                            // Activer la facture en payé et attributer un moyen de paiement à la facture.
@@ -740,12 +738,12 @@ class Transferkdo
           ];
     
           
-          $newCommandepaye = [
-          "paye"	=> 1,
-          "statut"	=> 2,
-          "mode_reglement_id"=>6,
-          "idwarehouse"=>6,
-          "notrigger"=>0,
+           $newCommandepaye = [
+            "paye"	=> 1,
+            "statut"	=> 2,
+            "mode_reglement_id"=>6,
+            "idwarehouse"=>6,
+            "notrigger"=>0,
       
          ];
         
@@ -771,16 +769,56 @@ class Transferkdo
            "paymentid"=>6,
            "closepaidinvoices"=> "yes",
            "accountid"=> 32, // id du compte bancaire.
-        ];
+           ];
 
+            // contruire le tableau newbank
+            $ord = $this->getIdcommande();
+            $array_keys = [];// recupérer les cles du tableau.
+            $new_banks =[];// reucpérer 
+        
+           foreach($ord as $ks =>$vb){
+               $array_keys[] = $ks;
+           }
+
+             for($i=$nombre_count; $i<$inv+1; $i++){
+                  $new_bank[]=
+                             [$i =>[
+                                "datepaye"=>$date_finale,
+                               "paymentid"=>6,
+                               "closepaidinvoices"=> "yes",
+                                "accountid"=> 32// id du compte bancaire. 
+
+                           ]
+                       ];
+               }
+
+              // forunir l'id de chaque array pour le fixer sur la ligne de d'ecritures
+                  foreach($new_bank as $keys=> $values){
+                       if(in_array($keys,$array_keys)){
+                             foreach($values as $ky => $vk){
+                              $new_banks[]=[$ky=>[
+                                    "datepaye"=>$vk['datepaye'],
+                                    "paymentid"=>6,
+                                    "closepaidinvoices"=> "yes",
+                                     "accountid"=> 32,// id du compte bancaire.
+                                     "num_payment"=>$ord[$keys]
+                                   ]
+                             ];
+                        }
+                   }
+               }
+             
+             
            // valider les facture dans dolibar
            for($i=$nombre_count; $i<$inv+2; $i++) {
               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/validate", json_encode($newCommandeValider));
            }
       
              // Lier les factures dolibar  à un moyen de paiement et bank.
-           for($i=$nombre_count; $i<$inv+2; $i++) {
-               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$i."/payments", json_encode($newbank));
+           foreach($new_banks as $vals){
+                 foreach($vals as $km =>$vas){
+                     $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$km."/payments", json_encode($vas));
+                  }
            }
 
               // mettre le statut en payé dans la facture  dolibar
@@ -791,4 +829,3 @@ class Transferkdo
      }
 
 }
-     

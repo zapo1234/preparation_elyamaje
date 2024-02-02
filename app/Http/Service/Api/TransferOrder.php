@@ -181,7 +181,8 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-          
+            
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -517,9 +518,9 @@ class TransferOrder
                                                $data_product[] = [
                                                 "desc"=>'',
                                                 "remise_percent"=> $donnees['discount_amount'],
-                                                "multicurrency_subprice"=> 20,
-                                                "multicurrency_total_ht" => 5,
-                                                "multicurrency_total_tva" => 20,
+                                                "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
                                                 "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$values['name'],
@@ -712,30 +713,31 @@ class TransferOrder
                           // traiter les commande achété avec des bon d'achat ici.
                   
                           foreach($data_lines[0]['lines'] as $keys => $val){
-                            $chainex ="Carte Cadeau";
-                             if(strpos($val['product_label'],$chainex)!=false){
+                            $chainex ="Carte";
+                            $chainex1 ="Cadeau";
+                             if(strpos($val['product_label'],$chainex)!=false && strpos($val['product_label'],$chainex1)!=false){
                                  if($val['product_label']!=""){
                                    $chaine_index = explode(' ',$val['product_label']);
                                  //
                                 $index_name ="CarteCadeau";
                                 $chaine_details = $chaine_index[0].''.$chaine_index[1];
                                  
-                              if($chaine_details==$index_name){
+                                  if($chaine_details==$index_name){
                                   // detruire les articles du tableau.
-                                   unset($data_lines[0]['lines'][$keys]);
-                                  $array_data_gift_card[]=[
-                                  "desc"=>'',
-                                  "multicurrency_subprice"=> floatval($val['multicurrency_subprice']),
-                                  "multicurrency_total_ht" => floatval($val['multicurrency_total_ht']),
-                                  "multicurrency_total_tva" => floatval($val['multicurrency_total_tva']),
-                                  "multicurrency_total_ttc" => floatval($val['multicurrency_total_ttc']),
-                                  "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                  "product_type"=>'',
-                                  "product_label" =>$val['product_label'],
-                                  "qty" => $val['qty'],
-                                  "fk_product" =>$val['fk_product'],//  insert id product dans dolibar.
-                                  "tva_tx" => '0',
-                                  "ref_ext" => $val['ref_ext'], // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
+                                    unset($data_lines[0]['lines'][$keys]);
+                                     $array_data_gift_card[]=[
+                                     "desc"=>'',
+                                     "multicurrency_subprice"=> floatval($val['multicurrency_subprice']),
+                                     "multicurrency_total_ht" => floatval($val['multicurrency_total_ht']),
+                                     "multicurrency_total_tva" => floatval($val['multicurrency_total_tva']),
+                                     "multicurrency_total_ttc" => floatval($val['multicurrency_total_ttc']),
+                                     "product_ref" =>'', // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                     "product_type"=>'',
+                                     "product_label" =>$val['product_label'],
+                                      "qty" => $val['qty'],
+                                     "fk_product" =>$val['fk_product'],//  insert id product dans dolibar.
+                                     "tva_tx" => '0',
+                                      "ref_ext" => $val['ref_ext'], // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                               ];
                              }
                              
@@ -1066,14 +1068,14 @@ class TransferOrder
                     }
 
                    elseif(in_array($account_name,$array_paimentss)){
-                        // dons 
-                         $account_id=3; // PROD
-                         $paimentid =3;// PROD
+                        // CB
+                         $account_id=4; // PROD
+                         $paimentid=4;// PROD
                     }
                     else{
-                          // dons 
-                          $account_id=3; // PROD
-                          $paimentid =3;// PROD
+                          // CB
+                          $account_id=4; // PROD
+                          $paimentid =4;// PROD
                     }
 
                    // si c'est un distributeur (mettre la facture impayé)
@@ -1187,9 +1189,23 @@ class TransferOrder
 
          public function Updatefacture($orders){
            // connexion api dolibar
+
+            $data = array('133662','133783','133622','133644','133800','133653fbfsdgfbzu','133625','133743','133752');
+
+            $data1 = array('133748','133748','133748','133746','133739','133740','133740','133750');
+
+            $data2= array('133541','133538','133590','133589','133585','133533','133549','133542','133566','133584','133554');
+
+            $data3 =array('133576','133568','133581','133567','133582','133562','133536','133551','133560','133550');
+            $data3 = array('133535','133601','133543','133592','133545','133537');
+
+
+
+
+             
              $method = "GET";
-            $apiKey = "f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ"; 
-            $apiUrl = "https://www.transfertx.elyamaje.com/api/index.php/";
+            $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd"; 
+            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
 
             // traiter le jeu de tableau
             // recupérer
@@ -1208,7 +1224,7 @@ class TransferOrder
            // le tableau pour valider les facture sur l'entrepot preics.
            // traiter les moyens de paimen
             // crée laccount paiement à partir de la methode de paiment.
-            $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB');// carte bancaire....
+            $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
             $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
             $array_paimentss = array('DONS');
             $valid="";
@@ -1252,30 +1268,36 @@ class TransferOrder
                      $moyen_paiement = $values['payment_method'];
                  }
                  
-                 if($moyen_paids==false){
+                 elseif($moyen_paids==false){
                      $moyen_paiement = "vir_card";
                      $mode_reglement_id=3;
                  }
 
                  // attribuer le compte de paiment ensuite.
-                 if(in_array($moyen_paiement,$array_paiment)) {
+                else if(in_array($moyen_paiement,$array_paiment)) {
                    // defini le mode de paiment commme une carte bancaire...
                   //$mode_reglement_id = 6;
                    $account_id=4;// PROD 
                    $paimentid =4;// PROD
                }
 
-                if(in_array($moyen_paiement,$array_paiments)){
+                elseif(in_array($moyen_paiement,$array_paiments)){
                   // defini le paiment comme virement bancaire......
                    //$mode_reglement_id = 4;
                     $account_id=6; // PROD
                     $paimentid =6;// PROD
                 }
 
-                 if(in_array($moyen_paiement,$array_paimentss)){
+                elseif(in_array($moyen_paiement,$array_paimentss)){
                     // dons 
-                     $account_id=3; // PROD
-                      $paimentid =3;// PROD
+                     $account_id=4; // PROD
+                      $paimentid =4;// PROD
+                  }
+
+                  else{
+                    $account_id=4; // PROD
+                    $paimentid =4;// PROD
+
                   }
 
                    $data_fk_facture[]= $fk_facture;// recupérer les id de facture depuis dolibar.
@@ -1292,6 +1314,8 @@ class TransferOrder
 
                   }
 
+                  
+
                   // array pour paimement de la facture.
                     $newCommandepaye[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                     "total_ht"  =>$values['total_order']-$values['total_tax_order'],
@@ -1300,7 +1324,7 @@ class TransferOrder
                      "paye"	=> 1,
                      "statut"	=> 2,
                      "mode_reglement_id"=>$mode_reglement_id,
-                     "idwarehouse"=>6,
+                     "idwarehouse"=>17,
                      "notrigger"=>0,
                  ];
 
@@ -1317,24 +1341,25 @@ class TransferOrder
                  } else {
                    $date_finale =  $d->getTimestamp(); // conversion de date.
                   }
+
+                  $account_id=4;
     
-                    $newbank[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
+                  $newbank[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
                      "datepaye"=>$date_finale,
                      "paymentid"=>6,
                      "closepaidinvoices"=> "yes",
                      "accountid"=> $account_id, // id du compte bancaire.
                 ];
-
+          
                  // tableau pour valider les  factures
                   $newCommandeValider[$values['order_woocommerce_id'].','.$valid.','.$fk_facture] = [
-                  "idwarehouse"	=> "6",
+                  "idwarehouse"	=> "17",
                    "notrigger" => "0",
                   ];
  
            }
-           
-          
-           // aller chercher les correspondances lines associé à ces factures dans dolibar pour line product.
+
+            // aller chercher les correspondances lines associé à ces factures dans dolibar pour line product.
              foreach($data_fk_facture as $vc){
                   $json_data[] = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices/".$vc),true);
               }
@@ -1354,10 +1379,12 @@ class TransferOrder
               // tableau associatve entre ref et label product....
            }
           
-
-          
+           
+           
+        
            // recupérer et construire un tableau des products pour les réecrire dans la facture
            $data_update_product =[];
+           $data_correction =[];
            foreach($product_construct_post as $keys=> $val){
                  foreach($val as $vad){
                    // recupérer le barcode pour aller le chercher le fk_product
@@ -1371,7 +1398,7 @@ class TransferOrder
                             $data_update_product[$keys][] =[
                             "desc"=>"Desc",
                            'fk_product'=> $fk_product,
-                           'qty'=> $ch[0],
+                           'qty'=> $ch[1],
                            'tva_tx'=> 20,
                            'subprice'=>$ch[1],
                            'remise_percent'=>$remise_percent,
@@ -1380,13 +1407,58 @@ class TransferOrder
                            'fk_code_ventilation'=>0
                         
                       ];
+
+                      $data_correction[] =[
+                        'fk_product'=> $fk_product,
+                        'qty'=> $ch[1],
+
+                      ];
                  }
              }
           }
 
-          dd($data_update_product);
+           
+         // dd($data_update_product);
 
-          // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
+          // insert dans bdd
+       /*   foreach($data_update_product as $key=> $vacc){
+              foreach($vacc as $vl){
+
+                  $array_data[] =[
+                   'fk_product'=>$vl['fk_product'],
+                    'qty'=>$vl['qty']
+                  
+                  ];
+            }
+
+          }
+
+
+          
+              // compter le nombre de id_live 
+              $result = DB::table('data_lines_facts')
+             ->select('fk_product' ,DB::raw('SUM(qty) as nombre_vente'))
+             ->groupBy('fk_product')
+             ->get();
+
+              $name_list = json_encode($result);
+              $name_list = json_decode($result,true);
+
+
+             $this->csvcreateentrepot($name_list);
+             DB::table('data_lines_facts')->insert($array_data);
+
+             dd('fin process');
+             
+             dd('fin');
+
+               dd('succes');
+
+        */
+
+
+
+         // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
           $data_result =[];
            $ref_facture =[];
            $product_data =[];// construire un tableau pour un post (réécriture des lines products dans dolibarr)
@@ -1404,6 +1476,9 @@ class TransferOrder
 
                 }
              }
+
+
+            
              // construire un jeu de données pour recupérer les prix provenant de la commande woocomerce
              foreach($data_result as $lm => $val){
                foreach($val as $valis){
@@ -1418,11 +1493,9 @@ class TransferOrder
                   ];
 
                   // recupérer
-
                }
             }
            }
-            
             
              // Mettre les facture en brouillons et suprimer le compte lié
                $data_fact =[
@@ -1452,6 +1525,8 @@ class TransferOrder
 
                // detruire dans la table lyq_facture_paiement les paiements associé à la facture.
                 // icie
+
+              
                 
                 foreach($data_fk_facture as $lk){
                    $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_paiement_facture WHERE fk_facture=$lk");
@@ -1469,8 +1544,7 @@ class TransferOrder
              //     $deletepaiement  = DB::connection('mysql2')->select("DELETE FROM llxyq_facturedet WHERE fk_facture=$vj");
              //   }
 
-                dd('zapo');
-
+             
                 // Mise à jours des ligne de product en masse(prix , quantité)
                   foreach($result_finale as $kyes => $valuss){
                       $ids_facture  = explode(',',$kyes);
@@ -1631,6 +1705,28 @@ class TransferOrder
 
 
          }
+
+
+         public function csvcreateentrepot(array $data)
+         {
+             
+                 $filename = "stocks_correction.csv";
+                 $fp = fopen('php://output', 'w');
+                   // créer une entete du tableau .
+                   $header = array('fk_product','quantite');
+                   // gérer les entete du csv 
+                  header('Content-type: application/csv');
+                 header('Content-Disposition: attachment; filename=' . $filename);
+                 fputcsv($fp, $header);
+                 
+                 
+                 foreach ($data as $row) {
+                 fputcsv($fp, $row);
+               }
+               exit();
+             
+       }
+   
 
   }
 
