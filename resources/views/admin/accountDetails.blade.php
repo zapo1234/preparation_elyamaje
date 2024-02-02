@@ -271,7 +271,7 @@
                                             <input type="hidden" name="cropped_image_data" id="cropped_image_data">
                                             <input type="hidden" name="user_id" value="{{ $user['user_id'] }}">
                                             <input type="file" name="browse_image" id="browse_image" class="form-control" style="display: none;">
-                                            <button id="upload_file" type="button" class="btn btn-primary mt-3" >Sélectionnez un fichier</button>
+                                            <button style="font-size:12px" id="upload_file" type="button" class="btn btn-primary mt-3" >Sélectionnez un fichier</button>
 
 
                                             
