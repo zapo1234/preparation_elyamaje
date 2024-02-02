@@ -247,7 +247,9 @@ class User extends BaseController
                 if($this->users->updatePictureById($request->post('user_id'), $imageName)){
 
                     // Save to Auth Session
-                    Auth()->user()->picture = $imageName;
+                    if(Auth()->user()->id == $request->post('user_id')){
+                        Auth()->user()->picture = $imageName;
+                    }
                     return redirect()->back()->with('success', 'Image de profil modifiée avec succès !');
                 }
             }
