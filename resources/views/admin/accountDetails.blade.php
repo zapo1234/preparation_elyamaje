@@ -263,7 +263,7 @@
                                 <form enctype="multipart/form-data" method="POST" class="updateImageProfil" action="{{ route('updateImageProfil') }}">
                                     @csrf
                                     <div class="row justify-content-center">
-                                        <div class="col-lg-6" align="center" style="height: 250px !important;">
+                                        <div class="col-lg-6 block_display_image" align="center">
                                             <div id="display_image_div">
                                                 <div style="margin-bottom: -50px" class="loading_image d-none spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
                                                 <img name="display_image_data" data-value="{{ $user['picture'] ? $user['picture'] : 'default_avatar.png' }}" width="150px" id="display_image_data" src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" alt="Picture">

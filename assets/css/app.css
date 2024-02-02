@@ -8717,3 +8717,12 @@ select option[disabled] {
 .default_avatar_choice img:hover{
 	transform: scale(1.2);
 }
+
+.block_display_image{
+	max-width: 150px;
+    height: 250px !important;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
