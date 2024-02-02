@@ -27,7 +27,7 @@
 
 					
 					<!-- Modal création de rôle -->
-					<div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal_radius modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<form data-bitwarden-watching="1" method="POST" action="{{ route('role.create') }}">
@@ -129,7 +129,7 @@
 										</tr>
 
 										<!-- Modal modification de rôle -->
-										<div class="modal fade" id="updateRoleModal_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+										<div class="modal_radius modal fade" id="updateRoleModal_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered" role="document">
 												<div class="modal-content">
 													<form method="POST" action="{{ route('role.update') }}">

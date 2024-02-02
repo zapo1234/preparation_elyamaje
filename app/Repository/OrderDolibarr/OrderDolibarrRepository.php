@@ -479,17 +479,64 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
 
-   public function getAllOrdersBeautyProf(){
-      // $data = Cache::remember('historiesBP', 3600, function () {
+   public function getAllOrdersBeautyProf($user_id = false, $filters = null){
+
+      if($user_id){
+         $query = $this->model::select('users.name', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+            'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc',
+            'orders_doli.name', 'orders_doli.pname')
+            ->leftJoin('users', 'users.id', '=', 'orders_doli.seller');
+
+            if($filters){
+               foreach($filters as $key => $filter){
+                  if($filter){
+                     if($key == "created_at"){
+                        $query->where("orders_doli.date" ,"LIKE",  "%".$filter."%");
+                     } else if($key == "ref_order"){
+                        $query->where("orders_doli.".$key."", $filter);
+                     }
+                  }
+               }
+            }
+            
+
+            $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+            $query->where('orders_doli.seller', $user_id);
+            $result = $query->get();
+            return $result->toArray();
+      } else {
          return $this->model::select('users.id','users.name', 'orders_doli.statut as status', 'orders_doli.ref_order', 
          'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc')
-         ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
-         ->where('orders_doli.ref_order', 'LIKE', '%BP%')
-         ->get()
-         ->toArray();
-      // });
+            ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
+            ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+            ->get()
+            ->toArray();
+      }
+   }
 
-      // return $data;
+   public function getAllOrdersBeautyProfHistory($filters = null){
+     
+      $query = $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
+         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+         ->leftJoin('users', 'users.id', '=', 'orders_doli.seller');
+
+         if($filters){
+            foreach($filters as $key => $filter){
+               if($filter){
+                  if($key == "created_at"){
+                     $query->where("orders_doli.date" ,"LIKE",  "%".$filter."%");
+                  } else if($key == "ref_order"){
+                     $query->where("orders_doli.".$key."", $filter);
+                  }
+               }
+            }
+         }
+         
+      $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+      $query->whereNotIn('orders_doli.statut', ['pending', 'canceled', 'processing']);
+      $result = $query->get();
+      return $result->toArray();
+     
    }
 
    public function getAllOrdersPendingBeautyProf($ref_order, $date){

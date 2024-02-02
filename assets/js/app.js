@@ -1,7 +1,6 @@
 
 function filter_mobile(width){
     if(width < 900 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 0 || $("#example_length .select2_custom").length > 0)){
-		console.log("dddd")
         if($(".filter_mobile").length == 0){
             $(".table_mobile_responsive").before(`
             <div class="filter_mobile">
@@ -40,7 +39,7 @@ function filter_mobile(width){
     } else {
         if($(".filter_mobile").length > 0){
             
-            $(".modal-backdrop").remove()
+            // $(".modal-backdrop").remove()
             $(".modal-body > .row").last().prependTo('#example_wrapper')
             $('select[name="example_length"]').parent().last().prependTo('.dataTables_length')
           

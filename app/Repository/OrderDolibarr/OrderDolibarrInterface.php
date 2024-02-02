@@ -41,9 +41,9 @@ interface OrderDolibarrInterface
 
     public function getOrdersBeautyProf($date);
 
-    public function getAllOrdersBeautyProf();
+    public function getAllOrdersBeautyProf($user_id, $filters);
 
-    public function getAllOrdersPendingBeautyProf($ref_order, $date);
+    public function getAllOrdersBeautyProfHistory($filters);
 }
 
 

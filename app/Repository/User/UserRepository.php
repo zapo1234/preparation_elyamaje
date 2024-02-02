@@ -21,7 +21,7 @@ class UserRepository implements UserInterface
    public function getUsersAndRoles($withInactive = false){
       $status = $withInactive ? [0, 1] : [1];
 
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type', 'active')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type', 'active', 'picture')
          ->Leftjoin('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->Leftjoin('roles', 'roles.id', '=', 'user_roles.role_id')
          ->whereIn('users.active', $status)
@@ -53,7 +53,7 @@ class UserRepository implements UserInterface
 
    public function getUsersByRole($role){
 
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'type')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'type', 'picture')
          ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->join('roles', 'roles.id', '=', 'user_roles.role_id')
          ->whereIn('user_roles.role_id', $role)
@@ -97,11 +97,13 @@ class UserRepository implements UserInterface
       try{
          return $this->model->where('users.id', $user_id)
             ->join('user_roles', 'user_roles.user_id', '=', 'users.id')
+            ->join('roles', 'roles.id', '=', 'user_roles.role_id')
             ->get()
             ->groupBy('users.id')
             ->map(function ($items) {
                $user = $items->first();
                $user['roles'] = $items->pluck('role_id')->toArray();
+               $user['roles_name'] = $items->pluck('role')->toArray();
                return $user;
             })
             ->values()
@@ -209,6 +211,14 @@ class UserRepository implements UserInterface
       }
    }
 
+   public function updateUserDetails($user_id, $data){
+      try{
+         return $this->model->where('id', $user_id)->update($data);
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+   }
+
    public function updateUserActive($email){
       try{
          $this->model->where('email', $email)->update(['active' => 1]);
@@ -272,6 +282,15 @@ class UserRepository implements UserInterface
       ];
       try{
          return DB::table('user_roles')->insert($roles);
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+   }
+
+   public function updatePictureById($user_id, $picture){
+      try{ 
+         $this->model->where('id', $user_id)->update(['picture' => $picture]);
+         return true;
       } catch(Exception $e){
          return $e->getMessage();
       }

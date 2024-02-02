@@ -116,7 +116,7 @@
 														<button class="show_detail_button show_detail" onclick="show('{{ $histo['order_id'] }}')">
 															<i class="font-primary font-20 bx bx-cube"></i>
 														</button>	
-														@if(strlen($histo['order_id']) != 10 && !str_contains($histo['order_id'], 'CO'))
+														@if(strlen($histo['order_id']) != 10)
 															<button class="show_detail_button show_detail" onclick="show_detail_customer('{{ $histo['order_id'] }}')">
 																<i class="font-primary font-20 bx bx-user"></i>
 															</button>	
@@ -131,7 +131,7 @@
 							</div>
 						</div>
 					<!-- Modal -->
-					<div class="modal fade" id="modalGenerateHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal fade modal_radius" id="modalGenerateHistory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="modal-body">
@@ -156,12 +156,12 @@
 		@endsection
 
 	
-		@section("script")
+	@section("script")
 
-	<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
-	<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-	<script src="assets/plugins/select2/js/select2.min.js"></script>
-	<script src="{{asset('assets/js/leaderHistory.js')}}"></script>
+		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
+		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
+		<script src="assets/plugins/select2/js/select2.min.js"></script>
+		<script src="{{asset('assets/js/leaderHistory.js')}}"></script>
 
 	@endsection
 

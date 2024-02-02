@@ -27,7 +27,7 @@
 
 
 					<!-- Modal création de compte -->
-					<div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal_radius modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<form data-bitwarden-watching="1" method="POST" action="{{ route('account.create') }}">
@@ -121,19 +121,24 @@
 							<table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>
+										<th>Profil</th>
 										<th>Nom</th>
-										<th>Rôles</th>
+										<th class="col-md-5">Rôles</th>
 										<th>Type</th>
 										<th class="col-md-1">Action</th>
 										<th class="col-md-1">Actif</th>
+										<th class="col-md-1">Détails</th>
 									</tr>
 								</thead>
 
 								<tbody>
 									@foreach ($users as $user)
 										<tr>
+											<td data-label="Profil">
+												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
+											</td>
 											<td data-label="Nom">{{ $user['name'] }}</td>
-											<td data-label="Rôles">	
+											<td style="width: 50%" data-label="Rôles">	
 												@if($user['active'] == 1)
 													@foreach($roles as $role)
 														@if(in_array($role['id'], $user['role_id']))
@@ -146,7 +151,7 @@
 												
 											</td>
 											<td data-label="Type">{{ $user['type'] == "warehouse" ? "Entrepôt" : ($user['type'] == "shop" ? "Boutique" : "Non défini")}}</td>
-											<td class="d-flex justify-content-between" data-label="Action" >
+											<td data-label="Action" >
 												@if(!$isAdmin && count(array_intersect([2,3,4,5], $user['role_id'])) == 0 && $user['active'] == 1 )
 													<div class="d-flex">
 														<div class="action_table font-22 text-secondary">	
@@ -171,10 +176,18 @@
 												@endif
 											</td>
 											<td data-label="Actif">{{ $user['active'] }}</td>
+											<td data-label="Détails">
+												<form method="GET" action="{{ route('admin.accountDetails') }}">
+													<input type="hidden" name="user_id" value="{{ $user['user_id'] }}">
+													<button type="submit" class="p-0 show_account_detail text-primary">
+														<i class="font-20 bx bx-detail"></i>
+													</button>
+												</form>
+											</td>
 										</tr>
 
 
-										<div class="modal fade" id="updateAccount_user_{{ $user['user_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+										<div class="modal fade modal_radius" id="updateAccount_user_{{ $user['user_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered" role="document">
 												<div class="modal-content">
 													<form data-bitwarden-watching="1" method="POST" action="{{ route('account.update') }}">
@@ -317,8 +330,8 @@
 
 			$('#example').DataTable({
 				"columnDefs": [
-					{ "visible": false, "targets": 2 },
-					{ "visible": false, "targets": 4 },
+					{ "visible": false, "targets": 3 },
+					{ "visible": false, "targets": 5 },
 				],
 				"initComplete": function(settings, json) {
 					$("#example").removeClass('d-none')
@@ -349,14 +362,14 @@
 		$('.type_dropdown').on('change', function(e){
 			var type_dropdown = $(this).val();
 			$('#example').DataTable()
-			.column(2).search(type_dropdown, true, false)
+			.column(3).search(type_dropdown, true, false)
 			.draw();
 		})
 
 		$('.actif_dropdown').on('change', function(e){
 			var actif_dropdown = $(this).val();
 			$('#example').DataTable()
-			.column(4).search(actif_dropdown, true, false)
+			.column(5).search(actif_dropdown, true, false)
 			.draw();
 		})
 

@@ -241,7 +241,7 @@
 
 
  <!-- Modal generate label -->
- <div data-bs-keyboard="false" data-bs-backdrop="static" class="generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+ <div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_radius generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-body">	

@@ -306,6 +306,7 @@ class Admin extends BaseController
         $ids = array_column($rolesUser, "id");
         $isAdmin = count(array_keys($ids,  1)) > 0 ? true : false;
         $roles = $this->role->getRoles();
+
         return view('admin.account', ['users' => $users, 'roles' => $roles, 'isAdmin' => $isAdmin]);
     }
 
@@ -951,7 +952,7 @@ class Admin extends BaseController
     public function analyticsSeller(Request $request){
         $date = $request->get('date') ?? date('Y-m-d');
         $ordersBeautyProf = $this->orderDolibarr->getOrdersBeautyProf($date);
-        
+    
         $list_histories = [];
         try{
             $list_histories = $this->buildHistoryBeautyProf($ordersBeautyProf);
@@ -1061,12 +1062,12 @@ class Admin extends BaseController
         return view('admin.cashier', ['orders' => $orders, 'list_status' => $new_orders_status, 'parameter' => $request->all()]);
     }
 
-    public function cashierList(){
-        dd("dd");
+    public function beautyProfHistory(Request $request){
+        $orders = $this->orderDolibarr->getAllOrdersBeautyProfHistory($request->all());
+        return view('admin.beautyProfHistory', ['orders' => $orders, 'list_status' => __('status'), 'parameter' => $request->all()]);
     }
 
-    public function beautyProfHistory(){
-        dd("c");
+    public function paymentTerminal(Request $request){
+        return view('admin.paymentTerminal', ['terminals' => []]);
     }
-
 }

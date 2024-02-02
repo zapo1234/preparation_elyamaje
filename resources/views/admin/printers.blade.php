@@ -77,7 +77,7 @@
 
 
 											<!-- Modal update imprimante -->
-											<div class="modal fade" id="updatePrinterModal_{{ $printer->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+											<div class="modal modal_radius fade" id="updatePrinterModal_{{ $printer->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 												<div class="modal-dialog modal-dialog-centered" role="document">
 													<div class="modal-content">
 														<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.update') }}">
@@ -138,7 +138,7 @@
 			</div>
 
 			<!-- Modal ajout imprimante -->
-			<div class="modal fade" id="addPrinterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal modal_radius fade" id="addPrinterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered" role="document">
 					<div class="modal-content">
 						<form data-bitwarden-watching="1" method="POST" action="{{ route('printer.add') }}">
@@ -185,7 +185,7 @@
 			</div>
 
 			<!-- Modal Suppression -->
-			<div class="modal fade" id="deletePrinter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal modal_radius fade" id="deletePrinter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered" role="document">
 					<div class="modal-content">
 						<form method="POST" action="{{ route('printer.delete') }}">
