@@ -980,6 +980,7 @@ class Order extends BaseController
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
+
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
       return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }

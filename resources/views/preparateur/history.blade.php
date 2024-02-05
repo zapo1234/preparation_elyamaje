@@ -94,7 +94,7 @@
 														
 														<div class="mt-1 mb-2 montant_total_order detail_amount">
 															<div>
-																<!-- </span>Sous-total des articles : <strong> {{ $histo['details']['total'] + $histo['details']['discount'] + $histo['details']['gift_card_amount'] - $histo['details']['total_tax'] -  $histo['details']['shipping_amount']}} {{ config('app.currency_symbol') }}</strong> -->
+																</span>Sous-total des articles : <strong> {{ floatval($histo['details']['total']) + floatval($histo['details']['discount']) + floatval($histo['details']['gift_card_amount']) - floatval($histo['details']['total_tax']) -  floatval($histo['details']['shipping_amount'])}} {{ config('app.currency_symbol') }}</strong>
 															</div>
 															<div class="text-success">
 																@if($histo['details']['discount'] > 0)
