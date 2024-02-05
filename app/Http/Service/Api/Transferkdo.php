@@ -636,7 +636,9 @@ class Transferkdo
 
                               }
 
+                            
 
+                               
                                 foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
                                 $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -651,14 +653,6 @@ class Transferkdo
                              }
                             // traiter la réponse de l'api
                              $response = json_decode($retour_create, true);
-                            if(isset($response['error']['message'])){
-                               $message = $response['error']['message'];
-
-                               $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
-
-                               echo json_encode(['success' => false, 'message'=> $message]);
-                               exit;
-                            }
 
                              // recupérer les commande a facture
                              $this->setIdcommande($ids_commande);
@@ -768,7 +762,7 @@ class Transferkdo
            "datepaye"=>$date_finale,
            "paymentid"=>6,
            "closepaidinvoices"=> "yes",
-           "accountid"=> 32, // id du compte bancaire.
+           "accountid"=> 46, // id du compte bancaire.
            ];
 
             // contruire le tableau newbank
@@ -786,7 +780,7 @@ class Transferkdo
                                 "datepaye"=>$date_finale,
                                "paymentid"=>6,
                                "closepaidinvoices"=> "yes",
-                                "accountid"=> 32// id du compte bancaire. 
+                                "accountid"=>46// id du compte bancaire. 
 
                            ]
                        ];
@@ -800,7 +794,7 @@ class Transferkdo
                                     "datepaye"=>$vk['datepaye'],
                                     "paymentid"=>6,
                                     "closepaidinvoices"=> "yes",
-                                     "accountid"=> 32,// id du compte bancaire.
+                                     "accountid"=>46,// id du compte bancaire.
                                      "num_payment"=>$ord[$keys]
                                    ]
                              ];
