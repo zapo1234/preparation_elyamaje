@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Service\Api\Api;
-use App\Repository\Order\OrderRepository;
 use Illuminate\Http\Request;
+use App\Http\Service\Api\Api;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Repository\User\UserRepository;
+use Illuminate\Support\Facades\Storage;
+use App\Repository\Order\OrderRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class User extends BaseController
@@ -20,13 +22,18 @@ class User extends BaseController
     private $users;
     private $orders;
     private $api;
+    private $orderDolibarr;
 
-   
-    public function __construct(UserRepository $users, OrderRepository $orders, Api $api){
+    public function __construct(
+        UserRepository $users, 
+        OrderRepository $orders, 
+        Api $api,
+        OrderDolibarrRepository $orderDolibarr
+    ){
         $this->users = $users;
         $this->orders = $orders;
         $this->api = $api;
-
+        $this->orderDolibarr = $orderDolibarr;
     }
     
     public function updateRole(Request $request){
@@ -162,5 +169,153 @@ class User extends BaseController
 
     public function noRole(){
         return view('norole');
+    }
+
+    public function accountDetails(Request $request){
+        $user_id = $request->get('user_id');
+        $accessAccount = Auth()->user()->hasRole(1) || Auth()->user()->hasRole(4) ? true : false;
+
+        // Only Super Admin can update Super Admin profile
+        if(Auth()->user()->id != 1 && $user_id == 1){
+            abort(403);
+        }
+
+        // If use have not right to update other user
+        if($user_id != Auth()->user()->id && (!Auth()->user()->hasRole(1) && !Auth()->user()->hasRole(4))){
+            abort(403);
+        }
+
+        $user = $this->users->getUserById($user_id);
+        $user = count($user) > 0 ? $user[0] : [];
+
+        // Not admin user can't update admin user
+        if(!Auth()->user()->hasRole(1) && in_array(1, $user['roles'])){
+            abort(403);
+        }
+     
+        $parameter = $request->all();
+        
+        // If not user found return 404
+        if(count($user) == 0){
+            abort(404);
+        } else {
+            $type = $user['type'];
+        }
+
+        $histories = [];
+
+        if($type == "shop"){
+            $orders = $this->orderDolibarr->getAllOrdersBeautyProf($user_id, $parameter);
+            $total_order = 0;
+
+            foreach($orders as $ord){
+                $histories['details'] = 
+                $total_order = $total_order + $ord['total_order_ttc'];
+            }
+
+            $histories['details'] = $orders;
+            $histories['average'] = $total_order > 0 ? number_format($total_order / count($orders), 2) : $total_order;
+            $histories['total_order'] = count($orders) ?? 0;
+            $histories['total_amount_order'] = number_format($total_order, 2) ?? 0;
+
+        }
+
+        return view('admin.accountDetails', ['user' => $user, 'type' => $type, 'histories' => $histories, 'status' => __('status'), 'parameter' => $parameter, 'accessAccount' => $accessAccount]);
+    }
+
+    public function updateImageProfil(Request $request){
+
+        $need_validate = true;
+        if($request->post('browse_image')){
+            $request->validate([
+                'browse_image' => 'required|file|mimes:jpg,jpeg,png|max:2048', 
+            ]);
+          
+        } else {
+            $need_validate = false;
+        }
+
+        if ($request->hasFile('browse_image') && $request->file('browse_image')->isValid() || $need_validate == false) {
+            $image_parts = explode(";base64,", $request->post('cropped_image_data'));
+            $extension = explode('/', mime_content_type($request->post('cropped_image_data')))[1];
+            $image_base64 = base64_decode($image_parts[1]);
+            $imageName = $request->post('user_id').'.'.$extension;
+            $store = Storage::disk('local')->put('images/'.$imageName, $image_base64);
+
+            if($store){
+                // Save to database
+                if($this->users->updatePictureById($request->post('user_id'), $imageName)){
+
+                    // Save to Auth Session
+                    if(Auth()->user()->id == $request->post('user_id')){
+                        Auth()->user()->picture = $imageName;
+                    }
+                    return redirect()->back()->with('success', 'Image de profil modifiée avec succès !');
+                }
+            }
+        }
+    }
+
+    public function updateAccountDetails(Request $request){
+
+        $data = $request->all();
+
+        if($data['email'] == "" || $data['name'] == ""){
+            return redirect()->back()->with('error', 'Veuillez renseigner les champs obligatoires');
+        }
+  
+        // Actual password missing
+        if(($data['new_password'] || $data['new_password2']) && $data['password'] == null){
+            return redirect()->back()->with('error', 'Veuillez renseigner votre mot de passe actuel');
+        } else if($data['new_password'] != $data['new_password2']){
+            return redirect()->back()->with('error', 'Les mots de passes sont différents !');
+        } else if($data['new_password'] && $data['new_password2'] && $data['password']){
+
+            // Check password
+            $user = $this->users->getUserById(Auth()->user()->id);
+            $user = count($user) > 0 ? $user[0] : [];
+
+            $pass_check = Hash::check($data['password'], $user['password']);
+            if(!$pass_check){
+                return redirect()->back()->with('error', 'Mot de passe actuel incorrect !');
+            } else {
+
+                // Update data user
+                $data_to_update = [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => Hash::make($data['new_password'])
+                ];
+
+                if($this->users->updateUserDetails(Auth()->user()->id, $data_to_update)){
+                    return redirect()->back()->with('success', 'Profil modifié avec succès !');
+                } else {
+                    return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+                }
+            }
+
+        } else {
+            
+            if(str_contains($data['email'], '@') && (str_contains($data['email'], '.fr') || str_contains($data['email'], '.com'))){
+                
+                // Update only email or name
+                $data_to_update = [
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                ];
+
+                Auth()->user()->name = $data['name'];
+                Auth()->user()->email = $data['email'];
+
+                if($this->users->updateUserDetails(Auth()->user()->id, $data_to_update)){
+                    return redirect()->back()->with('success', 'Profil modifié avec succès !');
+                } else {
+                    return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+                }
+            } else {
+                return redirect()->back()->with('error', 'Email au mauvais format !');
+            }
+          
+        }
     }
 }

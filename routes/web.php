@@ -135,9 +135,14 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
     Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
     Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
-    Route::get("/cashierList", [Admin::class, "cashierList"])->name('admin.cashierList'); 
-
     Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
+
+    // Terminaux de paiements
+    Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
+    Route::get("/addTerminal", [Admin::class, "addTerminal"])->name('terminal.add');
+    Route::get("/deleteTerminal", [Admin::class, "deleteTerminal"])->name('terminal.delete'); 
+
+
 });
 
 // PRÉPARATEUR
@@ -250,6 +255,13 @@ Route::group(['middleware' =>  ['auth', 'role:8']], function () {
 Route::group(['middleware' =>  ['auth']], function () {
     Route::get("/notifications", [Notification::class, "notificationRead"])->name('notification.read');
     Route::get("/allNotification", [Notification::class, "allNotification"])->name('notifications.all');
+
+    // Détails users
+    Route::get("/accountDetails", [User::class, "accountDetails"])->name('admin.accountDetails');
+
+    // Update data user
+    Route::post("/updateImageProfil", [User::class, "updateImageProfil"])->name('updateImageProfil');
+    Route::post("/updateAccountDetails", [User::class, "updateAccountDetails"])->name('updateAccountDetails');
 });
 
 // ROLES NON DÉFINI 

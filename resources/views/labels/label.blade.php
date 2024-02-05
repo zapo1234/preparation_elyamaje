@@ -42,7 +42,7 @@
 					</div>
 
 					<!-- Modal Génération Bordereau par date -->
-					<div class="modal fade" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal fade modal_radius" id="modalBordereau" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
 								<div class="modal-body">
@@ -262,7 +262,7 @@
 
 												
 													<i onclick="showCustomerOrderDetail('{{ $order[0]['order_woocommerce_id'] }}')" class="show_detail_customer lni lni-delivery"></i>
-													<div class="modal fade" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+													<div class="modal fade modal_radius" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 														<div class="modal-dialog modal-dialog-centered" role="document">
 															<div class="modal-content">
 																<div class="modal-body">
@@ -490,7 +490,7 @@
 
 
 			  <!-- Modal generate label -->
-			  <div data-bs-keyboard="false" data-bs-backdrop="static" class="generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			  <div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_radius generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered" role="document">
 						<div class="modal-content">
 							<div class="modal-body">	

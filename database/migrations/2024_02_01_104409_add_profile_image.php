@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldPickUpLocationId extends Migration
+class AddProfileImage extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddFieldPickUpLocationId extends Migration
      */
     public function up()
     {
-        Schema::table('orders_doli', function (Blueprint $table) {
-            $table->string('pick_up_location_id')->after('shipping_method')->nullable(); 
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('picture')->nullable(); 
         });
     }
 
@@ -25,7 +25,7 @@ class AddFieldPickUpLocationId extends Migration
      */
     public function down()
     {
-        Schema::table('orders_doli', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

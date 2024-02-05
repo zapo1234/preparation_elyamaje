@@ -99,14 +99,18 @@
                     </div>
                     <div class="user-box dropdown border-light-2">
                         <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="assets/images/avatars/default_avatar.png" class="user-img" alt="user avatar">
+                            <img src="{{ Auth()->user()->picture ? 'storage/app/images/'.Auth()->user()->picture : 'assets/images/avatars/default_avatar.png' }}" class="user-img" alt="user avatar">
                             <div class="user-info ps-3">
                                 <p class="user-name mb-0">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</p>
                                 <p class="designattion mb-0"> @include('partials.account', ['role' => Auth()->user()->roles->toArray()])</p>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('logout') }}"><i class='bx bx-log-out-circle'></i><span>Déconnexion</span></a>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('admin.accountDetails') }}?user_id={{ Auth()->user()->id }}"><i class='bx bx-user'></i><span>Profil</span></a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logout') }}"><i class='bx bx-log-out-circle'></i><span>Déconnexion</span></a>
                             </li>
                         </ul>
                     </div>

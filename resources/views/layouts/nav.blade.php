@@ -139,6 +139,7 @@
                     <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                     <li><a href="{{ url('colissimo') }}">Étiquettes</a></li>
                     <li><a href="{{ url('configDolibarr') }}">Dolibarr</a></li>
+                    <li><a href="{{ url('paymentTerminal') }}">Terminaux</a></li>
                 </ul>
             </li>
             <li>
@@ -221,7 +222,7 @@
                 </div>
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Beauty Prof's</a></li>
-                    <li><a href="{{ url('seller') }}">Vendeuse</a></li>
+                    <li><a href="{{ url('seller') }}">Analytics</a></li>
                     <li><a href="{{ url('cashier') }}">Caisse</a></li>
                     <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                 </ul>
@@ -258,7 +259,7 @@
         <li>
             <div class="profile-details">
                 <div class="profile-content">
-                    <img src="assets/images/avatars/default_avatar.png" class="user-img" alt="user avatar">
+                    <img src="{{ Auth()->user()->picture ? 'storage/app/images/'.Auth()->user()->picture : 'assets/images/avatars/default_avatar.png' }}" class="user-img" alt="user avatar">
                 </div>
                 <div class="name-job">
                     <div class="profile_name">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</div>

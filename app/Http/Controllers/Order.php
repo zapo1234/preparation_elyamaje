@@ -644,6 +644,7 @@ class Order extends BaseController
         // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
+
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
@@ -979,6 +980,7 @@ class Order extends BaseController
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
+
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
       return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
     }

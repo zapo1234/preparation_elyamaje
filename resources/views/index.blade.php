@@ -35,7 +35,7 @@
 											<input class="role_user_input" id="user_{{ $team['user_id'] }}" type="hidden" value="{{ implode(',',$team['role_id']) }}">
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
-													<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
+													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
 													<h6 class="mb-1 font-14">
@@ -107,7 +107,7 @@
 
 
 								<!-- Modal de confirmation de réatribution de commandes à un user -->
-								<div class="modal fade" id="reallocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal fade modal_radius" id="reallocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div class="modal-body">
@@ -213,11 +213,11 @@
 								</div>
 
 								<!-- Modal pour lancer l'attribution des commandes -->
-								<div class="modal fade" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal fade modal_radius" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
-												<i style="z-index:10;cursor:pointer;font-size:28px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+												<i style="z-index:10;cursor:pointer;font-size:24px;" data-bs-dismiss="modal" class="lni lni-close"></i>
 											</div>	
 											<div class="modal-body">
 												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>

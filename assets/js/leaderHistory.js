@@ -31,7 +31,6 @@ $(document).ready(function() {
         // Change status order
         $.ajax({
             url: "updateOrderStatus",
-            method: 'GET',
             method: 'POST',
             data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, from_dolibarr: from_dolibarr}
         }).done(function(data) {
@@ -40,7 +39,6 @@ $(document).ready(function() {
                 if(status == "processing"){
                     $.ajax({
                         url: "orderReInvoicing",
-                        method: 'GET',
                         method: 'POST',
                         data: {_token: $('input[name=_token]').val(), order_id: order_id}
                     }).done(function(data) {
@@ -87,7 +85,7 @@ function show(id){
                 }
 
                 $(".modal_order_admin").remove()
-                $('body').append(`<div class="modal_order_admin modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                $('body').append(`<div class="modal_order_admin modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-body detail_product_order">
