@@ -53,7 +53,7 @@ class Controller extends BaseController
     private $logError;
     private $factorder;
     private $commandeids;
-    private $transferko;
+    private $transferkdo;
 
     public function __construct(
         Order $orderController,
@@ -1768,80 +1768,86 @@ class Controller extends BaseController
         return view('shop.index');
     }
 
-    public function giftCardOrders(){
-        $status = "completed";
-        $after = date('Y-m-d H:i:s', strtotime('-1 day'));
-        $per_page = 100;
-        $page = 1;
-        $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+    public function giftCardOrders($token){
 
-        if(isset($orders['message'])){
-          $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
-          return false;
-        }
+        if($token =="lMxNFRyfpoh1gTs9HK3LqJt?QtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
+            $status = "completed";
+            $after = date('Y-m-d H:i:s', strtotime('-1 day'));
+            $per_page = 100;
+            $page = 1;
+            $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
 
-        if(!$orders){
-          return array();
-        } 
-        
-        $count = count($orders);
-  
-        // Check if others page
-        if($count == 100){
-          while($count == 100){
-            $page = $page + 1;
-            $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
-           
-            if(count($orders_other ) > 0){
-              $orders = array_merge($orders, $orders_other);
+            if(isset($orders['message'])){
+            $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
+            return false;
             }
-          
-            $count = count($orders_other);
-          }
-        }  
 
-        $order_to_billing = [];
-
-        // Check if just gift card in order
-        foreach($orders as $order){
-            $item_gift_card = 0;
-            foreach($order['line_items'] as $or){
-                if(str_contains($or['name'], 'Carte Cadeau')){
-                  $item_gift_card = $item_gift_card + 1;
+            if(!$orders){
+            return array();
+            } 
+            
+            $count = count($orders);
+    
+            // Check if others page
+            if($count == 100){
+            while($count == 100){
+                $page = $page + 1;
+                $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+            
+                if(count($orders_other ) > 0){
+                $orders = array_merge($orders, $orders_other);
                 }
+            
+                $count = count($orders_other);
             }
+            }  
 
-            if($item_gift_card == count($order['line_items'])){
-                $order['coupons'] = '';
-                $order['preparateur'] = 'Aucun';
-                $order['emballeur'] = 'Aucun';
-                $order['order_woocommerce_id'] = $order['id'];
-                $order['order_id'] =  $order['id'];
-                $order['total_order'] =  $order['total'];
-                $order['total_tax_order'] =  $order['total_tax'];
-                $order['date'] =  $order['date_created'];
-                $order['gift_card_amount'] = 0;
-                $order['shipping_amount'] = 0;
-                $order['shipping_method_detail'] = "";
-                $order['discount_amount'] = 0;
+            $order_to_billing = [];
 
-                $order_to_billing[] = $order;
+            // Check if just gift card in order
+            foreach($orders as $order){
+                $item_gift_card = 0;
+                foreach($order['line_items'] as $or){
+                    if(str_contains($or['name'], 'Carte Cadeau')){
+                    $item_gift_card = $item_gift_card + 1;
+                    }
+                }
 
-                
+                if($item_gift_card == count($order['line_items'])){
+                    $order['coupons'] = '';
+                    $order['preparateur'] = 'Aucun';
+                    $order['emballeur'] = 'Aucun';
+                    $order['order_woocommerce_id'] = $order['id'];
+                    $order['order_id'] =  $order['id'];
+                    $order['total_order'] =  $order['total'];
+                    $order['total_tax_order'] =  $order['total_tax'];
+                    $order['date'] =  $order['date_created'];
+                    $order['gift_card_amount'] = 0;
+                    $order['shipping_amount'] = 0;
+                    $order['shipping_method_detail'] = "";
+                    $order['discount_amount'] = 0;
 
-                if(count($order_to_billing) == 4){
-                    // Envoie à la facturation par 4
+                    $order_to_billing[] = $order;
+
+                    
+
+                    if(count($order_to_billing) == 4){
+                        // Envoie à la facturation par 4
+                        $this->transferkdo->transferkdo($order_to_billing);
+                        // Réinitialise le tableau
+                        $order_to_billing = [];
+                }
+                    // Remplacer par fonction qui facture plusieurs fois
+                }
+            } 
+
+
+            if(count($order_to_billing) > 0){
+                // Envoie à la facturation par 4
                 $this->transferkdo->transferkdo($order_to_billing);
-                     // Réinitialise le tableau
-               }
-                // Remplacer par fonction qui facture plusieurs fois
             }
-        } 
+        } else {
 
-
-        if(count($order_to_billing) > 0){
-            // Envoie à la facturation par 4
-            $this->transferkdo->transferkdo($order_to_billing);
         }
 
        

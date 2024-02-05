@@ -284,7 +284,7 @@ Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage']
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
 // Tache cron récupère les commandes avec carte cadeaux seulement
-Route::get("/giftCardOrders", [Controller::class, "giftCardOrders"]);
+Route::get("/giftCardOrders/{token}", [Controller::class, "giftCardOrders"]);
 
 
 
