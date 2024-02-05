@@ -1831,13 +1831,9 @@ class Controller extends BaseController
 
                 if(count($order_to_billing) == 4){
                     // Envoie à la facturation par 4
-                    $order_to_billing;
-                
-                    $this->transferkdo->transferkdo($order_to_billing);
-
-                    // Réinitialise le tableau
-                    $order_to_billing = [];
-                }
+                $this->transferkdo->transferkdo($order_to_billing);
+                     // Réinitialise le tableau
+               }
                 // Remplacer par fonction qui facture plusieurs fois
             }
         } 
@@ -1845,7 +1841,7 @@ class Controller extends BaseController
 
         if(count($order_to_billing) > 0){
             // Envoie à la facturation par 4
-          
+            $this->transferkdo->transferkdo($order_to_billing);
         }
 
        

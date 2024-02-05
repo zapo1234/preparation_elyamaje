@@ -1190,20 +1190,9 @@ class TransferOrder
          public function Updatefacture($orders){
            // connexion api dolibar
 
-            $data = array('133662','133783','133622','133644','133800','133653fbfsdgfbzu','133625','133743','133752');
+           dd('service en attente ne pas utiliser pour l\'instant');
 
-            $data1 = array('133748','133748','133748','133746','133739','133740','133740','133750');
-
-            $data2= array('133541','133538','133590','133589','133585','133533','133549','133542','133566','133584','133554');
-
-            $data3 =array('133576','133568','133581','133567','133582','133562','133536','133551','133560','133550');
-            $data3 = array('133535','133601','133543','133592','133545','133537');
-
-
-
-
-             
-             $method = "GET";
+           $method = "GET";
             $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd"; 
             $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
 
@@ -1381,6 +1370,7 @@ class TransferOrder
           
            
            
+          
         
            // recupérer et construire un tableau des products pour les réecrire dans la facture
            $data_update_product =[];
@@ -1390,7 +1380,7 @@ class TransferOrder
                    // recupérer le barcode pour aller le chercher le fk_product
                     $code = explode(',',$vad['barcode']);
                     $barcode = $code[1];
-                    $fk_product =array_search($barcode,$data_list_products);
+                    $fk_product = array_search($barcode,$data_list_products);
                     
                     $chaine_data = array_search($vad['barcode'],$data_construct);
                        if($chaine_data!=""){
@@ -1400,7 +1390,7 @@ class TransferOrder
                            'fk_product'=> $fk_product,
                            'qty'=> $ch[1],
                            'tva_tx'=> 20,
-                           'subprice'=>$ch[1],
+                           'subprice'=>$ch[2],
                            'remise_percent'=>$remise_percent,
                            'product_type'=> 1,
                            'rang'=> -1,
@@ -1418,10 +1408,10 @@ class TransferOrder
           }
 
            
-         // dd($data_update_product);
+        
 
           // insert dans bdd
-       /*   foreach($data_update_product as $key=> $vacc){
+         foreach($data_update_product as $key=> $vacc){
               foreach($vacc as $vl){
 
                   $array_data[] =[
@@ -1433,10 +1423,10 @@ class TransferOrder
 
           }
 
-
+        
           
-              // compter le nombre de id_live 
-              $result = DB::table('data_lines_facts')
+      // compter le nombre de id_live 
+        /*      $result = DB::table('data_lines_facts')
              ->select('fk_product' ,DB::raw('SUM(qty) as nombre_vente'))
              ->groupBy('fk_product')
              ->get();
@@ -1446,16 +1436,17 @@ class TransferOrder
 
 
              $this->csvcreateentrepot($name_list);
-             DB::table('data_lines_facts')->insert($array_data);
+             
 
              dd('fin process');
              
              dd('fin');
 
                dd('succes');
+          */
 
-        */
-
+        
+       //DB::table('data_lines_facts')->insert($array_data);
 
 
          // recupérer les ref (importatn effacer l'ecriture associe en base pour paiement important)
@@ -1478,8 +1469,8 @@ class TransferOrder
              }
 
 
-            
-             // construire un jeu de données pour recupérer les prix provenant de la commande woocomerce
+
+                // construire un jeu de données pour recupérer les prix provenant de la commande woocomerce
              foreach($data_result as $lm => $val){
                foreach($val as $valis){
                 $chaine_data = array_search($valis['barcode'],$test_data);
@@ -1496,6 +1487,10 @@ class TransferOrder
                }
             }
            }
+
+           dd($result_finale);
+
+          dd('fin de script');
             
              // Mettre les facture en brouillons et suprimer le compte lié
                $data_fact =[
@@ -1613,7 +1608,7 @@ class TransferOrder
                $array_data =[
                  "date"=> $date_finale,
                  "type"=>"CADO",
-                 "label"=>"Achat de carte cadeaux ",
+                 "label"=>"Achat de carte cadeaux",
                  "amount"=>-50,
                  "cheque_number"=>"TC1-2310-37090",
                  "datev" => $date_finale,
@@ -1726,6 +1721,8 @@ class TransferOrder
                exit();
              
        }
+
+       
    
 
   }
