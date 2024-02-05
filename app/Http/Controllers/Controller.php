@@ -1770,8 +1770,8 @@ class Controller extends BaseController
 
     public function giftCardOrders(){
         $status = "completed";
-        $after = false; //date('Y-m-d H:i:s', strtotime('-1 day'));
-        $per_page = 10;
+        $after = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
 

@@ -1328,36 +1328,36 @@ class Order extends BaseController
 
   // private function checkGiftCard($order){
 
-    // $item_gift_card = 0;
-    // foreach($order['line_items'] as $keyOrder => $or){
-    //   if(str_contains($or['name'], 'Carte Cadeau')){
-    //     $item_gift_card = $item_gift_card + 1;
-    //   }
-    // }
+  //   $item_gift_card = 0;
+  //   foreach($order['line_items'] as $keyOrder => $or){
+  //     if(str_contains($or['name'], 'Carte Cadeau')){
+  //       $item_gift_card = $item_gift_card + 1;
+  //     }
+  //   }
 
-    // if($item_gift_card == count($order['line_items'])){
+  //   if($item_gift_card == count($order['line_items'])){
 
-    //   // Facturer ici la commande contenant uniquement une ou des carte cadeaux
-    //   $order['coupons'] = '';
-    //   $order['preparateur'] = 'Aucun';
-    //   $order['emballeur'] = 'Aucun';
-    //   $order['order_woocommerce_id'] = $order['id'];
-    //   $order['order_id'] =  $order['id'];
-    //   $order['total_order'] =  $order['total'];
-    //   $order['total_tax_order'] =  $order['total_tax'];
-    //   $order['date'] =  $order['date_created'];
-    //   $order['gift_card_amount'] = 0;
-    //   $order['shipping_amount'] = 0;
-    //   $order['shipping_method_detail'] = "";
-    //   $order['discount_amount'] = 0;
+  //     // Facturer ici la commande contenant uniquement une ou des carte cadeaux
+  //     $order['coupons'] = '';
+  //     $order['preparateur'] = 'Aucun';
+  //     $order['emballeur'] = 'Aucun';
+  //     $order['order_woocommerce_id'] = $order['id'];
+  //     $order['order_id'] =  $order['id'];
+  //     $order['total_order'] =  $order['total'];
+  //     $order['total_tax_order'] =  $order['total_tax'];
+  //     $order['date'] =  $order['date_created'];
+  //     $order['gift_card_amount'] = 0;
+  //     $order['shipping_amount'] = 0;
+  //     $order['shipping_method_detail'] = "";
+  //     $order['discount_amount'] = 0;
 
 
 
-    //   // dd($order);
+  //     // dd($order);
 
-    //   // On facture directement
-    //   $this->factorder->Transferorder([$order]);
-    // }
+  //     // On facture directement
+  //     $this->factorder->Transferorder([$order]);
+  //   }
   // }
 }
 
