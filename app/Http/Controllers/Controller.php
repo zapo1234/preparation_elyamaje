@@ -1770,7 +1770,7 @@ class Controller extends BaseController
 
     public function giftCardOrders($token){
 
-        if($token =="lMxNFRyfpoh1gTs9HK3LqJt?QtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
+        if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
             $status = "completed";
             $after = date('Y-m-d H:i:s', strtotime('-1 day'));
             $per_page = 100;
@@ -1846,10 +1846,6 @@ class Controller extends BaseController
                 // Envoie à la facturation par 4
                 $this->transferkdo->transferkdo($order_to_billing);
             }
-        } else {
-
-        }
-
-       
+        } 
     }
 }
