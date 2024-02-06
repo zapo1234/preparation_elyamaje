@@ -185,7 +185,7 @@ class Transferkdo
      */
       public function Transferkdo($orders)
       {
-            
+            dd($orders);
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
