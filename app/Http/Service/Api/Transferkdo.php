@@ -508,9 +508,9 @@ class Transferkdo
                                                $data_product[] = [
                                                 "desc"=>'',
                                                 "remise_percent"=> $donnees['discount_amount'],
-                                                "multicurrency_subprice"=> 20,
-                                                "multicurrency_total_ht" => 5,
-                                                "multicurrency_total_tva" => 20,
+                                                "multicurrency_subprice"=> floatval($values['subtotal']),
+                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
                                                 "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$values['name'],
@@ -621,6 +621,7 @@ class Transferkdo
                         // fitrer les ids de commande .qui sont deja facture et les enlever.
                           $array_tab = []; // au recupere les socid
                           $ids_commande =[];// recupérer les ids dans commande.
+                        
                          if(count($unique_arr)!=0){
 
                             foreach($unique_arr as $key =>$van){
@@ -636,10 +637,7 @@ class Transferkdo
 
                               }
 
-                            
-
-                               
-                                foreach($data_tiers as $data) {
+                              foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
                                 $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                              
