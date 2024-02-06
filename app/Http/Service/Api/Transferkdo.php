@@ -185,7 +185,7 @@ class Transferkdo
      */
       public function Transferkdo($orders)
       {
-            dd($orders);
+            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -504,19 +504,19 @@ class Transferkdo
                                                  }
                                                  
 
-                                               $tva_product = 20;
+                                               $tva_product = 0;
                                                $data_product[] = [
                                                 "desc"=>'',
                                                 "remise_percent"=> $donnees['discount_amount'],
                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                "multicurrency_total_tva" => 0,
+                                                "multicurrency_total_ttc" => floatval($values['total']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$values['name'],
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                "tva_tx" => floatval($tva_product),
+                                                "tva_tx" => "",
                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 
@@ -565,7 +565,7 @@ class Transferkdo
                                           'date'=> $new_date,
                                           "email" => $donnees['billing']['email'],
                                           "total_ht"  =>floatval($donnees['total_order']-$donnees['total_tax_order']),
-                                          "total_tva" =>floatval($donnees['total_tax_order']),
+                                          "total_tva" =>0,
                                           "total_ttc" =>floatval($donnees['total_order']),
                                           "paye"=>"1",
                                           "lines" =>$data_product,
@@ -636,6 +636,8 @@ class Transferkdo
                                 unset($unique_arr[$clef]);
 
                               }
+                               
+                            
 
                               foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
