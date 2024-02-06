@@ -168,7 +168,7 @@
 										</div>
 
 										<!-- Modal Suppression -->
-										<div class="modal fade" id="deleteRole_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+										<div class="modal fade modal_radius " id="deleteRole_{{ $role['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 											<div class="modal-dialog modal-dialog-centered" role="document">
 												<div class="modal-content">
 													<form method="POST" action="{{ route('role.delete') }}">
