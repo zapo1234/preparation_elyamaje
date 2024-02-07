@@ -19,7 +19,7 @@ use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 
-class TransferOrder
+class Transfertext
 {
     
       private $api;
@@ -36,6 +36,7 @@ class TransferOrder
       private $don;
       private $dons;
       private $tiers;
+      private $amountcard;
     
        public function __construct(
         Api $api,
@@ -153,6 +154,18 @@ class TransferOrder
    }
 
 
+   public function getAmoundcard()
+   {
+       return $this->amoundcard;
+   }
+   
+   
+   public function setAmouncard($amountcard)
+   {
+      $this->amouncard = $amountcard;
+      return $this;
+   }
+
 
     public  function createtiers($donnees)
     {
@@ -179,10 +192,10 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder($orders)
+      public function Transfertext($orders)
       {
-            
-    
+          
+        dd($orders);
             
              $fk_commande="";
              $linkedObjectsIds =[];
@@ -594,19 +607,18 @@ class TransferOrder
                                   
                                       // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       // veifier si la commande a facturé vient d'une beauty proof BPP
-                                      /* $chaine_ext ="BPP";
+                                       $chaine_ext ="BPP";
                                        $result_int ="";// eviter que les commande de la BPP sois prise en compte.
                                        if(strpos($chaine_ext,$donnees['order_id'])==false){
-                                            $result_int='';
+                                            $index_int='';
                                        }else{
-                                             $result_int=1;
+                                             $index_int=1;
                                        }
 
-                                       */
-                                    
-                                       $data_options = [
+                                      $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$coupons,
+                                       "options_fid"=>$index_int,
                                        "options_prepa" => $preparateur,
                                        "options_emba" => $emballeur,
                                         ];
@@ -655,6 +667,8 @@ class TransferOrder
                                         $this->setDistristatus($status_distributeur);
 
                                         $this->setFicfacture($donnees['order_id']);
+
+                                        // recupérer le montant
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
                                         $historique = new Commandeid();
@@ -1033,20 +1047,30 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
-                  
-                  // recupérer le status
                   $status_dist = $this->getDistristatus();
-                   // recupération les méthode de paiement.
-                   $moyen_card = $this->commande->createpaiementid();
+                  // recupération les méthode de paiement.
+                  $moyen_card = $this->commande->createpaiementid();
+                  // verifier le moyens de paiment si contient une ,
+                   $chaine_index =",";
+                   // recupérer le status
+                   if(strpos($account_name,$chaine_index)==true){
+                    // ici
+                      $index_m ="CB";
+                      $moyen_paid =  array_search($account_name);
+                      $mode_reglement_id = $moyen_paids[0];
+                      $account_multiple="yes";
 
-                   $moyen_paid =  array_search($account_name,$moyen_card);
+                   }else{
+                       $moyen_paid =  array_search($account_name,$moyen_card);
 
-                   if($moyen_paid!=false){
-                       $moyen_paids = explode(',',$moyen_paid);
-                       $mode_reglement_id = $moyen_paids[0];
+                       if($moyen_paid!=false){
+                         $moyen_paids = explode(',',$moyen_paid);
+                          $mode_reglement_id = $moyen_paids[0];
                    }else{
                         $account_name="payplug";
                         $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
+                   }
+                      $account_multiple="no";
                    }
 
 
@@ -1054,6 +1078,7 @@ class TransferOrder
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
                    $array_espece =  array('LIQ');
+                   $double_pai = array('CBLIQ');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1182,11 +1207,20 @@ class TransferOrder
                           exit;
                           
                       }
-                       
-                        // Lier les factures dolibar  à un moyen de paiement et bank.
-                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+
                         // mettre le statut en payé dans la facture  dolibar
-                        $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                        if($account_multiple=="no"){
+                            $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                           // Lier les factures dolibar  à un moyen de paiement et bank.
+                          $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+
+                        }else{
+
+                             // reconstruire les données de la facture avec les montant
+
+
+                        }
+                        
 
                         // traiter les factures 
               }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\TransferOrder;
+use App\Http\Service\Api\Transfertext;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
@@ -42,6 +43,7 @@ class Order extends BaseController
     private $user;
     private $order;
     private $factorder;
+    private $transfert;
     private $history;
     private $pdf;
     private $colissimo;
@@ -63,6 +65,7 @@ class Order extends BaseController
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
       TransferOrder $factorder,
+      Transfertext $transfert,
       HistoryRepository $history,
       CreatePdf $pdf,
       Colissimo $colissimo,
@@ -85,6 +88,7 @@ class Order extends BaseController
       $this->user = $user;
       $this->order = $order;
       $this->factorder =$factorder;
+      $this->transfert = $transfert;
       $this->history = $history;
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
@@ -703,10 +707,14 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
       
-        $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-        $transfers = $request->post('transfers') == "false" ? 0 : 1;
+        //$from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+       // $transfers = $request->post('transfers') == "false" ? 0 : 1;
        // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-        $order_id = explode(',', $request->post('order_id'))[0];
+       // $order_id = explode(',', $request->post('order_id'))[0];
+
+        $from_dolibarr=false;
+        $transfers=false;
+        $order_id ="124020";
       
      if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
@@ -745,7 +753,10 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-            $this->factorder->Transferorder($orders);
+           
+           //$this->factorder->TransferOrder($orders);
+
+           $this->transfert->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [

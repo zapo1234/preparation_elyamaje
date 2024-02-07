@@ -98,7 +98,8 @@ class CommandeidsRepository implements CommandeidsInterface
              '57,gift_card'=>'gift_card',
              '6,apple_pay'=>'apple_pay',
              '6,wc-scalapay-payin3' => 'wc-scalapay-payin3',
-             '6,wc-scalapay-payin4' => 'wc-scalapay-payin4'
+             '6,wc-scalapay-payin4' => 'wc-scalapay-payin4',
+             '4,LIQ'=>'LIQ'
            ];
 
            return $data_array;
