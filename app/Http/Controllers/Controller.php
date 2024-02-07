@@ -1770,12 +1770,16 @@ class Controller extends BaseController
 
     public function giftCardOrders($token){
 
+        
+
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
             $status = "completed";
             $after = date('Y-m-d H:i:s', strtotime('-1 day'));
+            
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+        
 
             if(isset($orders['message'])){
             $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
@@ -1829,8 +1833,6 @@ class Controller extends BaseController
 
                     $order_to_billing[] = $order;
 
-                    
-
                     if(count($order_to_billing) == 4){
                         // Envoie à la facturation par 4
                         $this->transferkdo->transferkdo($order_to_billing);
@@ -1841,6 +1843,7 @@ class Controller extends BaseController
                 }
             } 
 
+    
 
             if(count($order_to_billing) > 0){
                 // Envoie à la facturation par 4
