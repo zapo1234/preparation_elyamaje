@@ -130,11 +130,14 @@ class WoocommerceService
   }
 
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
+
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
 
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'] ?? 0;
+    $transformOrder['gift_card_amount'] = "";
+    $transformOrder['amountCard'] = $orderDolibarr[0]['amountCard'] ?? 0;
     $transformOrder['date'] = $orderDolibarr[0]['date'];
     $transformOrder['date_created'] = $orderDolibarr[0]['date'];
     $transformOrder['total_tax_order'] = $orderDolibarr[0]['total_tax'];
