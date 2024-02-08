@@ -201,7 +201,6 @@ class WoocommerceService
     foreach($orderDolibarr as $order){
 
       $total_product = $total_product + intval($order['quantity']);
-
       if($product_to_add_label){
         if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {
           $transformOrder['line_items'][]= [
