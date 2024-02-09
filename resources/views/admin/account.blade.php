@@ -138,7 +138,7 @@
 												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
 											</td>
 											<td data-label="Nom">{{ $user['name'] }}</td>
-											<td style="width: 50%" data-label="Rôles">	
+											<td data-label="Rôles">	
 												@if($user['active'] == 1)
 													@foreach($roles as $role)
 														@if(in_array($role['id'], $user['role_id']))
@@ -355,6 +355,8 @@
 			})
 
 			$(".select2-container").css('margin-left', '10px')
+			$("#createAccountModal .select2-container").css('margin-left', '0px')
+
 			$('.type_dropdown').trigger('change')
 			$('.actif_dropdown').trigger('change')			
 		})
