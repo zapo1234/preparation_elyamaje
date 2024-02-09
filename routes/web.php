@@ -139,8 +139,9 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
 
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
-    Route::get("/addTerminal", [Admin::class, "addTerminal"])->name('terminal.add');
-    Route::get("/deleteTerminal", [Admin::class, "deleteTerminal"])->name('terminal.delete'); 
+    Route::post("/addTerminal", [Admin::class, "addTerminal"])->name('terminal.add');
+    Route::post("/updateTerminal", [Admin::class, "updateTerminal"])->name('terminal.update');
+    Route::post("/deleteTerminal", [Admin::class, "deleteTerminal"])->name('terminal.delete'); 
 
 
 });

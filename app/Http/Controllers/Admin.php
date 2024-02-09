@@ -31,6 +31,7 @@ use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
+use App\Repository\Terminal\TerminalRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -54,6 +55,7 @@ class Admin extends BaseController
     private $transferorder;
     private $facture;
     private $logError;
+    private $terminal;
 
     public function __construct(
         Api $api, 
@@ -71,7 +73,8 @@ class Admin extends BaseController
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
-        LogErrorRepository $logError
+        LogErrorRepository $logError,
+        TerminalRepository $terminal
     ){
         $this->api = $api;
         $this->category = $category;
@@ -89,6 +92,7 @@ class Admin extends BaseController
         $this->orderDolibarr = $orderDolibarr;
         $this->facture = $facture;
         $this->logError = $logError;
+        $this->terminal = $terminal;
     }
 
     public function syncCategories(){
@@ -1067,7 +1071,64 @@ class Admin extends BaseController
         return view('admin.beautyProfHistory', ['orders' => $orders, 'list_status' => __('status'), 'parameter' => $request->all()]);
     }
 
-    public function paymentTerminal(Request $request){
-        return view('admin.paymentTerminal', ['terminals' => []]);
+    public function paymentTerminal(){
+        $terminal = $this->terminal->getTerminal();
+        return view('admin.paymentTerminal', ['terminals' => $terminal]);
+    }
+
+    public function addTerminal(Request $request){
+        $request->validate([
+            'name' => 'required',
+            'ip_adress' => 'required',
+            'poiid' => 'required',
+        ]);
+
+        $data = [
+            'name' => $request->post('name'),
+            'ip_adress' => $request->post('ip_adress'),
+            'poiid' => $request->post('poiid'),
+        ];
+
+        try{
+            $this->terminal->insert($data);
+            return redirect()->back()->with('success', 'Terminal ajouté avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', str_contains($e->getMessage(), 'Duplicate') ? 'L\'adress IP ou le PoiId existe déjà' : 'Oops, une erreur est survenue !');
+        }
+    }
+
+    public function updateTerminal(Request $request){
+        $request->validate([
+            'update_name' => 'required',
+            'update_ip_adress' => 'required',
+            'update_poiid' => 'required',
+        ]);
+
+        $data = [
+            'name' => $request->post('update_name'),
+            'ip_adress' => $request->post('update_ip_adress'),
+            'poiid' => $request->post('update_poiid'),
+        ];
+
+        try{
+            $this->terminal->update($request->post('terminal_id'), $data);
+            return redirect()->back()->with('success', 'Terminal modifiée avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', str_contains($e->getMessage(), 'Duplicate') ? 'L\'adress IP ou le PoiId existe déjà' : 'Oops, une erreur est survenue !');
+        }
+    }
+
+    public function deleteTerminal(Request $request){
+
+        $request->validate([
+            'terminal_id' => 'required'
+        ]);
+
+        try{
+            $this->terminal->delete($request->post('terminal_id'));
+            return redirect()->back()->with('success', 'Terminal supprimé avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+        }
     }
 }
