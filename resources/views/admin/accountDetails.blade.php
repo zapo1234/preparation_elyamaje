@@ -146,6 +146,7 @@
                 </div>
             </div>
 
+            <!-- Détails shop  user -->
             @if($user['type'] == "shop" && Auth()->user()->hasRole(1))
                 <div class="row row-cols-1 row-cols-md-3 row-cols-xl-3">
                     <div class="col">
@@ -245,6 +246,48 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            @endif  
+
+            <!-- Détails warehouse user -->
+            @if($user['type'] == "warehouse" && Auth()->user()->hasRole(1) && $data_warehouse_user)
+                <div class="row row-cols-1 row-cols-md-3 row-cols-xl-3">
+                    <div class="col">
+                        <div class="card radius-10">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="widgets-icons rounded-circle mx-auto bg-light-warning text-warning mb-3"><i class="bx bx-cart-alt"></i>
+                                    </div>
+                                    <h4 class="font-bold my-1">{{ $data_warehouse_user['order_prepared'] }}</h4>
+                                    <p class="mb-0 text-secondary">Commandes préparées</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card radius-10">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="widgets-icons rounded-circle mx-auto bg-light-success text-success mb-3"><i class="bx bx-cart-alt"></i>
+                                    </div>
+                                    <h4 class="my-1 font-bold">{{ $data_warehouse_user['order_finished'] }}</h4>
+                                    <p class="mb-0 text-secondary">Commandes emballées</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card radius-10">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <div class="widgets-icons rounded-circle mx-auto bg-light-info  text-info  mb-3"><i class="bx bx-box"></i>
+                                    </div>
+                                    <h4 class="my-1 font-bold">{{ $data_warehouse_user['products'] }}</h4>
+                                    <p class="mb-0 text-secondary">Produits bippés</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

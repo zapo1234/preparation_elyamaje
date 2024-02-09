@@ -10,6 +10,8 @@ interface HistoryInterface
    public function getAllHistory($request);
 
    public function getHistoryAdmin($date);
+
+   public function getHistoryByIdUser($user_id);
    
    public function save($data);
 }
