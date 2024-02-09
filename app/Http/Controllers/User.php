@@ -233,11 +233,11 @@ class User extends BaseController
             $products = 0;
 
             foreach($history as $histo){
-                if($histo['status'] == "prepared"){
+                if($histo['status'] == "finished"){
                     $orders_finished = $orders_finished + 1;
-                    $products = $products + intval($histo['total_product']);
-                } else if($histo['status'] == "finished"){
+                } else if($histo['status'] == "prepared"){
                     $orders_prepared = $orders_prepared + 1;
+                    $products = $products + intval($histo['total_product']);
                 }
             }
 
