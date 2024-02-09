@@ -131,6 +131,7 @@ class WoocommerceService
 
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
 
+    
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
@@ -182,10 +183,9 @@ class WoocommerceService
       "phone" => $orderDolibarr[0]['phone'],
     ]; 
 
-
     $transformOrder['shipping'] = [
-      "first_name" => $orderDolibarr[0]['name'],
-      "last_name" => $orderDolibarr[0]['pname'] != $orderDolibarr[0]['name'] ? $orderDolibarr[0]['pname'] : '',
+      "first_name" => $orderDolibarr[0]['firstname'],
+      "last_name" => $orderDolibarr[0]['lastname'] != $orderDolibarr[0]['firstname'] ? $orderDolibarr[0]['lastname'] : '',
       "company" => $orderDolibarr[0]['company'],
       "address_1" => $orderDolibarr[0]['adresse'],
       "address_2" => "",
