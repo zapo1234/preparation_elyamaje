@@ -235,10 +235,10 @@ class User extends BaseController
             foreach($history as $histo){
                 if($histo['status'] == "prepared"){
                     $orders_finished = $orders_finished + 1;
+                    $products = $products + intval($histo['total_product']);
                 } else if($histo['status'] == "finished"){
                     $orders_prepared = $orders_prepared + 1;
                 }
-                $products = $products + intval($histo['total_product']);
             }
 
             $data_warehouse_user = [
