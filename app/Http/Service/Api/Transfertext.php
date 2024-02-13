@@ -1320,6 +1320,8 @@ class Transfertext
                                      $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
+
+                                      dd($name_list);
                                       // faire un update du amount.
                                       $ref_paiement = $name_list[0]['ref'];
                                       $index_row = explode(',',$ref_paiement);
