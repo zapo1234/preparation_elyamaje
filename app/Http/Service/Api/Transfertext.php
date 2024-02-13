@@ -1318,7 +1318,8 @@ class Transfertext
               
                                    // Lier les factures dolibar  à un moyen de paiement et bank.
                                     $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                                  
+                                   
+                                    $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
                                     // faire un select sur la table table paiment  
                                      $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");
                                      $name_list = json_encode($data);
@@ -1360,7 +1361,7 @@ class Transfertext
                                 ]);
 
 
-                                  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                               
                                   
                                 /*  // modifier directement dans la bdd 
                                    // ecrire le montant dans liquide bank pour les paiment en ligquide BP
