@@ -1327,7 +1327,7 @@ class Transfertext
                                       $ref_paiement = $name_list[0]['ref'];
                                       $index_row = explode('-',$ref_paiement);
                                       $index_pay = $index_row[1]+1;
-                                      $fk_bank = $num_list[0]['fk_bank']+1;
+                                      $fk_bank = $name_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
 
                                       dump($index_pay);
