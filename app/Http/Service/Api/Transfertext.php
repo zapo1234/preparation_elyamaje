@@ -251,7 +251,7 @@ class Transfertext
                  }
              }
              
-              dd($chaine_amout);
+              dd($chaine_amount);
               // recupérer le montant payé par cartependant la BP
                $this->setAmountcard($chaine_amount);
              
