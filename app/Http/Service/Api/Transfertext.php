@@ -746,8 +746,7 @@ class Transfertext
                          }
                         */
 
-                          dump($data_tiers);
-                          dd($data_lines);
+                        
                          
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
@@ -1301,6 +1300,8 @@ class Transfertext
                            }
 
                          if($account_multiple=="yes"){
+
+                            dd('trueyes');
                                  // Les cas ou y'a des paiment en partie espece et CB pour la BP.
                                   // reconstruire le montant de la facture 
                                   $val_tax = $index_amount_true[1]*0.2;
