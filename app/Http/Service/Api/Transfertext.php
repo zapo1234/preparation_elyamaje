@@ -1352,12 +1352,12 @@ class Transfertext
                                       'fk_paiement'=>4,
                                       'num_paiement'=>$name_list[0]['num_paiement'],
                                       'note'=> '',
-                                      'ext_payment_id'=>'',
-                                     'ext_payment_site'=>'',
-                                     'fk_bank'=>$fk_bank,
-                                      'fk_user_creat'=>'',
-                                      'fk_user_modif'=>'',
-                                      'statut'=>0,
+                                       'ext_payment_id'=>'',
+                                       'ext_payment_site'=>'',
+                                       'fk_bank'=>$fk_bank,
+                                       'fk_user_creat'=>'',
+                                       'fk_user_modif'=>'',
+                                       'statut'=>0,
                                       'pos_change'=>0.00000000
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
@@ -1368,7 +1368,6 @@ class Transfertext
                                   'tms' => date('Y-m-d H:i:s'),
                                   'datev' =>date('Y-m-d H:i:s') ,
                                   'dateo' => date('Y-m-d H:i:s'),
-                                  'datep' => '',
                                   'amount' => $index_amount_true[1],
                                   'label' =>"Paiment en espèce Beauty proof paris 2024",
                                   'fk_account'=>33,
