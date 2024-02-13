@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-           dd($orders);
+           
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -251,6 +251,7 @@ class Transfertext
                  }
              }
              
+              dd($chaine_amout);
               // recupérer le montant payé par cartependant la BP
                $this->setAmountcard($chaine_amount);
              
