@@ -1330,6 +1330,10 @@ class Transfertext
                                       $index_pay = $index_row[1]+1;
                                       $fk_bank = $num_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
+
+                                      dump($index_pay);
+                                      dump($fk_bank);
+                                      dd($ref_definitive);
                                       // faire un update sur la ligne de la facture ...
                                       DB::connection('mysql2')
                                      ->table('llxyq_paiement')
