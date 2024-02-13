@@ -24,6 +24,15 @@
                 </div>
             </div>
 
+
+            @if($errors->any())
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                    @foreach ($errors->all() as $error)
+                        <div class="text-white">{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+
             @if(session()->has('success'))
                 <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
                     <div class="text-white">{{ session()->get('success') }}</div>
@@ -44,16 +53,34 @@
                             <thead>
                                 <tr>
                                     <th>Nom</th>
-                                    <th>ID</th>
+                                    <th>Adresse IP</th>
+                                    <th>PoiId</th>
+                                    <th>ServiceId</th>
+                                    <th>SaleId</th>
+                                    <th>OperatorId</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($terminals as $terminal)
                                     <tr>
                                         <td data-label="Nom">{{  $terminal->name }}</td>
-                                        <td data-label="ID"></td>
+                                        <td data-label="Adresse IP">{{  $terminal->ip_adress }}</td>
+                                        <td data-label="PoiId">{{  $terminal->poiId }}</td>
+                                        <td data-label="ServiceId">{{  $terminal->serviceId }}</td>
+                                        <td data-label="SaleId">{{  $terminal->saleId }}</td>
+                                        <td data-label="OperatorId">{{  $terminal->operatorId }}</td>
+                                        <td class="d-flex justify-content-between" data-label="Action" >
+                                            <div class="d-flex">
+                                                <div data-id="{{ $terminal->id }}" class="update_action action_table font-22 text-primary">	
+                                                    <i class="text-primary fadeIn animated bx bx-edit"></i>
+                                                </div>
+                                                <div data-id="{{ $terminal->id }}" style="margin-left:10px;" class="delete_action action_table font-22">	
+                                                    <i class="text-danger fadeIn animated bx bx-trash-alt"></i>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
-
 
                                     <!-- Modal update terminal -->
                                     <div class="modal modal_radius fade" id="updateTerminalModal_{{ $terminal->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -75,15 +102,26 @@
                                                                     <label for="update_name" class="form-label">Nom*</label>
                                                                     <input value="{{ $terminal->name }}" required name="update_name" type="text" class="form-control" id="update_name">
                                                                 </div>
-                                                                <!-- <div class="col-md-12">
-                                                                    <label for="update_address_ip" class="form-label">Adresse IP*</label>
-                                                                    <input value="{{ $terminal->address_ip }}" required name="update_address_ip" type="text" class="form-control" id="update_address_ip">
+                                                                <div class="col-md-12">
+                                                                    <label for="update_ip_adress" class="form-label">Adresse IP*</label>
+                                                                    <input value="{{ $terminal->ip_adress }}" placeholder="192.168.0.0" required name="update_ip_adress" type="text" class="form-control" id="update_ip_adress">
                                                                 </div>
                                                                 <div class="col-md-12">
-                                                                    <label for="update_port" class="form-label">Port (9100 par défaut)</label>
-                                                                    <input value="{{ $terminal->port }}" name="update_port" type="text" class="form-control" id="update_port">
-                                                                </div> -->
-                                                              
+                                                                    <label for="update_poiid" class="form-label">PoiId</label>
+                                                                    <input value="{{ $terminal->poiId }}" required placeholder="10751876240" name="update_poiid" type="text" class="form-control" id="update_poiid">
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label for="update_serviceId" class="form-label">ServiceId</label>
+                                                                    <input value="{{ $terminal->serviceId }}" disabled name="update_serviceId" type="text" class="form-control" id="update_serviceId">
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label for="update_saleId" class="form-label">SaleId</label>
+                                                                    <input value="{{ $terminal->saleId }}" disabled name="update_saleId" type="text" class="form-control" id="update_saleId">
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label for="update_operatorId" class="form-label">OperatorId</label>
+                                                                    <input value="{{ $terminal->operatorId }}" disabled name="update_operatorId" type="text" class="form-control" id="update_operatorId">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -124,12 +162,24 @@
                                     <input required name="name" type="text" class="form-control" id="name">
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="address_ip" class="form-label">Adresse IP*</label>
-                                    <input placeholder="192.168.0.0" required name="address_ip" type="text" class="form-control" id="address_ip">
+                                    <label for="ip_adress" class="form-label">Adresse IP*</label>
+                                    <input placeholder="192.168.0.0" required name="ip_adress" type="text" class="form-control" id="ip_adress">
                                 </div>
                                 <div class="col-md-12">
-                                    <label for="port" class="form-label">Port</label>
-                                    <input value="9100" placeholder="9100" name="port" type="text" class="form-control" id="port">
+                                    <label for="poiid" class="form-label">PoiId</label>
+                                    <input value="" required placeholder="10751876240" name="poiid" type="text" class="form-control" id="poiid">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="serviceId" class="form-label">ServiceId</label>
+                                    <input value="1" disabled name="serviceId" type="text" class="form-control" id="serviceId">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="saleId" class="form-label">SaleId</label>
+                                    <input value="2" disabled name="saleId" type="text" class="form-control" id="saleId">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="operatorId" class="form-label">OperatorId</label>
+                                    <input value="3" disabled name="operatorId" type="text" class="form-control" id="operatorId">
                                 </div>
                             </div>
                         </div>

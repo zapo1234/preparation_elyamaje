@@ -74,7 +74,7 @@
                                         <td  data-label="Commande"><span>{{ $order['ref_order'] }}</span></td>
                                         <td  data-label="Cliente"><span class="p-2 badge bg-dark">{{ $order['name'] }} {{ $order['pname'] != $order['name'] ? $order['pname']: '' }}</span></td>
                                         <td  data-label="Vendeuse"><span class="p-2 badge bg-dark">{{ $order['seller'] }}</span></td>
-                                        <td  data-label="Date"><span>{{ date('d/m/Y', strtotime($order['created_at'])) }}</span></td>
+                                        <td  data-label="Date"><span>{{ date('d/m/Y H:i', strtotime($order['created_at'])) }}</span></td>
                                         <td  data-label="Status">
                                             @if($order['status'])
                                                 <select style="width: 180px; font-weight: bold;	font-size: 0.9em; " data-from_dolibarr="true" data-order="{{ $order['ref_order'] }}" class="{{ $order['status'] }} select_status select_user">

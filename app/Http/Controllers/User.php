@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
+use App\Repository\History\HistoryRepository;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Repository\User\UserRepository;
@@ -23,17 +24,20 @@ class User extends BaseController
     private $orders;
     private $api;
     private $orderDolibarr;
+    private $history;
 
     public function __construct(
         UserRepository $users, 
         OrderRepository $orders, 
         Api $api,
-        OrderDolibarrRepository $orderDolibarr
+        OrderDolibarrRepository $orderDolibarr,
+        HistoryRepository $history
     ){
         $this->users = $users;
         $this->orders = $orders;
         $this->api = $api;
         $this->orderDolibarr = $orderDolibarr;
+        $this->history = $history;
     }
     
     public function updateRole(Request $request){
@@ -204,6 +208,7 @@ class User extends BaseController
 
         $histories = [];
 
+        // Calcule stats vendeuse / caissière
         if($type == "shop"){
             $orders = $this->orderDolibarr->getAllOrdersBeautyProf($user_id, $parameter);
             $total_order = 0;
@@ -220,7 +225,31 @@ class User extends BaseController
 
         }
 
-        return view('admin.accountDetails', ['user' => $user, 'type' => $type, 'histories' => $histories, 'status' => __('status'), 'parameter' => $parameter, 'accessAccount' => $accessAccount]);
+        // Calcule stats préparation / emballage
+        if($type == "warehouse"){
+            $history = $this->history->getHistoryByIdUser($user_id);
+            $orders_prepared = 0;
+            $orders_finished = 0;
+            $products = 0;
+
+            foreach($history as $histo){
+                if($histo['status'] == "finished"){
+                    $orders_finished = $orders_finished + 1;
+                } else if($histo['status'] == "prepared"){
+                    $orders_prepared = $orders_prepared + 1;
+                    $products = $products + intval($histo['total_product']);
+                }
+            }
+
+            $data_warehouse_user = [
+                'order_prepared' => $orders_prepared,
+                'order_finished' => $orders_finished,
+                'products' => $products,
+            ];
+        }
+
+        return view('admin.accountDetails', ['user' => $user, 'type' => $type, 'histories' => $histories, 'status' => __('status'), 'parameter' => $parameter, 
+        'accessAccount' => $accessAccount, 'data_warehouse_user' => isset($data_warehouse_user) ? $data_warehouse_user : false ]);
     }
 
     public function updateImageProfil(Request $request){

@@ -84,6 +84,15 @@ class HistoryRepository implements HistoryInterface
       return $data;
    }
 
+   public function getHistoryByIdUser($user_id){
+      return  $this->model::select('histories.status', 'total_product',
+         'histories.created_at')
+         ->groupBy('histories.id')
+         ->where('user_id', $user_id)
+         ->get()
+         ->toArray();
+   }
+
    public function save($data){
       return $this->model::insert($data);
    }
