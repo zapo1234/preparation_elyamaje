@@ -1317,22 +1317,44 @@ class Transfertext
                                     $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
                                   
                                     // faire un select sur la table table paiment  
-                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref FROM llxyq_paiement WHERE rowid=$response_num");
+                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
                                       // faire un update du amount.
                                       $ref_paiement = $name_list[0]['ref'];
                                       $index_row = explode(',',$ref_paiement);
                                       $index_pay = $index_row[1]+1;
+                                      $fk_bank = $num_list[0]['fk_bank']+1;
+                                      $ref_definitive =  $index_row[0].'-'.$index_pay;
+                                      // faire un update sur la ligne de la facture ...
+                                    
+                                       DB::connection('mysql2')
+                                     ->table('llxyq_paiement')
+                                     ->where('rowid', '=', $response_num)
+                                     ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
+                                       // faire un insert du montant en especé ici
+                                      DB::connection('mysql2')->table('llxyq_paiement')->insert([
+                                     'ref' => $ref_definitive,
+                                     'ref_ext' => '',
+                                     'entity' => 1,
+                                     'datec' => 'valeur2',
+                                     'tms' => 'valeur1',
+                                     'datep' => 'valeur2',
+                                      'amount' => $index_amount_true[1],
+                                     'multicurrency_amount' =>$index_amount_true[1],
+                                     'fk_paiement'=>4,
+                                     'num_paiement'=>$name_list[0]['num_paiement'],
+                                      'note'=> '',
+                                     'ext_payment_id'=>'',
+                                     'ext_payment_site'=>'',
+                                     'fk_bank'=>$fk_bank,
+                                      'fk_user_creat'=>'',
+                                      'fk_user_modif'=>'',
+                                      'statut'=>0,
+                                      'pos_change'=>0.00000000
+                                    // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                                ]);
 
-                                      $data = DB::connection('mysql2')->select("UPDATE SET amount =$index_amount_true[0],multicurrency_amount=$index_amount_true[0] FROM llxyq_paiement WHERE rowid=$response_num");
-                                     
-
-                                    // faire un update sur la ligne de la facture ...
-
-                                    // faire un insert du montant en especé
-                                   
-                                   // modifier le paimement.
 
                                   $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
                                   
