@@ -70,6 +70,7 @@ class Admin extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
+        Transfertext $transfers,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
@@ -88,6 +89,7 @@ class Admin extends BaseController
         $this->order = $order;
         $this->woocommerce = $woocommerce;
         $this->factorder = $factorder;
+        $this->transfers = $transfers;
         $this->labelMissing = $labelMissing;
         $this->orderDolibarr = $orderDolibarr;
         $this->facture = $facture;
@@ -647,8 +649,8 @@ class Admin extends BaseController
 
             try {
 
-                  dd('zapo');
-                $this->factorder->Transferorder($order);  
+                  $this->transfers-> Transfertext($order);
+                 //$this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
