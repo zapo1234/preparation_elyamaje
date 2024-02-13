@@ -1352,7 +1352,7 @@ class Transfertext
                                       'fk_paiement'=>4,
                                       'num_paiement'=>$name_list[0]['num_paiement'],
                                       'note'=> '',
-                                     'ext_payment_id'=>'',
+                                      'ext_payment_id'=>'',
                                      'ext_payment_site'=>'',
                                      'fk_bank'=>$fk_bank,
                                       'fk_user_creat'=>'',
@@ -1361,6 +1361,35 @@ class Transfertext
                                       'pos_change'=>0.00000000
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
+
+                                DB::connection('mysql2')->table('llxyq_bank')->insert([
+                                  'ref' => $ref_definitive,
+                                  'datec' => '',
+                                  'tms' => date('Y-m-d H:i:s'),
+                                  'datev' =>date('Y-m-d H:i:s') ,
+                                  'dateo' => date('Y-m-d H:i:s'),
+                                  'datep' => '',
+                                  'amount' => $index_amount_true[1],
+                                  'label' =>"Paiment en espèce Beauty proof paris 2024",
+                                  'fk_account'=>33,
+                                  'fk_user_rappro'=>'',
+                                  'fk_type'=>'LIQ',
+                                  'num_releve'=> '',
+                                  'num_chq'=>$response['ref'],
+                                  'numero_compte'=>'',
+                                  'rappro'=>'',
+                                  'note'=>'',
+                                  'fk_bordereau'=>'',
+                                  'emetteur'=>'',
+                                  'author'=>'',
+                                  'origin_id'=>'',
+                                  'origin_type'=>'',
+                                  'import_key'=>'',
+                                  'amount_main_currency'=>''
+                                // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                            ]);
+
+                                // injecter dans la table 
 
 
                                
