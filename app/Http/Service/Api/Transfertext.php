@@ -1339,6 +1339,33 @@ class Transfertext
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
                                        // faire un insert du montant en especé ici
+
+                                       DB::connection('mysql2')->table('llxyq_bank')->insert([
+                                        'datec' => '',
+                                        'tms' => date('Y-m-d H:i:s'),
+                                        'datev' =>date('Y-m-d H:i:s') ,
+                                        'dateo' => date('Y-m-d H:i:s'),
+                                        'amount' => $index_amount_true[1],
+                                        'label' =>"Paiment en espèce Beauty proof paris 2024",
+                                        'fk_account'=>33,
+                                        'fk_user_rappro'=>'',
+                                        'fk_type'=>'LIQ',
+                                        'num_releve'=> '',
+                                        'num_chq'=>$response['ref'],
+                                        'numero_compte'=>'',
+                                        'rappro'=>'',
+                                        'note'=>'',
+                                        'fk_bordereau'=>'',
+                                        'emetteur'=>'',
+                                        'author'=>'',
+                                        'origin_id'=>'',
+                                        'origin_type'=>'',
+                                        'import_key'=>'',
+                                        'amount_main_currency'=>''
+                                      // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                                  ]);
+
+
                                       DB::connection('mysql2')->table('llxyq_paiement')->insert([
                                       'ref' => $ref_definitive,
                                       'ref_ext' => '',
@@ -1348,9 +1375,9 @@ class Transfertext
                                       'datep' => '',
                                       'amount' => $index_amount_true[1],
                                       'multicurrency_amount' =>$index_amount_true[1],
-                                      'fk_paiement'=>4,
-                                      'num_paiement'=>$name_list[0]['num_paiement'],
-                                      'note'=> '',
+                                       'fk_paiement'=>4,
+                                       'num_paiement'=>$name_list[0]['num_paiement'],
+                                       'note'=> '',
                                        'ext_payment_id'=>'',
                                        'ext_payment_site'=>'',
                                        'fk_bank'=>$fk_bank,
@@ -1361,31 +1388,7 @@ class Transfertext
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
 
-                                DB::connection('mysql2')->table('llxyq_bank')->insert([
-                                  'ref' => $ref_definitive,
-                                  'datec' => '',
-                                  'tms' => date('Y-m-d H:i:s'),
-                                  'datev' =>date('Y-m-d H:i:s') ,
-                                  'dateo' => date('Y-m-d H:i:s'),
-                                  'amount' => $index_amount_true[1],
-                                  'label' =>"Paiment en espèce Beauty proof paris 2024",
-                                  'fk_account'=>33,
-                                  'fk_user_rappro'=>'',
-                                  'fk_type'=>'LIQ',
-                                  'num_releve'=> '',
-                                  'num_chq'=>$response['ref'],
-                                  'numero_compte'=>'',
-                                  'rappro'=>'',
-                                  'note'=>'',
-                                  'fk_bordereau'=>'',
-                                  'emetteur'=>'',
-                                  'author'=>'',
-                                  'origin_id'=>'',
-                                  'origin_type'=>'',
-                                  'import_key'=>'',
-                                  'amount_main_currency'=>''
-                                // Ajoutez d'autres colonnes et valeurs selon votre besoin
-                            ]);
+                               
 
                                 // injecter dans la table 
 
