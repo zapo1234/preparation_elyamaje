@@ -646,6 +646,8 @@ class Admin extends BaseController
             }
 
             try {
+
+                  dd('zapo');
                 $this->factorder->Transferorder($order);  
 
                 // Stock historique
