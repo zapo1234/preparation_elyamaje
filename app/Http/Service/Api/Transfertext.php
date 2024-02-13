@@ -196,7 +196,6 @@ class Transfertext
       public function Transfertext($orders)
       {
            
-        dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
