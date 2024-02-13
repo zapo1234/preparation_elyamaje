@@ -1329,7 +1329,7 @@ class Transfertext
                                       $index_pay = $index_row[1]+1;
                                       $fk_bank = $name_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
-                                      
+
                                       // faire un update sur la ligne de la facture ...
                                       DB::connection('mysql2')
                                      ->table('llxyq_paiement')
@@ -1381,7 +1381,7 @@ class Transfertext
                                        'fk_user_creat'=>'',
                                        'fk_user_modif'=>'',
                                        'statut'=>0,
-                                      'pos_change'=>0.00000000
+                                       'pos_change'=>0.00000000
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
 
