@@ -1327,23 +1327,22 @@ class Transfertext
                                       $fk_bank = $num_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                       // faire un update sur la ligne de la facture ...
-                                    
                                        DB::connection('mysql2')
                                      ->table('llxyq_paiement')
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
                                        // faire un insert du montant en especé ici
                                       DB::connection('mysql2')->table('llxyq_paiement')->insert([
-                                     'ref' => $ref_definitive,
-                                     'ref_ext' => '',
-                                     'entity' => 1,
-                                     'datec' => 'valeur2',
-                                     'tms' => 'valeur1',
-                                     'datep' => 'valeur2',
+                                      'ref' => $ref_definitive,
+                                      'ref_ext' => '',
+                                      'entity' => 1,
+                                      'datec' => '',
+                                      'tms' => date('Y-m-d H:i:s'),
+                                      'datep' => '',
                                       'amount' => $index_amount_true[1],
-                                     'multicurrency_amount' =>$index_amount_true[1],
-                                     'fk_paiement'=>4,
-                                     'num_paiement'=>$name_list[0]['num_paiement'],
+                                      'multicurrency_amount' =>$index_amount_true[1],
+                                      'fk_paiement'=>4,
+                                      'num_paiement'=>$name_list[0]['num_paiement'],
                                       'note'=> '',
                                      'ext_payment_id'=>'',
                                      'ext_payment_site'=>'',

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\TransferOrder;
+use App\Http\Service\Api\Transfertext;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
@@ -42,6 +43,7 @@ class Order extends BaseController
     private $user;
     private $order;
     private $factorder;
+    private $transferts;
     private $history;
     private $pdf;
     private $colissimo;
@@ -63,6 +65,7 @@ class Order extends BaseController
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
       TransferOrder $factorder,
+      Transfertext $transferts,
       HistoryRepository $history,
       CreatePdf $pdf,
       Colissimo $colissimo,
@@ -85,6 +88,7 @@ class Order extends BaseController
       $this->user = $user;
       $this->order = $order;
       $this->factorder =$factorder;
+      $this->transferts =$transferts;
       $this->history = $history;
       $this->pdf = $pdf;
       $this->colissimo = $colissimo;
@@ -748,6 +752,8 @@ class Order extends BaseController
         // envoi des données pour créer des facture via api dolibar....
         try{
             $this->factorder->Transferorder($orders);
+
+            //$this->transferts->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [
