@@ -751,9 +751,10 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-            $this->factorder->Transferorder($orders);
+            
+          //$this->factorder->Transferorder($orders);
 
-            //$this->transferts->Transfertext($orders);
+          $this->transferts->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [
