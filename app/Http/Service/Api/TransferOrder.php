@@ -181,9 +181,6 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
-    
-            
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1071,8 +1068,8 @@ class TransferOrder
 
                    elseif(in_array($account_name,$array_paimentss)){
                         // CB
-                         $account_id=4; // PROD
-                         $paimentid=4;// PROD
+                         $account_id=3; // PROD
+                         $paimentid=3;// PROD
                    }
                     elseif(in_array($account_name,$array_espece)){
                          // acrocher un banque espèce Beauty proof.
