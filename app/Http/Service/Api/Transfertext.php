@@ -196,6 +196,7 @@ class Transfertext
       public function Transfertext($orders)
       {
            
+        dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1323,15 +1324,14 @@ class Transfertext
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
 
-                                      dd($name_list);
                                       // faire un update du amount.
                                       $ref_paiement = $name_list[0]['ref'];
-                                      $index_row = explode(',',$ref_paiement);
+                                      $index_row = explode('-',$ref_paiement);
                                       $index_pay = $index_row[1]+1;
                                       $fk_bank = $num_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                       // faire un update sur la ligne de la facture ...
-                                       DB::connection('mysql2')
+                                      DB::connection('mysql2')
                                      ->table('llxyq_paiement')
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
