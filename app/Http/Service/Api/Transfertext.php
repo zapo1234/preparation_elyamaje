@@ -251,7 +251,7 @@ class Transfertext
                  }
              }
              
-              dd($chaine_amount);
+              
               // recupérer le montant payé par cartependant la BP
                $this->setAmountcard($chaine_amount);
              
@@ -1360,7 +1360,7 @@ class Transfertext
 
                                   $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
                                   
-                                  // modifier directement dans la bdd 
+                                /*  // modifier directement dans la bdd 
                                    // ecrire le montant dans liquide bank pour les paiment en ligquide BP
                                    $array_data =[
                                      "date"=> $date_finale,
@@ -1373,6 +1373,7 @@ class Transfertext
                    
                                    // ecrire la ligne dans la bank BPP liquide pour les espèces.
                                     $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
+                                */
 
                            }
                         
