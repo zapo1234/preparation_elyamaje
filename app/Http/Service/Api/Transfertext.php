@@ -19,7 +19,7 @@ use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 
-class TransferOrder
+class Transfertext
 {
     
       private $api;
@@ -36,6 +36,8 @@ class TransferOrder
       private $don;
       private $dons;
       private $tiers;
+      private $amountcard;
+     
     
        public function __construct(
         Api $api,
@@ -153,6 +155,18 @@ class TransferOrder
    }
 
 
+   public function getAmountcard()
+   {
+       return $this->amountcard;
+   }
+   
+   
+   public function setAmountcard($amountcard)
+   {
+      $this->amountcard = $amountcard;
+      return $this;
+   }
+
 
     public  function createtiers($donnees)
     {
@@ -179,9 +193,10 @@ class TransferOrder
      /** 
      *@return array
      */
-      public function Transferorder($orders)
+      public function Transfertext($orders)
       {
-             $fk_commande="";
+           
+            $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
              $emballeur="";
@@ -207,9 +222,37 @@ class TransferOrder
                  if($val['gift_card_amount']!=""){
                       $gift_card_amount = $val['gift_card_amount'];
                  }
-             }
 
+                 // voir si le montant amouncard existe 
+                 if(isset($val['amountCard'])){
+                       $amount_card = $val['amountCard'];
+                       $total_montant = $val['total'];
+                       $indice_amount_liq ="";
+                       if($total_montant == $amount_card){
+                            $indice_amount_liq=0;//100% paiement par card.
+                        }else{
+
+                          if($amount_card!=0){
+                              // si y'a eu paimement espece et card cardeau
+                               $indice_amount_liq =  $total_montant - $amount_card;
+                          }
+
+                          if($amount_card==0){
+                              // y'a paiement en espece uniquement.
+                              $indice_amount_liq="liqpaid";
+                          }
+                     }
+
+                       $chaine_amount = "$amount_card%$indice_amount_liq";
+
+                 }else{
+                      $amount_card=0;
+                      $chaine_amount ='0%nobpp';
+                 }
+             }
              
+              // recupérer le montant payé par cartependant la BP
+               $this->setAmountcard($chaine_amount);
              
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
@@ -591,19 +634,19 @@ class TransferOrder
                                   
                                       // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       // veifier si la commande a facturé vient d'une beauty proof BPP
-                                      /* $chaine_ext ="BPP";
-                                       $result_int ="";// eviter que les commande de la BPP sois prise en compte.
-                                       if(strpos($chaine_ext,$donnees['order_id'])==false){
-                                            $result_int='';
+                                      
+                                       $chaine_ext ="BPP";
+                                       $index_int="";// eviter que les commande de la BPP sois prise en compte.
+                                       if(strpos($donnees['order_id'],$chaine_ext)!==false){
+                                            $index_int=1;
                                        }else{
-                                             $result_int=1;
+                                             $index_int="";
                                        }
 
-                                       */
-                                    
-                                       $data_options = [
+                                      $data_options = [
                                        "options_idw"=>$donnees['order_id'],
                                        "options_idc"=>$coupons,
+                                       "options_fid"=>$index_int,
                                        "options_prepa" => $preparateur,
                                        "options_emba" => $emballeur,
                                         ];
@@ -652,6 +695,8 @@ class TransferOrder
                                         $this->setDistristatus($status_distributeur);
 
                                         $this->setFicfacture($donnees['order_id']);
+
+                                        // recupérer le montant
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
                                         $historique = new Commandeid();
@@ -699,8 +744,9 @@ class TransferOrder
                            }
                          }
                         */
-                          
-                          
+
+                        
+                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -916,6 +962,8 @@ class TransferOrder
          public function invoicespay($orders)
          {
            
+
+        
              $method = "GET";
              $apiKey = env('KEY_API_DOLIBAR'); 
              $apiUrl = env('KEY_API_URL');
@@ -1030,57 +1078,109 @@ class TransferOrder
                 
                   // recupérer le mode de paiement
                   $account_name = $this->getAccountpay();
-                  
-                  // recupérer le status
+
                   $status_dist = $this->getDistristatus();
-                   // recupération les méthode de paiement.
-                   $moyen_card = $this->commande->createpaiementid();
-
-                   $moyen_paid =  array_search($account_name,$moyen_card);
-
-                   if($moyen_paid!=false){
-                       $moyen_paids = explode(',',$moyen_paid);
-                       $mode_reglement_id = $moyen_paids[0];
-                   }else{
-                        $account_name="payplug";
-                        $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
+                  // recupération les méthode de paiement.
+                  $moyen_card = $this->commande->createpaiementid();
+                  // recupérer les index_amout pour pour gérer les paiement des commandes.
+                  $chaine_amount_true = $this->getAmountcard();
+                   $index_amount_true = explode('%',$chaine_amount_true);
+                   $chaine_index =",";
+                     
+                   // recupérer le status
+                   if($index_amount_true[1]!=0 && $index_amount_true[1]!="liqpaid" && $index_amount_true[1]!="nobpp"){
+                    // ici y'a eu paiement en LIQ et CB
+                      $index_m ="CB";
+                      $moyen_paid =  array_search($index_m,$moyen_card);
+                      $moyen_paids = explode(',',$moyen_paid);
+                      $mode_reglement_id = $moyen_paids[0];
+                      $account_multiple="yes";
+                     // j'accroche les compte bancaire.
+                      
                    }
 
+                   if($index_amount_true[1]=="liqpaid"){
+                    // ici y'a eu paiement uniquement en LIQ
+                
+                      $index_m ="LIQ";
+                      $moyen_paid =  array_search($index_m,$moyen_card);
+                      $moyen_paids = explode(',',$moyen_paid);
+                      $mode_reglement_id = $moyen_paids[0];
+                      $account_multiple="yesliq";
+                     // j'accroche les compte bancaire
+            
+                   }
+
+                      // Qaund y'a un paiement uniquement que par CB 
+                    if($index_amount_true[1]==0){
+                        $index_m ="CB";
+                        $moyen_paid =  array_search($index_m,$moyen_card);
+                        $moyen_paids = explode(',',$moyen_paid);
+                        $mode_reglement_id = $moyen_paids[0];
+                        $account_multiple="no";
+                       
+                    }
+                     
+                       // si lacommande ne vient pas par un BPP(beauty proofs)
+                    if($index_amount_true[1]=="nobpp"){
+                         
+                       $moyen_paid =  array_search($account_name,$moyen_card);
+                           if($moyen_paid!=false){
+                            $moyen_paids = explode(',',$moyen_paid);
+                             $mode_reglement_id = $moyen_paids[0];
+                          }else{
+                           $account_name="payplug";
+                            $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
+                          }
+
+                          $account_multiple="no";
+                     }
+                    
 
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
                    $array_espece =  array('LIQ');
+                   $double_pai = array('CB,LIQ','LIQ,CB');// recupérer la methode de paiment....
 
-                   if(in_array($account_name,$array_paiment)) {
-                    // defini le mode de paiment commme une carte bancaire...
-                     //$mode_reglement_id = 6;
-                       $account_id=4;// PROD 
-                       $paimentid =4;// PROD
-                   }
+                   if($account_multiple=="no"){
+                       if(in_array($account_name,$array_paiment)) {
+                       // defini le mode de paiment commme une carte bancaire...
+                         //$mode_reglement_id = 6;
+                         $account_id=4;// PROD 
+                         $paimentid =6;// PROD
+                       }
 
-                   elseif(in_array($account_name,$array_paiments)){
-                      // defini le paiment comme virement bancaire......
+                       elseif(in_array($account_name,$array_paiments)){
+                         // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
-                       $account_id=6; // PROD
-                       $paimentid =6;// PROD
-                    }
-
-                   elseif(in_array($account_name,$array_paimentss)){
-                        // CB
-                         $account_id=3; // PROD
-                         $paimentid=3;// PROD
-                   }
-                    elseif(in_array($account_name,$array_espece)){
-                         // acrocher un banque espèce Beauty proof.
-                         $account_id = 32;
-                         $paimentid =  32;
+                        $account_id=3; // PROD
+                        $paimentid =3;// PROD
                      }
-                    else{
+
+                      elseif(in_array($account_name,$array_paimentss)){
+                         // CB
+                           $account_id=4; // PROD
+                           $paimentid=4;// PROD
+                       }
+                       else{
                           // CB
                           $account_id=4; // PROD
-                          $paimentid =4;// PROD
-                    }
+                          $paimentid =6;// PROD
+                         }
+
+                   }
+                    
+                   // paimement liquide.
+                     if($account_multiple=="yesliq"){
+                        $account_id=33;// PROD 
+                        $paimentid =4;// PROD
+                     }
+
+                     if($account_multiple=="yes"){
+                        $account_id=4;// PROD 
+                        $paimentid =6;// PROD envoi en CB.
+                   }
 
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
@@ -1146,7 +1246,7 @@ class TransferOrder
       
                  $newbank = [
                  "datepaye"=>$date_finale,
-                 "paymentid"=>6,
+                 "paymentid"=>$paimentid,
                  "closepaidinvoices"=> "yes",
                  "accountid"=> $account_id, // id du compte bancaire.
                  ];
@@ -1179,14 +1279,65 @@ class TransferOrder
                           exit;
                           
                       }
-                       
-                        // Lier les factures dolibar  à un moyen de paiement et bank.
-                        $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                        // mettre le statut en payé dans la facture  dolibar
-                        $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
-                        // traiter les factures 
-              }
+                        // mettre le statut en payé dans la facture  dolibar les commande preparation(uniquement internet)
+                        if($account_multiple=="no"){
+                              // Lier les factures dolibar  à un moyen de paiement et bank.
+                            $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                             $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                          // Lier les factures dolibar  à un moyen de paiement et bank.
+                          }
+                        
+
+                         if($account_multiple=="yesliq"){  // liquide 100% BP
+                             // Lier les factures dolibar  à un moyen de paiement et bank.
+                               $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+   
+                              $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                             // Lier les factures dolibar  à un moyen de paiement et bank.
+   
+                           }
+
+                         if($account_multiple=="yes"){
+                                 // Les cas ou y'a des paiment en partie espece et CB pour la BP.
+                                  // reconstruire le montant de la facture 
+                                  $val_tax = $index_amount_true[1]*0.2;
+                                    
+                                  dump('yes');
+                                  // laisser la facture en recommance
+                                   $newCommandepayes = [
+                                    "paye"	=> 0,
+                                     "statut"	=> "",
+                                    "mode_reglement_id"=>$mode_reglement_id,
+                                    "idwarehouse"=>6,
+                                     "notrigger"=>0,
+                                   ];
+              
+
+                                   // Lier les factures dolibar  à un moyen de paiement et bank.
+                                    $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                                            
+                                   // modifier le paimement.
+
+                                  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                                  
+                                  // modifier directement dans la bdd 
+                                   // ecrire le montant dans liquide bank pour les paiment en ligquide BP
+                                   $array_data =[
+                                     "date"=> $date_finale,
+                                     "type"=>"LIQ",
+                                     "label"=>"Paiment en espèce Beauty proof paris 2024",
+                                     "amount"=>$index_amount_true[1],
+                                     "cheque_number"=>$response['ref'],
+                                     "datev" => $date_finale,
+                                    ];
+                   
+                                   // ecrire la ligne dans la bank BPP liquide pour les espèces.
+                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
+
+                           }
+                        
+                 }
 
         }
 
