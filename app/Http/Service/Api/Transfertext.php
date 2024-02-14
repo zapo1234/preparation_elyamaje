@@ -1323,7 +1323,7 @@ class Transfertext
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                        
                                       $index_amount_true[1] = 17.95;
-                                      $index_amount_true = 30;
+                                      $index_amount_true[0] = 30;
                                       // faire un update sur la ligne de la du paimeent ...
                                       DB::connection('mysql2')
                                      ->table('llxyq_paiement')
