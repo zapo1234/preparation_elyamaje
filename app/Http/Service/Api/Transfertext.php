@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-           
+           dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1305,14 +1305,6 @@ class Transfertext
                                   $val_tax = $index_amount_true[1]*0.2;
                                     
                                   dump('yes');
-                                  // laisser la facture en recommance
-                                   $newCommandepayes = [
-                                    "paye"	=> 0,
-                                     "statut"	=> "",
-                                    "mode_reglement_id"=>$mode_reglement_id,
-                                    "idwarehouse"=>6,
-                                     "notrigger"=>0,
-                                   ];
               
                                    // Lier les factures dolibar  à un moyen de paiement et bank.
                                     $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
