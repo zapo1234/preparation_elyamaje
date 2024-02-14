@@ -1327,6 +1327,9 @@ class Transfertext
                                        
                                       $index_amount_true[1] = 17.95;
                                       $index_amount_true[0] = 30;
+
+                                      // dernier row id pour insert de l'espece
+                                      $rowid_auto  = $name_list[0]['rowid']+1;
                                       // Modifier la ligne de paiement de la facture 
                                        DB::connection('mysql2')
                                        ->table('llxyq_paiement_facture')
@@ -1398,10 +1401,10 @@ class Transfertext
                                 ]);
 
                                 // faire un insert d'ecriture de paiement facture du montant en espéce.
-                                DB::connection('mysql2')->table('llxyq_paiement_facture')->insert([
-                                   'fk_paiement' => $fk_bank,
-                                   'fk_facture' =>$inv,
-                                   'amount' => $index_amount_true[1],
+                                  DB::connection('mysql2')->table('llxyq_paiement_facture')->insert([
+                                     'fk_paiement' => $rowid_auto,
+                                     'fk_facture' =>$inv,
+                                     'amount' => $index_amount_true[1],
                                   // Ajoutez d'autres colonnes et valeurs selon votre besoin
                             ]);
 
