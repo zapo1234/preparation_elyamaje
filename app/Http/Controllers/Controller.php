@@ -1778,8 +1778,6 @@ class Controller extends BaseController
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
-        
-            dd($orders);
 
             if(isset($orders['message'])){
             $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
