@@ -1315,6 +1315,8 @@ class Transfertext
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
 
+                                      dd($name_list);
+
                                       // faire un update du amount.
                                       $ref_paiement = $name_list[0]['ref'];
                                       $index_row = explode('-',$ref_paiement);
@@ -1328,7 +1330,7 @@ class Transfertext
                                       // Modifier la ligne de paiement de la facture 
                                        DB::connection('mysql2')
                                        ->table('llxyq_paiement_facture')
-                                       ->where('rowid', '=', $inv)
+                                       ->where('fk_facture', '=', $inv)
                                        ->update(['amount' => $index_amount_true[0]]);
                                       
                                        // modifier le montant dans ligne de paiment
