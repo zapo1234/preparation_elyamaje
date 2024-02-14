@@ -1346,7 +1346,7 @@ class Transfertext
                                         'numero_compte'=>'',
                                         'rappro'=>0,
                                         'note'=>'',
-                                        'fk_bordereau'=>'',
+                                        'fk_bordereau'=>0,
                                         'banque'=>'',
                                         'emetteur'=>'',
                                         'author'=>'',
