@@ -1319,6 +1319,7 @@ class Transfertext
                                       $ref_paiement = $name_list[0]['ref'];
                                       $index_row = explode('-',$ref_paiement);
                                       $index_pay = $index_row[1]+1;
+                                       $fk_banks = $name_list[0]['fk_bank'];
                                       $fk_bank = $name_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                        
@@ -1329,7 +1330,13 @@ class Transfertext
                                      ->table('llxyq_paiement')
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
-                                       
+
+                                     // Modifier dans l'ecriture de labanque
+                                      DB::connection('mysql2')
+                                     ->table('llxyq_bank')
+                                     ->where('rowid', '=', $fk_banks)
+                                     ->update(['amount' => $index_amount_true[0]]);
+
                                      // faire un update sur le paiment de la facture la ligne
                                        DB::connection('mysql2')
                                        ->table('llxyq_paiement_facture')
@@ -1387,6 +1394,14 @@ class Transfertext
                                        'pos_change'=>0.00000000
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
+
+                                // insert dans la table paiement_facture
+                                DB::connection('mysql2')->table('llxyq_paiement_facture')->insert([
+                                   'fk_paiement' => $fk_bank,
+                                   'fk_facture' =>$inv,
+                                   'amount' => $index_amount_true[1],
+                                  // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                            ]);
 
                                
 
