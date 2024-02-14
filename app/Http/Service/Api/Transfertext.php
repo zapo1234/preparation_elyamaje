@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-          
+            dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1325,9 +1325,6 @@ class Transfertext
                                       $fk_bank = $name_list[0]['fk_bank']+1;
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                        
-                                      $index_amount_true[1] = 17.95;
-                                      $index_amount_true[0] = 30;
-
                                       // dernier row id pour insert de l'espece
                                       $rowid_auto  = $name_list[0]['rowid']+1;
                                       // Modifier la ligne de paiement de la facture 
