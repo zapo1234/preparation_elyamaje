@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-            
+            dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -963,8 +963,6 @@ class Transfertext
          public function invoicespay($orders)
          {
            
-
-        
              $method = "GET";
              $apiKey = env('KEY_API_DOLIBAR'); 
              $apiUrl = env('KEY_API_URL');
