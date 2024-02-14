@@ -1335,18 +1335,17 @@ class Transfertext
                                        ->table('llxyq_paiement_facture')
                                        ->where('fk_facture', '=', $inv)
                                        ->update(['amount' => $index_amount_true[0]]);
-                                      
                                        // modifier le montant dans ligne de paiment
-                                      DB::connection('mysql2')
-                                     ->table('llxyq_paiement')
-                                     ->where('rowid', '=', $response_num)
-                                     ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
+                                        DB::connection('mysql2')
+                                       ->table('llxyq_paiement')
+                                       ->where('rowid', '=', $response_num)
+                                       ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
 
-                                     // Modifier dans l'ecriture de labanque avec le montant
-                                      DB::connection('mysql2')
-                                     ->table('llxyq_bank')
-                                     ->where('rowid', '=', $fk_banks)
-                                     ->update(['amount' => $index_amount_true[0]]);
+                                        // Modifier dans l'ecriture de labanque avec le montant
+                                        DB::connection('mysql2')
+                                       ->table('llxyq_bank')
+                                       ->where('rowid', '=', $fk_banks)
+                                       ->update(['amount' => $index_amount_true[0]]);
 
                                     // faire un insert du montant en especé ici dans la banque
                                       DB::connection('mysql2')->table('llxyq_bank')->insert([
