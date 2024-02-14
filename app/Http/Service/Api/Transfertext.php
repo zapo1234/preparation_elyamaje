@@ -1315,7 +1315,7 @@ class Transfertext
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
 
-                                      dd($name_list);
+                                    
 
                                       // faire un update du amount.
                                       $ref_paiement = $name_list[0]['ref'];
