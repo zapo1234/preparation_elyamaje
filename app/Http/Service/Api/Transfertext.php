@@ -1323,12 +1323,19 @@ class Transfertext
                                       $ref_definitive =  $index_row[0].'-'.$index_pay;
                                        
                                       $index_amount_true[1] = 17.95;
-                                      // faire un update sur la ligne de la facture ...
+                                      $index_amount_true = 30;
+                                      // faire un update sur la ligne de la du paimeent ...
                                       DB::connection('mysql2')
                                      ->table('llxyq_paiement')
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
-                                       // faire un insert du montant en especé ici
+                                       
+                                     // faire un update sur le paiment de la facture la ligne
+                                       DB::connection('mysql2')
+                                       ->table('llxyq_paiement_facture')
+                                       ->where('rowid', '=', $inv)
+                                       ->update(['amount' => $index_amount_true[0]]);
+                                         // faire un insert du montant en especé ici
 
                                        DB::connection('mysql2')->table('llxyq_bank')->insert([
                                         'datec' => date('Y-m-d H:i:s'),
