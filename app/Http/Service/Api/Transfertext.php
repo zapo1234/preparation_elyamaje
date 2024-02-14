@@ -1325,26 +1325,26 @@ class Transfertext
                                        
                                       $index_amount_true[1] = 17.95;
                                       $index_amount_true[0] = 30;
-                                      // faire un update sur la ligne de la du paimeent ...
+                                      // Modifier la ligne de paiement de la facture 
+                                       DB::connection('mysql2')
+                                       ->table('llxyq_paiement_facture')
+                                       ->where('rowid', '=', $inv)
+                                       ->update(['amount' => $index_amount_true[0]]);
+                                      
+                                       // modifier le montant dans ligne de paiment
                                       DB::connection('mysql2')
                                      ->table('llxyq_paiement')
                                      ->where('rowid', '=', $response_num)
                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
 
-                                     // Modifier dans l'ecriture de labanque
+                                     // Modifier dans l'ecriture de labanque avec le montant
                                       DB::connection('mysql2')
                                      ->table('llxyq_bank')
                                      ->where('rowid', '=', $fk_banks)
                                      ->update(['amount' => $index_amount_true[0]]);
 
-                                     // faire un update sur le paiment de la facture la ligne
-                                       DB::connection('mysql2')
-                                       ->table('llxyq_paiement_facture')
-                                       ->where('rowid', '=', $inv)
-                                       ->update(['amount' => $index_amount_true[0]]);
-                                         // faire un insert du montant en especé ici
-
-                                       DB::connection('mysql2')->table('llxyq_bank')->insert([
+                                    // faire un insert du montant en especé ici dans la banque
+                                      DB::connection('mysql2')->table('llxyq_bank')->insert([
                                         'datec' => date('Y-m-d H:i:s'),
                                         'tms' => date('Y-m-d H:i:s'),
                                         'datev' =>date('Y-m-d H:i:s') ,
@@ -1371,7 +1371,7 @@ class Transfertext
                                       // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                   ]);
 
-
+                                     // faire un insert du paiement espece
                                       DB::connection('mysql2')->table('llxyq_paiement')->insert([
                                       'ref' => $ref_definitive,
                                       'ref_ext' => '',
@@ -1395,7 +1395,7 @@ class Transfertext
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
 
-                                // insert dans la table paiement_facture
+                                // faire un insert d'ecriture de paiement facture du montant en espéce.
                                 DB::connection('mysql2')->table('llxyq_paiement_facture')->insert([
                                    'fk_paiement' => $fk_bank,
                                    'fk_facture' =>$inv,
