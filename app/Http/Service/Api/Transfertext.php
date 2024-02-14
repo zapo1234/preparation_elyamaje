@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-           dd($orders);
+          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1330,7 +1330,7 @@ class Transfertext
                                        // faire un insert du montant en especé ici
 
                                        DB::connection('mysql2')->table('llxyq_bank')->insert([
-                                        'datec' => '',
+                                        'datec' => date('Y-m-d H:i:s'),
                                         'tms' => date('Y-m-d H:i:s'),
                                         'datev' =>date('Y-m-d H:i:s') ,
                                         'dateo' => date('Y-m-d H:i:s'),
