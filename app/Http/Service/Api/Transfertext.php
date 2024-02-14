@@ -1337,20 +1337,22 @@ class Transfertext
                                         'amount' => $index_amount_true[1],
                                         'label' =>"Paiment en espèce Beauty proof paris 2024",
                                         'fk_account'=>33,
-                                        'fk_user_rappro'=>'',
+                                        'fk_user_author'=>0,
+                                        'fk_user_rappro'=>0,
                                         'fk_type'=>'LIQ',
                                         'num_releve'=> '',
                                         'num_chq'=>$response['ref'],
                                         'numero_compte'=>'',
-                                        'rappro'=>'',
+                                        'rappro'=>0,
                                         'note'=>'',
                                         'fk_bordereau'=>'',
+                                        'banque'=>'',
                                         'emetteur'=>'',
                                         'author'=>'',
-                                        'origin_id'=>'',
+                                        'origin_id'=>0,
                                         'origin_type'=>'',
                                         'import_key'=>'',
-                                        'amount_main_currency'=>''
+                                        'amount_main_currency'=>0.00000000
                                       // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                   ]);
 
@@ -1359,9 +1361,9 @@ class Transfertext
                                       'ref' => $ref_definitive,
                                       'ref_ext' => '',
                                       'entity' => 1,
-                                      'datec' => '',
+                                      'datec' => date('Y-m-d H:i:s'),
                                       'tms' => date('Y-m-d H:i:s'),
-                                      'datep' => '',
+                                      'datep' =>  date('Y-m-d H:i:s'),
                                       'amount' => $index_amount_true[1],
                                       'multicurrency_amount' =>$index_amount_true[1],
                                        'fk_paiement'=>4,
@@ -1370,9 +1372,10 @@ class Transfertext
                                        'ext_payment_id'=>'',
                                        'ext_payment_site'=>'',
                                        'fk_bank'=>$fk_bank,
-                                       'fk_user_creat'=>'',
-                                       'fk_user_modif'=>'',
-                                       'statut'=>0,
+                                       'fk_user_creat'=>0,
+                                       'fk_user_modif'=>0,
+                                        'fk_export_compta'=>0,
+                                        'statut'=>0,
                                        'pos_change'=>0.00000000
                                     // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                 ]);
