@@ -85,15 +85,26 @@
                                 </div>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                <div>
-                                    <p class="mb-0 fw-bold" style="
-                                        font-size: 13px;
-                                        ">Total CB</p>
+                                    <div>
+                                        <p class="mb-0 fw-bold" style="
+                                            font-size: 13px;
+                                            ">Total CB</p>
+                                    </div>
+                                    <div class="d-flex ms-auto align-items-center font-20">
+                                        <h4 class="my-1 font-20">{{ floatval($c['total_card']) }} €</h4>
+                                    </div>
                                 </div>
-                                <div class="d-flex ms-auto align-items-center font-20">
-                                    <h4 class="my-1 font-20">{{ floatval($c['total_card']) }} €</h4>
+                                <div class="d-flex align-items-center">
+                                    <div>
+                                        <p class="mb-0 fw-bold text-danger" style="
+                                            font-size: 13px;
+                                            ">Total décaissé</p>
+                                    </div>
+                                    <div class="text-danger d-flex ms-auto align-items-center font-20">
+                                        {{ isset($ammount_to_deduct[$key]) ? -$ammount_to_deduct[$key] : 0 }}  €
+                                    </div>
                                 </div>
-                                </div>
+
                                 <hr>
                                 <div class="d-flex justify-content-center flex-wrap gap-3">
                                 <button class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleSmallModal_{{ $key }}"><i class="bx bx-coin"></i>Décaisser</button>

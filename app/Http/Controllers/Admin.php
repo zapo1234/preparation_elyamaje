@@ -1232,9 +1232,13 @@ class Admin extends BaseController
 
     public function cashMovement(Request $request){
 
-        $amount = $request->post('amount');
+        $amount = floatval(str_replace(',', '.', $request->post('amount')));
         $caisse = $request->post('caisse');
         $amountCaisse = $request->post('amountCaisse');
+
+        if($amount == 0.0){
+            return redirect()->back()->with('error',  "Le montant renseigné n'est pas correct !");
+        }
 
         $data = [
             'before_movement' => $amountCaisse,
@@ -1292,10 +1296,15 @@ class Admin extends BaseController
 
     public function addCashMovement(Request $request) {
 
+        $amount = floatval(str_replace(',', '.', $request->post('amount')));
+        if($amount == 0.0){
+            return redirect()->back()->with('error',  "Le montant renseigné n'est pas correct !");
+        }
+
         $data = [
             'caisse' => $request->post('caisse'),
             'before_movement' => $request->post('amountCaisse'),
-            'amount' => $request->post('amount'),
+            'amount' => $amount,
             'status' => 0,
             'type' => 'deposit',
             'created_at' => date('Y-m-d H:i:s'),
