@@ -20,13 +20,14 @@ class Chronopost
 
         // ASSURANCE COLIS
         $insuredValue = $this->getInsuredValue($order['total_order'], $weight);
-        
+        $accountDetails = $this->getAccountDetails($order['shipping_method']);
+
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
-            'password'                      => config('app.chronopost_password'), 
+            'password'                      => $accountDetails['password'], 
             // Chronopost account / Compte client chronopost
             'headerValue'                   => [
-                "accountNumber"             => config('app.chronopost_accountNumber'),                
+                "accountNumber"             => $accountDetails['accountNumber'],                
                 "idEmit"                    => 'CHRFR',
                 'subAccount'                => ''
             ],
@@ -406,6 +407,21 @@ class Chronopost
 
     protected function getInsuredValue($total, $weight){
 
+    }
+
+    protected function getAccountDetails($method = false){
+        $chrono13 = array('password' => config('app.chronopost_password'), 'accountNumber' => config('app.chronopost_accountNumber'));
+        
+        if(!$method){
+            return $chrono13;
+        } else {
+            $account = [
+                'chrono13' => $chrono13,
+                'chronotoshopdirect' => array('password' => config('app.chronopost_relais_password'), 'accountNumber' => config('app.chronopost_relais_accountNumber')),
+            ];
+
+            return isset($account[$method]) ? $account[$method] : $chrono13;
+        }
     }
     
 }
