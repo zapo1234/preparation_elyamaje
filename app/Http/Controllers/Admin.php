@@ -15,6 +15,7 @@ use App\Models\products_categories;
 use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
+use App\Http\Service\Api\Transfertext;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
@@ -60,6 +61,7 @@ class Admin extends BaseController
     private $terminal;
     private $cashMovement;
     private $caisse;
+    private $transfers;
 
     public function __construct(
         Api $api, 
@@ -74,6 +76,7 @@ class Admin extends BaseController
         OrderRepository $order,
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
+        Transfertext $transfers,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
@@ -94,6 +97,7 @@ class Admin extends BaseController
         $this->order = $order;
         $this->woocommerce = $woocommerce;
         $this->factorder = $factorder;
+        $this->transfers = $transfers;
         $this->labelMissing = $labelMissing;
         $this->orderDolibarr = $orderDolibarr;
         $this->facture = $facture;
@@ -654,6 +658,8 @@ class Admin extends BaseController
             }
 
             try {
+
+                // $this->transfers-> Transfertext($order);
                 $this->factorder->Transferorder($order);  
 
                 // Stock historique
