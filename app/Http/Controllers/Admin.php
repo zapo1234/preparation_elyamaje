@@ -27,6 +27,8 @@ use App\Repository\Label\LabelMissingRepository;
 use App\Repository\Colissimo\ColissimoRepository;
 use App\Repository\Categorie\CategoriesRepository;
 use App\Http\Service\Woocommerce\WoocommerceService;
+use App\Repository\Caisse\CaisseRepository;
+use App\Repository\CashMovement\CashMovementRepository;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -56,6 +58,8 @@ class Admin extends BaseController
     private $facture;
     private $logError;
     private $terminal;
+    private $cashMovement;
+    private $caisse;
 
     public function __construct(
         Api $api, 
@@ -74,7 +78,9 @@ class Admin extends BaseController
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
         LogErrorRepository $logError,
-        TerminalRepository $terminal
+        TerminalRepository $terminal,
+        CashMovementRepository $cashMovement,
+        CaisseRepository $caisse
     ){
         $this->api = $api;
         $this->category = $category;
@@ -93,6 +99,8 @@ class Admin extends BaseController
         $this->facture = $facture;
         $this->logError = $logError;
         $this->terminal = $terminal;
+        $this->cashMovement = $cashMovement;
+        $this->caisse = $caisse;
     }
 
     public function syncCategories(){
@@ -1038,7 +1046,7 @@ class Admin extends BaseController
         return $list_histories;
     }
 
-    public function cashier(Request $request){
+    public function cashierWaiting(Request $request){
         $ref_order = $request->get('ref_order') ?? false;
         $date = $request->get('created_at') ?? false;
         $orders_status = ['pending', 'processing', 'canceled'];
@@ -1063,7 +1071,236 @@ class Admin extends BaseController
             }
         }
 
-        return view('admin.cashier', ['orders' => $orders, 'list_status' => $new_orders_status, 'parameter' => $request->all()]);
+        return view('admin.cashierWaiting', ['orders' => $orders, 'list_status' => $new_orders_status, 'parameter' => $request->all()]);
+    }
+
+    public function caisse(){
+        $caisses = $this->caisse->getCaisse();
+        return view('admin.caisse', ['caisses' => $caisses]);
+    }
+
+    public function addCaisse(Request $request){
+        $request->validate([
+            'name' => 'required',
+            'uniqueId'  => 'required',
+        ]);
+
+        $data = [
+            'name' => $request->post('name'),
+            'uniqueId' => $request->post('uniqueId'),
+        ];
+
+        try{
+            $this->caisse->insert($data);
+            return redirect()->back()->with('success', 'Caisse ajoutée avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', str_contains($e->getMessage(), 'Duplicate') ? 'Cette caisse existe déjà' : 'Oops, une erreur est survenue !');
+        }
+    }
+
+    public function updateCaisse(Request $request){
+        $request->validate([
+            'update_name' => 'required',
+            'update_uniqueId' => 'required',
+        ]);
+
+        $data = [
+            'name' => $request->post('update_name'),
+            'uniqueId' => $request->post('update_uniqueId'),
+        ];
+
+        try{
+            $this->caisse->update($request->post('caisse_id'), $data);
+            return redirect()->back()->with('success', 'Caisse modifiée avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', str_contains($e->getMessage(), 'Duplicate') ? 'Cette caisse existe déjà' : 'Oops, une erreur est survenue !');
+        }
+    }
+
+    public function deleteCaisse(Request $request){
+
+        $request->validate([
+            'caisse_id' => 'required'
+        ]);
+
+        try{
+            $this->caisse->delete($request->post('caisse_id'));
+            return redirect()->back()->with('success', 'Caisse supprimé avec succès !');
+        } catch (Exception $e){
+            return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+        }
+    }
+
+    public function cashier(Request $request){
+        $date = $request->get('date') ?? date('Y-m-d');
+
+        // List orders for each caisse
+        $detailsCaisse = $this->caisse->getAllDetailsUniqueId($date);
+        $caisse = [];
+
+        // List movements for each caisse
+        $movements = $this->cashMovement->getMovements($date);
+        $list_movements = [];
+        $ammount_to_deduct = [];
+        $ammount_to_add = [];
+
+        // Sum des montant transféré pour chaque caisse
+        foreach($movements as $movement){
+            // Amount to deduct
+            if($movement->type == "withdrawal"){
+                if(!isset($ammount_to_deduct[$movement->caisse])){
+                    $ammount_to_deduct[$movement->caisse] = $movement->status == 1 ? floatval($movement->amount) : 0;
+                } else {
+                    $ammount_to_deduct[$movement->caisse] += $movement->status == 1 ? floatval($movement->amount): 0;
+                }
+            }
+
+             // Amount to add
+            if($movement->type == "deposit"){
+                if(!isset($ammount_to_add[$movement->caisse])){
+                    $ammount_to_add[$movement->caisse] = $movement->status == 1 ? floatval($movement->amount) : 0;
+                } else {
+                    $ammount_to_add[$movement->caisse] += $movement->status == 1 ? floatval($movement->amount): 0;
+                }
+            }
+          
+            
+            // Details movement
+            $list_movements[$movement->caisse][] = [
+                'name' => $movement->name,
+                'date' => $movement->created_at ? $movement->created_at->format('H:i') : 'Inconnu',
+                'before_movement' => $movement->before_movement,
+                'status' => $movement->status,
+                'amount' => floatval($movement->amount),
+                'caisse' => $movement->deviceName,
+                'movementId' => $movement->id,
+                'type' =>  $movement->type
+            ];
+        }
+
+        foreach ($detailsCaisse as $detail) {
+            
+            // Si caisseId n'existe pas encore dans $caisse, on initialise avec un tableau vide
+            if (!isset($caisse[$detail->caisseId])) {
+                $caisse[$detail->caisseId] = [
+                    'name' => $detail->caisseName,
+                    'total_card' => 0,
+                    'total_cash' => 0,
+                    'cash' => 0,
+                    'details' => [],
+                    'details_orders' => []
+                ];
+            }
+
+            // Check if date is same than choice date
+            if($detail->date >= $date){
+                // Mise à jour des totaux card et cash pour cette commande
+                $caisse[$detail->caisseId]['total_card'] += $detail->amountCard;
+                $caisse[$detail->caisseId]['total_cash'] += $detail->total_order_ttc - $detail->amountCard;
+
+                if($detail->ref_order){
+                    $caisse[$detail->caisseId]['details_orders'][] = $detail;
+                }
+
+                // Ajouter les détails de l'utilisateur à $caisse[$order->caisseId]['details']
+                $userName = $detail->cashierName;
+                if($userName){
+                    if (!isset($caisse[$detail->caisseId]['details'][$userName])) {
+                        $caisse[$detail->caisseId]['details'][$userName] = [
+                            'card' => 0,
+                            'cash' => 0,
+                        ];
+                    }
+        
+                    // Mise à jour des détails pour cet utilisateur
+                    $caisse[$detail->caisseId]['details'][$userName]['card'] += $detail->amountCard;
+                    $caisse[$detail->caisseId]['details'][$userName]['cash'] += $detail->total_order_ttc - $detail->amountCard;
+                }
+            }
+           
+        }
+        
+        return view('admin.cashier', ['caisse' => $caisse, 'ammount_to_deduct' => $ammount_to_deduct, 
+        'ammount_to_add' => $ammount_to_add, 'list_movements' => $list_movements, 'date' => $date]);
+    }
+
+    public function cashMovement(Request $request){
+
+        $amount = $request->post('amount');
+        $caisse = $request->post('caisse');
+        $amountCaisse = $request->post('amountCaisse');
+
+        $data = [
+            'before_movement' => $amountCaisse,
+            'amount' => $amount,
+            'caisse' => $caisse,
+            'user_id' => Auth()->user()->id,
+            'status' => 0,
+            'created_at' => date('Y-m-d H:i:s'),
+            'type' => 'withdrawal'
+        ];
+
+        if(floatval($amount) <= 0){
+            return redirect()->back()->with('error',  "Le montant à décaisser doit être supérieur à 0 !");
+        }
+
+        // Check if amount is not stronger than caisse amount
+        if(floatval($amountCaisse) >= floatval($amount)){
+            if($this->cashMovement->addMovement($data)){
+                return redirect()->back()->with('warning',  "Le montant à décaisser à été mis en attente");
+            } else {
+                return redirect()->back()->with('error',  "Le montant n'a pas pu être décaissé");
+            }
+        } else {
+            return redirect()->back()->with('error',  "Le montant à décaisser est supérieur au montant de la caisse !");
+        }
+    }
+
+    public function updateCashMovement(Request $request){
+        $data = [
+            'status' => 1,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        $caisse = $request->post('caisse');
+        $movementId = $request->post('movement_id');
+
+        if($this->cashMovement->updateMovement($movementId, $data)){
+            return redirect()->back()->with('success',  "Le montant à bien été décaissé de la caisse ".$caisse);
+        } else {
+            return redirect()->back()->with('error',  "Le montant n'a pas été décaissé");
+        }
+    }
+
+    public function cancelCashMovement(Request $request){
+
+        $caisse = $request->post('caisse');
+        $movementId = $request->post('movement_id');
+
+        if($this->cashMovement->deleteMovement($movementId)){
+            return redirect()->back()->with('success',  "Le mouvement à bien été annulé pour la caisse ".$caisse);
+        } else {
+            return redirect()->back()->with('error',  "Le mouvement n'a pas été annulé");
+        }
+    }
+
+    public function addCashMovement(Request $request) {
+
+        $data = [
+            'caisse' => $request->post('caisse'),
+            'before_movement' => $request->post('amountCaisse'),
+            'amount' => $request->post('amount'),
+            'status' => 0,
+            'type' => 'deposit',
+            'created_at' => date('Y-m-d H:i:s'),
+            'user_id' => Auth()->user()->id
+        ];
+
+        if($this->cashMovement->addMovement($data)){
+            return redirect()->back()->with('warning',  "Le montant à ajouter est en attente de validation");
+        } else {
+            return redirect()->back()->with('error',  "Le montant n'a pas pu être ajouté");
+        }
     }
 
     public function beautyProfHistory(Request $request){

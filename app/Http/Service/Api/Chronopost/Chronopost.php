@@ -17,6 +17,9 @@ class Chronopost
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
         $SaturdayShipping = 1;
+
+        // ASSURANCE COLIS
+        $insuredValue = $this->getInsuredValue($order['total_order'], $weight);
         
         $shipping_params = [ 
             // Chronopost account api password / Mot de passe Api Chronopost
@@ -394,14 +397,15 @@ class Chronopost
 		return $stringToReturn;
 	}
 
-    protected function getFilledValue($value)
-	{
-        
+    protected function getFilledValue($value) {
 		if ($value) {
 			return $this->removeaccents(trim($value));
 		}
-
 		return '';
 	}
+
+    protected function getInsuredValue($total, $weight){
+
+    }
     
 }

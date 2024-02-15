@@ -16,7 +16,7 @@
                 <div class="ps-3">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">
-                            <li class="breadcrumb-item active" aria-current="page">Historique</li>
+                            <li class="breadcrumb-item active" aria-current="page">Commandes en attente</li>
                         </ol>
                     </nav>
                 </div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="table-responsive">
                     
-                        <form method="GET" action="{{ route('admin.beautyProfHistory') }}" class="d-flex d-none order_research">
+                        <form method="GET" action="{{ route('admin.cashierWaiting') }}" class="d-flex d-none order_research">
                             <input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
                             <input value="{{ $parameter['ref_order'] ?? '' }}" placeholder="Numéro de commande" name="ref_order" class="custom_input" style="padding: 4px;" type="text">
                             <button style="margin-left:10px" class="research_history_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
@@ -70,9 +70,9 @@
                             </thead>
                             <tbody>
                                 @foreach($orders as $order)
-                                    <tr>
+                                    <tr class="{{ $order['need_action'] ? 'need_action' : ''}}">
                                         <td  data-label="Commande"><span>{{ $order['ref_order'] }}</span></td>
-                                        <td  data-label="Cliente"><span class="p-2 badge bg-dark">{{ $order['billing_name'] }} {{ $order['billing_pname'] != $order['billing_name'] ? $order['billing_pname']: '' }}</span></td>
+                                        <td  data-label="Cliente"><span class="p-2 badge bg-dark">{{ $order['name'] }} {{ $order['pname'] != $order['name'] ? $order['pname']: '' }}</span></td>
                                         <td  data-label="Vendeuse"><span class="p-2 badge bg-dark">{{ $order['seller'] }}</span></td>
                                         <td  data-label="Date"><span>{{ date('d/m/Y H:i', strtotime($order['created_at'])) }}</span></td>
                                         <td  data-label="Status">

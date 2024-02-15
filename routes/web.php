@@ -134,7 +134,12 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/seller", [Admin::class, "seller"])->name('admin.seller'); 
     Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
     Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
+    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
     Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
+    Route::post("/cashMovement", [Admin::class, "cashMovement"])->name('admin.cashMovement'); 
+    Route::post("/updateCashMovement", [Admin::class, "updateCashMovement"])->name('admin.updateCashMovement'); 
+    Route::post("/cancelCashMovement", [Admin::class, "cancelCashMovement"])->name('admin.cancelCashMovement'); 
+    Route::post("/addCashMovement", [Admin::class, "addCashMovement"])->name('admin.addCashMovement'); 
     Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
     // Terminaux de paiements
@@ -143,7 +148,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/updateTerminal", [Admin::class, "updateTerminal"])->name('terminal.update');
     Route::post("/deleteTerminal", [Admin::class, "deleteTerminal"])->name('terminal.delete'); 
 
-
+    // Caisse
+    Route::get("/caisse", [Admin::class, "caisse"])->name('admin.caisse'); 
+    Route::post("/addCaisse", [Admin::class, "addCaisse"])->name('admin.addCaisse');
+    Route::post("/updateCaisse", [Admin::class, "updateCaisse"])->name('admin.updateCaisse');
+    Route::post("/deleteCaisse", [Admin::class, "deleteCaisse"])->name('admin.deleteCaisse'); 
 });
 
 // PRÉPARATEUR

@@ -60,19 +60,24 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $order_lines[$key]['status'] = $order['statut'];
          $order_lines[$key]['shipping_method_detail'] = "Colissimo avec signature";
 
-         $order_lines[$key]['billing_customer_first_name'] = $order['firstname'];
-         $order_lines[$key]['billing_customer_last_name'] = $order['firstname'] != $order['lastname'] ? $order['lastname'] : '';
-         $order_lines[$key]['billing_customer_email'] = $order['email'];
-         $order_lines[$key]['billing_customer_address_1'] = $order['adresse'];
-         $order_lines[$key]['billing_customer_address_2'] = '';
-
          $order_lines[$key]['shipping_customer_first_name'] = $order['firstname'];
          $order_lines[$key]['shipping_customer_last_name'] = $order['firstname'] != $order['lastname'] ? $order['lastname'] : '';
          $order_lines[$key]['shipping_customer_company'] = $order['company'];
          $order_lines[$key]['shipping_customer_address_1'] = $order['adresse'];
          $order_lines[$key]['shipping_customer_address_2'] = '';
          $order_lines[$key]['shipping_customer_city'] = $order['city'];
-         $order_lines[$key]['shipping_customer_postcode'] = $order['code_postal'];    
+         $order_lines[$key]['shipping_customer_postcode'] = $order['code_postal'];  
+         
+         $order_lines[$key]['billing_customer_first_name'] = $order['billing_name'] ?? $order_lines[$key]['shipping_customer_first_name'];
+         $order_lines[$key]['billing_customer_last_name'] = $order['billing_name'] != $order['billing_pname'] ? $order['billing_pname'] : '' ?? $order_lines[$key]['shipping_customer_last_name'];
+         $order_lines[$key]['billing_customer_email'] = $order['email'];
+         $order_lines[$key]['billing_customer_address_1'] = $order['billing_adresse'] ?? $order_lines[$key]['shipping_customer_address_1'];
+         $order_lines[$key]['billing_customer_address_2'] = '';
+         $order_lines[$key]['billing_customer_city'] = $order['billing_city'] ?? $order_lines[$key]['shipping_customer_city'];
+         $order_lines[$key]['billing_customer_company'] = $order['billing_company'];
+         $order_lines[$key]['billing_customer_postcode'] = $order['billing_code_postal'] ?? $order_lines[$key]['shipping_customer_postcode'];
+         $order_lines[$key]['billing_customer_phone'] = $order['phone'];
+
       }
 
       return $order_lines;
@@ -517,7 +522,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersBeautyProfHistory($filters = null){
      
       $query = $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+         'orders_doli.date as created_at', 'orders_doli.billing_name', 'orders_doli.billing_pname', 'orders_doli.name', 'orders_doli.pname')
          ->leftJoin('users', 'users.id', '=', 'orders_doli.seller');
 
          if($filters){
@@ -545,7 +550,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       if($ref_order){
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-            'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+            'orders_doli.date as created_at', 'orders_doli.billing_name as name', 'orders_doli.billing_pname as pname')
             ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
             ->where('orders_doli.statut', 'pending')
             ->where('orders_doli.ref_order', $ref_order)
@@ -553,14 +558,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ->toArray();
       } else {
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+         'orders_doli.date as created_at', 'orders_doli.billing_name as name', 'orders_doli.billing_pname as pname')
             ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
             ->where('orders_doli.statut', 'pending')
             ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
             ->get()
             ->toArray();
       }
-      
    }
 }
 
