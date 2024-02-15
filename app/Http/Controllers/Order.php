@@ -985,6 +985,8 @@ class Order extends BaseController
 
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
+      $history_dolibarr = $this->orderDolibarr->getAllHistory();
+      $history = count($history_dolibarr) > 0 ? array_merge($history, $history_dolibarr) : $history;
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
 
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs

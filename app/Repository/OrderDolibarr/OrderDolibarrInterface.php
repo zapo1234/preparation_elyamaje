@@ -45,6 +45,7 @@ interface OrderDolibarrInterface
 
     public function getAllOrdersBeautyProfHistory($filters);
 
+    public function getAllHistory();
 }
 
 
