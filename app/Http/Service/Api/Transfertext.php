@@ -1313,10 +1313,25 @@ class Transfertext
                                      "notrigger"=>0,
                                    ];
               
-
                                    // Lier les factures dolibar  à un moyen de paiement et bank.
                                     $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                                            
+                                  
+                                    // faire un select sur la table table paiment  
+                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref FROM llxyq_paiement WHERE rowid=$response_num");
+                                     $name_list = json_encode($data);
+                                      $name_list = json_decode($name_list,true);
+                                      // faire un update du amount.
+                                      $ref_paiement = $name_list[0]['ref'];
+                                      $index_row = explode(',',$ref_paiement);
+                                      $index_pay = $index_row[1]+1;
+
+                                      $data = DB::connection('mysql2')->select("UPDATE SET amount =$index_amount_true[0],multicurrency_amount=$index_amount_true[0] FROM llxyq_paiement WHERE rowid=$response_num");
+                                     
+
+                                    // faire un update sur la ligne de la facture ...
+
+                                    // faire un insert du montant en especé
+                                   
                                    // modifier le paimement.
 
                                   $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
