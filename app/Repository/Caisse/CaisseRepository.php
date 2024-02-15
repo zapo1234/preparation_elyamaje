@@ -38,6 +38,7 @@ class CaisseRepository implements CaisseInterface
          ->leftJoin('users as cashier', 'cashier.id', '=', 'orders_doli.cashier')
          ->whereNotIn('orders_doli.statut', ['canceled', 'pending'])
          ->orWhereNull('orders_doli.statut') 
+         ->orderBy('caisse.name', 'ASC')
          // ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
          // ->orWhereNull('orders_doli.date')
          ->get();
