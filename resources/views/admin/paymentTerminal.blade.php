@@ -173,7 +173,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label for="mac_adress" class="form-label">Adresse MAC*</label>
-                                    <input value="{{ $terminal->mac }}" placeholder="" required name="mac_adress" type="text" class="form-control" id="mac_adress">
+                                    <input value="" placeholder="" required name="mac_adress" type="text" class="form-control" id="mac_adress">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="poiid" class="form-label">PoiId</label>
