@@ -602,10 +602,10 @@ class TransferOrder
                                        */
                                     
                                        $data_options = [
-                                       "options_idw"=>$donnees['order_id'],
-                                       "options_idc"=>$coupons,
-                                       "options_prepa" => $preparateur,
-                                       "options_emba" => $emballeur,
+                                        "options_idw"=>$donnees['order_id'],
+                                        "options_idc"=>$coupons,
+                                        "options_prepa" => $preparateur,
+                                        "options_emba" => $emballeur,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits

@@ -17,6 +17,7 @@ class CreateCodePromosTable extends Migration
             $table->id();
             $table->integer('id_commande');
             $table->string('code_promo');
+            $table->interger('percent');
             $table->string('email');
             $table->timestamps();
         });
