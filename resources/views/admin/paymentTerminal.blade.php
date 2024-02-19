@@ -67,7 +67,7 @@
                                     <tr>
                                         <td data-label="Nom">{{  $terminal->name }}</td>
                                         <td data-label="Adresse IP">{{  $terminal->ip_adress }}</td>
-                                        <td data-label="Adresse IP">{{  $terminal->mac }}</td>
+                                        <td data-label="Adresse MAC">{{  $terminal->mac }}</td>
                                         <td data-label="PoiId">{{  $terminal->poiId }}</td>
                                         <td data-label="ServiceId">{{  $terminal->serviceId }}</td>
                                         <td data-label="SaleId">{{  $terminal->saleId }}</td>
