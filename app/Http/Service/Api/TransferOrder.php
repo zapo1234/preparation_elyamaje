@@ -504,7 +504,7 @@ class TransferOrder
                                                    "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
-                                                   "real_price"=> $values['real_price'],
+                                                   "real_price"=> 0,
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
                                                      ];
@@ -602,10 +602,10 @@ class TransferOrder
                                        */
                                     
                                        $data_options = [
-                                       "options_idw"=>$donnees['order_id'],
-                                       "options_idc"=>$coupons,
-                                       "options_prepa" => $preparateur,
-                                       "options_emba" => $emballeur,
+                                        "options_idw"=>$donnees['order_id'],
+                                        "options_idc"=>$coupons,
+                                        "options_prepa" => $preparateur,
+                                        "options_emba" => $emballeur,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits

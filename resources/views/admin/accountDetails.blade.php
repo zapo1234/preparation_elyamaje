@@ -355,7 +355,6 @@
     <script src="{{asset('assets/js/leaderHistory.js')}}"></script>
     <script src="{{asset('assets/js/cropper.min.js')}}"></script>
     <script src="{{asset('assets/js/account.js')}}"></script>
-
 @endsection
 
 

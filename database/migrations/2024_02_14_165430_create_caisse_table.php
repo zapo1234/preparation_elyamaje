@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCodePromosTable extends Migration
+class CreateCaisseTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateCodePromosTable extends Migration
      */
     public function up()
     {
-        Schema::create('code_promos', function (Blueprint $table) {
+        Schema::create('caisse', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_commande');
-            $table->string('code_promo');
-            $table->interger('percent');
-            $table->string('email');
+            $table->string('name')->unique();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateCodePromosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('code_promos');
+        Schema::dropIfExists('caisse');
     }
 }

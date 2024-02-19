@@ -263,6 +263,7 @@ class Label extends BaseController
                     'origin'    => $bordereau['origin'] ?? 'colissimo',
                 ];
             }
+
             return view('labels.bordereau', ['bordereaux' => array_values($bordereaux_array)]);
         } catch(Exception $e){
             return redirect()->route('bordereaux')->with('error', $e->getMessage());

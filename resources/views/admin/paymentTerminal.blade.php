@@ -54,6 +54,7 @@
                                 <tr>
                                     <th>Nom</th>
                                     <th>Adresse IP</th>
+                                    <th>Adresse MAC</th>
                                     <th>PoiId</th>
                                     <th>ServiceId</th>
                                     <th>SaleId</th>
@@ -66,6 +67,7 @@
                                     <tr>
                                         <td data-label="Nom">{{  $terminal->name }}</td>
                                         <td data-label="Adresse IP">{{  $terminal->ip_adress }}</td>
+                                        <td data-label="Adresse IP">{{  $terminal->mac }}</td>
                                         <td data-label="PoiId">{{  $terminal->poiId }}</td>
                                         <td data-label="ServiceId">{{  $terminal->serviceId }}</td>
                                         <td data-label="SaleId">{{  $terminal->saleId }}</td>
@@ -105,6 +107,10 @@
                                                                 <div class="col-md-12">
                                                                     <label for="update_ip_adress" class="form-label">Adresse IP*</label>
                                                                     <input value="{{ $terminal->ip_adress }}" placeholder="192.168.0.0" required name="update_ip_adress" type="text" class="form-control" id="update_ip_adress">
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <label for="update_mac_adress" class="form-label">Adresse MAC*</label>
+                                                                    <input value="{{ $terminal->mac }}" placeholder="" required name="update_mac_adress" type="text" class="form-control" id="update_mac_adress">
                                                                 </div>
                                                                 <div class="col-md-12">
                                                                     <label for="update_poiid" class="form-label">PoiId</label>
@@ -164,6 +170,10 @@
                                 <div class="col-md-12">
                                     <label for="ip_adress" class="form-label">Adresse IP*</label>
                                     <input placeholder="192.168.0.0" required name="ip_adress" type="text" class="form-control" id="ip_adress">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="mac_adress" class="form-label">Adresse MAC*</label>
+                                    <input value="{{ $terminal->mac }}" placeholder="" required name="mac_adress" type="text" class="form-control" id="mac_adress">
                                 </div>
                                 <div class="col-md-12">
                                     <label for="poiid" class="form-label">PoiId</label>

@@ -60,19 +60,24 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $order_lines[$key]['status'] = $order['statut'];
          $order_lines[$key]['shipping_method_detail'] = "Colissimo avec signature";
 
-         $order_lines[$key]['billing_customer_first_name'] = $order['firstname'];
-         $order_lines[$key]['billing_customer_last_name'] = $order['firstname'] != $order['lastname'] ? $order['lastname'] : '';
-         $order_lines[$key]['billing_customer_email'] = $order['email'];
-         $order_lines[$key]['billing_customer_address_1'] = $order['adresse'];
-         $order_lines[$key]['billing_customer_address_2'] = '';
-
          $order_lines[$key]['shipping_customer_first_name'] = $order['firstname'];
          $order_lines[$key]['shipping_customer_last_name'] = $order['firstname'] != $order['lastname'] ? $order['lastname'] : '';
          $order_lines[$key]['shipping_customer_company'] = $order['company'];
          $order_lines[$key]['shipping_customer_address_1'] = $order['adresse'];
          $order_lines[$key]['shipping_customer_address_2'] = '';
          $order_lines[$key]['shipping_customer_city'] = $order['city'];
-         $order_lines[$key]['shipping_customer_postcode'] = $order['code_postal'];    
+         $order_lines[$key]['shipping_customer_postcode'] = $order['code_postal'];  
+         
+         $order_lines[$key]['billing_customer_first_name'] = $order['billing_name'] ?? $order_lines[$key]['shipping_customer_first_name'];
+         $order_lines[$key]['billing_customer_last_name'] = $order['billing_name'] != $order['billing_pname'] ? $order['billing_pname'] : '' ?? $order_lines[$key]['shipping_customer_last_name'];
+         $order_lines[$key]['billing_customer_email'] = $order['email'];
+         $order_lines[$key]['billing_customer_address_1'] = $order['billing_adresse'] ?? $order_lines[$key]['shipping_customer_address_1'];
+         $order_lines[$key]['billing_customer_address_2'] = '';
+         $order_lines[$key]['billing_customer_city'] = $order['billing_city'] ?? $order_lines[$key]['shipping_customer_city'];
+         $order_lines[$key]['billing_customer_company'] = $order['billing_company'];
+         $order_lines[$key]['billing_customer_postcode'] = $order['billing_code_postal'] ?? $order_lines[$key]['shipping_customer_postcode'];
+         $order_lines[$key]['billing_customer_phone'] = $order['phone'];
+
       }
 
       return $order_lines;
@@ -517,7 +522,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersBeautyProfHistory($filters = null){
      
       $query = $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+         'orders_doli.date as created_at', 'orders_doli.billing_name', 'orders_doli.billing_pname', 'orders_doli.name', 'orders_doli.pname')
          ->leftJoin('users', 'users.id', '=', 'orders_doli.seller');
 
          if($filters){
@@ -545,7 +550,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       if($ref_order){
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-            'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+            'orders_doli.date as created_at', 'orders_doli.billing_name as name', 'orders_doli.billing_pname as pname')
             ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
             ->where('orders_doli.statut', 'pending')
             ->where('orders_doli.ref_order', $ref_order)
@@ -553,14 +558,72 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ->toArray();
       } else {
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
-         'orders_doli.date as created_at', 'orders_doli.name', 'orders_doli.pname')
+         'orders_doli.date as created_at', 'orders_doli.billing_name as name', 'orders_doli.billing_pname as pname')
             ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
             ->where('orders_doli.statut', 'pending')
             ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
             ->get()
             ->toArray();
       }
-      
+   }
+
+   public function getAllHistory(){
+      $list_orders = [];
+
+      $orders = $this->model->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
+         ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->join('users', 'users.id', '=', 'orders_doli.user_id')
+         ->whereIn('orders_doli.statut', ['prepared-order'])
+         ->select('orders_doli.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         'products.name', 'products.barcode', 'products.location', 'lines_commande_doli.pick', 'lines_commande_doli.qte as quantity',
+         'lines_commande_doli.total_tva as total_tax','lines_commande_doli.total_ttc as total_price', 'lines_commande_doli.price as cost', 'products.weight', 'lines_commande_doli.remise_percent')
+         ->orderBy('products.menu_order', 'ASC')
+         ->get();
+
+      $orders = json_decode(json_encode($orders), true);
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($orders as $key => $list){
+        
+         if(isset($product_double[$list['ref_order']][$list["barcode"]])){
+            $quantity = $product_double[$list['ref_order']][$list["barcode"]]['quantity'];
+            $key_barcode_to_remove = $product_double[$list['ref_order']][$list["barcode"]]['key_barcode_to_remove'];
+   
+            unset($orders[$key_barcode_to_remove]);
+            $orders[$key]['quantity'] = $orders[$key]['quantity'] + $quantity;
+            $orders[$key]['pick'] = $orders[$key]['quantity'];
+         } else {
+            $product_double[$list['ref_order']][$list["barcode"]] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key
+            ];
+             
+         }
+      }
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      foreach($orders as $order){
+         $list_orders[$order['ref_order']]['preparateur'] =  $order['preparateur'];
+         $list_orders[$order['ref_order']]['details'] = [
+            'id' => $order['ref_order'],
+            'first_name' => $order['billing_name'],
+            'last_name' => $order['billing_pname'],
+            'date' => $order['date'],
+            'total' => $order['total_order_ttc'],
+            'total_tax' => $order['total_tax'],
+            'status' => $order['statut'],
+            'coupons' => '',
+            'discount' => '',
+            'discount_amount' => 0,
+            'gift_card_amount' => 0,
+            'shipping_amount' => 0,
+         ];
+         $list_orders[$order['ref_order']]['items'][] = $order;
+      }
+
+      $list_orders = array_values($list_orders);
+      return $list_orders;
    }
 }
 

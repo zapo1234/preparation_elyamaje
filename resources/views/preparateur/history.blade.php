@@ -74,7 +74,13 @@
 																	<span>{{ $item['name'] }}</span>
 																@endif
 															</div>
-															<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
+
+															@if(isset($item['remise_percent']))
+																<span class="column22">{{ round(floatval($item['cost']),2) }} {{$item['remise_percent'] > 0 ?  '(-'.$item['remise_percent'].'%)' : '' }}</span>
+															@else 
+																<span class="column22">{{ round(floatval($item['cost']),2) }}</span>
+															@endif
+															
 															<span class="quantity column33"> {{ $item['quantity'] }} </span>
 															<span class="column44">{{  $item['location'] }} </span>
 														</div>

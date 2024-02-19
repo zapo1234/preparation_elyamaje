@@ -670,10 +670,15 @@ class Order extends BaseController
 
     public function orderReInvoicing(Request $request){
       $order_id = $request->post('order_id');
-
       try{
-        // Update order re invoicing
+        // Delete order from table commandeId
         $this->commandeids->deleteOrder($order_id);
+
+        // Update all picked products to 0
+        $this->productOrder->update(['pick' => 0, 'pick_control' => 0], $order_id);
+
+        // Maybe delete labels later...
+        
         echo json_encode(["success" => true]);
       } catch(Exception $e){
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
@@ -707,23 +712,12 @@ class Order extends BaseController
 
     public function validWrapOrder(Request $request){
       
-       $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
-        $transfers = $request->post('transfers') == "false" ? 0 : 1;
-       // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
-        $order_id = explode(',', $request->post('order_id'))[0];
-       /* $from_dolibarr=1;
-        $transfers=0;
-        $order_id ="BPP-0652556966";
-
-       /* $from_dolibarr=false;
-        $transfers=false;
-        $order_id ="124020";
-
-    */
+      $from_dolibarr = $request->post('from_dolibarr') == "false" ? 0 : 1;
+      $transfers = $request->post('transfers') == "false" ? 0 : 1;
+      // Sécurité dans le cas ou tout le code barre est envoyé, on récupère que le numéro.
+      $order_id = explode(',', $request->post('order_id'))[0];
     
-
-      
-     if($from_dolibarr){
+      if($from_dolibarr){
         // Si commande dolibarr je fournis le fk_command
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id);
       } else if($transfers){
@@ -757,15 +751,12 @@ class Order extends BaseController
           $orders = $this->woocommerce->transformArrayOrder($order);
         }
 
-       
-
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
            
-            //$this->factorder->TransferOrder($orders);
-
-            $this->transfert->Transfertext($orders);
+            $this->factorder->TransferOrder($orders);
+            // $this->transfert->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [
@@ -999,6 +990,8 @@ class Order extends BaseController
 
     public function leaderHistoryOrder(){
       $history = $this->order->getAllHistory();
+      $history_dolibarr = $this->orderDolibarr->getAllHistory();
+      $history = count($history_dolibarr) > 0 ? array_merge($history, $history_dolibarr) : $history;
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
 
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
