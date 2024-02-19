@@ -1336,13 +1336,15 @@ class Admin extends BaseController
             'name' => 'required',
             'ip_adress' => 'required',
             'poiid' => 'required',
+            'mac' => 'required',
+
         ]);
 
         $data = [
             'name' => $request->post('name'),
             'ip_adress' => $request->post('ip_adress'),
             'poiid' => $request->post('poiid'),
-            'mac' => $request->post('poiid') ?? null
+            'mac' => $request->post('mac_adress') ?? null
         ];
 
         try{
@@ -1358,6 +1360,7 @@ class Admin extends BaseController
             'update_name' => 'required',
             'update_ip_adress' => 'required',
             'update_poiid' => 'required',
+            'update_mac_adress' => 'required',
         ]);
 
         $data = [
