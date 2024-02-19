@@ -1180,7 +1180,8 @@ class Admin extends BaseController
                 'amount' => floatval($movement->amount),
                 'caisse' => $movement->deviceName,
                 'movementId' => $movement->id,
-                'type' =>  $movement->type
+                'type' =>  $movement->type,
+                'comment' => $movement->comment
             ];
         }
 
@@ -1247,7 +1248,8 @@ class Admin extends BaseController
             'user_id' => Auth()->user()->id,
             'status' => 0,
             'created_at' => date('Y-m-d H:i:s'),
-            'type' => 'withdrawal'
+            'type' => 'withdrawal',
+            'comment' => $request->post('comment') ?? null
         ];
 
         if(floatval($amount) <= 0){
@@ -1308,7 +1310,8 @@ class Admin extends BaseController
             'status' => 0,
             'type' => 'deposit',
             'created_at' => date('Y-m-d H:i:s'),
-            'user_id' => Auth()->user()->id
+            'user_id' => Auth()->user()->id,
+            'comment' => $request->post('comment') ?? null
         ];
 
         if($this->cashMovement->addMovement($data)){

@@ -169,6 +169,7 @@
                                                                 <th scope="col" rowspan="1" colspan="1">N°</th>
                                                                 <th scope="col" rowspan="1" colspan="1">Heure</th>
                                                                 <th scope="col" rowspan="1" colspan="1">Montant</th>
+                                                                <th scope="col" rowspan="1" colspan="1">Commentaire</th>
                                                                 <th scope="col" rowspan="1" colspan="1">Nom</th>
                                                                 <th scope="col" rowspan="1" colspan="1">ID</th>
                                                             </tr>
@@ -180,10 +181,11 @@
                                                                             <td data-label="N°"><span>{{ $keyMovement }}</span></td>
                                                                             <td data-label="Heure"><span>{{ $movement['date'] }}</span></td>
                                                                             <td data-label="Montant">
-                                                                                <div class="p-2 d-flex align-items-center font-20">
-                                                                                    <h4 class="{{ $movement['type']  == 'withdrawal' ? 'text-danger' : 'text-success' }} my-1 font-20">{{ $movement['type']  == "withdrawal" ? '-' : '+' }} {{ $movement['amount'] }} €</h4>
+                                                                                <div class="p-2 d-flex align-items-center" style="font-size: 1.1em">
+                                                                                    <h4 class="{{ $movement['type']  == 'withdrawal' ? 'text-danger' : 'text-success' }} my-1" style="font-size: 1.1em">{{ $movement['type']  == "withdrawal" ? '-' : '+' }} {{ $movement['amount'] }} €</h4>
                                                                                 </div>
                                                                             </td>
+                                                                            <td data-label="Commentaire"><span>{{ $movement['comment'] }}</span></td>
                                                                             <td data-label="Nom"><span>{{ $movement['name'] }}</span></td>
                                                                             <td data-label="ID"><span>{{ $movement['movementId'] }}</span></td>
                                                                         </tr>
@@ -193,6 +195,7 @@
                                                                         <td data-label="N°"></td>
                                                                         <td data-label="Heure"></td>
                                                                         <td data-label="Montant"></td>
+                                                                        <td data-label="Commentaire"></td>
                                                                         <td data-label="Nom"></td>
                                                                         <td data-label="ID"></td>
                                                                     </tr>
@@ -232,11 +235,17 @@
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2 mt-3">
-                                                            <label for="inputEnterYourName" class="col-sm-5 col-form-label">Montant à décaisser</label>
-                                                            <div class="col-sm-7">
+                                                            <label for="inputEnterYourName" class="col-sm-4 col-form-label">Montant à décaisser</label>
+                                                            <div class="col-sm-8">
                                                                 <input type="hidden" name="caisse" value="{{ $key }}">
                                                                 <input id="amountCaisse_{{ $key }}" type="hidden" name="amountCaisse" value="{{ number_format(floatval($c['total_cash']) - (isset($ammount_to_deduct[$key]) ? $ammount_to_deduct[$key] : 0) + (isset($ammount_to_add[$key]) ? $ammount_to_add[$key] : 0), 2, ',', ' ') }}">
                                                                 <input id="amount_{{ $key }}" type="text" class="form-control" name="amount" placeholder="Saisir Montant">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2 mt-3">
+                                                            <label for="inputEnterYourName" class="col-sm-4 col-form-label">Commentaire</label>
+                                                            <div class="col-sm-8">
+                                                                <textarea style="resize: none; height: 100px" id="comment_{{ $key }}" type="text" class="form-control" name="comment" placeholder="Commentaire mouvement"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -272,11 +281,17 @@
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2 mt-3">
-                                                            <label for="inputEnterYourName" class="col-sm-5 col-form-label">Fonds à ajouter</label>
-                                                            <div class="col-sm-7">
+                                                            <label for="inputEnterYourName" class="col-sm-4 col-form-label">Fonds à ajouter</label>
+                                                            <div class="col-sm-8">
                                                                 <input type="hidden" name="caisse" value="{{ $key }}">
                                                                 <input id="amountCaisse_{{ $key }}" type="hidden" name="amountCaisse" value="{{ number_format(floatval($c['total_cash']) - (isset($ammount_to_deduct[$key]) ? $ammount_to_deduct[$key] : 0) + (isset($ammount_to_add[$key]) ? $ammount_to_add[$key] : 0), 2, ',', ' ') }}">
                                                                 <input id="amount_{{ $key }}" type="text" class="form-control" name="amount" placeholder="Saisir Montant">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2 mt-3">
+                                                            <label for="inputEnterYourName" class="col-sm-4 col-form-label">Commentaire</label>
+                                                            <div class="col-sm-8">
+                                                                <textarea style="resize: none; height: 100px" id="comment_{{ $key }}" type="text" class="form-control" name="comment" placeholder="Commentaire mouvement"></textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -309,6 +324,7 @@
                                 <th scope="col" rowspan="1" colspan="1">Heure</th>
                                 <th scope="col" rowspan="1" colspan="1">Montant caisse</th>
                                 <th scope="col" rowspan="1" colspan="1">Mouvement</th>
+                                <th scope="col" rowspan="1" colspan="1">Commentaire</th>
                                 <th scope="col" rowspan="1" colspan="1">Nom</th>
                                 <th scope="col" rowspan="1" colspan="1">Status</th>
                                 <th scope="col" rowspan="1" colspan="1">Action</th>
@@ -319,25 +335,26 @@
                             @foreach($list_movements as $key_caisse => $mov)
                                 @foreach($mov as $m)
                                     <tr role="row">
-                                        <td>{{ $m['caisse'] }}</td>
-                                        <td>{{ $m['date'] }}</td>
-                                        <td><span class="font-20 font-bold">{{ $m['before_movement'] }} €</span></td>
-                                        <td><span class="font-20 {{ $m['type']  == 'withdrawal' ? 'text-danger' : 'text-success' }}">{{ $m['type']  == "withdrawal" ? '-' : '+' }} {{ $m['amount'] }} €</span></td>
-                                        <td><span>{{ $m['name'] }}</span></td>
-                                        <td>
+                                        <td data-label="Caisse">{{ $m['caisse'] }}</td>
+                                        <td data-label="Heure">{{ $m['date'] }}</td>
+                                        <td data-label="Montant caisse"><span class="font-20 font-bold">{{ $m['before_movement'] }} €</span></td>
+                                        <td data-label="Mouvement"><span class="font-20 {{ $m['type']  == 'withdrawal' ? 'text-danger' : 'text-success' }}">{{ $m['type']  == "withdrawal" ? '-' : '+' }} {{ $m['amount'] }} €</span></td>
+                                        <td data-label="Heure">{{ $m['comment'] }}</td>
+                                        <td data-label="Nom"><span>{{ $m['name'] }}</span></td>
+                                        <td data-label="Status">
                                             @if($m['status'] == 1)
                                                 <span class="p-2 badge bg-success">Validé</span>
                                             @else 
                                                 <span class="p-2 badge bg-warning">En attente</span>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td data-label="Action">
                                             @if($m['status'] == 0)
                                                 <button data-name="{{ $m['caisse'] }}" data-id="{{ $m['movementId'] }}" class="removeClassButton validMovement text-success"><i class="font-30 fadeIn animated bx bx-check"></i></button>
                                                 <button data-name="{{ $m['caisse'] }}" data-id="{{ $m['movementId'] }}" class="removeClassButton cancelMovement text-danger"><i class="font-30 fadeIn animated bx bx-x"></i></button>
                                             @endif
                                         </td>
-                                        <td><span>{{ $m['movementId'] }}</span></td>
+                                        <td data-label="ID"><span>{{ $m['movementId'] }}</span></td>
                                     </tr>
                                 @endforeach
                             @endforeach
@@ -402,17 +419,17 @@
             $('.example').DataTable({})
            
             $('.example3').DataTable({
-                "order": [[7, 'DESC']],
+                "order": [[8, 'DESC']],
                 "columnDefs": [
-                    { "visible": false, "targets": 7 },
+                    { "visible": false, "targets": 8 },
                 ],
             })
 
     
             $('.example2').DataTable({
-                "order": [[4, 'DESC']],
+                "order": [[5, 'DESC']],
                 "columnDefs": [
-                    { "visible": false, "targets": 4 },
+                    { "visible": false, "targets": 5 },
                 ],
             })
         })

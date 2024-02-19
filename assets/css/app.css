@@ -3311,7 +3311,6 @@ a {
 
 }
 
-
 .nav-search input.form-control::placeholder {
 
 
@@ -4061,7 +4060,8 @@ a {
 /*Forms */
 
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
 
 
 	color: #000 !important;
