@@ -120,7 +120,8 @@ $(document).ready(function() {
                             customer_note:  order.customer_note,
                             from_dolibarr:  order.from_dolibarr ?? false,
                             orderDolibarId : order.from_dolibarr ? order.dolibarrOrderId : false,
-                            is_distributor : order.is_distributor
+                            is_distributor : order.is_distributor,
+                            discount_amount : order.discount_amount ?? 0
                         };
                     } else {
                         return false;
@@ -239,7 +240,7 @@ $(document).ready(function() {
                                                         ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : 
                                                         '<span class="column55"><i onclick="deleteProductDolibarr('+row.orderDolibarId+','+element.product_id+','+element.product_dolibarr_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>'}
                                                     </div>`
-                                            ).join('')}
+                                                ).join('')}
                                             </div>
                                             <div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
                                                 <div class="d-flex flex-column justify-content-between">
@@ -254,6 +255,8 @@ $(document).ready(function() {
                                                     <span class="montant_total_order">Expédition:<strong> `+row.shipping_amount+`€</strong></span>
                                                     <span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
                                                     ${row.gift_card.length > 0 ? `<span class="text-success">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
+                                                    ${row.discount_amount > 0 ? `<span class="text-success">Réduction: <strong>(-`+row.discount_amount+`%)</strong></span>` : ``}
+
                                                     <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+row.total+`€</strong></span>
                                                     <div class="d-flex justify-content-end">
                                                         <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
@@ -261,7 +264,6 @@ $(document).ready(function() {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -750,7 +752,6 @@ function addProductOrderConfirm(){
                     <span class="column33 quantity"> `+last_line_items.quantity+` </span>
                     <span class="column44">`+parseFloat(last_line_items.subtotal).toFixed(2)+`</span>
                     <span class="column55"><i onclick="deleteProduct(`+order_id+`,`+last_line_items.id+`,`+last_line_items.variation_id+`,`+last_line_items.product_id+`,`+last_line_items.quantity+`)" class="edit_order bx bx-trash"></i></span>
-
                 </div>`
             )
 

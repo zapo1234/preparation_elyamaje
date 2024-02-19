@@ -140,6 +140,7 @@
                     <li><a href="{{ url('colissimo') }}">Étiquettes</a></li>
                     <li><a href="{{ url('configDolibarr') }}">Dolibarr</a></li>
                     <li><a href="{{ url('paymentTerminal') }}">Terminaux</a></li>
+                    <li><a href="{{ url('caisse') }}">Caisses</a></li>
                 </ul>
             </li>
             <li>
@@ -223,6 +224,7 @@
                 <ul class="sub-menu">
                     <li><a class="link_name" href="#">Beauty Prof's</a></li>
                     <li><a href="{{ url('seller') }}">Analytics</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
                     <li><a href="{{ url('cashier') }}">Caisse</a></li>
                     <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                 </ul>

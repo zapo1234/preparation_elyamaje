@@ -68,12 +68,13 @@ class ProductOrderRepository implements ProductOrderInterface
    }
 
 
-    public function getproductdolibar()
-    {
+   public function getproductdolibar() {
         // recupérer des product depuis dolibar....pour recupérer id_product +dolibarr......
+   }
 
-
-    }
+   public function update($data, $order_id){
+      return $this->model::where('order_id', $order_id)->update($data);
+   }
 
   
 }

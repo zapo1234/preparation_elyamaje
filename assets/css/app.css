@@ -3311,7 +3311,6 @@ a {
 
 }
 
-
 .nav-search input.form-control::placeholder {
 
 
@@ -4061,7 +4060,8 @@ a {
 /*Forms */
 
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
 
 
 	color: #000 !important;
@@ -6003,6 +6003,9 @@ input::placeholder {
 
 @media screen and (max-width: 950px) {
 
+	.caisse_page_details{
+		margin-left: 15px;
+	}
 	.card_with_label::after {
 		top: -54px !important;
 		left: -17px !important;
@@ -8726,3 +8729,44 @@ select option[disabled] {
     flex-direction: column;
     align-items: center;
 }
+
+.card_caisse .col{
+	min-width: 290px !important;
+}
+
+
+.orders_cashed .dataTables_wrapper .col-md-6,
+.movement_cash .dataTables_wrapper .col-md-6{
+	width: 50% !important;
+}
+@media screen and (min-width: 990px) {
+	.orders_cashed{
+		width: 65%;
+	}
+	
+	.movement_cash{
+		width: 35%;
+	}
+
+	.orders_cashed .col-md-6:has(.dataTables_length),
+	.movement_cash .col-md-6:has(.dataTables_length){
+		width: 50%;
+	}
+
+	.orders_cashed  .col-md-6:has(.dataTables_filter){
+		width: 50%;
+	}
+}
+
+
+@media screen and (max-width: 1250px) {
+	.movement_cash, .orders_cashed{
+		width: 100% !important;
+	}
+}
+
+.removeClassButton{
+	border: none;
+	background-color: transparent;
+}
+
