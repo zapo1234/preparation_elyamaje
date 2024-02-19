@@ -1336,7 +1336,7 @@ class Admin extends BaseController
             'name' => 'required',
             'ip_adress' => 'required',
             'poiid' => 'required',
-            'mac' => 'required',
+            'mac_adress' => 'required',
 
         ]);
 
