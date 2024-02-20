@@ -50,6 +50,14 @@
 													<label for="email" class="form-label">Email*</label>
 													<input required name="email" type="email" class="form-control" id="email">
 												</div>
+												<div class="col-md-12 d-flex align-items-center form-check" style="cursor: pointer !important; margin-left: 8px">
+													<input class="form-check-input" style="cursor: pointer; width: 20px; height: 20px;" type="checkbox" value="" id="passwordCheck" name="passwordCheck">
+													<label style="margin-left: 15px; margin-top: 5px" class="form-check-label" for="passwordCheck">Renseigner un mot de passe manuellement</label>
+												</div>
+												<div class="col-md-12" style="display: none;" id="showPasswordInput">
+													<label for="password" class="form-label">Mot de passe*</label>
+													<input name="password" type="password" class="form-control" id="password">
+												</div>
 												<div class="col-md-12">
 													<label for="role" class="form-label">Rôle*</label>
 													<select required name="role[]" id="role" class="form-select select">
@@ -192,7 +200,7 @@
 												<div class="modal-content">
 													<form data-bitwarden-watching="1" method="POST" action="{{ route('account.update') }}">
 														@csrf
-														<input name="account_user_update" type="hidden" id="account_user_update" value="{{ $user['user_id'] }}">
+														<input name="account_user_update" type="hidden" value="{{ $user['user_id'] }}">
 														<div class="modal-body">
 															<div class="card-body p-3">
 																<div class="card-title d-flex align-items-center">
@@ -204,17 +212,17 @@
 																<div class="row g-3">
 																	<div class="col-md-12">
 																		<label for="update_name_last_name" class="form-label">Nom / Prénom*</label>
-																		<input value="{{ $user['name'] }}" required name="update_name_last_name" type="text" class="form-control" id="update_name_last_name">
+																		<input value="{{ $user['name'] }}" required name="update_name_last_name" type="text" class="form-control">
 																	</div>
 																
 																	<div class="col-md-12">
 																		<label for="update_email" class="form-label">Email*</label>
-																		<input value="{{ $user['email'] }}" required name="update_email" type="update_email" class="form-control" id="update_email">
+																		<input value="{{ $user['email'] }}" required name="update_email" type="update_email" class="form-control">
 																	</div>
 																	<div class="col-md-12">
 																		<label for="update_role" class="form-label">Rôle*</label>
-																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" id="role_user">
-																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" id="update_role" class="select form-select">
+																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" class="role_user">
+																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" class="select form-select">
 																			@foreach($roles as $role)
 																				@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																					<option value="{{ $role->id }}">{{  $role->role }}</option>
@@ -226,7 +234,7 @@
 																	</div>
 																	<div class="col-md-12">
 																		<label for="update_type" class="form-label">Type*</label>
-																		<select required name="update_type" id="update_type" class="form-select">
+																		<select required name="update_type" class="form-select">
 																			@if($user['type'] === "warehouse")
 																				<option selected value="warehouse">Entrepôt</option>
 																				<option value="shop">Boutique</option>
@@ -241,7 +249,7 @@
 																	</div>
 																	<div class="poste_input d-none col-md-12">
 																		<label for="update_poste" class="form-label">N° du poste</label>
-																		<input value="{{ $user['poste'] }}" name="update_poste" type="number" class="poste_field form-control" id="update_poste">
+																		<input value="{{ $user['poste'] }}" name="update_poste" type="number" class="poste_field form-control">
 																	</div>
 																</div>
 															</div>
@@ -401,7 +409,7 @@
 		// Modifier compte
 		$(".update_action").on('click', function(){
 			var id_account = $(this).attr('data-id')
-			var roles = $("#updateAccount_user_"+id_account).find('#role_user').val()
+			var roles = $("#updateAccount_user_"+id_account).find('.role_user').val()
 			$("#updateAccount_user_"+id_account).find('#update_role').val(roles.split(',')).trigger('change').select2();
 			$("#updateAccount_user_"+id_account).modal({
 				backdrop: 'static',
@@ -419,6 +427,10 @@
 			$("#activeAccount").modal('show')
 		})
 
+		// Show or Hide Input password
+		$("#passwordCheck").on('change', function(){
+			$("#showPasswordInput").toggle('hide')
+		})
 
 		</script>
 	@endsection

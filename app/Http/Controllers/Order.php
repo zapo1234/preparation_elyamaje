@@ -678,7 +678,7 @@ class Order extends BaseController
         $this->productOrder->update(['pick' => 0, 'pick_control' => 0], $order_id);
 
         // Maybe delete labels later...
-
+        
         echo json_encode(["success" => true]);
       } catch(Exception $e){
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
