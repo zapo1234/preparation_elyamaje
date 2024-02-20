@@ -128,7 +128,7 @@ class Order extends BaseController
 
         return $orders_user;
       } else {
-        $status = "processing,order-new-distrib,prepared-order,en-attente-de-pai"; // Commande en préparation
+        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
@@ -678,7 +678,7 @@ class Order extends BaseController
         $this->productOrder->update(['pick' => 0, 'pick_control' => 0], $order_id);
 
         // Maybe delete labels later...
-        
+
         echo json_encode(["success" => true]);
       } catch(Exception $e){
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
