@@ -8,6 +8,8 @@ interface CashMovementInterface
 {
    public function getMovements($date);
 
+   public function getMovementsByCaisse($caisse);
+
    public function addMovement($data);
 
    public function updateMovement($movementId, $data);

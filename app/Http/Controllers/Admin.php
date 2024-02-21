@@ -1235,7 +1235,15 @@ class Admin extends BaseController
     }
 
     public function cashMovement(Request $request){
+
         $caisse = $request->post('caisse');
+
+        // Check if cash movement already in processing for this caisse
+        $movement_processing = count($this->cashMovement->getMovementsByCaisse($caisse)->toArray());
+        if($movement_processing > 0){
+            return redirect()->back()->with('error',  "Veuillez d'abord valider ou annuler les mouvements en cours pour cette caisse");
+        }
+
 
         $amount = str_replace(',', '.', $request->post('amount'));
         $amount = str_replace([" ", ","], "", $amount);
@@ -1303,6 +1311,12 @@ class Admin extends BaseController
     }
 
     public function addCashMovement(Request $request) {
+
+        // Check if cash movement already in processing for this caisse
+        $movement_processing = count($this->cashMovement->getMovementsByCaisse($request->post('caisse'))->toArray());
+        if($movement_processing > 0){
+            return redirect()->back()->with('error',  "Veuillez d'abord valider ou annuler les mouvements en cours pour cette caisse");
+        }
 
         $amount = floatval(str_replace(',', '.', $request->post('amount')));
         if($amount == 0.0){
