@@ -970,11 +970,11 @@ class Admin extends BaseController
     public function analyticsSeller(Request $request){
         $date = $request->get('date') ?? date('Y-m-d');
         $ordersBeautyProf = $this->orderDolibarr->getOrdersBeautyProf($date);
-    
         $list_histories = [];
         try{
             $list_histories = $this->buildHistoryBeautyProf($ordersBeautyProf);
-            echo json_encode(['success' => true, 'histories' => $list_histories['details'], 'status' => $list_histories['status']]);
+            echo json_encode(['success' => true, 'histories' => $list_histories['details'], 'status' => $list_histories['status'], 
+            'total_amount_order' => $list_histories['total_amount_order']]);
         } catch(Exception $e){
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -1014,6 +1014,7 @@ class Admin extends BaseController
         $list_histories['details'] = [];
         $pending = 0;
         $paid = 0;
+        $total_amount_order = 0;
 
         // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
         foreach($histories as $histo){
@@ -1023,6 +1024,7 @@ class Admin extends BaseController
             $paid    =  $histo['status'] != "pending" && $histo['status'] != "canceled" ? $paid + 1 : $paid;
             
             if(!isset($list_histories['details'][$id][$histo['id']])){
+                $total_amount_order = $total_amount_order + $histo['total_order_ttc'];
                 $list_histories['details'][date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
                     'name' => $histo['name'],
                     'number_order' => 1,
@@ -1032,6 +1034,7 @@ class Admin extends BaseController
             } else {
                 $list_histories['details'][$id][$histo['id']]['number_order']++;
                 $list_histories['details'][$id][$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+                $total_amount_order += $histo['total_order_ttc'];
             }
         }
 
@@ -1040,7 +1043,6 @@ class Admin extends BaseController
             foreach($data as $key2 => $dt) {
                 $list_histories['details'][$key][$key2]['average'] =  floatval(number_format($dt['total_amount'] / $dt['number_order'], 2));
             }
-            
         }
 
         $list_histories['status'] = 
@@ -1049,6 +1051,7 @@ class Admin extends BaseController
             'paid'    => $paid
         ];
 
+        $list_histories['total_amount_order'] = $total_amount_order;
         return $list_histories;
     }
 
@@ -1226,16 +1229,19 @@ class Admin extends BaseController
             }
            
         }
-        
+
         return view('admin.cashier', ['caisse' => $caisse, 'ammount_to_deduct' => $ammount_to_deduct, 
         'ammount_to_add' => $ammount_to_add, 'list_movements' => $list_movements, 'date' => $date]);
     }
 
     public function cashMovement(Request $request){
-
-        $amount = floatval(str_replace(',', '.', $request->post('amount')));
         $caisse = $request->post('caisse');
-        $amountCaisse = $request->post('amountCaisse');
+
+        $amount = str_replace(',', '.', $request->post('amount'));
+        $amount = str_replace([" ", ","], "", $amount);
+
+        $amountCaisse = str_replace(',', '.', $request->post('amountCaisse'));
+        $amountCaisse = str_replace([" ", ","], "", $amountCaisse);
 
         if($amount == 0.0){
             return redirect()->back()->with('error',  "Le montant renseigné n'est pas correct !");
