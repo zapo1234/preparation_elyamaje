@@ -241,18 +241,10 @@ class UserRepository implements UserInterface
 
    public function deleteUser($user_id){
       try{
-         // Check if user have oirders
-         $orders = DB::table('orders')->where('user_id', $user_id)->count();
-         if($orders > 0){
-            return "haveOrder";
-         } else {
-            $this->model->where('id', $user_id)->update(['active' => 0]);
-
-            // Supprime ses rôles
-            DB::table('user_roles')->where('user_id', $user_id)->delete();
-   
-            return true;
-         }
+         $this->model->where('id', $user_id)->update(['active' => 0]);
+         // Supprime ses rôles
+         DB::table('user_roles')->where('user_id', $user_id)->delete();
+         return true;
       } catch(Exception $e){
          return $e->getMessage();
       }
