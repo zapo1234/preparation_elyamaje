@@ -217,7 +217,7 @@ class Chronopost
                 'chrono18' => "16",
                 'chronorelais' => "86",
                 'chronorelaiseurope' => "49",
-                'chronotoshopdirect' => "86",
+                'chronotoshopdirect' => "5X",
                 'chronotoshopeurope' => "49",
                 'chronoprecise' => "20",
             ];
