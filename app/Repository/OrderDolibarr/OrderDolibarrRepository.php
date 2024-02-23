@@ -538,7 +538,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          }
          
       $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
-      $query->whereNotIn('orders_doli.statut', ['pending', 'canceled', 'processing']);
+      $query->whereNotIn('orders_doli.statut', ['pending', 'processing']);
       $result = $query->get();
       return $result->toArray();
      
