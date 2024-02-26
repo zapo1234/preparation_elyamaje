@@ -763,7 +763,7 @@ class Order extends BaseController
         try{
            
             //$this->factorder->TransferOrder($orders);
-             $this->transfert->Transfertext($orders);
+            $this->transfert->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [

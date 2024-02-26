@@ -1012,6 +1012,7 @@ class Admin extends BaseController
 
     private function buildHistoryBeautyProf($histories){
         $list_histories['details'] = [];
+        $status_to_exclude = ['canceled', 'pending'];
         $pending = 0;
         $paid = 0;
         $total_amount_order = 0;
@@ -1024,7 +1025,7 @@ class Admin extends BaseController
             $paid    =  $histo['status'] != "pending" && $histo['status'] != "canceled" ? $paid + 1 : $paid;
             
             if(!isset($list_histories['details'][$id][$histo['id']])){
-                $total_amount_order = $total_amount_order + $histo['total_order_ttc'];
+                $total_amount_order =  !in_array($histo['status'], $status_to_exclude) ? $total_amount_order + $histo['total_order_ttc'] : $total_amount_order;
                 $list_histories['details'][date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
                     'name' => $histo['name'],
                     'number_order' => 1,
@@ -1034,7 +1035,7 @@ class Admin extends BaseController
             } else {
                 $list_histories['details'][$id][$histo['id']]['number_order']++;
                 $list_histories['details'][$id][$histo['id']]['total_amount'] += $histo['total_order_ttc'];
-                $total_amount_order += $histo['total_order_ttc'];
+                !in_array($histo['status'], $status_to_exclude) ?  $total_amount_order += $histo['total_order_ttc'] : $total_amount_order = $total_amount_order;
             }
         }
 
