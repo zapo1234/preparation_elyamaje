@@ -448,7 +448,7 @@ class Transfertext
                                    
                                      $type_id="";
                                     $typent_code="";
-                                    // defini si le client est un professionnel.
+                                    // defini si le client est un professionnel..
                                    if($woo!=""){
                                       $type_id ="235";
                                       $typent_code="PROF";
