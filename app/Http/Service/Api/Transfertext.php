@@ -751,7 +751,7 @@ class Transfertext
                          }
                         */
                           
-                          // Create le client via Api.......
+                          // Create le client via Api.........
                           dump($data_tiers);
                           dd($data_lines);
                            foreach($data_tiers as $data) {
