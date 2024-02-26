@@ -1152,7 +1152,7 @@ class Transfertext
                        }
 
                        elseif(in_array($account_name,$array_paiments)){
-                         // defini le paiment comme virement bancaire......
+                         // defini le paiment comme virement bancaire......        
                        //$mode_reglement_id = 4;
                         $account_id=3; // PROD
                         $paimentid =3;// PROD
@@ -1173,7 +1173,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=33;// PROD 
+                        $account_id=47;// PROD 
                         $paimentid =4;// PROD
                      }
 
@@ -1351,7 +1351,7 @@ class Transfertext
                                           'dateo' => date('Y-m-d H:i:s'),
                                           'amount' => $index_amount_true[1],
                                           'label' =>"Paiment en espèce Beauty proof paris 2024",
-                                          'fk_account'=>33,
+                                          'fk_account'=>47,
                                           'fk_user_author'=>0,
                                           'fk_user_rappro'=>0,
                                           'fk_type'=>'LIQ',
@@ -1420,7 +1420,7 @@ class Transfertext
                                     ];
                    
                                    // ecrire la ligne dans la bank BPP liquide pour les espèces.
-                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
+                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/47/lines/",json_encode($array_data));
 
                               */
                                   
