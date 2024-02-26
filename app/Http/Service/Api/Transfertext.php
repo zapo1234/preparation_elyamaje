@@ -752,6 +752,8 @@ class Transfertext
                         */
                           
                           // Create le client via Api.....
+                          dump($data_tiers);
+                          dd($data_lines);
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
