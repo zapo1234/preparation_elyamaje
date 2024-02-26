@@ -1411,4 +1411,9 @@ class Admin extends BaseController
             return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
         }
     }
+
+    public function stockscat(){
+
+        return view('admin.stockscat');
+    }
 }
