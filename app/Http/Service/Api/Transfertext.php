@@ -466,7 +466,15 @@ class Transfertext
                                       
                                   }
                                    $name="";
-                                   $code = $donnees['customer_id'];//customer_id dans woocomerce 
+                                  
+                                     $chaine_index ="BPP";
+                                    if(strpos($donnees['order_id'],$chaine_index)!==false){
+                                      $code = $donnees['order_id'];
+                                    }else{
+                                       $code = $donnees['customer_id'];//customer_id dans woocomerce ..
+                                   }
+                              
+
                                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
 
                                     // recupérer le prefix pays a partir du code client 
@@ -746,7 +754,8 @@ class Transfertext
                         */
 
                         
-                        
+                          dump($data_tiers);
+                          dd($data_lines);
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
