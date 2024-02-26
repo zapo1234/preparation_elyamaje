@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-            
+          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -233,7 +233,7 @@ class Transfertext
                         }else{
 
                           if($amount_card!=0){
-                               // si y'a eu paimement espece et card cardeau
+                              // si y'a eu paimement espece et card cardeau
                                $indice_amount_liq =  $total_montant - $amount_card;
                           }
 
@@ -242,26 +242,23 @@ class Transfertext
                               $indice_amount_liq="liqpaid";
                           }
                      }
-                        $chaine_amount = "$amount_card%$indice_amount_liq";// lire le cas en fonction de retour ..
+
+                       $chaine_amount = "$amount_card%$indice_amount_liq"; // lier le cas des en fonction du retour chaine.....
 
                  }else{
-                       $amount_card=0;
-                       $chaine_amount ='0%nobpp';
+                      $amount_card=0;
+                      $chaine_amount ='0%nobpp';
                  }
              }
              
-               
-              // recupérer le montant payé par cartependant la BP
+               // recupérer le montant payé par cartependant la BP...
+
                $this->setAmountcard($chaine_amount);
-
-
              
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
                  $apiUrl = env('KEY_API_URL');
-
-
 
                  $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -350,7 +347,7 @@ class Transfertext
                   }
                     
                   // recupére les orders des données provenant de  woocomerce
-                    // appel du service via api
+                    // appel du service via api.....
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
                      $data_gift_card =[];// data liee au commande des gift_card acheté.
@@ -747,8 +744,9 @@ class Transfertext
                            }
                          }
                         */
+
                         
-                         
+                        
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -1183,6 +1181,11 @@ class Transfertext
                         $account_id=4;// PROD 
                         $paimentid =6;// PROD envoi en CB.
                    }
+                   
+                   //dump($account_multiple);
+                   //dump($paimentid);
+                   //dd($account_id);
+                
 
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
@@ -1279,7 +1282,9 @@ class Transfertext
                           
                           echo json_encode(['success' => false, 'message'=> $message]);
                           exit;
-                        }
+                          
+                      }
+
                         // mettre le statut en payé dans la facture  dolibar les commande preparation(uniquement internet)
                         if($account_multiple=="no"){
                               // Lier les factures dolibar  à un moyen de paiement et bank.
@@ -1288,51 +1293,58 @@ class Transfertext
                           // Lier les factures dolibar  à un moyen de paiement et bank.
                           }
                         
-                          if($account_multiple=="yesliq"){  // liquide 100% BP
+
+                         if($account_multiple=="yesliq"){  // liquide 100% BP
+
                              // Lier les factures dolibar  à un moyen de paiement et bank.
                                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
    
                               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-                             // Lier les factures dolibar  à un moyen de paiement et bank.
+                             // Lier les factures dolibar  à un moyen de paiement et bank...
    
                            }
 
-                          if($account_multiple=="yes"){
+                         if($account_multiple=="yes"){
+                              
                                  // Les cas ou y'a des paiment en partie espece et CB pour la BP.
                                   // reconstruire le montant de la facture 
                                   $val_tax = $index_amount_true[1]*0.2;
-                                 // Lier les factures dolibar  à un moyen de paiement et bank.
-                                  $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                                  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-                                   // faire un select sur la table table paiment  
-                                   $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");                                     $name_list = json_encode($data);
-                                    $name_list = json_decode($name_list,true);
-                                    // faire un update du amount.
-                                    $ref_paiement = $name_list[0]['ref'];
-                                    $index_row = explode('-',$ref_paiement);
-                                    $index_pay = $index_row[1]+1;
-                                    $fk_banks = $name_list[0]['fk_bank'];  
-                                    $fk_bank = $name_list[0]['fk_bank']+1;// le fk bank suivant.
-                                    $ref_definitive =  $index_row[0].'-'.$index_pay;
-                                     $rowid_auto  = $name_list[0]['rowid']+1;
-                                     // faire un update sur la ligne de la facture ...
-                                     DB::connection('mysql2')
-                                      ->table('llxyq_paiement_facture')
-                                      ->where('fk_facture', '=', $inv)
-                                      ->update(['amount' => $index_amount_true[0]]);
-                                       // modifier le montant dans ligne de paiment
-                                      DB::connection('mysql2')
-                                      ->table('llxyq_paiement')
-                                      ->where('rowid', '=', $response_num)
-                                      ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
-                                      // Modifier dans l'ecriture de labanque avec le montant
+                                    
+              
+                                   // Lier les factures dolibar  à un moyen de paiement et bank.
+                                    $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
+                                  
+                                    $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                                     // faire un select sur la table table paiment  
+                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");                                     $name_list = json_encode($data);
+                                      $name_list = json_decode($name_list,true);
+                                      // faire un update du amount.
+                                       $ref_paiement = $name_list[0]['ref'];
+                                       $index_row = explode('-',$ref_paiement);
+                                       $index_pay = $index_row[1]+1;
+                                        $fk_banks = $name_list[0]['fk_bank'];  
+                                         $fk_bank = $name_list[0]['fk_bank']+1;// le fk bank suivant.
+                                        $ref_definitive =  $index_row[0].'-'.$index_pay;
+                                         $rowid_auto  = $name_list[0]['rowid']+1;
+                                        // faire un update sur la ligne de la facture ...
                                         DB::connection('mysql2')
-                                        ->table('llxyq_bank')
-                                       ->where('rowid', '=', $fk_banks)
-                                      ->update(['amount' => $index_amount_true[0]]);
-                                        // faire un insert du montant en especé
-                                        // faire un insert du montant en especé ici dans la banque
-                                        DB::connection('mysql2')->table('llxyq_bank')->insert([
+                                        ->table('llxyq_paiement_facture')
+                                           ->where('fk_facture', '=', $inv)
+                                           ->update(['amount' => $index_amount_true[0]]);
+                                          // modifier le montant dans ligne de paiment
+                                          DB::connection('mysql2')
+                                           ->table('llxyq_paiement')
+                                           ->where('rowid', '=', $response_num)
+                                           ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
+                                        // Modifier dans l'ecriture de labanque avec le montant
+                                         DB::connection('mysql2')
+                                         ->table('llxyq_bank')
+                                         ->where('rowid', '=', $fk_banks)
+                                        ->update(['amount' => $index_amount_true[0]]);
+
+                                       // faire un insert du montant en especé
+                                       // faire un insert du montant en especé ici dans la banque
+                                       DB::connection('mysql2')->table('llxyq_bank')->insert([
                                            'datec' => date('Y-m-d H:i:s'),
                                           'tms' => date('Y-m-d H:i:s'),
                                           'datev' =>date('Y-m-d H:i:s') ,
@@ -1349,36 +1361,36 @@ class Transfertext
                                          'rappro'=>0,
                                           'note'=>'',
                                           'fk_bordereau'=>0,
-                                           'banque'=>'',
+                                         'banque'=>'',
                                           'emetteur'=>'',
                                            'author'=>'',
-                                           'origin_id'=>0,
-                                           'origin_type'=>'',
+                                         'origin_id'=>0,
+                                         'origin_type'=>'',
                                           'import_key'=>'',
-                                          'amount_main_currency'=>0.00000000
-                                        // Ajoutez d'autres colonnes et valeurs selon votre besoin
-                                     ]);
+                                        'amount_main_currency'=>0.00000000
+                                      // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                                  ]);
   
                                       // faire un insert du paiement espece
                                         DB::connection('mysql2')->table('llxyq_paiement')->insert([
-                                         'ref' => $ref_definitive,
-                                         'ref_ext' => '',
-                                          'entity' => 1,
-                                         'datec' => date('Y-m-d H:i:s'),
+                                       'ref' => $ref_definitive,
+                                        'ref_ext' => '',
+                                        'entity' => 1,
+                                        'datec' => date('Y-m-d H:i:s'),
                                          'tms' => date('Y-m-d H:i:s'),
-                                         'datep' =>  date('Y-m-d H:i:s'),
-                                         'amount' => $index_amount_true[1],
-                                         'multicurrency_amount' =>$index_amount_true[1],
-                                         'fk_paiement'=>4,
-                                         'num_paiement'=>$name_list[0]['num_paiement'],
+                                        'datep' =>  date('Y-m-d H:i:s'),
+                                        'amount' => $index_amount_true[1],
+                                        'multicurrency_amount' =>$index_amount_true[1],
+                                        'fk_paiement'=>4,
+                                        'num_paiement'=>$name_list[0]['num_paiement'],
                                          'note'=> '',
                                          'ext_payment_id'=>'',
                                          'ext_payment_site'=>'',
-                                         'fk_bank'=>$fk_bank,
+                                          'fk_bank'=>$fk_bank,
                                           'fk_user_creat'=>0,
                                          'fk_user_modif'=>0,
-                                         'fk_export_compta'=>0,
-                                         'statut'=>0,
+                                          'fk_export_compta'=>0,
+                                          'statut'=>0,
                                          'pos_change'=>0.00000000
                                       // Ajoutez d'autres colonnes et valeurs selon votre besoin
                                  ]);
