@@ -25,7 +25,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
-         ->whereNotIn('orders_doli.statut', ['pending', 'finished'])
+         ->whereNotIn('orders_doli.statut', ['pending', 'finished', 'canceled'])
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
