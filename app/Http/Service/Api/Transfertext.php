@@ -756,7 +756,7 @@ class Transfertext
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                             dd($retour_create)
+                            
                              
                           }
 
