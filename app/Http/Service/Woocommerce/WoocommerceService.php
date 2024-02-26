@@ -131,7 +131,12 @@ class WoocommerceService
 
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
 
-    
+    $shipping_method_label = [
+      'chronotoshopdirect' => 'Livraison en point relais',
+      'chrono13' => 'Livraison à domicile',
+      'chrono18' => 'Livraison à domicile'
+    ];
+
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
@@ -165,7 +170,10 @@ class WoocommerceService
     // On force la méthode d'expédition en livraison à domicile avec signature
     $transformOrder['shipping_method'] = $orderDolibarr[0]['shipping_method'] ?? "lpc_sign";
     $transformOrder['product_code'] = null;
-    $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost - Livraison express à domicile avant 13h offert dès 100€ d'achats" 
+    // $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost" 
+    // : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
+
+    $transformOrder['shipping_method_detail'] = isset($shipping_method_label[$orderDolibarr[0]['shipping_method']]) ? $shipping_method_label[$orderDolibarr[0]['shipping_method']] 
     : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
 
     $transformOrder['billing'] = [
