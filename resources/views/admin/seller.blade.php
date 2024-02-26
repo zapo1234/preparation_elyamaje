@@ -30,13 +30,16 @@
                         <div style="border-width:0.18em" class="ml-1 text-warning load_spinner  spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
                     </div>
 
-                    Payées : 
+                    Payées :
                     <div class="align-items-center d-flex">
                         <span class="ml-1 data_number order_paid text-success">	</span>
                         <div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
                     </div>
                 </div>
-                <div style="width:233px"></div>
+                <div class="d-flex justify-content-end align-items-center" style="width:233px">
+                    <span class="font-20 font-bold">Revenu : </span>
+                    <span style="margin-left: 3px" class="text-success font-20 font-bold  total_amount"></span>
+                </div>
             </div>
         
             @if(session()->has('success'))

@@ -217,7 +217,7 @@ class Chronopost
                 'chrono18' => "16",
                 'chronorelais' => "86",
                 'chronorelaiseurope' => "49",
-                'chronotoshopdirect' => "86",
+                'chronotoshopdirect' => "5X",
                 'chronotoshopeurope' => "49",
                 'chronoprecise' => "20",
             ];
@@ -418,6 +418,7 @@ class Chronopost
             $account = [
                 'chrono13' => $chrono13,
                 'chronotoshopdirect' => array('password' => config('app.chronopost_relais_password'), 'accountNumber' => config('app.chronopost_relais_accountNumber')),
+                // 'chrono18' => array('password' => config('app.chronopost_18_password'), 'accountNumber' => config('app.chronopost_18_accountNumber')),
             ];
 
             return isset($account[$method]) ? $account[$method] : $chrono13;

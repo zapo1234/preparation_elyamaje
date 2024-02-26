@@ -23,6 +23,10 @@ class CashMovementRepository implements CashMovementInterface
       ->get();
    }
 
+   public function getMovementsByCaisse($caisse){
+      return $this->model::where(['caisse' => $caisse, 'status' => 0])->get();
+   }
+
    public function addMovement($data){
       try{
          return $this->model::insert($data);

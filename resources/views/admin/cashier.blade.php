@@ -440,7 +440,16 @@
 
         $(".addMovementForm").submit(function(e){
             var caisse_id = $(this).attr('data-caisse-id')
-            if(parseFloat($("#amount_"+caisse_id).val()) > parseFloat($("#amountCaisse_"+caisse_id).val())){
+
+            var amout_caisse = $("#amountCaisse_"+caisse_id).val().replace(/\s/g, "")
+            amout_caisse = amout_caisse.replace(/\s/g, ""); // Supprime tous les espaces
+            amout_caisse = amout_caisse.replace(",", ".");
+
+            var amount = $("#amount_"+caisse_id).val().replace(/\s/g, "")
+            amount = amount.replace(/\s/g, ""); // Supprime tous les espaces
+            amount = amount.replace(",", ".");
+      
+            if(parseFloat(amount) > parseFloat(amout_caisse)){
                 e.preventDefault();
                 $("#amount_"+caisse_id).css('border', '1px solid red')
                 $("#exampleSmallModal_"+caisse_id+" .my-1").css('color', 'red')
