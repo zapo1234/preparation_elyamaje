@@ -227,6 +227,7 @@
                     <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
                     <li><a href="{{ url('cashier') }}">Caisse</a></li>
                     <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                    <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
                 </ul>
             </li>
         @endif

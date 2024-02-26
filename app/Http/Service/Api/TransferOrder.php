@@ -589,24 +589,33 @@ class TransferOrder
                                   $id_true ="";
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
-                                      // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                                      // veifier si la commande a facturé vient d'une beauty proof BPP
-                                      /* $chaine_ext ="BPP";
-                                       $result_int ="";// eviter que les commande de la BPP sois prise en compte.
-                                       if(strpos($chaine_ext,$donnees['order_id'])==false){
-                                            $result_int='';
-                                       }else{
-                                             $result_int=1;
-                                       }
+                                    $chaine_ext ="BPP";
+                                    $index_int="";// eviter que les commande de la BPP sois prise en compte.
+                                    if(strpos($donnees['order_id'],$chaine_ext)!==false){
+                                         $index_int=1;
+                                         $montant_fidelite = 0.000;
+                                    }else{
+                                          $index_int="";
+                                          $montant_fidelite = $donnees['total_order'];
+                                    }
 
-                                       */
+                                    $data_options = [
+                                    "options_idw"=>$donnees['order_id'],
+                                    "options_idc"=>$coupons,
+                                    "options_fid"=>$index_int,
+                                    "options_prepa" => $preparateur,
+                                    "options_emba" => $emballeur,
+                                    "options_point_fidelite"=>$montant_fidelite,
+                                     ];
                                     
-                                       $data_options = [
+                                     /*  $data_options = [
                                         "options_idw"=>$donnees['order_id'],
                                         "options_idc"=>$coupons,
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
                                         ];
+
+                                    */
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
                                        // data normale de la facture sans bon cadeaux ou achat via bon gift cart.
