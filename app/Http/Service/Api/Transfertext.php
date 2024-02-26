@@ -469,13 +469,11 @@ class Transfertext
                                   
                                      $chaine_index ="BPP";
                                     if(strpos($donnees['order_id'],$chaine_index)!==false){
-                                      $code = $donnees['order_id'];
+                                      $code_client = $donnees['order_id'];
                                     }else{
-                                       $code = $donnees['customer_id'];//customer_id dans woocomerce ..
+                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
                                    }
-                              
-
-                                   $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+                                  
 
                                     // recupérer le prefix pays a partir du code client 
                                     $code_country = $donnees['billing']['country'];
