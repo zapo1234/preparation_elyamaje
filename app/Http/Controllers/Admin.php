@@ -983,6 +983,7 @@ class Admin extends BaseController
     public function analyticsSellerTotal(){
         try{
             $histories = $this->orderDolibarr->getAllOrdersBeautyProf();
+            $status_to_exclude = ['canceled', 'pending'];
             $order_by_name = [];
    
             foreach($histories as $histo){
@@ -990,19 +991,20 @@ class Admin extends BaseController
                     $order_by_name[$histo['id']] = [
                         'name' => $histo['name'],
                         'total_order' => 1,
-                        'total_amount' => $histo['total_order_ttc'],
+                        'total_amount' => !in_array($histo['status'], $status_to_exclude) ? $histo['total_order_ttc'] : 0,
                     ];
                 } else {
                     $order_by_name[$histo['id']]['total_order']++;
-                    $order_by_name[$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+                    !in_array($histo['status'], $status_to_exclude) ? $order_by_name[$histo['id']]['total_amount'] += $histo['total_order_ttc'] 
+                    : $order_by_name[$histo['id']]['total_amount'] += 0;
                 }
             }
 
-            
             // Trie par commandes préparées
             usort($order_by_name, function($a, $b) {
                 return $b['total_order'] <=> $a['total_order'];
             });
+            
 
             echo json_encode(['success' => true, 'average' => $order_by_name]);
         } catch (Exception $e){
@@ -1035,7 +1037,7 @@ class Admin extends BaseController
             } else {
                 $list_histories['details'][$id][$histo['id']]['number_order']++;
                 $list_histories['details'][$id][$histo['id']]['total_amount'] += $histo['total_order_ttc'];
-                !in_array($histo['status'], $status_to_exclude) ?  $total_amount_order += $histo['total_order_ttc'] : $total_amount_order = $total_amount_order;
+                !in_array($histo['status'], $status_to_exclude) ? $total_amount_order += $histo['total_order_ttc'] : $total_amount_order = $total_amount_order;
             }
         }
 
