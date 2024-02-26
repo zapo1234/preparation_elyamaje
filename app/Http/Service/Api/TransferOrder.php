@@ -181,6 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
+             //dd($orders);
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -709,6 +710,9 @@ class TransferOrder
                          }
                         */
                           
+                        dump($data_tiers);
+
+                        dd($data_lines);
                           
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {

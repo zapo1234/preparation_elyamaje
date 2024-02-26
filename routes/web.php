@@ -146,6 +146,9 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
      // gestion de stocks lime et rape.
      Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
 
+    // requete stocks post
+    Route::post("/stockscat", [Admin::class, "poststock"])->name('admin.stockscat'); 
+
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
     Route::post("/addTerminal", [Admin::class, "addTerminal"])->name('terminal.add');
