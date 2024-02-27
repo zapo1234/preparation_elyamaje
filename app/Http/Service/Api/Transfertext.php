@@ -471,7 +471,7 @@ class Transfertext
                                     if(strpos($donnees['order_id'],$chaine_index)!==false){
                                       $code_client = $donnees['order_id'];
                                     }else{
-                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers.....
                                    }
                                   
 
