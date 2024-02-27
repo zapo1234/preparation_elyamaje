@@ -207,7 +207,7 @@ class Transfertext
                     $id_commande="exist";
                     $linkedObjectsIds =  ["commande" => [""=>$val['fk_commande']]];
                     $emballeur = $val['emballeur'];
-                    $preparateur="";
+                    $preparateur=$val['preparateur'];
                     $coupons="";
                  }
 
@@ -496,6 +496,7 @@ class Transfertext
                                    'name_alias' => $woo,
                                    'address' => $donnees['billing']['address_1'],
                                    'zip' => $donnees['billing']['postcode'],
+                                   'town'=> $donnees['billing']['city'],
                                    'status'=>'1',
                                    'email' => $donnees['billing']['email'],
                                    "typent_id" => $type_id,
