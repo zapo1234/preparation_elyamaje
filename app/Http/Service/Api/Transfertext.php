@@ -1198,7 +1198,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=33;// PROD 
+                        $account_id=47;// PROD 
                         $paimentid =4;// PROD
                      }
 
@@ -1376,7 +1376,7 @@ class Transfertext
                                           'dateo' => date('Y-m-d H:i:s'),
                                           'amount' => $index_amount_true[1],
                                           'label' =>"Paiment en espèce Beauty proof paris 2024",
-                                          'fk_account'=>33,
+                                          'fk_account'=>47,
                                           'fk_user_author'=>0,
                                           'fk_user_rappro'=>0,
                                           'fk_type'=>'LIQ',
