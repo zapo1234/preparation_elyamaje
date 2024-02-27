@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-          
+           
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -207,7 +207,7 @@ class Transfertext
                     $id_commande="exist";
                     $linkedObjectsIds =  ["commande" => [""=>$val['fk_commande']]];
                     $emballeur = $val['emballeur'];
-                    $preparateur=$val['preparateur'];
+                    $preparateur= $val['preparateur'];
                     $coupons="";
                  }
 
