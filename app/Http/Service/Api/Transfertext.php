@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-            
+          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -443,12 +443,13 @@ class Transfertext
                                     $a11= substr($a1,-2);
                                     $a2 = $dat[1];
                                  
-                                   $socid = $id_cl;
+                                   //$socid = $id_cl;
+                                   $socid="news";
                                    $woo = $donnees['billing']['company'];
                                    
                                      $type_id="";
                                     $typent_code="";
-                                    // defini si le client est un professionnel..
+                                    // defini si le client est un professionnel.
                                    if($woo!=""){
                                       $type_id ="235";
                                       $typent_code="PROF";
@@ -466,14 +467,15 @@ class Transfertext
                                       
                                   }
                                    $name="";
-                                  
-                                     $chaine_index ="BPP";
-                                    if(strpos($donnees['order_id'],$chaine_index)!==false){
-                                      $code_client = $donnees['order_id'];
-                                    }else{
-                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers.....
-                                   }
-                                  
+
+                                   $chaine_index ="BPP";
+                                   if(strpos($donnees['order_id'],$chaine_index)!==false){
+                                     $code_client = $donnees['order_id'];
+                                   }else{
+                                    $code = $donnees['customer_id'];
+                                     $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+                                  }
+                                 
 
                                     // recupérer le prefix pays a partir du code client 
                                     $code_country = $donnees['billing']['country'];
@@ -486,7 +488,8 @@ class Transfertext
                                      $id_country = array_search($code_country,$data_ids_country);
                                      $code_country = $donnees['billing']['country'];
                                    }
-
+                                   
+                                   // create tiers news
                                    $data_tiers[] =[ 
                                    'entity' =>'1',
                                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
@@ -750,17 +753,32 @@ class Transfertext
                            }
                          }
                         */
-                          
-                          // Create le client via Api.........
                         
-                           foreach($data_tiers as $data) {
+                          
+                         // Create le client via Api.....
+                           
+                          if(count($data_tiers)!=0){
+                             foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
-                             $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                            
-                             
+                             $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                                if($retour_create_tiers==""){
+                                   $message ="Problème sur la création du client";
+                                   $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
+                                   echo json_encode(['success' => false, 'message'=> $message]);
+                                   exit;
+                              }
+                           }
+                          }
+                          //
+                          // recrire la data_lines.
+                          if($data_lines[0]['socid']=="news"){
+                              $data_lines[0]['socid']=$retour_create_tiers;
+                          }else{
+                              $data_lines= $data_lines;
                           }
 
                           // traiter les commande achété avec des bon d'achat ici.
+                          
                   
                           foreach($data_lines[0]['lines'] as $keys => $val){
                             $chainex ="Carte";
@@ -1158,7 +1176,7 @@ class Transfertext
                        }
 
                        elseif(in_array($account_name,$array_paiments)){
-                         // defini le paiment comme virement bancaire......        
+                         // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
                         $account_id=3; // PROD
                         $paimentid =3;// PROD
@@ -1179,7 +1197,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=47;// PROD 
+                        $account_id=33;// PROD 
                         $paimentid =4;// PROD
                      }
 
@@ -1357,7 +1375,7 @@ class Transfertext
                                           'dateo' => date('Y-m-d H:i:s'),
                                           'amount' => $index_amount_true[1],
                                           'label' =>"Paiment en espèce Beauty proof paris 2024",
-                                          'fk_account'=>47,
+                                          'fk_account'=>33,
                                           'fk_user_author'=>0,
                                           'fk_user_rappro'=>0,
                                           'fk_type'=>'LIQ',
@@ -1426,7 +1444,7 @@ class Transfertext
                                     ];
                    
                                    // ecrire la ligne dans la bank BPP liquide pour les espèces.
-                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/47/lines/",json_encode($array_data));
+                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
 
                               */
                                   
