@@ -107,7 +107,7 @@ $(".validate_order").on("click", function(){
             }
 
             $(".total_order_details").append(`
-                <div class="d-flex">
+                <div class="d-flex button_order_action">
                     <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
                         <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button" onclick="validWrapOrder(true)" class="btn btn-primary d-flex mx-auto"> Valider avec étiquette</button>
                     </div>
