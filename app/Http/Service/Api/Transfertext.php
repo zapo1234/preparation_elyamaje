@@ -448,7 +448,7 @@ class Transfertext
                                    
                                      $type_id="";
                                     $typent_code="";
-                                    // defini si le client est un professionnel.
+                                    // defini si le client est un professionnel..
                                    if($woo!=""){
                                       $type_id ="235";
                                       $typent_code="PROF";
@@ -471,7 +471,7 @@ class Transfertext
                                     if(strpos($donnees['order_id'],$chaine_index)!==false){
                                       $code_client = $donnees['order_id'];
                                     }else{
-                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers.....
                                    }
                                   
 
@@ -750,11 +750,13 @@ class Transfertext
                            }
                          }
                         */
+                          
+                          // Create le client via Api.........
                         
-                          // Create le client via Api.....
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                            
                              
                           }
 
