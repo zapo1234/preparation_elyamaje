@@ -91,8 +91,7 @@ class Colissimo
                         ]
                     ]
                 ];
-
-
+                
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
 
