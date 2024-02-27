@@ -266,7 +266,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       return $this->model::select('products.name', 'products.weight', 
          'lines_commande_doli.qte as quantity', 'products.product_woocommerce_id', 'lines_commande_doli.price as cost', 'orders_doli.statut as status')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
-         ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.ref_order', $order_id)
          ->get();
    }

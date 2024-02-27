@@ -380,13 +380,13 @@ class Label extends BaseController
 
         if($from_dolibarr){
             $product_order = $this->orderDolibarr->getProductOrder($order_id)->toArray();
+            // Default colissimo with sign
             $product_order[0]['shipping_method'] = "lpc_sign";
         } else {
             $product_order = $this->order->getProductOrder($order_id);
         }
 
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
-
         if(isset($product_order[0])){
             // dd($product_order[0]);
             if($product_order[0]['status'] != "finished" && !$from_validWraper){
@@ -415,7 +415,6 @@ class Label extends BaseController
                 $product_order[$key]['total_quantity'] = 0;
             }
         }
-
 
         if(count($product_order) > 0){
             echo json_encode(['success' => true, 'products_order' => $product_order]);

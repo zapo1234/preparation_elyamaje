@@ -132,9 +132,9 @@ class WoocommerceService
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
 
     $shipping_method_label = [
-      'chronotoshopdirect' => 'Livraison en point relais',
-      'chrono13' => 'Livraison à domicile',
-      'chrono18' => 'Livraison à domicile'
+      'chronotoshopdirect' => 'Chronopost - Livraison en relais Pickup',
+      'chrono13' => 'Livraison express avant 13h',
+      'chrono18' => 'Livraison à domicile chrono18'
     ];
 
     $transformOrder = [];
