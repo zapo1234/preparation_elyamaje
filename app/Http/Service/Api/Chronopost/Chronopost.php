@@ -51,40 +51,10 @@ class Chronopost
             ],
 
             // Customer / Client
-            'customerValue' => [
-                "customerCivility"          => ' ',
-                "customerName"              => $this->getFilledValue($order['shipping']['company'] ?? ''),
-                "customerName2"             => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']),      
-                "customerContactName"       => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
-                "customerAdress1"           => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
-                "customerAdress2"           => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
-                "customerCity"              => $this->getFilledValue($order['shipping']['city']),
-                "customerZipCode"           => $order['shipping']['postcode'],
-                "customerCountry"           => $order['shipping']['country'],
-                "customerCountryName"       => $countryName,                                                                                       
-                "customerEmail"             => $order['billing']['email'],
-                "customerMobilePhone"       => str_replace(" ", "", $order['billing']['phone']),
-                "customerPhone"             => str_replace(" ", "", $order['billing']['phone']),
-                "customerPreAlert"          => 22,
-            ],
+            'customerValue' => $this->getCustomerValue($order, $countryName),
 
             // Recipient / Destinataire
-            'recipientValue' => [
-                "recipientCivility"         => ' ',
-                "recipientName"             => $this->getFilledValue($order['shipping']['company'] ?? ''),
-                "recipientName2"            => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']), 
-                "recipientContactName"      => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
-                "recipientAdress1"          => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
-                "recipientAdress2"          => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
-                "recipientCity"             => $this->getFilledValue($order['shipping']['city']),
-                "recipientZipCode"          => $order['shipping']['postcode'],
-                "recipientCountry"          => $order['shipping']['country'],
-                "recipientCountryName"      => $countryName,
-                "recipientEmail"            => $order['billing']['email'],
-                "recipientMobilePhone"      => str_replace(" ", "", $order['billing']['phone']),
-                "recipientPhone"            => str_replace(" ", "", $order['billing']['phone']),
-                "recipientPreAlert"         => 22,  
-            ],
+            'recipientValue' => $this->getRecipientValue($order, $countryName),
 
             // Sky Bill / Etiquette de livraison / Caractéristique du colis
             'skybillValue' => [
@@ -116,8 +86,8 @@ class Chronopost
             // client's ref. value / Code barre client
             'refValue' => [
                 "customerSkybillNumber"     => $order['order_id'], 
-                "recipientRef"              => $order['customer_id'], // Ref destinataire, champ libre
-                "shipperRef"                => $order['pick_up_location_id'] ?? $order['order_id'],  // Libre ou mettre code point relais     
+                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
+                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais     
                 "idRelais"                  => $order['pick_up_location_id'] ?? ''
                     
             ],
@@ -206,6 +176,87 @@ class Chronopost
         } catch(Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    protected function getCustomerValue($order, $countryName){
+        
+        // If Shop 2 Shop, CustomerValue is billing for dolibarr order
+        if(in_array($order['shipping_method'], ["chronotoshopdirect"]) && $order['from_dolibarr']){
+            return [
+                "customerCivility"          => ' ',
+                "customerName"              => $this->getFilledValue($order['billing']['company'] ?? ''),
+                "customerName2"             => $this->getFilledValue($order['billing']['last_name'].' '.$order['billing']['first_name']),      
+                "customerContactName"       => $this->getFilledValue($order['billing']['first_name'].' '.$order['billing']['last_name']),
+                "customerAdress1"           => $this->getFilledValue($order['billing']['address_1'] ?? ''),
+                "customerAdress2"           => $this->getFilledValue($order['billing']['address_2'] ?? ''),
+                "customerCity"              => $this->getFilledValue($order['billing']['city']),
+                "customerZipCode"           => $order['billing']['postcode'],
+                "customerCountry"           => $order['billing']['country'],
+                "customerCountryName"       => $countryName,                                                                                       
+                "customerEmail"             => $order['billing']['email'],
+                "customerMobilePhone"       => str_replace(" ", "", $order['billing']['phone']),
+                "customerPhone"             => str_replace(" ", "", $order['billing']['phone']),
+                "customerPreAlert"          => 22,
+            ];
+        } else {
+            return [
+                "customerCivility"          => ' ',
+                "customerName"              => $this->getFilledValue($order['shipping']['company'] ?? ''),
+                "customerName2"             => $this->getFilledValue($order['shipping']['last_name'].' '.$order['shipping']['first_name']),      
+                "customerContactName"       => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
+                "customerAdress1"           => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
+                "customerAdress2"           => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
+                "customerCity"              => $this->getFilledValue($order['shipping']['city']),
+                "customerZipCode"           => $order['shipping']['postcode'],
+                "customerCountry"           => $order['shipping']['country'],
+                "customerCountryName"       => $countryName,                                                                                       
+                "customerEmail"             => $order['billing']['email'],
+                "customerMobilePhone"       => str_replace(" ", "", $order['billing']['phone']),
+                "customerPhone"             => str_replace(" ", "", $order['billing']['phone']),
+                "customerPreAlert"          => 22,
+            ];
+        }
+    }
+
+    protected function getRecipientValue($order, $countryName) {
+
+        // If Shop 2 Shop, RecipientValue is billing for dolibarr order
+        if(in_array($order['shipping_method'], ["chronotoshopdirect"]) && $order['from_dolibarr']){
+            return[
+                "recipientCivility"         => ' ',
+                "recipientName"             => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
+                "recipientName2"            => $this->getFilledValue($order['billing']['first_name'].' '.$order['billing']['last_name']), 
+                "recipientContactName"      => $this->getFilledValue($order['billing']['first_name'].' '.$order['billing']['last_name']),
+                "recipientAdress1"          => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
+                "recipientAdress2"          => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
+                "recipientCity"             => $this->getFilledValue($order['shipping']['city']),
+                "recipientZipCode"          => $order['shipping']['postcode'],
+                "recipientCountry"          => $order['shipping']['country'],
+                "recipientCountryName"      => $countryName,
+                "recipientEmail"            => $order['billing']['email'],
+                "recipientMobilePhone"      => str_replace(" ", "", $order['billing']['phone']),
+                "recipientPhone"            => str_replace(" ", "", $order['billing']['phone']),
+                "recipientPreAlert"         => 22,  
+            ];
+        } else {
+            return[
+                "recipientCivility"         => ' ',
+                "recipientName"             => $this->getFilledValue($order['shipping']['company'] ?? ''),
+                "recipientName2"            => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']), 
+                "recipientContactName"      => $this->getFilledValue($order['shipping']['first_name'].' '.$order['shipping']['last_name']),
+                "recipientAdress1"          => $this->getFilledValue($order['shipping']['address_1'] ?? ''),
+                "recipientAdress2"          => $this->getFilledValue($order['shipping']['address_2'] ?? ''),
+                "recipientCity"             => $this->getFilledValue($order['shipping']['city']),
+                "recipientZipCode"          => $order['shipping']['postcode'],
+                "recipientCountry"          => $order['shipping']['country'],
+                "recipientCountryName"      => $countryName,
+                "recipientEmail"            => $order['billing']['email'],
+                "recipientMobilePhone"      => str_replace(" ", "", $order['billing']['phone']),
+                "recipientPhone"            => str_replace(" ", "", $order['billing']['phone']),
+                "recipientPreAlert"         => 22,  
+            ];
+        }
+          
     }
 
     protected function getProductCode($method = false){
