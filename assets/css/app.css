@@ -293,7 +293,8 @@ a {
 		margin: auto;
 		width: 75%;
 		min-width: 320px;
-		border-radius: 20px
+		border-radius: 20px;
+		margin-bottom: 75px;
 	}
 
 	.detail_order_to_wrap .row-main{

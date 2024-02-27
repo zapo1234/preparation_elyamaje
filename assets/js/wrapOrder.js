@@ -66,7 +66,7 @@ $(".validate_order").on("click", function(){
                    
                         ${!transfers ?
                             `<div class="d-flex w-100 justify-content-center">
-                                <span style="width: fit-content" class="mb-3 badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
+                                <span style="width: fit-content" class="badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
                             </div>`
                         : ''}
 
