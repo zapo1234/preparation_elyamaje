@@ -63,6 +63,7 @@ $(document).ready(function() {
                 var status_list = json.status_list
                 // Récupérer les données des utilisateurs (users)
                 var users = json.users;
+
                 // Combiner les données des commandes (orders) et des utilisateurs (users)
                 var combinedData = orders ? orders.map(function(order) {
                 var coupons = false;

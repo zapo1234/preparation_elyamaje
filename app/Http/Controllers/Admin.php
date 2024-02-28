@@ -108,6 +108,7 @@ class Admin extends BaseController
         $this->terminal = $terminal;
         $this->cashMovement = $cashMovement;
         $this->caisse = $caisse;
+        $this->construcstocks = $construcstocks;
     }
 
     public function syncCategories(){
@@ -1421,17 +1422,219 @@ class Admin extends BaseController
     public function stockscat(){
         $data = $this->construcstocks->Constructstocks();
         $message="";
-        return view('admin.stockscat',['data'=>$data,'message=>$message']);
+        return view('admin.stockscat',['data'=>$data,'message'=>$message]);
     }
 
     public function poststock(Request $request){
            
-        $data = $this->construcstocks->Constructstocks();
-        $data_id = $this->construcstocks->getdata();
+         $data = $this->construcstocks->Constructstocks();
+         $data_id = $this->construcstocks->getdata();
          $array_list1 = array_flip($data_id);//
-          $donnees = $request->get('qte');
+
+          $existant = $request->get('qts');
+          //dd($existant);
+           $donnees = $request->get('qte');
+           //dump($donnees);
           // construire des jeu de données.
            $datac =[];
+           $datas =[];
+           $regroup_data =[];
+          foreach($donnees as $ky =>$val){
+           if($val==""){
+                $index="no";
+           }else{
+                $index=$val;
+           }
+             $datac[$index.','.$ky] = $ky;
+             $datas[$val] = $ky;
+          }
+            // reconstruire le tableau.
+            $tab_data_qte =[];
+           foreach($existant as $kelc => $vald){
+                $index_te =  array_search($kelc,$datac);
+                 // recupérer le cas 
+                $index_s = explode(',',$index_te);
+                // recupérer le nombre finale de mutiplication
+                $s = (int)$index_s[0] - (int)$vald;
+
+                if($s>0){
+                    $a ="a";
+                }
+                if($s<0){
+                    $a ="b";
+                }
+
+                if($s==""){
+                    $a="c";
+                }
+
+                $tab_data_qte[] = $index_te.','.$s.','.$a;
+ 
+           }
+        
+            $datacc =array_flip($tab_data_qte);
+             $array_list2 = $datacc;
+               // faire une list de array.
+             if(count($datas)!=1){
+              // faire le traitement
+                  foreach($array_list2 as $ms => $valus){
+                //
+                $index_key = explode(',',$ms);
+                if($index_key[0]!="no"){
+                    // va contruire les données
+                    $regroup_data[$ms] =$valus;
+                }
+               }
+             
+              //dd($regroup_data);
+              // chercher les correspondance souhaite. pour crée des les données 
+              $group_data =[];
+              $data_array1 =[];
+              foreach($regroup_data as $keu=>$val){
+                   $chaine_data = array_search($val,$array_list1);
+                   if($chaine_data!=false){
+                        // recupérer 
+                      $chaine_qte_coeff = explode(',',$keu);
+                      $index_search = explode('%',$chaine_data);
+                      
+                      // fabirquer les données ....
+                      $line_create = $index_search[0]*$chaine_qte_coeff[2];// modifier ici ancien $chaine_qte_coeff[0]
+                      $line_create1 = $index_search[1];
+                       // créer un 1 er jeu de tableau. pour actuliser les quantite rentré .
+                       $data_array1[$index_search[1]]=$chaine_qte_coeff[0];
+                         //  un second jeu de données.
+                        $data_array2[] =  [
+                          'id_parent'=> $index_search[2],
+                          'quantite'=> $line_create
+                       ];
+                       
+                       // recupérer la quantite unite
+                       $data_array3[$index_search[2]] = $index_search[3];
+                   }
+
+                   
+              }
+
+              //dump($data_array2);
+              
+              // caluler sur le second tableau les quantite a decremente
+              $result = array_reduce($data_array2,function($carry,$item){
+              if(!isset($carry[$item['id_parent']])){ 
+                $carry[$item['id_parent']] = ['id_parent'=>$item['id_parent'],'quantite'=>$item['quantite']]; 
+               } else { 
+                $carry[$item['id_parent']]['quantite'] += $item['quantite']; 
+             } 
+               return $carry; 
+              });
+
+           // dd($result);
+             $restriction =[];
+             $data_flush =[];// construire le tableau pour update multiple en bdd
+             $ids_restriction =[];// recupérer les ids .
+             foreach($result as $lg => $valo){
+                 $line = $lg.','.$valo['quantite'];
+                 $data_flush[$line]= $lg;
+             }
+              // regouper la somme a deduire 
+               // reconstruire le tableau finale pour qte de l'unite
+              $line_final_unite =[];
+              foreach($data_array3 as $ky=>$valc){
+                  
+                  $qte_line = array_search($ky,$data_flush);
+                  $line_qte = explode(',',$qte_line);
+
+                  // verifier la quantité trouvé
+                   $line_final_unite[$ky]=$valc-$line_qte[1];
+              }
+              
+              // construire mes datas requete
+              foreach($data_array1 as $ken =>$vn){
+                   $data_finale1[] =[
+                      ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
+                      
+                    ];
+              }
+                // construire les data pour les unite a decremente
+               foreach($line_final_unite as $kens =>$vns){
+                   $data_finale2[] =[
+                      ['product_id'=>$kens, 'warehouse_array_list'=>$vns]
+                      
+                    ];
+
+                   // recupérer les quantité negative
+                  if($vns<0){
+                     $restriction[] = $vns;
+                     $ids_restriction[] =$kens;
+                  }
+              }
+
+             // recupérer le array ici
+              $index_label = $this->construcstocks->getLinesproduct();
+              $list_product =[];
+
+              foreach($ids_restriction as $vam){
+                  $ls =  array_search($vam,$index_label);
+                  $mms = explode('%',$ls);
+                
+                  $list_product[] =  $mms[1];
+              }
+
+              $list_libelle = implode(',',$list_product);
+              
+              if(count($restriction)!=0){
+                // bloquer ici
+                  $message ="Attention $list_libelle à l'unite serait négative";
+                  return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+              }
+              
+              
+              $data_f = array_merge($data_finale1,$data_finale2);
+             
+              // excuté les chamgement.
+              foreach ($data_f as $valus) {
+                  $userId = $valus[0]['product_id'];
+                   $status = $valus[0]['warehouse_array_list'];
+                  // Effectuer la mise à jour pour chaque enregistrement
+                   ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
+                 }
+                   // retour sur la page
+                   $message ="des lignes bien modifiées";
+                return view('admin.confirm',['data'=>$data,'message'=>$message]);
+             }
+
+            if(count($datas)==1){
+                $message ="Aucune ligne modifie";
+                return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+              
+          }
+    }
+
+    public function poststockrap(Request $request){
+           
+         $data = $this->construcstocks->Constructstocks();
+         $data_id = $this->construcstocks->getRapes();
+         $array_list1 = $data_id;//
+
+           // recupérer les deux premiere chaine..
+           $array_normale =[];
+           $array_normale[] = $array_list1[0];
+           $array_normale[] = $array_list1[1];
+ 
+           // vider le tableau des deux index
+           
+            $list_array = array_values(array_diff($array_list1,$array_normale));
+          
+           $array_list1 = array_flip($list_array);
+           
+            $existant = $request->get('qts');
+
+
+            $donnees = $request->get('qte');
+           // recupérer les quantité à l'unité
+            $donnes = $request->get('qte1');
+        
+
+          $datac =[];
           $datas =[];
 
           $regroup_data =[];
@@ -1445,130 +1648,202 @@ class Admin extends BaseController
              $datas[$val] = $ky;
           }
 
-          $array_list2 = $datac;
-            
-           // faire une list de array.
-          if(count($datas)!=1){
-           // faire le traitement
-             
-        // afficher les choses
-             foreach($array_list2 as $ms => $valus){
+          
+
+          $tab_data_qte =[];
+          foreach($existant as $kelc => $vald){
+               $index_te =  array_search($kelc,$datac);
+
+               // recupérer le cas 
+               $index_s = explode(',',$index_te);
+               // recupérer le nombre finale de mutiplication
+               $s = (int)$index_s[0] - (int)$vald;
+
+               if($s>0){
+                   $a ="a";
+               }
+               if($s<0){
+                   $a ="b";
+               }
+
+               if($s==""){
+                  $a ="c";
+               }
+
+               $tab_data_qte[] = $index_te.','.$s.','.$a;
+
+          }
+       
+           $datacc =array_flip($tab_data_qte);
+
+        $array_list2 = $datacc;
+        
+            // faire une list de array.
+         if(count($datas)!=1){
+             // faire le traitement
+             // afficher les choses
+              foreach($array_list2 as $ms => $valus){
                 //
                 $index_key = explode(',',$ms);
-                if($index_key[0]!="no"){
-                    // va contruire les données
-                    $regroup_data[$ms] =$valus;
-                }
-               }
-             
-
-              // chercher les correspondance souhaite. pour crée des les données 
-              $group_data =[];
-              $data_array1 =[];
-              foreach($regroup_data as $keu=>$val){
-                   $chaine_data = array_search($val,$array_list1);
-                   if($chaine_data!=false){
-                        // recupérer 
-                      $chaine_qte_coeff = explode(',',$keu);
-                      $index_search = explode('%',$chaine_data);
-                      
-                      // fabirquer les données ....
-                      $line_create = $index_search[0]*$chaine_qte_coeff[0];
-                      $line_create1 = $index_search[1];
-                       // créer un 1 er jeu de tableau. pour actuliser les quantite rentré .
-                       $data_array1[$index_search[1]]=$chaine_qte_coeff[0];
-                          
-
-                        //  un second jeu de données.
-                        $data_array2[] =  [
-                          'id_parent'=> $index_search[2],
-                          'quantite'=> $line_create
-                       ];
-                       
-                       // recupérer la quantite unite
-                       $data_array3[$index_search[2]] = $index_search[3];
-                   }
-
-                   
+                  if($index_key[0]!="no"){
+                   // va contruire les données
+                   $regroup_data[$ms] =$valus;
+                  }
               }
-              
-               // caluler sur le second tableau les quantite a decremente
+
+            $group_data =[];
+            $data_array1 =[];
+         
+           foreach($regroup_data as $keu=>$val){
+                $chaine_data = array_search($val,$array_list1);
+                  if($chaine_data!=false){
+                   // recupérer 
+                  $chaine_qte_coeff = explode(',',$keu);
+                  $index_search = explode('%',$chaine_data);
+                    // fabirquer les données ....
+                  $line_create = $index_search[0]*$chaine_qte_coeff[2];// modifier ici ancien $chaine_qte_coeff[0]
+                   $line_create1 = $index_search[1];
+                  // créer un 1 er jeu de tableau. pour actuliser les quantite rentré .
+                  $data_array1[$index_search[1]]=$chaine_qte_coeff[0];
+                     
+                //  un second jeu de données.
+                   $data_array2[] =  [
+                     'id_parent'=> $index_search[2],
+                     'quantite'=> $line_create
+                  ];
+                  
+                  // recupérer la quantite unite
+                  $data_array3[$index_search[2]] = $index_search[3];
+              }
+
+         }
+
+              // caluler sur le second tableau les quantite a decremente
               $result = array_reduce($data_array2,function($carry,$item){
-              if(!isset($carry[$item['id_parent']])){ 
-                $carry[$item['id_parent']] = ['id_parent'=>$item['id_parent'],'quantite'=>$item['quantite']]; 
-               } else { 
-                $carry[$item['id_parent']]['quantite'] += $item['quantite']; 
-             } 
-               return $carry; 
-              });
-           
+                if(!isset($carry[$item['id_parent']])){ 
+                  $carry[$item['id_parent']] = ['id_parent'=>$item['id_parent'],'quantite'=>$item['quantite']]; 
+                 } else { 
+                  $carry[$item['id_parent']]['quantite'] += $item['quantite']; 
+               } 
+                 return $carry; 
+                });
+  
+               // dd($result);
+                $data_flush =[];// construire le tableau pour update multiple en bdd
+               foreach($result as $lg => $valo){
+                   $line = $lg.','.$valo['quantite'];
+                   $data_flush[$line]= $lg;
+               }
+  
+                // regouper la somme a deduire 
+                 // reconstruire le tableau finale pour qte de l'unite
+                $line_final_unite =[];
+                $list_qte =[];
+                $restriction =[];
+                $ids_restriction =[];
+                foreach($data_array3 as $ky=>$valc){
+                    
+                    $qte_line = array_search($ky,$data_flush);
+                    $line_qte = explode(',',$qte_line);
+                    // verifier la quantité trouvé
+                      $line_final_unite[$ky]=$valc-$line_qte[1];
+                }
 
-             $data_flush =[];// construire le tableau pour update multiple en bdd
-             foreach($result as $lg => $valo){
-                 $line = $lg.','.$valo['quantite'];
-                 $data_flush[$line]= $lg;
-             }
-
-              // regouper la somme a deduire 
-              
-              // reconstruire le tableau finale pour qte de l'unite
-              $line_final_unite =[];
-              foreach($data_array3 as $ky=>$valc){
-                  
-                  $qte_line = array_search($ky,$data_flush);
-                  $line_qte = explode(',',$qte_line);
-                  
-                  $line_final_unite[$ky]=$valc-$line_qte[1];
-              }
-              
-              // construire mes datas requete
-              foreach($data_array1 as $ken =>$vn){
+                // construire mes datas requete pour line des produits ..
+            
+               foreach($data_array1 as $ken =>$vn){
                    $data_finale1[] =[
-                      ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
-                      
-                    ];
-              }
-              
-              
-              // construire les data pour les unite a decremente
-               foreach($line_final_unite as $kens =>$vns){
-                   $data_finale2[] =[
-                      ['product_id'=>$kens, 'warehouse_array_list'=>$vns]
-                      
-                    ];
-              }
-              
-              
-               $data_f = array_merge($data_finale1,$data_finale2);
-              
-              
-              $dataToUpdate = [
-            ['product_id' => 5631, 'warehouse_array_list' => '55'],
-            ['product_id' => 4668, 'warehouse_array_list' => '55'],
-             // Ajoutez d'autres enregistrements avec les valeurs correspondantes
-           ];
+                    ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
+                   
+                   ];
 
-          foreach ($data_f as $valus) {
-              
+                    // recupere les qauntite en line ..
+                   $list_qte[] = $vn;
+              }
+           
+           
+           // construire les data pour les unite a decremente
+            foreach($line_final_unite as $kens =>$vns){
+                $data_finale2[] =[
+                   ['product_id'=>$kens, 'warehouse_array_list'=>$vns]
+                   
+                 ];
+
+                  // recupérer les quantité negative
+                  if($vns<0){
+                    $restriction[] = $vns;
+                    $ids_restriction[] = $kens;
+                 }
+           }
+            
+               // recupérer le array ici
+               $index_label = $this->construcstocks->getLinesproduct();
+               $list_product =[];
+ 
+               foreach($ids_restriction as $vam){
+                   $ls =  array_search($vam,$index_label);
+                   $mms = explode('%',$ls);
+                 
+                   $list_product[] =  $mms[1];
+               }
+ 
+               $list_libelle = implode(',',$list_product);
+               
+               if(count($restriction)!=0){
+                 // bloquer ici
+                   $message ="Attention $list_libelle à l'unite serait négative";
+                   return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+               }
+          
+
+            // exécuter sur les manche en unites.
+            $data_rape = explode('%',$array_normale[0]);
+           
+            $somme_qte = array_sum($list_qte);
+            $vnss = $data_rape[1]-$somme_qte;
+
+             $data_finale3[] =[
+                ['product_id'=>$data_rape[2], 'warehouse_array_list'=>$vnss]
+                   
+            ];
+
+             // construire mon tableau pour decremente l'unité.;;
+              $data_f = array_merge($data_finale1,$data_finale2,$data_finale3);
+             
+              // excuté les chamgement.
+              foreach ($data_f as $valus) {
                 $userId = $valus[0]['product_id'];
                  $status = $valus[0]['warehouse_array_list'];
               // Effectuer la mise à jour pour chaque enregistrement
-            ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
+                 ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
            }
            
-            // retour sur la page
-              $message ="des lignes bien modifiées";
-                return view('admin.stockscat',['data'=>$data,'message'=>$message]);
-   
+               // retour sur la page
+               $message ="des lignes bien modifiées";
+                return view('admin.confirm',['data'=>$data,'message'=>$message]);
 
-          }
+       }
 
-         if(count($datas)==1){
-               $message ="Aucune ligne modifie";
-               return view('admin.stockscat',['data'=>$data,'message'=>$message]);
-              
-          }
+        if(count($datas)==1){
+            $this->construcstocks->Constructstocks();
+           $data = $this->construcstocks->getRape();
+          $message ="Aucune ligne modifie";
+          return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
+        }
 
+          
+    }
+
+    public function stockgroupe(){
+
+         $this->construcstocks->listcategories();
+    }
+
+    public function postrape(){
+        $this->construcstocks->Constructstocks();
+        $data = $this->construcstocks->getRape();
+        $message="";
+        return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
     }
     
    

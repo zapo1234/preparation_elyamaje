@@ -195,7 +195,7 @@ class Transfertext
      */
       public function Transfertext($orders)
       {
-          
+           
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -207,7 +207,7 @@ class Transfertext
                     $id_commande="exist";
                     $linkedObjectsIds =  ["commande" => [""=>$val['fk_commande']]];
                     $emballeur = $val['emballeur'];
-                    $preparateur="";
+                    $preparateur= $val['preparateur'];
                     $coupons="";
                  }
 
@@ -472,7 +472,7 @@ class Transfertext
                                    if(strpos($donnees['order_id'],$chaine_index)!==false){
                                      $code_client = $donnees['order_id'];
                                    }else{
-                                    $code = $donnees['customer_id'];
+                                     $code = $donnees['customer_id'];
                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
                                   }
                                  
@@ -496,6 +496,7 @@ class Transfertext
                                    'name_alias' => $woo,
                                    'address' => $donnees['billing']['address_1'],
                                    'zip' => $donnees['billing']['postcode'],
+                                   'town'=> $donnees['billing']['city'],
                                    'status'=>'1',
                                    'email' => $donnees['billing']['email'],
                                    "typent_id" => $type_id,
@@ -1197,7 +1198,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=33;// PROD 
+                        $account_id=47;// PROD 
                         $paimentid =4;// PROD
                      }
 
@@ -1375,7 +1376,7 @@ class Transfertext
                                           'dateo' => date('Y-m-d H:i:s'),
                                           'amount' => $index_amount_true[1],
                                           'label' =>"Paiment en espèce Beauty proof paris 2024",
-                                          'fk_account'=>33,
+                                          'fk_account'=>47,
                                           'fk_user_author'=>0,
                                           'fk_user_rappro'=>0,
                                           'fk_type'=>'LIQ',
@@ -1428,25 +1429,7 @@ class Transfertext
                              ]);
 
                                    
-                                   // modifier le paimement.
-
-                                /*  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-                                  
-                                  // modifier directement dans la bdd 
-                                   // ecrire le montant dans liquide bank pour les paiment en ligquide BP
-                                   $array_data =[
-                                     "date"=> $date_finale,
-                                     "type"=>"LIQ",
-                                     "label"=>"Paiment en espèce Beauty proof paris 2024",
-                                     "amount"=>$index_amount_true[1],
-                                     "cheque_number"=>$response['ref'],
-                                     "datev" => $date_finale,
-                                    ];
-                   
-                                   // ecrire la ligne dans la bank BPP liquide pour les espèces.
-                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
-
-                              */
+                                
                                   
                            }
                         

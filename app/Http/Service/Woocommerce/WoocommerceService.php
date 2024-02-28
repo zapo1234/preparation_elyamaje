@@ -140,7 +140,7 @@ class WoocommerceService
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
-
+    
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'] ?? 0;
     $transformOrder['gift_card_amount'] = "";
     $transformOrder['amountCard'] = $orderDolibarr[0]['amountCard'] ?? 0;

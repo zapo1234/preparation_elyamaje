@@ -142,12 +142,20 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/addCashMovement", [Admin::class, "addCashMovement"])->name('admin.addCashMovement'); 
     Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
-    // gestion de stocks.
-     // gestion de stocks lime et rape.
-     Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
+   // gestion de stocks lime et rape.
+   Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
 
+   // requete stocks post
+   Route::post("/stockscat", [Admin::class, "poststock"])->name('admin.stockscat'); 
+
+
+   // rape gere le calcule des raps et plaquante
+   Route::post("/stockscatrap", [Admin::class, "poststockrap"])->name('admin.stockscatrap'); 
+
+
+   // traiter les rapes
     // requete stocks post
-    Route::post("/stockscat", [Admin::class, "poststock"])->name('admin.stockscat'); 
+    Route::get("/stocksrape", [Admin::class, "postrape"])->name('admin.stocksrape'); 
 
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 

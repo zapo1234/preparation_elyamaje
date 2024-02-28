@@ -43,18 +43,20 @@
             </div>
             <div class="card-body p-0" style="background-color:white;">
                 <div class="d-flex w-100">
-                        <form  method="POST" action="{{ route('admin.stockscat') }}" style="overflow:hidden; width:70%;" class="radius-10">
+                        <form method="POST" action="{{ route('admin.stocksrape') }}" style="overflow:hidden; width:70%;" class="radius-10 d-flex flex-wrap">
                             @csrf
-                            <table id="" style="width:100%" class="kitStock">
+                            <table id="" style="width:100%" class="kitStockRape">
                                 @foreach($data as $key => $val)
                                     <tr style="padding:3%">
-                                        <td style="background-color:black;font-size:16px !important; font-weight:500; text-transform:uppercase;color:white;width:50%;border-top-left-radius: 10px;border-top-right-radius: 10px;">{{  $key }} </td>
+                                        <td style="background-color:black;font-size:16px; font-weight:500; text-transform:uppercase;color:white;width:100%;border-top-left-radius: 10px;border-top-right-radius: 10px; display:block !important;">
+                                            {{ $key }} 
+                                        </td>
                                     </tr>
                                     @foreach($val as $kj => $vals)
                                         @foreach($vals as $lm => $vv)
-                                        
+                                
                                             @php
-                                                
+
                                                 $lim = explode('%',$lm);
                                                 
                                                 $namex = explode(' ',$lim[0]);
@@ -68,21 +70,22 @@
                                                 }else{
                                                     $name_list = $namex[3];
                                                 }
-
+                                        
                                             @endphp
-                                            
+                                    
                                             <tr>
-                                                <td style="background-color: #333333;color:white;padding:10px;">{{ $name_list  }}  Nombre d'unités : {{  $lim[1] }} </td>
+                                                <td style="background-color: #333333;color:white;padding:10px; display:block !important;">
+                                                    {{ $name_list }}  Nombre d'unités : {{ $lim[1] }}
+                                                </td>
                                             </tr>
-                                            
                                             @foreach($vv as $ls =>$vc)
                                                 <tr>
                                                     <td style="display:flex; min-height:50px; align-items:center; gap:20px; justify-content:space-between;padding-bottom:25px !important; padding-top:8px !important;">
-                                                                <span style="font-weight:500; width:300px;">{{ $vc['libelle_family'] }} </span>
-                                                                <div class="d-flex align-items-center justify-content-center">
-                                                                    Quantité :  
-                                                                    <input type="text" name="qts[]" value ="{{  $vc['quantite']  }}" readonly style="border:none !important;"> 
-                                                                </div>
+                                                            <span style="font-weight:500; width:300px;">{{ $vc['libelle_family'] }} </span>
+                                                            <div class="d-flex align-items-center justify-content-center">
+                                                                Quantité :
+                                                                <input type="text" name="qts[]" value="{{ $vc['quantite'] }}" readonly style="border:none !important;"> 
+                                                            </div>
                                                             <input type="text" name="qte[]" placeholder="Nouveau stock"> 
                                                     </td>
                                                 </tr>
@@ -91,9 +94,9 @@
                                     @endforeach  
                                 @endforeach
                             </table>
-                            <button style="position:fixed;top:50%;margin-left:70%" type="submit" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="">Modifier le stock</button>
+                            <button style="position:fixed;top:50%;margin-left:70%" type="submit" class="btn btn-primary text-white">Modifier le stock</button>
                         </form>
-                </div>
+                    </div>
             </div>
         </div>
     </div>
