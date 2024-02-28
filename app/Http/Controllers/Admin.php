@@ -108,6 +108,7 @@ class Admin extends BaseController
         $this->terminal = $terminal;
         $this->cashMovement = $cashMovement;
         $this->caisse = $caisse;
+        $this->construcstocks = $construcstocks;
     }
 
     public function syncCategories(){
