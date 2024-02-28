@@ -129,10 +129,12 @@ class  Construncstocks
         $data_product =[];
          $line_product =[];
         foreach($list_products as $valus){
+          if($valus['product_id']!="6371"){
           $chainex = $valus['product_id'].'%'.$valus['label'].'%'.$valus['warehouse_array_list'];
           $data_product[$chainex] = $valus['product_id'];
            $line = $valus['product_id'].'%'.$valus['label'];
            $line_product[$line] = $valus['product_id'];
+          }
       }
       
       

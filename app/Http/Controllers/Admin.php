@@ -1693,7 +1693,7 @@ class Admin extends BaseController
 
             $group_data =[];
             $data_array1 =[];
-         
+           $list_qte =[];
            foreach($regroup_data as $keu=>$val){
                 $chaine_data = array_search($val,$array_list1);
                   if($chaine_data!=false){
@@ -1714,6 +1714,8 @@ class Admin extends BaseController
                   
                   // recupérer la quantite unite
                   $data_array3[$index_search[2]] = $index_search[3];
+
+                  $list_qte[] = $line_create;
               }
 
          }
@@ -1738,7 +1740,7 @@ class Admin extends BaseController
                 // regouper la somme a deduire 
                  // reconstruire le tableau finale pour qte de l'unite
                 $line_final_unite =[];
-                $list_qte =[];
+                
                 $restriction =[];
                 $ids_restriction =[];
                 foreach($data_array3 as $ky=>$valc){
@@ -1758,7 +1760,7 @@ class Admin extends BaseController
                    ];
 
                     // recupere les qauntite en line ..
-                   $list_qte[] = $vn;
+                  
               }
            
            
