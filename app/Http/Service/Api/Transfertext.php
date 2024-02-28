@@ -1341,7 +1341,8 @@ class Transfertext
                                   
                                     $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
                                      // faire un select sur la table table paiment  
-                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");                                     $name_list = json_encode($data);
+                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");                                     
+                                     $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
                                       // faire un update du amount.
                                        $ref_paiement = $name_list[0]['ref'];
