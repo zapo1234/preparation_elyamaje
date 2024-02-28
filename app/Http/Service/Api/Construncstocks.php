@@ -159,7 +159,7 @@ class  Construncstocks
          $data_donnees =[];
          foreach($datas as $key =>$valus){
           
-              if(count($valus)==1 OR count($valus)==2 OR count($valus)==4){
+              if(count($valus)==1 OR count($valus)==2 OR count($valus)==4 OR count($valus)==3){
                  $data_donnees[$key] =$valus;
               }
            }
