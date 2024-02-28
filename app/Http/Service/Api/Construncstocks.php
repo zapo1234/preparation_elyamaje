@@ -15,8 +15,13 @@ class  Construncstocks
       private $datas = [];
 
       private $data =[];
+
+      private $rape =[];
    
-    
+      private $rapes =[];
+
+      private $linesproduct =[];
+
        public function __construct(
         Api $api
        )
@@ -41,7 +46,7 @@ class  Construncstocks
     }
 
 
-  /**
+    /**
    * @return array
     */
     public function getData(): array
@@ -53,6 +58,54 @@ class  Construncstocks
    public function setData(array $data)
    {
     $this->data = $data;
+    return $this;
+   }
+
+
+
+    /**
+   * @return array
+    */
+    public function getRape(): array
+    {
+      return $this->rape;
+    }
+  
+   public function setRape(array $rape)
+   {
+     $this->rape = $rape;
+      return $this;
+   }
+
+
+   
+    /**
+   * @return array
+    */
+    public function getRapes(): array
+    {
+      return $this->rapes;
+    }
+  
+   public function setRapes(array $rapes)
+   {
+     $this->rapes = $rapes;
+      return $this;
+   }
+
+
+     /**
+   * @return array
+    */
+    public function getLinesproduct(): array
+    {
+     return $this->linesproduct;
+    }
+  
+  
+   public function setLinesproduct(array $linesproduct)
+   {
+    $this->linesproduct = $linesproduct;
     return $this;
    }
 
@@ -71,15 +124,20 @@ class  Construncstocks
         $list_product = json_encode($listproduct);
         $list_products = json_decode($listproduct,true);
         
-        
+        //dd($list_products);
 
         $data_product =[];
+         $line_product =[];
         foreach($list_products as $valus){
           $chainex = $valus['product_id'].'%'.$valus['label'].'%'.$valus['warehouse_array_list'];
           $data_product[$chainex] = $valus['product_id'];
+           $line = $valus['product_id'].'%'.$valus['label'];
+           $line_product[$line] = $valus['product_id'];
       }
       
       
+         // recupérer le tableau
+            $this->setLinesproduct($line_product);
           // aller recupérer la table product association dolibar.
            // filtrer directement avec une requete sql depuis dolibar.
          $data = DB::connection('mysql2')->select("SELECT fk_product_fils,fk_product_pere,qty  FROM llxyq_product_association");
@@ -151,8 +209,7 @@ class  Construncstocks
               $data_limes =[];
               $data_details_limes =[];
               
-             
-          
+              
               foreach($list_data_assoc_produit as $kel =>$valus){
 
                    $chaine_index = explode(' ',$kel);
@@ -177,11 +234,36 @@ class  Construncstocks
                         ];
                       
                    }
+                 
+                   if($chaine_index[0]=="RAPE"){
+                       $index_prefix ="RAPE MANCHE";
+                       $tab_result_arrays1[$index_prefix][] = [
+                        $kel =>[]
+                     ];
+
+                     // chaine index ..
+                     $array_tab[$index_prefix][] =[
+                      $kel => $valus
+                     ];
                    
-                   
-                   
-                   if($chaine_index[0]=="Lime"){
-                    $data_product_array_choix[$kel] =$valus;
+                }
+
+                 if($chaine_index[0]=="Plaque"){
+                  $index_prefix ="Plaque Râpante";
+                  $tab_result_arrays21[$index_prefix][] = [
+                   $kel =>$valus
+                ];
+
+                   // recupérer la ligne une pour id 
+                   // chaine index ..
+                    $array_tab1[$index_prefix][] =[
+                     $kel => $valus
+                   ];
+                }
+
+                
+                    if($chaine_index[0]=="Lime"){
+                        $data_product_array_choix[$kel] =$valus;
                         // construire la sortir de mon tableau
                         $index_prefix = $chaine_index[0].' '.$chaine_index[1];
                         
@@ -196,20 +278,24 @@ class  Construncstocks
                       
                    }
                    
-                  
-                   
                }
- 
-          //
-            $tab_result_array = array_merge($tab_result_arrays,$tab_result_array1,$tab_result_array2);
+
+               // recupérer les raps.
+               $array_result_rap = array_merge($tab_result_arrays1,$tab_result_arrays21);
+               $this->setRape($array_result_rap);
+              //
+            // reconstruire le tableau....
+             $tab_result_array = array_merge($tab_result_arrays,$tab_result_array1,$tab_result_array2);
         
-            $array_reverse = array_reverse($tab_result_array);
-            
-            
+              $array_reverse = array_reverse($tab_result_array);
+    
 
           //unset($array_reverse['Lime Droite']);
             $recap_ids_line =[];// recupérer les lines souhaites
             // recu pere les ids en line constituf du tableau.
+
+            // les raps et plaquante
+            $recap_ids_lines =[];
         
             foreach($array_reverse as $valus){
               foreach($valus as $sm => $valis){
@@ -219,7 +305,7 @@ class  Construncstocks
                    // recupérer le id_parent haut.
                     $index_libel = explode('%',$lmm);
                       foreach($valo as $ll){
-                       // recupérer le taux chez le libelle
+                       // recupérer le taux chez le libelle..
                          $taux_libelle = explode(' ',$ll['libelle_family']);
                          $recap_ids_line[]= $ll['coeff_qte'].'%'.$ll['id_product_pere'].'%'.$index_libel[2].'%'.$index_libel[1];
 
@@ -227,6 +313,44 @@ class  Construncstocks
                 }
            }
           }
+
+        
+          $rape_index_first =[];// crée le 1 er index
+          $plaque_index_first =[];// crée le 1 er index
+          foreach($array_tab as $kd=>$vals){
+             foreach($vals[0] as $ml=>$vbm){
+              $rape_index_first[] = $ml;
+             }
+          }
+
+          foreach($array_tab1 as $kd=>$vals){
+            foreach($vals[0] as $mls=>$vbm){
+             $plaque_index_first[] = $mls;
+            }
+         }
+
+          // traiter les rap et plaquete.
+          foreach($array_result_rap as $valus){
+            foreach($valus as $sm => $valis){
+            
+                foreach($valis as $lmm => $valo){
+                   // recupérer le id_parent haut.
+                  $index_libel = explode('%',$lmm);
+                    foreach($valo as $ll){
+                     // recupérer le taux chez le libelle
+                       $taux_libelle = explode(' ',$ll['libelle_family']);
+                       $recap_ids_lines[]= $ll['coeff_qte'].'%'.$ll['id_product_pere'].'%'.$index_libel[2].'%'.$index_libel[1];
+                }
+            }
+         }
+        }
+
+        
+        
+        $recap_ids_lines =  array_merge($rape_index_first,$plaque_index_first,$recap_ids_lines);
+
+          // ici .
+          $this->setRapes($recap_ids_lines);
         
           $this->setdata($recap_ids_line);
           
