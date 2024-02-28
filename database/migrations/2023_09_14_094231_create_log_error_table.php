@@ -16,7 +16,7 @@ class CreateLogErrorTable extends Migration
         Schema::create('log_error', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id')->nullable();
-            $table->string('message')->nullable();
+            $table->string('message', 1000)->nullable();
             $table->timestamps();
         });
     }
