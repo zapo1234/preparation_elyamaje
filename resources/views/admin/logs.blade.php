@@ -51,9 +51,9 @@
 								<tbody>
 									@foreach ($logs as $log)
 										<tr>
-											<td class="col-md-1">{{ $log['order_id'] }}</td>
-											<td><span style="word-break:break-word" class="text-warning">{{ $log['message'] }}</span></td>
-											<td class="col-md-2">{{ $log['created_at'] }}</td>
+											<td class="col-md-1 font-bold" style="color: black !important">{{ $log['order_id'] }}</td>
+											<td><span style="word-break:break-word" class="text-danger">{{ $log['message'] }}</span></td>
+											<td class="col-md-2 font-bold" style="color: black !important">{{ $log['created_at'] }}</td>
 											<td class="col-md-2">{{ $log['id'] }}</td>
 										</tr>
 									@endforeach
