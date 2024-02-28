@@ -284,8 +284,8 @@ class Order extends BaseController
 
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
-                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
+                if(!str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  && !str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $list_orders[] = $order;
                 }
               } else {
@@ -761,7 +761,8 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-              $this->factorder->TransferOrder($orders);
+        
+            $this->factorder->TransferOrder($orders);
             //$this->transfert->Transfertext($orders);
 
             // Insert la commande dans histories
