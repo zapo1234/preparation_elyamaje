@@ -472,7 +472,7 @@ class Transfertext
                                    if(strpos($donnees['order_id'],$chaine_index)!==false){
                                      $code_client = $donnees['order_id'];
                                    }else{
-                                    $code = $donnees['customer_id'];
+                                     $code = $donnees['customer_id'];
                                      $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
                                   }
                                  
@@ -1429,25 +1429,7 @@ class Transfertext
                              ]);
 
                                    
-                                   // modifier le paimement.
-
-                                /*  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-                                  
-                                  // modifier directement dans la bdd 
-                                   // ecrire le montant dans liquide bank pour les paiment en ligquide BP
-                                   $array_data =[
-                                     "date"=> $date_finale,
-                                     "type"=>"LIQ",
-                                     "label"=>"Paiment en espèce Beauty proof paris 2024",
-                                     "amount"=>$index_amount_true[1],
-                                     "cheque_number"=>$response['ref'],
-                                     "datev" => $date_finale,
-                                    ];
-                   
-                                   // ecrire la ligne dans la bank BPP liquide pour les espèces.
-                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
-
-                              */
+                                
                                   
                            }
                         
