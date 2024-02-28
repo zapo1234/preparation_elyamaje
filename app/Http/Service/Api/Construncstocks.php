@@ -123,6 +123,8 @@ class  Construncstocks
         $listproduct = DB::table('products_dolibarr')->select('product_id','label','warehouse_array_list')->get();
         $list_product = json_encode($listproduct);
         $list_products = json_decode($listproduct,true);
+
+        dd($list_products);
         
         //dd($list_products);
 
