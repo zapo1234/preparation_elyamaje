@@ -16,6 +16,7 @@ use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\Api\Construncstocks;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
@@ -62,6 +63,7 @@ class Admin extends BaseController
     private $cashMovement;
     private $caisse;
     private $transfers;
+    private $construcstocks;
 
     public function __construct(
         Api $api, 
@@ -83,7 +85,8 @@ class Admin extends BaseController
         LogErrorRepository $logError,
         TerminalRepository $terminal,
         CashMovementRepository $cashMovement,
-        CaisseRepository $caisse
+        CaisseRepository $caisse,
+        Construncstocks $construcstocks
     ){
         $this->api = $api;
         $this->category = $category;
@@ -105,6 +108,7 @@ class Admin extends BaseController
         $this->terminal = $terminal;
         $this->cashMovement = $cashMovement;
         $this->caisse = $caisse;
+        $this->construcstocks = $construcstocks;
     }
 
     public function syncCategories(){
@@ -659,8 +663,8 @@ class Admin extends BaseController
 
             try {
 
-                // $this->transfers-> Transfertext($order);
-                $this->factorder->Transferorder($order);  
+                  //$this->transfers-> Transfertext($order);
+                   $this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -970,11 +974,11 @@ class Admin extends BaseController
     public function analyticsSeller(Request $request){
         $date = $request->get('date') ?? date('Y-m-d');
         $ordersBeautyProf = $this->orderDolibarr->getOrdersBeautyProf($date);
-    
         $list_histories = [];
         try{
             $list_histories = $this->buildHistoryBeautyProf($ordersBeautyProf);
-            echo json_encode(['success' => true, 'histories' => $list_histories['details'], 'status' => $list_histories['status']]);
+            echo json_encode(['success' => true, 'histories' => $list_histories['details'], 'status' => $list_histories['status'], 
+            'total_amount_order' => $list_histories['total_amount_order']]);
         } catch(Exception $e){
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -983,6 +987,7 @@ class Admin extends BaseController
     public function analyticsSellerTotal(){
         try{
             $histories = $this->orderDolibarr->getAllOrdersBeautyProf();
+            $status_to_exclude = ['canceled', 'pending'];
             $order_by_name = [];
    
             foreach($histories as $histo){
@@ -990,19 +995,20 @@ class Admin extends BaseController
                     $order_by_name[$histo['id']] = [
                         'name' => $histo['name'],
                         'total_order' => 1,
-                        'total_amount' => $histo['total_order_ttc'],
+                        'total_amount' => !in_array($histo['status'], $status_to_exclude) ? $histo['total_order_ttc'] : 0,
                     ];
                 } else {
                     $order_by_name[$histo['id']]['total_order']++;
-                    $order_by_name[$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+                    !in_array($histo['status'], $status_to_exclude) ? $order_by_name[$histo['id']]['total_amount'] += $histo['total_order_ttc'] 
+                    : $order_by_name[$histo['id']]['total_amount'] += 0;
                 }
             }
 
-            
             // Trie par commandes préparées
             usort($order_by_name, function($a, $b) {
                 return $b['total_order'] <=> $a['total_order'];
             });
+            
 
             echo json_encode(['success' => true, 'average' => $order_by_name]);
         } catch (Exception $e){
@@ -1012,8 +1018,10 @@ class Admin extends BaseController
 
     private function buildHistoryBeautyProf($histories){
         $list_histories['details'] = [];
+        $status_to_exclude = ['canceled', 'pending'];
         $pending = 0;
         $paid = 0;
+        $total_amount_order = 0;
 
         // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
         foreach($histories as $histo){
@@ -1023,6 +1031,7 @@ class Admin extends BaseController
             $paid    =  $histo['status'] != "pending" && $histo['status'] != "canceled" ? $paid + 1 : $paid;
             
             if(!isset($list_histories['details'][$id][$histo['id']])){
+                $total_amount_order =  !in_array($histo['status'], $status_to_exclude) ? $total_amount_order + $histo['total_order_ttc'] : $total_amount_order;
                 $list_histories['details'][date('d/m/Y', strtotime($histo['created_at']))][$histo['id']] = [
                     'name' => $histo['name'],
                     'number_order' => 1,
@@ -1032,6 +1041,7 @@ class Admin extends BaseController
             } else {
                 $list_histories['details'][$id][$histo['id']]['number_order']++;
                 $list_histories['details'][$id][$histo['id']]['total_amount'] += $histo['total_order_ttc'];
+                !in_array($histo['status'], $status_to_exclude) ? $total_amount_order += $histo['total_order_ttc'] : $total_amount_order = $total_amount_order;
             }
         }
 
@@ -1040,7 +1050,6 @@ class Admin extends BaseController
             foreach($data as $key2 => $dt) {
                 $list_histories['details'][$key][$key2]['average'] =  floatval(number_format($dt['total_amount'] / $dt['number_order'], 2));
             }
-            
         }
 
         $list_histories['status'] = 
@@ -1049,6 +1058,7 @@ class Admin extends BaseController
             'paid'    => $paid
         ];
 
+        $list_histories['total_amount_order'] = $total_amount_order;
         return $list_histories;
     }
 
@@ -1226,16 +1236,27 @@ class Admin extends BaseController
             }
            
         }
-        
+
         return view('admin.cashier', ['caisse' => $caisse, 'ammount_to_deduct' => $ammount_to_deduct, 
         'ammount_to_add' => $ammount_to_add, 'list_movements' => $list_movements, 'date' => $date]);
     }
 
     public function cashMovement(Request $request){
 
-        $amount = floatval(str_replace(',', '.', $request->post('amount')));
         $caisse = $request->post('caisse');
-        $amountCaisse = $request->post('amountCaisse');
+
+        // Check if cash movement already in processing for this caisse
+        $movement_processing = count($this->cashMovement->getMovementsByCaisse($caisse)->toArray());
+        if($movement_processing > 0){
+            return redirect()->back()->with('error',  "Veuillez d'abord valider ou annuler les mouvements en cours pour cette caisse");
+        }
+
+
+        $amount = str_replace(',', '.', $request->post('amount'));
+        $amount = str_replace([" ", ","], "", $amount);
+
+        $amountCaisse = str_replace(',', '.', $request->post('amountCaisse'));
+        $amountCaisse = str_replace([" ", ","], "", $amountCaisse);
 
         if($amount == 0.0){
             return redirect()->back()->with('error',  "Le montant renseigné n'est pas correct !");
@@ -1297,6 +1318,12 @@ class Admin extends BaseController
     }
 
     public function addCashMovement(Request $request) {
+
+        // Check if cash movement already in processing for this caisse
+        $movement_processing = count($this->cashMovement->getMovementsByCaisse($request->post('caisse'))->toArray());
+        if($movement_processing > 0){
+            return redirect()->back()->with('error',  "Veuillez d'abord valider ou annuler les mouvements en cours pour cette caisse");
+        }
 
         $amount = floatval(str_replace(',', '.', $request->post('amount')));
         if($amount == 0.0){
@@ -1391,4 +1418,433 @@ class Admin extends BaseController
             return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
         }
     }
+
+    public function stockscat(){
+        $data = $this->construcstocks->Constructstocks();
+        $message="";
+        return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+    }
+
+    public function poststock(Request $request){
+           
+         $data = $this->construcstocks->Constructstocks();
+         $data_id = $this->construcstocks->getdata();
+         $array_list1 = array_flip($data_id);//
+
+          $existant = $request->get('qts');
+          //dd($existant);
+           $donnees = $request->get('qte');
+           //dump($donnees);
+          // construire des jeu de données.
+           $datac =[];
+           $datas =[];
+           $regroup_data =[];
+          foreach($donnees as $ky =>$val){
+           if($val==""){
+                $index="no";
+           }else{
+                $index=$val;
+           }
+             $datac[$index.','.$ky] = $ky;
+             $datas[$val] = $ky;
+          }
+            // reconstruire le tableau.
+            $tab_data_qte =[];
+           foreach($existant as $kelc => $vald){
+                $index_te =  array_search($kelc,$datac);
+                 // recupérer le cas 
+                $index_s = explode(',',$index_te);
+                // recupérer le nombre finale de mutiplication
+                $s = (int)$index_s[0] - (int)$vald;
+
+                if($s>0){
+                    $a ="a";
+                }
+                if($s<0){
+                    $a ="b";
+                }
+
+                if($s==""){
+                    $a="c";
+                }
+
+                $tab_data_qte[] = $index_te.','.$s.','.$a;
+ 
+           }
+        
+            $datacc =array_flip($tab_data_qte);
+             $array_list2 = $datacc;
+               // faire une list de array.
+             if(count($datas)!=1){
+              // faire le traitement
+                  foreach($array_list2 as $ms => $valus){
+                //
+                $index_key = explode(',',$ms);
+                if($index_key[0]!="no"){
+                    // va contruire les données
+                    $regroup_data[$ms] =$valus;
+                }
+               }
+             
+              //dd($regroup_data);
+              // chercher les correspondance souhaite. pour crée des les données 
+              $group_data =[];
+              $data_array1 =[];
+              foreach($regroup_data as $keu=>$val){
+                   $chaine_data = array_search($val,$array_list1);
+                   if($chaine_data!=false){
+                        // recupérer 
+                      $chaine_qte_coeff = explode(',',$keu);
+                      $index_search = explode('%',$chaine_data);
+                      
+                      // fabirquer les données ....
+                      $line_create = $index_search[0]*$chaine_qte_coeff[2];// modifier ici ancien $chaine_qte_coeff[0]
+                      $line_create1 = $index_search[1];
+                       // créer un 1 er jeu de tableau. pour actuliser les quantite rentré .
+                       $data_array1[$index_search[1]]=$chaine_qte_coeff[0];
+                         //  un second jeu de données.
+                        $data_array2[] =  [
+                          'id_parent'=> $index_search[2],
+                          'quantite'=> $line_create
+                       ];
+                       
+                       // recupérer la quantite unite
+                       $data_array3[$index_search[2]] = $index_search[3];
+                   }
+
+                   
+              }
+
+              //dump($data_array2);
+              
+              // caluler sur le second tableau les quantite a decremente
+              $result = array_reduce($data_array2,function($carry,$item){
+              if(!isset($carry[$item['id_parent']])){ 
+                $carry[$item['id_parent']] = ['id_parent'=>$item['id_parent'],'quantite'=>$item['quantite']]; 
+               } else { 
+                $carry[$item['id_parent']]['quantite'] += $item['quantite']; 
+             } 
+               return $carry; 
+              });
+
+           // dd($result);
+             $restriction =[];
+             $data_flush =[];// construire le tableau pour update multiple en bdd
+             $ids_restriction =[];// recupérer les ids .
+             foreach($result as $lg => $valo){
+                 $line = $lg.','.$valo['quantite'];
+                 $data_flush[$line]= $lg;
+             }
+              // regouper la somme a deduire 
+               // reconstruire le tableau finale pour qte de l'unite
+              $line_final_unite =[];
+              foreach($data_array3 as $ky=>$valc){
+                  
+                  $qte_line = array_search($ky,$data_flush);
+                  $line_qte = explode(',',$qte_line);
+
+                  // verifier la quantité trouvé
+                   $line_final_unite[$ky]=$valc-$line_qte[1];
+              }
+              
+              // construire mes datas requete
+              foreach($data_array1 as $ken =>$vn){
+                   $data_finale1[] =[
+                      ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
+                      
+                    ];
+              }
+                // construire les data pour les unite a decremente
+               foreach($line_final_unite as $kens =>$vns){
+                   $data_finale2[] =[
+                      ['product_id'=>$kens, 'warehouse_array_list'=>$vns]
+                      
+                    ];
+
+                   // recupérer les quantité negative
+                  if($vns<0){
+                     $restriction[] = $vns;
+                     $ids_restriction[] =$kens;
+                  }
+              }
+
+             // recupérer le array ici
+              $index_label = $this->construcstocks->getLinesproduct();
+              $list_product =[];
+
+              foreach($ids_restriction as $vam){
+                  $ls =  array_search($vam,$index_label);
+                  $mms = explode('%',$ls);
+                
+                  $list_product[] =  $mms[1];
+              }
+
+              $list_libelle = implode(',',$list_product);
+              
+              if(count($restriction)!=0){
+                // bloquer ici
+                  $message ="Attention $list_libelle à l'unite serait négative";
+                  return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+              }
+              
+              
+              $data_f = array_merge($data_finale1,$data_finale2);
+             
+              // excuté les chamgement.
+              foreach ($data_f as $valus) {
+                  $userId = $valus[0]['product_id'];
+                   $status = $valus[0]['warehouse_array_list'];
+                  // Effectuer la mise à jour pour chaque enregistrement
+                   ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
+                 }
+                   // retour sur la page
+                   $message ="des lignes bien modifiées";
+                return view('admin.confirm',['data'=>$data,'message'=>$message]);
+             }
+
+            if(count($datas)==1){
+                $message ="Aucune ligne modifie";
+                return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+              
+          }
+    }
+
+    public function poststockrap(Request $request){
+           
+         $data = $this->construcstocks->Constructstocks();
+         $data_id = $this->construcstocks->getRapes();
+         $array_list1 = $data_id;//
+
+           // recupérer les deux premiere chaine..
+           $array_normale =[];
+           $array_normale[] = $array_list1[0];
+           $array_normale[] = $array_list1[1];
+ 
+           // vider le tableau des deux index
+           
+            $list_array = array_values(array_diff($array_list1,$array_normale));
+          
+           $array_list1 = array_flip($list_array);
+           
+            $existant = $request->get('qts');
+
+
+            $donnees = $request->get('qte');
+           // recupérer les quantité à l'unité
+            $donnes = $request->get('qte1');
+        
+
+          $datac =[];
+          $datas =[];
+
+          $regroup_data =[];
+          foreach($donnees as $ky =>$val){
+           if($val==""){
+                $index="no";
+           }else{
+                $index=$val;
+           }
+             $datac[$index.','.$ky] = $ky;
+             $datas[$val] = $ky;
+          }
+
+          
+
+          $tab_data_qte =[];
+          foreach($existant as $kelc => $vald){
+               $index_te =  array_search($kelc,$datac);
+
+               // recupérer le cas 
+               $index_s = explode(',',$index_te);
+               // recupérer le nombre finale de mutiplication
+               $s = (int)$index_s[0] - (int)$vald;
+
+               if($s>0){
+                   $a ="a";
+               }
+               if($s<0){
+                   $a ="b";
+               }
+
+               if($s==""){
+                  $a ="c";
+               }
+
+               $tab_data_qte[] = $index_te.','.$s.','.$a;
+
+          }
+       
+           $datacc =array_flip($tab_data_qte);
+
+        $array_list2 = $datacc;
+        
+            // faire une list de array.
+         if(count($datas)!=1){
+             // faire le traitement
+             // afficher les choses
+              foreach($array_list2 as $ms => $valus){
+                //
+                $index_key = explode(',',$ms);
+                  if($index_key[0]!="no"){
+                   // va contruire les données
+                   $regroup_data[$ms] =$valus;
+                  }
+              }
+
+            $group_data =[];
+            $data_array1 =[];
+         
+           foreach($regroup_data as $keu=>$val){
+                $chaine_data = array_search($val,$array_list1);
+                  if($chaine_data!=false){
+                   // recupérer 
+                  $chaine_qte_coeff = explode(',',$keu);
+                  $index_search = explode('%',$chaine_data);
+                    // fabirquer les données ....
+                  $line_create = $index_search[0]*$chaine_qte_coeff[2];// modifier ici ancien $chaine_qte_coeff[0]
+                   $line_create1 = $index_search[1];
+                  // créer un 1 er jeu de tableau. pour actuliser les quantite rentré .
+                  $data_array1[$index_search[1]]=$chaine_qte_coeff[0];
+                     
+                //  un second jeu de données.
+                   $data_array2[] =  [
+                     'id_parent'=> $index_search[2],
+                     'quantite'=> $line_create
+                  ];
+                  
+                  // recupérer la quantite unite
+                  $data_array3[$index_search[2]] = $index_search[3];
+              }
+
+         }
+
+              // caluler sur le second tableau les quantite a decremente
+              $result = array_reduce($data_array2,function($carry,$item){
+                if(!isset($carry[$item['id_parent']])){ 
+                  $carry[$item['id_parent']] = ['id_parent'=>$item['id_parent'],'quantite'=>$item['quantite']]; 
+                 } else { 
+                  $carry[$item['id_parent']]['quantite'] += $item['quantite']; 
+               } 
+                 return $carry; 
+                });
+  
+               // dd($result);
+                $data_flush =[];// construire le tableau pour update multiple en bdd
+               foreach($result as $lg => $valo){
+                   $line = $lg.','.$valo['quantite'];
+                   $data_flush[$line]= $lg;
+               }
+  
+                // regouper la somme a deduire 
+                 // reconstruire le tableau finale pour qte de l'unite
+                $line_final_unite =[];
+                $list_qte =[];
+                $restriction =[];
+                $ids_restriction =[];
+                foreach($data_array3 as $ky=>$valc){
+                    
+                    $qte_line = array_search($ky,$data_flush);
+                    $line_qte = explode(',',$qte_line);
+                    // verifier la quantité trouvé
+                      $line_final_unite[$ky]=$valc-$line_qte[1];
+                }
+
+                // construire mes datas requete pour line des produits ..
+            
+               foreach($data_array1 as $ken =>$vn){
+                   $data_finale1[] =[
+                    ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
+                   
+                   ];
+
+                    // recupere les qauntite en line ..
+                   $list_qte[] = $vn;
+              }
+           
+           
+           // construire les data pour les unite a decremente
+            foreach($line_final_unite as $kens =>$vns){
+                $data_finale2[] =[
+                   ['product_id'=>$kens, 'warehouse_array_list'=>$vns]
+                   
+                 ];
+
+                  // recupérer les quantité negative
+                  if($vns<0){
+                    $restriction[] = $vns;
+                    $ids_restriction[] = $kens;
+                 }
+           }
+            
+               // recupérer le array ici
+               $index_label = $this->construcstocks->getLinesproduct();
+               $list_product =[];
+ 
+               foreach($ids_restriction as $vam){
+                   $ls =  array_search($vam,$index_label);
+                   $mms = explode('%',$ls);
+                 
+                   $list_product[] =  $mms[1];
+               }
+ 
+               $list_libelle = implode(',',$list_product);
+               
+               if(count($restriction)!=0){
+                 // bloquer ici
+                   $message ="Attention $list_libelle à l'unite serait négative";
+                   return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+               }
+          
+
+            // exécuter sur les manche en unites.
+            $data_rape = explode('%',$array_normale[0]);
+           
+            $somme_qte = array_sum($list_qte);
+            $vnss = $data_rape[1]-$somme_qte;
+
+             $data_finale3[] =[
+                ['product_id'=>$data_rape[2], 'warehouse_array_list'=>$vnss]
+                   
+            ];
+
+             // construire mon tableau pour decremente l'unité.;;
+              $data_f = array_merge($data_finale1,$data_finale2,$data_finale3);
+             
+              // excuté les chamgement.
+              foreach ($data_f as $valus) {
+                $userId = $valus[0]['product_id'];
+                 $status = $valus[0]['warehouse_array_list'];
+              // Effectuer la mise à jour pour chaque enregistrement
+                 ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
+           }
+           
+               // retour sur la page
+               $message ="des lignes bien modifiées";
+                return view('admin.confirm',['data'=>$data,'message'=>$message]);
+
+       }
+
+        if(count($datas)==1){
+            $this->construcstocks->Constructstocks();
+           $data = $this->construcstocks->getRape();
+          $message ="Aucune ligne modifie";
+          return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
+        }
+
+          
+    }
+
+    public function stockgroupe(){
+
+         $this->construcstocks->listcategories();
+    }
+
+    public function postrape(){
+        $this->construcstocks->Constructstocks();
+        $data = $this->construcstocks->getRape();
+        $message="";
+        return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
+    }
+    
+   
 }

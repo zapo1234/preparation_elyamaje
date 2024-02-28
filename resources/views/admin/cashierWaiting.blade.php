@@ -77,7 +77,7 @@
                                         <td  data-label="Date"><span>{{ date('d/m/Y H:i', strtotime($order['created_at'])) }}</span></td>
                                         <td  data-label="Status">
                                             @if($order['status'])
-                                                <select style="width: 180px; font-weight: bold;	font-size: 0.9em; " data-from_dolibarr="true" data-order="{{ $order['ref_order'] }}" class="{{ $order['status'] }} select_status select_user">
+                                                <select style="width: 180px; font-size: 0.9em; " data-from_dolibarr="true" data-order="{{ $order['ref_order'] }}" class="{{ $order['status'] }} select_status select_user">
                                                     @foreach($list_status as $key => $list)
                                                         @if($key == $order['status'])
                                                             <option selected value="{{ $order['status'] }}">

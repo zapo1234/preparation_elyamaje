@@ -32,6 +32,10 @@ File: app.css
 
 /* General */
 
+@font-face {
+    font-family: 'Poppins';
+    src: url('../fonts/Poppins-Regular.ttf');
+}
 
 body {
 
@@ -48,7 +52,7 @@ body {
 
     overflow-x: hidden;
 
-	font-family: 'Roboto', sans-serif;
+	font-family: 'Poppins';
 
 
 }
@@ -289,7 +293,8 @@ a {
 		margin: auto;
 		width: 75%;
 		min-width: 320px;
-		border-radius: 20px
+		border-radius: 20px;
+		margin-bottom: 25px;
 	}
 
 	.detail_order_to_wrap .row-main{
@@ -5561,6 +5566,14 @@ textarea::placeholder {
 
 @media screen and (max-width: 767px) {
 
+	.button_order_action{
+		flex-wrap: wrap;
+	}
+
+	.total_order_details .btn{
+		margin: 2vh 0;
+	}
+
 	.user-box .user-info {
 		display: none;
 	}
@@ -7581,8 +7594,9 @@ textarea:focus{
 }
 
 .action_button .btn {
-    width: 165px;
+    align-items: center;
 }
+
 .detail_order_to_wrap .btn:focus {
     box-shadow: none;
     outline: none;
@@ -8769,4 +8783,3 @@ select option[disabled] {
 	border: none;
 	background-color: transparent;
 }
-

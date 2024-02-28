@@ -59,6 +59,8 @@ class User extends BaseController
         $role =  $input['role'];
         $poste =  $input['poste'] ?? 0;
         $type =  $input['type'] ?? "warehouse";
+        $password = $input['password'] != null && $input['password'] != "" ? $input['password'] : false;
+        $send_mail = false;
 
         // Check if email is unique
         $email_already_exist = $this->users->getUserByEmail($email);
@@ -70,22 +72,26 @@ class User extends BaseController
                 return redirect()->back()->with('error',  'Cet email existe déjà !');
             }
         }
+        
+        if(!$password){
+            $rand_pass = rand(136,50000);
+            $password = "elyamaje@$rand_pass";
+            $send_mail = true;
+        }
        
-        $rand_pass = rand(136,50000);
-        $password = "elyamaje@$rand_pass";
         // crypter l'email.
         $password_hash = Hash::make($password);
         $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste, $type);
 
         if($create){
-            
-            // ENVOIE EMAIL
-            Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
-                $message->to($email);
-                $message->from('no-reply@elyamaje.com');
-                $message->subject('Confirmation de création de compte Préparation Elyamaje');
-            });
-
+            if($send_mail){
+                // ENVOIE EMAIL
+                Mail::send('email.newAccount', ['email' => $email, 'name' => $user_name_last_name, 'password'=> $password], function($message) use($email){
+                    $message->to($email);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->subject('Confirmation de création de compte Préparation Elyamaje');
+                });
+            }
             return redirect()->back()->with('success', 'Compte créé avec succès !');
         } else {
             return redirect()->back()->with('error',  $create);
@@ -99,12 +105,8 @@ class User extends BaseController
         if($user_id != 1){
             $delete = $this->users->deleteUser($user_id);
 
-            if($delete == "haveOrder"){
-                return redirect()->back()->with('error',  'Cet utilisateur possède des commandes, veuillez d\'abord les réattribuer');
-            }
-
             if($delete){
-                return redirect()->back()->with('success', 'Compte supprimé avec succès !');
+                return redirect()->back()->with('success', 'Compte désactivé avec succès !');
             } else {
                 return redirect()->back()->with('error',  $delete);
             }

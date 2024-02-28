@@ -49,6 +49,16 @@ return [
     |
     */
 
+    'chronopost_18_accountNumber' => '',
+    'chronopost_18_password' => '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chronopost Auth Key DOMTOM
+    |--------------------------------------------------------------------------
+    |
+    */
+
     'chronopost_domtom_accountNumber' => '74941803',
     'chronopost_domtom_password' => '394503',
 

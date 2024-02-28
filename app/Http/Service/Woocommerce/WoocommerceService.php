@@ -131,11 +131,16 @@ class WoocommerceService
 
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
 
-    
+    $shipping_method_label = [
+      'chronotoshopdirect' => 'Chronopost - Livraison en relais Pickup',
+      'chrono13' => 'Livraison express avant 13h',
+      'chrono18' => 'Livraison à domicile chrono18'
+    ];
+
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
-
+    
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'] ?? 0;
     $transformOrder['gift_card_amount'] = "";
     $transformOrder['amountCard'] = $orderDolibarr[0]['amountCard'] ?? 0;
@@ -160,21 +165,32 @@ class WoocommerceService
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
+    $transformOrder['pick_up_location_id'] = $orderDolibarr[0]['pick_up_location_id'] != 0 && $orderDolibarr[0]['pick_up_location_id'] ? $orderDolibarr[0]['pick_up_location_id'] : false;
     $transformOrder['preparateur'] = isset($orderDolibarr[0]['preparateur']) ? $orderDolibarr[0]['preparateur'] : '';
 
     // On force la méthode d'expédition en livraison à domicile avec signature
     $transformOrder['shipping_method'] = $orderDolibarr[0]['shipping_method'] ?? "lpc_sign";
     $transformOrder['product_code'] = null;
-    $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost - Livraison express à domicile avant 13h offert dès 100€ d'achats" 
+    // $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost" 
+    // : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
+
+    $transformOrder['shipping_method_detail'] = isset($shipping_method_label[$orderDolibarr[0]['shipping_method']]) ? $shipping_method_label[$orderDolibarr[0]['shipping_method']] 
     : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
+
+
+    // Si adresse trop longue, on découpe en deux
+    $adress = explode("\n", $orderDolibarr[0]['adresse']);
+    $adress = array_values(array_filter($adress, 'strlen'));
+    $adress_1 = $adress[0];
+    $adress_2 = isset($adress[1]) ? $adress[1] : '';
 
     $transformOrder['billing'] = [
       "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['name'],
       "last_name" => $orderDolibarr[0]['billing_pname'] != null ? $orderDolibarr[0]['billing_pname'] : 
       ($orderDolibarr[0]['pname'] != $orderDolibarr[0]['name'] ? $orderDolibarr[0]['pname'] : ''),
       "company" => $orderDolibarr[0]['billing_company'] ?? $orderDolibarr[0]['company'],
-      "address_1" => $orderDolibarr[0]['billing_adresse'] ?? $orderDolibarr[0]['adresse'],
-      "address_2" => "",
+      "address_1" => $orderDolibarr[0]['billing_adresse'] ?? $adress_1,
+      "address_2" => $adress_2,
       "city" => $orderDolibarr[0]['billing_city'] ?? $orderDolibarr[0]['city'],
       "state" => "",
       "postcode" => $orderDolibarr[0]['billing_code_postal'] ?? $orderDolibarr[0]['code_postal'],
@@ -187,8 +203,8 @@ class WoocommerceService
       "first_name" => $orderDolibarr[0]['firstname'],
       "last_name" => $orderDolibarr[0]['lastname'] != $orderDolibarr[0]['firstname'] ? $orderDolibarr[0]['lastname'] : '',
       "company" => $orderDolibarr[0]['company'],
-      "address_1" => $orderDolibarr[0]['adresse'],
-      "address_2" => "",
+      "address_1" => $adress_1,
+      "address_2" => $adress_2,
       "city" => $orderDolibarr[0]['city'],
       "state" => "",
       "postcode" => $orderDolibarr[0]['code_postal'],
@@ -197,9 +213,7 @@ class WoocommerceService
       "phone" => $orderDolibarr[0]['phone'],
     ]; 
 
-
     foreach($orderDolibarr as $order){
-
       $total_product = $total_product + intval($order['quantity']);
       if($product_to_add_label){
         if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {

@@ -7,8 +7,8 @@
 @section("wrapper")
 <div class="page-wrapper">
     <div class="page-content">
-        <div class="page-breadcrumb d-sm-flex align-items-center mb-2">
-            <div class="breadcrumb-title pe-3 mb-2"></div>
+        <div class="page-breadcrumb d-sm-flex align-items-center">
+            <div class="breadcrumb-title pe-3"></div>
             <input id="barcode" type="hidden" value="">
             <input id="barcode_verif" type="hidden" value="">
 

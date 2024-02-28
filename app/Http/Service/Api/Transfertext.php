@@ -207,7 +207,7 @@ class Transfertext
                     $id_commande="exist";
                     $linkedObjectsIds =  ["commande" => [""=>$val['fk_commande']]];
                     $emballeur = $val['emballeur'];
-                    $preparateur="";
+                    $preparateur= $val['preparateur'];
                     $coupons="";
                  }
 
@@ -243,7 +243,7 @@ class Transfertext
                           }
                      }
 
-                       $chaine_amount = "$amount_card%$indice_amount_liq";
+                       $chaine_amount = "$amount_card%$indice_amount_liq"; // lier le cas des en fonction du retour chaine.....
 
                  }else{
                       $amount_card=0;
@@ -251,15 +251,14 @@ class Transfertext
                  }
              }
              
-              // recupérer le montant payé par cartependant la BP
+               // recupérer le montant payé par cartependant la BP...
+
                $this->setAmountcard($chaine_amount);
              
                  $method = "GET";
                  // recupérer les clé Api dolibar transfertx........
                  $apiKey = env('KEY_API_DOLIBAR'); 
                  $apiUrl = env('KEY_API_URL');
-
-
 
                  $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
@@ -348,7 +347,7 @@ class Transfertext
                   }
                     
                   // recupére les orders des données provenant de  woocomerce
-                    // appel du service via api
+                    // appel du service via api.....
                      $data_tiers = [];//data tiers dans dolibar
                      $data_lines  = [];// data article liée à commande du tiers en cours
                      $data_gift_card =[];// data liee au commande des gift_card acheté.
@@ -444,7 +443,8 @@ class Transfertext
                                     $a11= substr($a1,-2);
                                     $a2 = $dat[1];
                                  
-                                   $socid = $id_cl;
+                                   //$socid = $id_cl;
+                                   $socid="news";
                                    $woo = $donnees['billing']['company'];
                                    
                                      $type_id="";
@@ -467,8 +467,15 @@ class Transfertext
                                       
                                   }
                                    $name="";
-                                   $code = $donnees['customer_id'];//customer_id dans woocomerce 
-                                   $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+
+                                   $chaine_index ="BPP";
+                                   if(strpos($donnees['order_id'],$chaine_index)!==false){
+                                     $code_client = $donnees['order_id'];
+                                   }else{
+                                     $code = $donnees['customer_id'];
+                                     $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
+                                  }
+                                 
 
                                     // recupérer le prefix pays a partir du code client 
                                     $code_country = $donnees['billing']['country'];
@@ -481,13 +488,15 @@ class Transfertext
                                      $id_country = array_search($code_country,$data_ids_country);
                                      $code_country = $donnees['billing']['country'];
                                    }
-
+                                   
+                                   // create tiers news
                                    $data_tiers[] =[ 
                                    'entity' =>'1',
                                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
                                    'name_alias' => $woo,
                                    'address' => $donnees['billing']['address_1'],
                                    'zip' => $donnees['billing']['postcode'],
+                                   'town'=> $donnees['billing']['city'],
                                    'status'=>'1',
                                    'email' => $donnees['billing']['email'],
                                    "typent_id" => $type_id,
@@ -639,8 +648,10 @@ class Transfertext
                                        $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                        if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                             $index_int=1;
+                                            $montant_fidelite = 0.000;
                                        }else{
                                              $index_int="";
+                                             $montant_fidelite = $donnees['total_order'];
                                        }
 
                                       $data_options = [
@@ -649,6 +660,7 @@ class Transfertext
                                        "options_fid"=>$index_int,
                                        "options_prepa" => $preparateur,
                                        "options_emba" => $emballeur,
+                                       "options_point_fidelite"=>$montant_fidelite,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
@@ -672,8 +684,6 @@ class Transfertext
                                       // créer les facture pour le gift cart.
                                        $ext_traitement = 0;
                                       
-                                      
-
                                        // construire mon tableau de ma seconde facture au cas il existe des bon d'achat gift_card ou des cadeaux line
                                         // Récupérer pour les cadeaux.
                                         $data_options_kdo = [
@@ -744,17 +754,32 @@ class Transfertext
                            }
                          }
                         */
-
                         
-                         
-                          // Create le client via Api.....
-                           foreach($data_tiers as $data) {
+                          
+                         // Create le client via Api.....
+                           
+                          if(count($data_tiers)!=0){
+                             foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
-                             $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                             
+                             $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                                if($retour_create_tiers==""){
+                                   $message ="Problème sur la création du client";
+                                   $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
+                                   echo json_encode(['success' => false, 'message'=> $message]);
+                                   exit;
+                              }
+                           }
+                          }
+                          //
+                          // recrire la data_lines.
+                          if($data_lines[0]['socid']=="news"){
+                              $data_lines[0]['socid']=$retour_create_tiers;
+                          }else{
+                              $data_lines= $data_lines;
                           }
 
                           // traiter les commande achété avec des bon d'achat ici.
+                          
                   
                           foreach($data_lines[0]['lines'] as $keys => $val){
                             $chainex ="Carte";
@@ -1112,7 +1137,7 @@ class Transfertext
                    }
 
                       // Qaund y'a un paiement uniquement que par CB 
-                    if($index_amount_true[1]==0){
+                    if($index_amount_true[1]==0 && $index_amount_true[1]!="liqpaid"){
                         $index_m ="CB";
                         $moyen_paid =  array_search($index_m,$moyen_card);
                         $moyen_paids = explode(',',$moyen_paid);
@@ -1173,7 +1198,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=33;// PROD 
+                        $account_id=47;// PROD 
                         $paimentid =4;// PROD
                      }
 
@@ -1181,6 +1206,11 @@ class Transfertext
                         $account_id=4;// PROD 
                         $paimentid =6;// PROD envoi en CB.
                    }
+                   
+                   //dump($account_multiple);
+                   //dump($paimentid);
+                   //dd($account_id);
+                
 
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
@@ -1290,66 +1320,118 @@ class Transfertext
                         
 
                          if($account_multiple=="yesliq"){  // liquide 100% BP
+
                              // Lier les factures dolibar  à un moyen de paiement et bank.
                                $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
    
                               $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
-                             // Lier les factures dolibar  à un moyen de paiement et bank.
+                             // Lier les factures dolibar  à un moyen de paiement et bank...
    
                            }
 
                          if($account_multiple=="yes"){
+                              
                                  // Les cas ou y'a des paiment en partie espece et CB pour la BP.
                                   // reconstruire le montant de la facture 
                                   $val_tax = $index_amount_true[1]*0.2;
                                     
-                                  dump('yes');
-                                  // laisser la facture en recommance
-                                   $newCommandepayes = [
-                                    "paye"	=> 0,
-                                     "statut"	=> "",
-                                    "mode_reglement_id"=>$mode_reglement_id,
-                                    "idwarehouse"=>6,
-                                     "notrigger"=>0,
-                                   ];
               
                                    // Lier les factures dolibar  à un moyen de paiement et bank.
                                     $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
                                   
-                                    // faire un select sur la table table paiment  
-                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref FROM llxyq_paiement WHERE rowid=$response_num");
+                                    $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                                     // faire un select sur la table table paiment  
+                                     $data = DB::connection('mysql2')->select("SELECT rowid,ref,num_paiement,fk_bank FROM llxyq_paiement WHERE rowid=$response_num");                                     
                                      $name_list = json_encode($data);
                                       $name_list = json_decode($name_list,true);
                                       // faire un update du amount.
-                                      $ref_paiement = $name_list[0]['ref'];
-                                      $index_row = explode(',',$ref_paiement);
-                                      $index_pay = $index_row[1]+1;
+                                       $ref_paiement = $name_list[0]['ref'];
+                                       $index_row = explode('-',$ref_paiement);
+                                       $index_pay = $index_row[1]+1;
+                                        $fk_banks = $name_list[0]['fk_bank'];  
+                                         $fk_bank = $name_list[0]['fk_bank']+1;// le fk bank suivant.
+                                        $ref_definitive =  $index_row[0].'-'.$index_pay;
+                                         $rowid_auto  = $name_list[0]['rowid']+1;
+                                        // faire un update sur la ligne de la facture ...
+                                        DB::connection('mysql2')
+                                        ->table('llxyq_paiement_facture')
+                                           ->where('fk_facture', '=', $inv)
+                                           ->update(['amount' => $index_amount_true[0]]);
+                                          // modifier le montant dans ligne de paiment
+                                          DB::connection('mysql2')
+                                           ->table('llxyq_paiement')
+                                           ->where('rowid', '=', $response_num)
+                                           ->update(['amount' => $index_amount_true[0], 'multicurrency_amount' => $index_amount_true[0]]);
+                                        // Modifier dans l'ecriture de labanque avec le montant
+                                         DB::connection('mysql2')
+                                         ->table('llxyq_bank')
+                                         ->where('rowid', '=', $fk_banks)
+                                        ->update(['amount' => $index_amount_true[0]]);
 
-                                      $data = DB::connection('mysql2')->select("UPDATE SET amount =$index_amount_true[0],multicurrency_amount=$index_amount_true[0] FROM llxyq_paiement WHERE rowid=$response_num");
-                                     
+                                       // faire un insert du montant en especé
+                                       // faire un insert du montant en especé ici dans la banque
+                                       DB::connection('mysql2')->table('llxyq_bank')->insert([
+                                           'datec' => date('Y-m-d H:i:s'),
+                                          'tms' => date('Y-m-d H:i:s'),
+                                          'datev' =>date('Y-m-d H:i:s') ,
+                                          'dateo' => date('Y-m-d H:i:s'),
+                                          'amount' => $index_amount_true[1],
+                                          'label' =>"Paiment en espèce Beauty proof paris 2024",
+                                          'fk_account'=>47,
+                                          'fk_user_author'=>0,
+                                          'fk_user_rappro'=>0,
+                                          'fk_type'=>'LIQ',
+                                          'num_releve'=> '',
+                                          'num_chq'=>$response['ref'],
+                                          'numero_compte'=>'',
+                                         'rappro'=>0,
+                                          'note'=>'',
+                                          'fk_bordereau'=>0,
+                                         'banque'=>'',
+                                          'emetteur'=>'',
+                                           'author'=>'',
+                                         'origin_id'=>0,
+                                         'origin_type'=>'',
+                                          'import_key'=>'',
+                                        'amount_main_currency'=>0.00000000
+                                      // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                                  ]);
+  
+                                      // faire un insert du paiement espece
+                                        DB::connection('mysql2')->table('llxyq_paiement')->insert([
+                                       'ref' => $ref_definitive,
+                                        'ref_ext' => '',
+                                        'entity' => 1,
+                                        'datec' => date('Y-m-d H:i:s'),
+                                         'tms' => date('Y-m-d H:i:s'),
+                                        'datep' =>  date('Y-m-d H:i:s'),
+                                        'amount' => $index_amount_true[1],
+                                        'multicurrency_amount' =>$index_amount_true[1],
+                                        'fk_paiement'=>4,
+                                        'num_paiement'=>$name_list[0]['num_paiement'],
+                                         'note'=> '',
+                                         'ext_payment_id'=>'',
+                                         'ext_payment_site'=>'',
+                                          'fk_bank'=>$fk_bank,
+                                          'fk_user_creat'=>0,
+                                         'fk_user_modif'=>0,
+                                          'fk_export_compta'=>0,
+                                          'statut'=>0,
+                                         'pos_change'=>0.00000000
+                                      // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                                 ]);
+  
+                                 // faire un insert d'ecriture de paiement facture du montant en espéce.
+                                   DB::connection('mysql2')->table('llxyq_paiement_facture')->insert([
+                                       'fk_paiement' => $rowid_auto,
+                                       'fk_facture' =>$inv,
+                                       'amount' => $index_amount_true[1],
+                                   // Ajoutez d'autres colonnes et valeurs selon votre besoin
+                             ]);
 
-                                    // faire un update sur la ligne de la facture ...
-
-                                    // faire un insert du montant en especé
                                    
-                                   // modifier le paimement.
-
-                                  $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
+                                
                                   
-                                  // modifier directement dans la bdd 
-                                   // ecrire le montant dans liquide bank pour les paiment en ligquide BP
-                                   $array_data =[
-                                     "date"=> $date_finale,
-                                     "type"=>"LIQ",
-                                     "label"=>"Paiment en espèce Beauty proof paris 2024",
-                                     "amount"=>$index_amount_true[1],
-                                     "cheque_number"=>$response['ref'],
-                                     "datev" => $date_finale,
-                                    ];
-                   
-                                   // ecrire la ligne dans la bank BPP liquide pour les espèces.
-                                    $this->api->CallAPI("POST", $apiKey, $apiUrl."bankaccounts/33/lines/",json_encode($array_data));
-
                            }
                         
                  }
@@ -1459,7 +1541,7 @@ class Transfertext
 
                   }
 
-                   $data_fk_facture[]= $fk_facture;// recupérer les id de facture depuis dolibar.
+                   $data_fk_facture[]= $fk_facture;// recupérer les id de facture depuis dolibar...
                    $data_product_construct =[];
                    foreach($values['line_items'] as $val){
                       $chaine = $val['quantity'].','.$val['subtotal'].','.$val['meta_data'][0]['value'];

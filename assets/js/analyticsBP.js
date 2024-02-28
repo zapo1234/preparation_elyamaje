@@ -6,7 +6,6 @@ $(document).ready(function() {
         method: "GET",
         async: true,
     }).done(function(data) {
-        console.log(data)
         if(JSON.parse(data).success){
             var data = JSON.parse(data)
             $(".loading_chart").remove()
@@ -59,6 +58,8 @@ $(document).ready(function() {
             loadingRecords: ""
         },
         "initComplete": function(settings, json) {
+
+            $(".total_amount").text(parseFloat(json.total_amount_order).toFixed(2)+' €')
             $(".loading_table_analytics").hide()
             $(".load_spinner").hide()
 
@@ -84,6 +85,7 @@ $(document).ready(function() {
         },
         "drawCallback": function( settings  ) {
             if(settings.json){
+                $(".total_amount").text(parseFloat(settings.json.total_amount_order).toFixed(2)+' €')
                 $(".order_pending").text(settings.json.status.pending ?? 0)
                 $(".order_paid").text(settings.json.status.paid ?? 0)
                 $(".data_number").show()

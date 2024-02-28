@@ -55,7 +55,7 @@ class Colissimo
                             'weight' => $weight, // Poids du colis
                             'insuranceValue' => $insuranceValue,
                             // 'nonMachinable' => $nonMachinable, //Format du colis, true pour non standard
-                            'pickupLocationId' => $order['pick_up_location_id'] ?? null
+                            'pickupLocationId' => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : null
                         ],
                         'sender' => [
                             'senderParcelRef' => $order_id,
@@ -91,7 +91,7 @@ class Colissimo
                         ]
                     ]
                 ];
-
+                
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
 
@@ -100,6 +100,8 @@ class Colissimo
                 ])->post($url, $data);
 
         
+              
+
                 preg_match('/--(.*)\b/', $response, $boundary);
         
                 $content = empty($boundary)
@@ -115,7 +117,6 @@ class Colissimo
 
                 $trackingNumber = isset($content['<jsonInfos>']['labelV2Response']['parcelNumber']) ? $content['<jsonInfos>']['labelV2Response']['parcelNumber'] : null;
 
-               
                 if($trackingNumber){
                     $data = [
                         'order_id' => $order_id,
@@ -137,13 +138,15 @@ class Colissimo
                                 return $e->getMessage();
                             }
                         } else {
-                            return true;
+                            $data['success'] = true;
+                            return $data;
                         }
                     } else {
-                        return true;
+                        $data['success'] = true;
+                        return $data;
                     }
                 } else {
-
+                    return array('success' => false);
                 }
             } catch (Exception $e) {
                 return $e->getMessage();

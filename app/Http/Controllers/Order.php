@@ -128,7 +128,7 @@ class Order extends BaseController
 
         return $orders_user;
       } else {
-        $status = "processing,order-new-distrib,prepared-order,en-attente-de-pai"; // Commande en préparation
+        $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
         $per_page = 100;
         $page = 1;
         $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
@@ -284,8 +284,8 @@ class Order extends BaseController
 
             if(isset($order['shipping_lines'])){
               if(count($order['shipping_lines']) > 0){
-                if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
-                  || str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
+                if(!str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Nice")
+                  && !str_contains($order['shipping_lines'][0]['method_title'], "Retrait dans notre magasin à Marseille")){
                   $list_orders[] = $order;
                 }
               } else {
@@ -620,12 +620,20 @@ class Order extends BaseController
       $status = $request->post('status');
       $user_id = $request->post('user_id');
       $from_dolibarr = $request->post('from_dolibarr');
+      $status_finished = $status;
 
       if($order_id && $status){
 
         // Si pas de user récupéré
         if($user_id == null && ($from_dolibarr == "false" || $from_dolibarr == "0")){
+          $status_finished = "lpc_ready_to_ship";
           $order_details = $this->order->getOrderById($order_id);
+
+          if(isset($order_details[0]['shipping_method'])){
+            if(str_contains($order_details[0]['shipping_method'], 'chrono')){
+              $status_finished = "chronopost-pret";
+            }
+          }
 
           if(count($order_details) > 0){
             $user_id = $order_details[0]['user_id'];
@@ -648,11 +656,10 @@ class Order extends BaseController
         // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
-
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
           if(!in_array($status,  $ignore_status)){
             if($status == "finished"){
-              $this->api->updateOrdersWoocommerce("completed", $order_id);
+              $this->api->updateOrdersWoocommerce($status_finished, $order_id);
             } else {
               $this->api->updateOrdersWoocommerce($status, $order_id);
             } 
@@ -754,9 +761,9 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-           
-            $this->factorder->TransferOrder($orders);
-            // $this->transfert->Transfertext($orders);
+        
+            // $this->factorder->TransferOrder($orders);
+            $this->transfert->Transfertext($orders);
 
             // Insert la commande dans histories
             $data = [

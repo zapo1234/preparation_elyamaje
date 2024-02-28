@@ -25,7 +25,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
-         ->whereNotIn('orders_doli.statut', ['pending', 'finished'])
+         ->whereNotIn('orders_doli.statut', ['pending', 'finished', 'canceled'])
          ->get();
 
       $orders = json_decode(json_encode($orders), true);
@@ -266,7 +266,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       return $this->model::select('products.name', 'products.weight', 
          'lines_commande_doli.qte as quantity', 'products.product_woocommerce_id', 'lines_commande_doli.price as cost', 'orders_doli.statut as status')
          ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
-         ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('orders_doli.ref_order', $order_id)
          ->get();
    }
@@ -538,7 +538,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          }
          
       $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
-      $query->whereNotIn('orders_doli.statut', ['pending', 'canceled', 'processing']);
+      $query->whereNotIn('orders_doli.statut', ['pending', 'processing']);
       $result = $query->get();
       return $result->toArray();
      
