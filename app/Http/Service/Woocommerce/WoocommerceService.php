@@ -134,7 +134,7 @@ class WoocommerceService
     $shipping_method_label = [
       'chronotoshopdirect' => 'Chronopost - Livraison en relais Pickup',
       'chrono13' => 'Livraison express avant 13h',
-      'chrono18' => 'Livraison à domicile chrono18'
+      'chrono18' => 'Livraison à domicile avant 18h'
     ];
 
     $transformOrder = [];
