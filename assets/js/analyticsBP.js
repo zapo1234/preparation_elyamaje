@@ -45,7 +45,7 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return '<div class="average">'+row.average+'</div>'
+                    return '<div class="average">'+parseFloat(row.average).toFixed(2)+'</div>'
                 }
             },
             {data: null, 

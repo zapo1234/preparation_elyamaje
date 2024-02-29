@@ -1048,7 +1048,7 @@ class Admin extends BaseController
         // Calcule moyenne du panier
         foreach($list_histories['details'] as $key => $data) {
             foreach($data as $key2 => $dt) {
-                $list_histories['details'][$key][$key2]['average'] =  floatval(number_format($dt['total_amount'] / $dt['number_order'], 2));
+                $list_histories['details'][$key][$key2]['average'] =  floatval($dt['total_amount'] / $dt['number_order']);
             }
         }
 
