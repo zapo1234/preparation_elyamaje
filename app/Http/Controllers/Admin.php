@@ -36,6 +36,7 @@ use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use App\Repository\Terminal\TerminalRepository;
+use App\Repository\Notification\NotificationstocksRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -64,6 +65,7 @@ class Admin extends BaseController
     private $caisse;
     private $transfers;
     private $construcstocks;
+    private $stocks;
 
     public function __construct(
         Api $api, 
@@ -86,6 +88,7 @@ class Admin extends BaseController
         TerminalRepository $terminal,
         CashMovementRepository $cashMovement,
         CaisseRepository $caisse,
+        NotificationstocksRepository $stocks,
         Construncstocks $construcstocks
     ){
         $this->api = $api;
@@ -109,6 +112,7 @@ class Admin extends BaseController
         $this->cashMovement = $cashMovement;
         $this->caisse = $caisse;
         $this->construcstocks = $construcstocks;
+        $this->stocks = $stocks;
     }
 
     public function syncCategories(){
