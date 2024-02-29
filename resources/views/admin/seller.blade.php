@@ -24,6 +24,11 @@
                 </div>    
                
                 <div class="d-flex analytics_data_title align-items-center multiple_title">
+                    Annulées :
+                    <div class="align-items-center d-flex breadcrumb-title pe-3" style="margin-right: 15px">
+                        <span class="ml-1 data_number order_canceled text-danger">	</span>
+                        <div class="ml-1 text-danger load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+                    </div>
                     En attente : 
                     <div class="align-items-center d-flex breadcrumb-title pe-3" style="margin-right: 15px">
                         <span class="ml-1 data_number order_pending text-warning">	</span>
@@ -36,7 +41,7 @@
                         <div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
                     </div>
                 </div>
-                <div class="d-flex justify-content-end align-items-center" style="width:233px">
+                <div class="d-flex justify-content-end align-items-center income" style="width:233px">
                     <span class="font-20 font-bold">Revenu : </span>
                     <span style="margin-left: 3px" class="text-success font-20 font-bold  total_amount"></span>
                 </div>

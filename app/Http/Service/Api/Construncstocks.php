@@ -185,10 +185,12 @@ class  Construncstocks
         $data_product =[];
          $line_product =[];
         foreach($list_products as $valus){
+          if($valus['product_id']!="6371"){
           $chainex = $valus['product_id'].'%'.$valus['label'].'%'.$valus['warehouse_array_list'];
           $data_product[$chainex] = $valus['product_id'];
            $line = $valus['product_id'].'%'.$valus['label'];
            $line_product[$line] = $valus['product_id'];
+          }
       }
       
       
@@ -264,7 +266,8 @@ class  Construncstocks
               $tab_result_array = [];
               $data_limes =[];
               $data_details_limes =[];
-              
+              $tab_result_array2 =[];
+              $tab_result_array1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
 

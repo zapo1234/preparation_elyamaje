@@ -6096,6 +6096,11 @@ textarea::placeholder {
 		margin-top: 15px;
 	}
 
+	.income{
+		margin-top: 15px;
+		width: auto !important;
+	}
+
 	.multiple_title .ps-3{
 		padding-left: 1rem !important;
 	}
@@ -8782,4 +8787,11 @@ select option[disabled] {
 .removeClassButton{
 	border: none;
 	background-color: transparent;
+}
+
+
+@media (max-height: 820px) {
+	.sidebar.close .nav-links li:hover .beauty_prof_menu{
+		top: -169px;
+	}
 }

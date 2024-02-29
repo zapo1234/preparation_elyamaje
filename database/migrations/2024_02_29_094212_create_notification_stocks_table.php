@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLogErrorTable extends Migration
+class CreateNotificationStocksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateLogErrorTable extends Migration
      */
     public function up()
     {
-        Schema::create('log_error', function (Blueprint $table) {
+        Schema::create('notification_stocks', function (Blueprint $table) {
             $table->id();
-            $table->integer('order_id')->nullable();
-            $table->string('message', 1000)->nullable();
+            $table->string('libelle');
+            $table->integer('quantite');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateLogErrorTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_error');
+        Schema::dropIfExists('notification_stocks');
     }
 }

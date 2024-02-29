@@ -221,7 +221,7 @@
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
                 </div>
-                <ul class="sub-menu">
+                <ul class="sub-menu beauty_prof_menu">
                     <li><a class="link_name" href="#">Beauty Prof's</a></li>
                     <li><a href="{{ url('seller') }}">Analytics</a></li>
                     <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
