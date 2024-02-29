@@ -43,7 +43,7 @@
             </div>
             <div class="card-body p-0" style="background-color:white;">
                 <div class="d-flex w-100">
-                        <form method="POST" action="{{ route('admin.stocksrape') }}" style="overflow:hidden; width:70%;" class="radius-10 d-flex flex-wrap">
+                        <form method="POST" action="{{ route('admin.stockscatrap') }}" style="overflow:hidden; width:70%;" class="radius-10 d-flex flex-wrap">
                             @csrf
                             <table id="" style="width:100%" class="kitStockRape">
                                 @foreach($data as $key => $val)
