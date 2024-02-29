@@ -36,6 +36,7 @@ use App\Repository\Distributor\DistributorRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use App\Repository\Terminal\TerminalRepository;
+use App\Repository\Notification\NotificationstocksRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Admin extends BaseController
@@ -64,6 +65,7 @@ class Admin extends BaseController
     private $caisse;
     private $transfers;
     private $construcstocks;
+    private $stocks;
 
     public function __construct(
         Api $api, 
@@ -86,6 +88,7 @@ class Admin extends BaseController
         TerminalRepository $terminal,
         CashMovementRepository $cashMovement,
         CaisseRepository $caisse,
+        NotificationstocksRepository $stocks,
         Construncstocks $construcstocks
     ){
         $this->api = $api;
@@ -109,6 +112,7 @@ class Admin extends BaseController
         $this->cashMovement = $cashMovement;
         $this->caisse = $caisse;
         $this->construcstocks = $construcstocks;
+        $this->stocks = $stocks;
     }
 
     public function syncCategories(){
@@ -1425,10 +1429,20 @@ class Admin extends BaseController
         }
     }
 
+    
     public function stockscat(){
         $data = $this->construcstocks->Constructstocks();
         $message="";
-        return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+        // recupérer les lines qu'il faut dans notification
+        $list_product = $this->stocks->getAll();
+        if(count($list_product)==0){
+            $list_product[] =[
+                  "libelle"=>"Aucun mouvement de stock"
+
+            ];
+         }
+
+        return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
     }
 
     public function poststock(Request $request){
@@ -1454,7 +1468,9 @@ class Admin extends BaseController
              $datac[$index.','.$ky] = $ky;
              $datas[$val] = $ky;
           }
-            // reconstruire le tableau.
+
+
+           // reconstruire le tableau.
             $tab_data_qte =[];
            foreach($existant as $kelc => $vald){
                 $index_te =  array_search($kelc,$datac);
@@ -1480,6 +1496,7 @@ class Admin extends BaseController
         
             $datacc =array_flip($tab_data_qte);
              $array_list2 = $datacc;
+             $array_id_groups =[];// recupérer tous les id des produit a update 
                // faire une list de array.
              if(count($datas)!=1){
               // faire le traitement
@@ -1514,8 +1531,12 @@ class Admin extends BaseController
                           'quantite'=> $line_create
                        ];
                        
-                       // recupérer la quantite unite
-                       $data_array3[$index_search[2]] = $index_search[3];
+                         // recupérer la quantite unite
+                         $data_array3[$index_search[2]] = $index_search[3];
+                           // recupere les qauntite en line ..
+                          $list_qte[] = $line_create;
+                           // recupérer les id de produit
+                          $array_id_groups[]=$index_search[2];
                    }
 
                    
@@ -1589,8 +1610,15 @@ class Admin extends BaseController
               
               if(count($restriction)!=0){
                 // bloquer ici
-                  $message ="Attention $list_libelle à l'unite serait négative";
-                  return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+                 $list_product = $this->stocks->getAll();
+                if(count($list_product)==0){
+                      $list_product[] =[
+                        "libelle"=>"Aucun mouvement de stock"
+
+                     ];
+                 }
+                  $message ="Stock de $list_libelle insuffisant pour créer le kit";
+                  return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
               }
               
               
@@ -1603,6 +1631,26 @@ class Admin extends BaseController
                   // Effectuer la mise à jour pour chaque enregistrement
                    ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
                  }
+
+                 foreach($array_id_groups as $vlo){
+                    $lc =  array_search($vlo,$index_label);
+                    $ms = explode('%',$lc);
+                    $data_libelle_listing[] = [
+                         'libelle'=>$ms[1],
+                         'quantite'=>1,
+                         'created_at'=>date('Y-m-d H:i:s'),
+                         'updated_at'=>date('Y-m-d H:i:s'),
+    
+                    ];
+    
+                 }
+
+                 // faire un trucate avant
+                 $this->stocks->deletedatable();
+    
+                 // faire un insert ici
+                 $this->stocks->insert($data_libelle_listing);
+
                    // retour sur la page
                    $message ="des lignes bien modifiées";
                 return view('admin.confirm',['data'=>$data,'message'=>$message]);
@@ -1610,7 +1658,14 @@ class Admin extends BaseController
 
             if(count($datas)==1){
                 $message ="Aucune ligne modifie";
-                return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+                 $list_product = $this->stocks->getAll();
+                   if(count($list_product)==0){
+                         $list_product[] =[
+                           "libelle"=>"Aucun mouvement de stock"
+
+                        ];
+                   }
+                return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
               
           }
     }
@@ -1699,7 +1754,8 @@ class Admin extends BaseController
 
             $group_data =[];
             $data_array1 =[];
-           $list_qte =[];
+            $list_qte =[];
+            $array_id_groups =[];// recupérer tous les id des produit a update 
            foreach($regroup_data as $keu=>$val){
                 $chaine_data = array_search($val,$array_list1);
                   if($chaine_data!=false){
@@ -1721,7 +1777,11 @@ class Admin extends BaseController
                   // recupérer la quantite unite
                   $data_array3[$index_search[2]] = $index_search[3];
 
-                  $list_qte[] = $line_create;
+                   // recupere les qauntite en line ..
+                   $list_qte[] = $line_create;
+
+                   // recupérer les id de produit
+                   $array_id_groups[]=$index_search[2];
               }
 
          }
@@ -1746,7 +1806,6 @@ class Admin extends BaseController
                 // regouper la somme a deduire 
                  // reconstruire le tableau finale pour qte de l'unite
                 $line_final_unite =[];
-                
                 $restriction =[];
                 $ids_restriction =[];
                 foreach($data_array3 as $ky=>$valc){
@@ -1764,9 +1823,8 @@ class Admin extends BaseController
                     ['product_id'=>$ken, 'warehouse_array_list'=>$vn]
                    
                    ];
-
-                    // recupere les qauntite en line ..
-                  
+                   // recupere les qauntite en line ..
+                   
               }
            
            
@@ -1798,17 +1856,24 @@ class Admin extends BaseController
                $list_libelle = implode(',',$list_product);
                
                if(count($restriction)!=0){
+
+                $list_product = $this->stocks->getAlls();
+                if(count($list_product)==0){
+                      $list_product[] =[
+                        "libelle"=>"Aucun mouvement de stock"
+
+                     ];
+                }
                  // bloquer ici
-                   $message ="Attention $list_libelle à l'unite serait négative";
-                   return view('admin.stockscat',['data'=>$data,'message'=>$message]);
+                   $message ="Stock de $list_libelle insuffisant pour créer le kit";
+                   return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
                }
           
 
-            // exécuter sur les manche en unites.
-            $data_rape = explode('%',$array_normale[0]);
-           
-            $somme_qte = array_sum($list_qte);
-            $vnss = $data_rape[1]-$somme_qte;
+             // exécuter sur les manche en unites.
+             $data_rape = explode('%',$array_normale[0]);
+             $somme_qte = array_sum($list_qte);
+             $vnss = $data_rape[1]-$somme_qte;
 
              $data_finale3[] =[
                 ['product_id'=>$data_rape[2], 'warehouse_array_list'=>$vnss]
@@ -1819,16 +1884,37 @@ class Admin extends BaseController
               $data_f = array_merge($data_finale1,$data_finale2,$data_finale3);
              
               // excuté les chamgement.
+              $array_id_group =[];
               foreach ($data_f as $valus) {
                 $userId = $valus[0]['product_id'];
                  $status = $valus[0]['warehouse_array_list'];
               // Effectuer la mise à jour pour chaque enregistrement
                  ProductDolibarr::where('product_id', $userId)->update(['warehouse_array_list' => $status]);
-           }
-           
-               // retour sur la page
-               $message ="des lignes bien modifiées";
-                return view('admin.confirm',['data'=>$data,'message'=>$message]);
+
+            }
+
+             // lister les produit qui ont eu un changement de stocks
+             
+             foreach($array_id_groups as $vlo){
+                $lc =  array_search($vlo,$index_label);
+                $ms = explode('%',$lc);
+                $data_libelle_listing[] = [
+                     'libelle'=>$ms[1],
+                     'quantite'=>2,
+                     'created_at'=>date('Y-m-d H:i:s'),
+                     'updated_at'=>date('Y-m-d H:i:s'),
+
+                ];
+
+             }
+
+               // faire un trucate avant
+               $this->stocks->deletedatables();
+               // faire un insert ici
+               $this->stocks->insert($data_libelle_listing);
+                // retour sur la page
+                $message ="des lignes bien modifiées";
+                return view('admin.confirmrape',['data'=>$data,'message'=>$message]);
 
        }
 
@@ -1836,7 +1922,14 @@ class Admin extends BaseController
             $this->construcstocks->Constructstocks();
            $data = $this->construcstocks->getRape();
           $message ="Aucune ligne modifie";
-          return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
+          $list_product = $this->stocks->getAlls();
+          if(count($list_product)==0){
+            $list_product[]=[
+             'libelle'=>"Aucun mouvement de stock"
+
+            ];
+        }
+          return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
         }
 
           
@@ -1851,7 +1944,51 @@ class Admin extends BaseController
         $this->construcstocks->Constructstocks();
         $data = $this->construcstocks->getRape();
         $message="";
-        return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
+        $list_product = $this->stocks->getAlls();
+        if(count($list_product)==0){
+            $list_product[]=[
+             'libelle'=>"Aucun mouvement de stock"
+
+            ];
+        }
+
+        return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+    }
+
+  
+
+
+    function initialQtyLot(){
+
+
+        try {
+            $res = $this->construcstocks->updateinitialQtyLotToZero();
+
+            if ($res["success"]) {
+                return redirect()->back()->with('success', $res["message"]);
+            }else {
+                return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    function updateProducts(){      
+
+        try {
+            $res = $this->construcstocks->updateProductsCaisse();
+
+            dd($res);
+            return $res;
+            if ($res["success"]) {
+                return redirect()->back()->with('success', $res["message"]);
+            }else {
+                return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
     }
     
    

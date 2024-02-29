@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Models\ProductsCategorie;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
+use PDO;
 
 class  Construncstocks
 {
@@ -112,6 +113,61 @@ class  Construncstocks
     
      public  function Constructstocks()
      {
+
+      // $data = DB::connection('mysql2')->select("SELECT fk_product_fils,fk_product_pere,qty  FROM llxyq_product_association");
+
+
+      // $host = '109.234.162.138'; // nom d'hôte du serveur de la base de données
+      // $dbname = 'mamo9937_doli54'; // nom de la base de données
+      // $user = 'mamo9937_dolib54'; // nom d'utilisateur de la base de données
+      // $password = ']14]1pSxvS'; // mot de passe de la base de données
+     
+      // $dsn = "mysql:host=$host;dbname=$dbname";
+
+      // $pdo = new \PDO($dsn, $user, $password);
+
+      // dd($pdo);
+
+      // $sql = 'SELECT `fk_product_fils , fk_product_pere` FROM `llxyq_product_association`';
+
+   
+      // // Préparation de la requête
+      // $stmt = $pdo->prepare($sql);
+
+      // // Exécution de la requête avec les valeurs
+      // $stmt->execute();
+
+      // $res = $stmt->fetchAll();
+
+      // dd($res);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //
 
          $apiKey = env('KEY_API_DOLIBAR'); 
@@ -124,7 +180,7 @@ class  Construncstocks
         $list_product = json_encode($listproduct);
         $list_products = json_decode($listproduct,true);
         
-        //dd($list_products);
+      
 
         $data_product =[];
          $line_product =[];
@@ -167,7 +223,7 @@ class  Construncstocks
            }
            
           
-          
+           $tab_result_array2 =[];
             
           // aller construire les données souhaite.
            $list_data_assoc_produit =[];
@@ -774,6 +830,91 @@ class  Construncstocks
                     
              
             } 
+
+            function updateinitialQtyLotToZero(){
+
+              try {
+                  $res = DB::table('products_dolibarr')
+                  ->Join('products_association', 'products_dolibarr.product_id', '=', 'products_association.fk_product_pere')
+                  ->where('products_association.qty', 10)
+                  ->orWhere('products_association.qty', 5)
+                  ->update(['products_dolibarr.warehouse_array_list' => 0]);
+                  ;
+                  return ["success" => true, "message" => "Les quantités des kits on été mise a zéro"];
+              
+              } catch (\Throwable $th) {
+                  return ["success" => false, "message" => $th->getMessage()];
+              }
+      
+          
+          }
+
+          public function updateProductsCaisse()
+          {
+              try {
+                  $url = 'https://www.poserp.elyamaje.com/api/index.php/';
+                  $key = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+      
+                  $parametres = array(
+                      'apikey' => $key,
+                      'limit' => 10000,
+                  );
+      
+                  $products = $this->api->CallAPI("GET", $key, $url."products",$parametres);
+                  $products = json_decode($products,true);
+      
+                  $array_final = array();
+      
+                  foreach ($products as $key => $prod) {
+                      if ($prod["status"] == 1) {   
+      
+                          $qte = 0;  
+      
+                          if ($prod["warehouse_array_list"]) {
+                              foreach ($prod["warehouse_array_list"][$prod["id"]] as $key => $value) {
+                                  if ($value["warehouse"] == "Entrepôt Malpassé") {
+                                      if ($qte == 0) {
+                                          $qte = $value["stock"];
+                                      }
+                                  }
+                              }
+                          }
+      
+                          $data = [
+                              "product_id" => $prod["id"],
+                              "label" => $prod["label"],
+                              "price_ttc" => $prod["price"]? ($prod["price"]*(($prod["tva_tx"]*0.01)+1)):$prod["price_ttc"],
+                              "barcode" => $prod["barcode"],
+                              "poids" => $prod["weight"]?? 0,
+                              "warehouse_array_list" => $qte,
+                          ];
+                          array_push($array_final,$data);
+                      }
+                  }
+      
+                  // dd($array_final);
+      
+                  if ($array_final) {
+                      DB::beginTransaction();
+                     
+                      DB::table('products_dolibarr')->truncate();
+                      DB::table('products_dolibarr')->insert($array_final);
+      
+                      DB::commit();
+      
+                      return ["success" => true, "message" => "La table produit dolibarr a bien été mise à jour"];
+                  }else {
+                      return ["success" => false, "message" => "Aucune donnée récupéré depuis dolibarr production (La table n'a pas été mise à jour)"];
+                  }
+      
+                  
+                  
+              } catch (\Throwable $th) {
+                  DB::rollBack();
+                  return ["success" => false, "message" => $th->getMessage()];
+              }  
+      
+          }
         
            
            
