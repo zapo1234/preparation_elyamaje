@@ -242,7 +242,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 
     // Lyes
     Route::post('/initialQtyLot', [Admin::class, 'initialQtyLot'])->name('initialQtyLot');
-    Route::get('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
+    Route::post('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
 
     
 });
