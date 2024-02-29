@@ -1978,9 +1978,7 @@ class Admin extends BaseController
 
         try {
             $res = $this->construcstocks->updateProductsCaisse();
-
-            dd($res);
-            return $res;
+           
             if ($res["success"]) {
                 return redirect()->back()->with('success', $res["message"]);
             }else {

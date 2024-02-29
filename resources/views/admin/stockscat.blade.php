@@ -27,7 +27,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form id="resetQuantitiesForm" method="POST" action="{{ route('initialQtyLot') }}">
+                    <form id="resetQuantitiesForm1" method="POST" action="{{ route('initialQtyLot') }}">
                         @csrf
                         <p>Êtes-vous sûr de vouloir mettre les quantités des kits de lime à zéro ?</p>
                         <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
@@ -36,7 +36,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button id="cofirme1" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                    <button id="cofirme1" type="submit" form="resetQuantitiesForm1" class="btn btn-dark">Confirmer</button>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form id="resetQuantitiesForm" method="POST" action="{{ route('updateProducts') }}">
+                    <form id="resetQuantitiesForm2" method="POST" action="{{ route('updateProducts') }}">
                         @csrf
                         <p>Êtes-vous sûr de vouloir mettre à jour les quantitées des produits de preparation(caisse) ?</p>
                         <p>Attention cela va écraser les anciennes quantitées de preparation et caisse</p>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelle2" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button id="cofirme2" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                    <button id="cofirme2" type="submit" form="resetQuantitiesForm2" class="btn btn-dark">Confirmer</button>
                 </div>
             </div>
         </div>
