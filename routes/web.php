@@ -152,8 +152,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
    // rape gere le calcule des raps et plaquante
    Route::post("/stockscatrap", [Admin::class, "poststockrap"])->name('admin.stockscatrap'); 
 
-
-   // traiter les rapes
+ // traiter les rapes
     // requete stocks post
     Route::get("/stocksrape", [Admin::class, "postrape"])->name('admin.stocksrape'); 
 
