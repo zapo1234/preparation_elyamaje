@@ -7,8 +7,85 @@
 @endsection
 
 @section("wrapper")
+
+
+
+
+
+
+
+
+
+    {{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+
+    <div class="modal fade" id="exampleDarkModal1" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white">Mise à zéro des quantités des kits limes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-white">
+                    <!-- Début du formulaire -->
+                    <form id="resetQuantitiesForm" method="POST" action="{{ route('initialQtyLot') }}">
+                        @csrf
+                        <p>Êtes-vous sûr de vouloir mettre les quantités des kits de lime à zéro ?</p>
+                        <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
+                    </form>
+                    <!-- Fin du formulaire -->
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button id="cofirme1" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- -------------------------------------------------------------------------------------------------------------------- --}}
+
+     {{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+
+    <div class="modal fade" id="exampleDarkModal2" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white">Synchronisation des quantité dolibarr & preparation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-white">
+                    <!-- Début du formulaire -->
+                    <form id="resetQuantitiesForm" method="POST" action="{{ route('updateProducts') }}">
+                        @csrf
+                        <p>Êtes-vous sûr de vouloir mettre à jour les quantitées des produits de preparation(caisse) ?</p>
+                        <p>Attention cela va écraser les anciennes quantitées de preparation et caisse</p>
+                    </form>
+                    <!-- Fin du formulaire -->
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelle2" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button id="cofirme2" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Modal de confirmation --}}
+
     <div class="page-wrapper">
         <div class="page-content">
+
+            @if(session()->has('success'))
+            <div class="alert alert-success border-0 bg-success alert-dismissible fade show" style="z-index: 100;">
+                <div class="text-white">{{ session()->get('success') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+            @if(session()->has('error'))
+            <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" style="z-index: 100;">
+                <div class="text-white">{{ session()->get('error') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
             <div class="d-flex w-100 justify-content-between page-breadcrumb d-sm-flex align-items-center mb-3">
                 <div class="d-flex align-items-center multiple_title">
                     <div class="breadcrumb-title pe-3">
@@ -20,6 +97,11 @@
                                 <li class="breadcrumb-item active" aria-current="page">Gestion des stocks</li>
                             </ol>
                         </nav>
+                    </div>
+
+                    <div class="breadcrumb-title pe-3">
+                        <button style="position:absolute;top:90%;left:40%" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Mettre les kits à zéro</button>
+                        <button style="position:absolute;top:90%;left:57%" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal2">Synchro dolibarr & préparation</button>
                     </div>
                 </div>    
             </div>
@@ -157,6 +239,29 @@
             $("#cancelMovementModal").modal('show')
         })
     </script>
+
+{{-- <script>
+    $(document).ready(function() {
+        $('#cofirme').click(function() {
+            // Envoyer une requête Ajax vers la route
+            $.ajax({
+                url: '{{ route("initialQtyLot") }}',
+                type: 'GET',
+                dataType: 'json', // Changez ceci en fonction de votre retour de données
+                success: function(response) {
+                    // Traitement des données de retour si nécessaire
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    // Gérer les erreurs
+                    console.error('Erreur lors de la requête : ' + status);
+                }
+            });
+        });
+    });
+</script> --}}
+
+
 @endsection
 
 

@@ -1845,6 +1845,42 @@ class Admin extends BaseController
         $message="";
         return view('admin.stocksrape',['data'=>$data,'message'=>$message]);
     }
+
+  
+
+
+    function initialQtyLot(){
+
+
+        try {
+            $res = $this->construcstocks->updateinitialQtyLotToZero();
+
+            if ($res["success"]) {
+                return redirect()->back()->with('success', $res["message"]);
+            }else {
+                return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    function updateProducts(){      
+
+        try {
+            $res = $this->construcstocks->updateProductsCaisse();
+
+            dd($res);
+            return $res;
+            if ($res["success"]) {
+                return redirect()->back()->with('success', $res["message"]);
+            }else {
+                return redirect()->back()->with('error', 'Oops, une erreur est survenue !');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
     
    
 }
