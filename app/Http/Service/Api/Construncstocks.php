@@ -210,7 +210,8 @@ class  Construncstocks
               $tab_result_array = [];
               $data_limes =[];
               $data_details_limes =[];
-              
+              $tab_result_array2 =[];
+              $tab_result_array1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
 
