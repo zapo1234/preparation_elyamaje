@@ -239,6 +239,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
 
     // ajax verification des commandes api dolibar factures.
     Route::get("/orderinvoices", [TiersController::class, "getinvoices"])->name('tiers.getinvoices');
+
+    // Lyes
+    Route::post('/initialQtyLot', [Admin::class, 'initialQtyLot'])->name('initialQtyLot');
+    Route::get('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
+
+    
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
