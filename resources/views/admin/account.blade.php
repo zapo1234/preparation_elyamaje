@@ -150,11 +150,11 @@
 												@if($user['active'] == 1)
 													@foreach($roles as $role)
 														@if(in_array($role['id'], $user['role_id']))
-															<span class="role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
+															<span class="mt-1 role_user_badge badge" style="background-color:{{ $role['color'] }}">{{ $role['role'] }}</span>
 														@endif
 													@endforeach
 												@else
-													<span class="role_user_badge badge" style="background-color:#E1DDDD">Compte inactif</span>
+													<span class="mt-1 role_user_badge badge" style="background-color:#E1DDDD">Compte inactif</span>
 												@endif
 												
 											</td>
@@ -222,7 +222,7 @@
 																	<div class="col-md-12">
 																		<label for="update_role" class="form-label">Rôle*</label>
 																		<input type="hidden" value="{{ implode(',', $user['role_id']) }}" class="role_user">
-																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" class="select form-select">
+																		<select data-id="{{ $user['user_id'] }}" multiple required name="update_role[]" class="update_role select form-select">
 																			@foreach($roles as $role)
 																				@if( in_array($role->id, [2,3,4,5]) || $isAdmin)
 																					<option value="{{ $role->id }}">{{  $role->role }}</option>
@@ -240,7 +240,7 @@
 																				<option value="shop">Boutique</option>
 																			@elseif($user['type'] === "shop")
 																				<option selected value="shop">Boutique</option>
-																				<option selected value="warehouse">Entrepôt</option>
+																				<option value="warehouse">Entrepôt</option>
 																			@else 
 																				<option value="warehouse">Entrepôt</option>
 																				<option value="shop">Boutique</option>
@@ -410,11 +410,14 @@
 		$(".update_action").on('click', function(){
 			var id_account = $(this).attr('data-id')
 			var roles = $("#updateAccount_user_"+id_account).find('.role_user').val()
-			$("#updateAccount_user_"+id_account).find('#update_role').val(roles.split(',')).trigger('change').select2();
+			$("#updateAccount_user_"+id_account).find('.update_role').val(roles.split(',')).trigger('change').select2();
 			$("#updateAccount_user_"+id_account).modal({
 				backdrop: 'static',
 				keyboard: false
 			})
+
+			console.log(id_account)
+
 			$("#updateAccount_user_"+id_account).modal('show')
 		});
 
