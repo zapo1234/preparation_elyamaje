@@ -32,7 +32,7 @@ File: app.css
 /* BP Gestion des stocks */
  
 .kitStock input, .kitStockRape input{
-    max-width: 150px;
+    max-width: 110px;
 }
  
 .kitStock tr td, .kitStockRape tr td{

@@ -189,7 +189,9 @@
                                 <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
                                 @foreach($list_product as $val)
                                     @if($val['libelle'] == "Aucun mouvement de stock")
+                                    <p style="text-align: center;width:90%;">
                                         {{ $val['libelle'] }}<br/>
+                                    </p>
                                     @else
                                     <p style="text-align: left;width:90%;" class="d-flex gap-1">
                                         <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $val['libelle'] }} a été modifié.<br/>
