@@ -8788,3 +8788,10 @@ select option[disabled] {
 	border: none;
 	background-color: transparent;
 }
+
+
+@media (max-height: 820px) {
+	.sidebar.close .nav-links li:hover .beauty_prof_menu{
+		top: -169px;
+	}
+}
