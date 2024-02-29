@@ -1019,9 +1019,12 @@ class Admin extends BaseController
     private function buildHistoryBeautyProf($histories){
         $list_histories['details'] = [];
         $status_to_exclude = ['canceled', 'pending'];
+        $total_amount_order = 0;
+
+        // Status of orders
         $pending = 0;
         $paid = 0;
-        $total_amount_order = 0;
+        $canceled = 0;
 
         // Historique des commandes préparées, emballées et des produits bippés pour chaque préparateur & emballeurs
         foreach($histories as $histo){
@@ -1029,6 +1032,8 @@ class Admin extends BaseController
 
             $pending =  $histo['status'] == "pending" ? $pending + 1 : $pending;
             $paid    =  $histo['status'] != "pending" && $histo['status'] != "canceled" ? $paid + 1 : $paid;
+            $canceled  =   $histo['status'] == "canceled" ? $canceled + 1 : $canceled;
+
             
             if(!isset($list_histories['details'][$id][$histo['id']])){
                 $total_amount_order =  !in_array($histo['status'], $status_to_exclude) ? $total_amount_order + $histo['total_order_ttc'] : $total_amount_order;
@@ -1048,14 +1053,15 @@ class Admin extends BaseController
         // Calcule moyenne du panier
         foreach($list_histories['details'] as $key => $data) {
             foreach($data as $key2 => $dt) {
-                $list_histories['details'][$key][$key2]['average'] =  floatval(number_format($dt['total_amount'] / $dt['number_order'], 2));
+                $list_histories['details'][$key][$key2]['average'] =  floatval($dt['total_amount'] / $dt['number_order']);
             }
         }
 
         $list_histories['status'] = 
         [
             'pending' => $pending,
-            'paid'    => $paid
+            'paid'    => $paid,
+            'canceled' => $canceled
         ];
 
         $list_histories['total_amount_order'] = $total_amount_order;

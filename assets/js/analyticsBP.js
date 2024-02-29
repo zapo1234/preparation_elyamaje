@@ -45,7 +45,7 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return '<div class="average">'+row.average+'</div>'
+                    return '<div class="average">'+parseFloat(row.average).toFixed(2)+'</div>'
                 }
             },
             {data: null, 
@@ -65,6 +65,8 @@ $(document).ready(function() {
 
             $(".order_pending").text(json.status.pending ?? 0)
             $(".order_paid").text(json.status.paid ?? 0)
+            $(".order_canceled").text(json.status.canceled ?? 0)
+
 
             $("#example_length select").css('margin-right', '10px')
             $(".date_dropdown").appendTo('.dataTables_length')
@@ -88,6 +90,7 @@ $(document).ready(function() {
                 $(".total_amount").text(parseFloat(settings.json.total_amount_order).toFixed(2)+' €')
                 $(".order_pending").text(settings.json.status.pending ?? 0)
                 $(".order_paid").text(settings.json.status.paid ?? 0)
+                $(".order_canceled").text(settings.json.status.canceled ?? 0)
                 $(".data_number").show()
                 $(".load_spinner").hide()
             }
