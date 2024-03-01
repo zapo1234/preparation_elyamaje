@@ -1451,6 +1451,8 @@ class Admin extends BaseController
             ];
          }
 
+         dd($list_faible_stocks);
+
         return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
