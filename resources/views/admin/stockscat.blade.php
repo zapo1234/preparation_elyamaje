@@ -184,7 +184,7 @@
                                     @endforeach  
                                 @endforeach
                             </table>
-                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:50%;">
+                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:30%;">
                                 
                             @foreach($list_faible_stocks as $vl)
                                     @if($vl['produit'] == "Aucun mouvement produit")
@@ -193,7 +193,7 @@
                                     </p>
                                     @else
                                     <p style="text-align: left;width:90%;" class="d-flex gap-1">
-                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $vl['produit'] }} est insuffisant.<br/>
+                                        <i class="lni lni-warning" style="color:#CD2A28; fill:#CD2A28;"></i>Le stock de {{ $vl['produit'] }} est insuffisant.<br/>
                                     </p>
                                     @endif
                                 @endforeach
