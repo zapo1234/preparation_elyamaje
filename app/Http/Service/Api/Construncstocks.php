@@ -406,7 +406,9 @@ class  Construncstocks
                     $index_libel = explode('%',$lmm);
                      
                     if((int)$index_libel[1] < 10){
-                        $list_product_limite_stocks[] = $index_libel[0];
+                        $list_product_limite_stocks[] =[
+                          'produit'=>$index_libel[0]
+                        ];
                     }
                     // recupérer les produit en unite qui sont moins de 10
                       foreach($valo as $ll){
@@ -447,7 +449,9 @@ class  Construncstocks
                   $index_libel = explode('%',$lmm);
                   
                   if((int)$index_libel[1] < 10){
-                    $list_product_limite_rape[] = $index_libel[0];
+                    $list_product_limite_rape[] = [
+                       'produit'=>$index_libel[0]
+                    ];
                 }
 
                     foreach($valo as $ll){
