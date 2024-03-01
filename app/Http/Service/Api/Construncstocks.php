@@ -404,6 +404,8 @@ class  Construncstocks
                   foreach($valis as $lmm => $valo){
                      // recupérer le id_parent haut.
                     $index_libel = explode('%',$lmm);
+
+                    dd($index_libel);
                      
                     if((int)$index_libel[2] < 10){
                         $list_product_limite_stocks[] = $index_libel[0];
