@@ -51,10 +51,13 @@
     <script src="https://prodev.elyamaje.com/admin/js/account.js"></script>
     
     <script type="text/javascript">
+
+      const route = "{{ route('admin.stocksrape') }}";
+
       function redirection() {
-        window.location.replace("https://preparation.elyamaje.com/stocksrape");
+        window.location.replace(route);
       }      
-      setTimeout("redirection()", 2000);
+      setTimeout("redirection()", 500);
     </script>
   </body>
 </html>

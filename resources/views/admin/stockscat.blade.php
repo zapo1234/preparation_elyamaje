@@ -27,7 +27,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form id="resetQuantitiesForm" method="POST" action="{{ route('initialQtyLot') }}">
+                    <form id="resetQuantitiesForm1" method="POST" action="{{ route('initialQtyLot') }}">
                         @csrf
                         <p>Êtes-vous sûr de vouloir mettre les quantités des kits de lime à zéro ?</p>
                         <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
@@ -36,7 +36,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button id="cofirme1" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                    <button id="cofirme1" type="submit" form="resetQuantitiesForm1" class="btn btn-dark">Confirmer</button>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form id="resetQuantitiesForm" method="POST" action="{{ route('updateProducts') }}">
+                    <form id="resetQuantitiesForm2" method="POST" action="{{ route('updateProducts') }}">
                         @csrf
                         <p>Êtes-vous sûr de vouloir mettre à jour les quantitées des produits de preparation(caisse) ?</p>
                         <p>Attention cela va écraser les anciennes quantitées de preparation et caisse</p>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelle2" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button id="cofirme2" type="submit" form="resetQuantitiesForm" class="btn btn-dark">Confirmer</button>
+                    <button id="cofirme2" type="submit" form="resetQuantitiesForm2" class="btn btn-dark">Confirmer</button>
                 </div>
             </div>
         </div>
@@ -74,16 +74,27 @@
         <div class="page-content">
 
             @if(session()->has('success'))
-            <div class="alert alert-success border-0 bg-success alert-dismissible fade show" style="z-index: 100;">
+            <div id="success-message" class="alert alert-success border-0 bg-success alert-dismissible fade show" style="z-index: 100;">
                 <div class="text-white">{{ session()->get('success') }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            <script>
+                setTimeout(function() {
+                    $('#success-message').remove();
+                }, 2000);
+            </script>
+
             @endif
             @if(session()->has('error'))
-            <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show" style="z-index: 100;">
+            <div id="error-message" class="alert alert-danger border-0 bg-danger alert-dismissible fade show" style="z-index: 100;">
                 <div class="text-white">{{ session()->get('error') }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            <script>
+                setTimeout(function() {
+                    $('#error-message').remove();
+                }, 2000);
+            </script>
             @endif
 
             <div class="d-flex w-100 justify-content-between page-breadcrumb d-sm-flex align-items-center mb-3">
@@ -99,10 +110,11 @@
                         </nav>
                     </div>
 
-                    <div class="breadcrumb-title pe-3">
-                        <button style="position:absolute;top:90%;left:40%" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Mettre les kits à zéro</button>
-                        <button style="position:absolute;top:90%;left:57%" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal2">Synchro dolibarr & préparation</button>
+                    <div class="d-flex gap-2" style="margin-left:20px">
+                        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Mettre les kits à zéro</button>
+                        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal2">Synchro dolibarr &amp; préparation</button>
                     </div>
+
                 </div>    
             </div>
             <div class="d-flex gap-3 align-items-center" style="min-height:50px;">
@@ -173,8 +185,20 @@
                                     @endforeach  
                                 @endforeach
                             </table>
-                            <button style="position:fixed;top:50%;margin-left:70%" type="submit" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="">Modifier le stock</button>
-                        </form>
+                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:50%;">
+                                <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
+                                @foreach($list_product as $val)
+                                    @if($val['libelle'] == "Aucun mouvement de stock")
+                                    <p style="text-align: center;width:90%;">
+                                        {{ $val['libelle'] }}<br/>
+                                    </p>
+                                    @else
+                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
+                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $val['libelle'] }} a été modifié.<br/>
+                                    </p>
+                                    @endif
+                                @endforeach
+                            <div>                                    </form>
                 </div>
             </div>
         </div>
