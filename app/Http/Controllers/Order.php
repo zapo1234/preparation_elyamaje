@@ -670,7 +670,7 @@ class Order extends BaseController
           
           // Get details orders for incrementation or decrementation stock dolibarr
           if(str_contains($order_id, 'BP')){
-            $res= true;
+            $res = true;
             $data = $this->orderDolibarr->getOrderDetails($order_id);
             if(count($data) > 0){
               $actual_status = $data[0]['status'];
