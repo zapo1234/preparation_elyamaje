@@ -173,7 +173,7 @@
                                             @endphp
                                             
                                             <tr>
-                                                <td style="background-color: #333333;color:white;padding:10px;">{{ $name_list  }}  Nombre d'unités : {{  $lim[1] }}   <span> {{ $text  }}</span></td>
+                                                <td style="background-color: #333333;color:white;padding:10px;">{{ $name_list  }}  Nombre d'unités : {{  $lim[1] }}   <span style="padding-left:5%"> {{ $text  }}</span></td>
                                             </tr>
                                             
                                             @foreach($vv as $ls =>$vc)
