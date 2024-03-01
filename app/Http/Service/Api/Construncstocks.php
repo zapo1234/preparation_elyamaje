@@ -152,75 +152,16 @@ class  Construncstocks
      public  function Constructstocks()
      {
 
-      // $data = DB::connection('mysql2')->select("SELECT fk_product_fils,fk_product_pere,qty  FROM llxyq_product_association");
-
-
-      // $host = '109.234.162.138'; // nom d'hôte du serveur de la base de données
-      // $dbname = 'mamo9937_doli54'; // nom de la base de données
-      // $user = 'mamo9937_dolib54'; // nom d'utilisateur de la base de données
-      // $password = ']14]1pSxvS'; // mot de passe de la base de données
-     
-      // $dsn = "mysql:host=$host;dbname=$dbname";
-
-      // $pdo = new \PDO($dsn, $user, $password);
-
-      // dd($pdo);
-
-      // $sql = 'SELECT `fk_product_fils , fk_product_pere` FROM `llxyq_product_association`';
-
-   
-      // // Préparation de la requête
-      // $stmt = $pdo->prepare($sql);
-
-      // // Exécution de la requête avec les valeurs
-      // $stmt->execute();
-
-      // $res = $stmt->fetchAll();
-
-      // dd($res);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //
-
-         $apiKey = env('KEY_API_DOLIBAR'); 
+        $apiKey = env('KEY_API_DOLIBAR'); 
          $apiUrl = env('KEY_API_URL');
 
          // recupérer les product associes
-
-          // recupérer les informations des produits souhaités et crée un jeu de donnée.
-        $listproduct = DB::table('products_dolibarr')->select('product_id','label','warehouse_array_list')->get();
-        $list_product = json_encode($listproduct);
-        $list_products = json_decode($listproduct,true);
+         // recupérer les informations des produits souhaités et crée un jeu de donnée.
+         $listproduct = DB::table('products_dolibarr')->select('product_id','label','warehouse_array_list')->get();
+         $list_product = json_encode($listproduct);
+         $list_products = json_decode($listproduct,true);
         
-      
-
-        $data_product =[];
+         $data_product =[];
          $line_product =[];
         foreach($list_products as $valus){
           if($valus['product_id']!="6371"){
@@ -250,7 +191,6 @@ class  Construncstocks
              ];
         }
 
-
          // je veux les produit qui ont deux inden dans les array
          $data_donnees =[];
          foreach($datas as $key =>$valus){
@@ -260,10 +200,8 @@ class  Construncstocks
               }
            }
            
-          
            $tab_result_array2 =[];
-            
-          // aller construire les données souhaite.
+             // aller construire les données souhaite.
            $list_data_assoc_produit =[];
            $recup_id_datas =[];// recupérer les ids data pour construire les mise a jours.
            foreach($data_donnees as $keys =>$values){
@@ -308,23 +246,17 @@ class  Construncstocks
               $tab_result_array1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
-
-                   $chaine_index = explode(' ',$kel);
-                   
-                    if($chaine_index[0]=="Bloc"){
-                       
-                       $index_prefix ="Bloc blanc";
-                         
-                        $tab_result_array2[$index_prefix][] = [
+                    $chaine_index = explode(' ',$kel);
+                      if($chaine_index[0]=="Bloc"){
+                        $index_prefix ="Bloc blanc";
+                          $tab_result_array2[$index_prefix][] = [
                            $kel =>$valus
                         ];
                       
                    }
                    
-                   
                     if($chaine_index[0]=="Bâtonnet"){
-                       
-                       $index_prefix ="Bâtonnet de Buis";
+                        $index_prefix ="Bâtonnet de Buis";
                          
                         $tab_result_array1[$index_prefix][] = [
                            $kel =>$valus
@@ -381,17 +313,15 @@ class  Construncstocks
                $array_result_rap = array_merge($tab_result_arrays1,$tab_result_arrays21);
                $this->setRape($array_result_rap);
               //
-            // reconstruire le tableau....
+              // reconstruire le tableau....
              $tab_result_array = array_merge($tab_result_arrays,$tab_result_array1,$tab_result_array2);
         
               $array_reverse = array_reverse($tab_result_array);
     
-
-          //unset($array_reverse['Lime Droite']);
+              //unset($array_reverse['Lime Droite']);
             $recap_ids_line =[];// recupérer les lines souhaites
             // recu pere les ids en line constituf du tableau.
-
-            // les raps et plaquante
+           // les raps et plaquante
             $recap_ids_lines =[];
 
             $list_product_limite_stocks =[];
@@ -399,14 +329,14 @@ class  Construncstocks
             $list_product_limite_rape =[];
         
             foreach($array_reverse as $valus){
-              foreach($valus as $sm => $valis){
+                   foreach($valus as $sm => $valis){
               
-                  foreach($valis as $lmm => $valo){
-                     // recupérer le id_parent haut.
-                    $index_libel = explode('%',$lmm);
+                        foreach($valis as $lmm => $valo){
+                        // recupérer le id_parent haut.
+                         $index_libel = explode('%',$lmm);
                      
-                    if((int)$index_libel[1] < 10){
-                        $list_product_limite_stocks[] =[
+                       if((int)$index_libel[1] < 10){
+                           $list_product_limite_stocks[] =[
                           'produit'=>$index_libel[0]
                         ];
                     }
