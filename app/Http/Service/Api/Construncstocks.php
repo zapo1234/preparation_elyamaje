@@ -23,6 +23,8 @@ class  Construncstocks
 
       private $linesproduct =[];
 
+      private $stocksproduct =[];
+
        public function __construct(
         Api $api
        )
@@ -109,6 +111,23 @@ class  Construncstocks
     $this->linesproduct = $linesproduct;
     return $this;
    }
+
+
+     /**
+   * @return array
+    */
+    public function getStocksproduct(): array
+    {
+     return $this->stocksproduct;
+    }
+  
+  
+   public function setStocksproduct(array $stocksproduct)
+   {
+     $this->stocksproduct = $stocksproduct;
+     return $this;
+   }
+
 
     
      public  function Constructstocks()
@@ -355,6 +374,8 @@ class  Construncstocks
 
             // les raps et plaquante
             $recap_ids_lines =[];
+
+            $list_product_limite_stocks =[];
         
             foreach($array_reverse as $valus){
               foreach($valus as $sm => $valis){
@@ -362,7 +383,11 @@ class  Construncstocks
                   foreach($valis as $lmm => $valo){
                      // recupérer le id_parent haut.
                     $index_libel = explode('%',$lmm);
-                    dd($index_libel);
+                     
+                    if((int)$index_libel[2] < 10){
+                        $list_product_limite_stocks[] = $index_libel[0];
+                    }
+                    // recupérer les produit en unite qui sont moins de 10
                       foreach($valo as $ll){
                        // recupérer le taux chez le libelle..
                          $taux_libelle = explode(' ',$ll['libelle_family']);
@@ -373,8 +398,11 @@ class  Construncstocks
                 }
            }
           }
-
-        
+           
+           dd($list_product_limite_stocks);
+          // recupérer les produit faible ens tocks moins de 10
+           $this->setStocksproduct($list_product_limite_stocks);
+           
           $rape_index_first =[];// crée le 1 er index
           $plaque_index_first =[];// crée le 1 er index
           foreach($array_tab as $kd=>$vals){
