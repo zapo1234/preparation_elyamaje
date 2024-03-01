@@ -155,21 +155,12 @@
                                                 
                                                     if(count($namex)==2){
                                                     $name_list = $namex[1];
-                                                  }
-                                                 elseif(count($namex)==3){
+                                                }
+                                                
+                                                elseif(count($namex)==3){
                                                     $name_list = $namex[2];
                                                 }else{
                                                     $name_list = $namex[3];
-                                                }
-
-                                               $chiffre_stock =10;
-                                                if($lim[1]<$chiffre_stock){
-                                                   $list_libelle[] =['produit'=>$name_list;
-                                                                    ];
-                                                }else{
-                                                      $list_libelle[] =[
-                                                            'produit'=>"stocks stable de produit"
-                                                     ];
                                                 }
 
                                             @endphp
@@ -207,20 +198,7 @@
                                     </p>
                                     @endif
                                 @endforeach
-
-                                @foreach($list_libelle as $vls)
-                                @if($vls['produit'] == "Auncun produit")
-                                    <p style="text-align: center;width:90%;">
-                                        {{ $vls['produit'] }}<br/>
-                                    </p>
-                                    @else
-                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
-                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $vls['produit'] }} est insuffisant<br/>
-                                    </p>
-                                    @endif
-
-                                @endforeach
-                            <div>          </form>
+                            <div>                                    </form>
                 </div>
             </div>
         </div>
