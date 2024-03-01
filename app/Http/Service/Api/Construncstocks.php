@@ -365,6 +365,8 @@ class  Construncstocks
                       foreach($valo as $ll){
                        // recupérer le taux chez le libelle..
                          $taux_libelle = explode(' ',$ll['libelle_family']);
+
+                         dd($taux_libelle);
                          $recap_ids_line[]= $ll['coeff_qte'].'%'.$ll['id_product_pere'].'%'.$index_libel[2].'%'.$index_libel[1];
 
                   }
