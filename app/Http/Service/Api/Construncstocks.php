@@ -396,7 +396,7 @@ class  Construncstocks
 
             $list_product_limite_stocks =[];
 
-            $limit_product_limite_rape =[];
+            $list_product_limite_rape =[];
         
             foreach($array_reverse as $valus){
               foreach($valus as $sm => $valis){
@@ -447,7 +447,7 @@ class  Construncstocks
                   $index_libel = explode('%',$lmm);
                   
                   if((int)$index_libel[2] < 10){
-                    $limit_product_limite_rape[] = $index_libel[0];
+                    $list_product_limite_rape[] = $index_libel[0];
                 }
 
                     foreach($valo as $ll){
@@ -462,7 +462,7 @@ class  Construncstocks
 
         dd($list_product_limite_rape);
         // recupérer le tableau de stock faible des rapes
-        $this->setStockrape( $limit_product_limite_rape);
+        $this->setStockrape($list_product_limite_rape);
 
          $recap_ids_lines =  array_merge($rape_index_first,$plaque_index_first,$recap_ids_lines);
 
