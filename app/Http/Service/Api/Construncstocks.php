@@ -360,8 +360,7 @@ class  Construncstocks
               foreach($valus as $sm => $valis){
               
                   foreach($valis as $lmm => $valo){
-                      
-                   // recupérer le id_parent haut.
+                     // recupérer le id_parent haut.
                     $index_libel = explode('%',$lmm);
                       foreach($valo as $ll){
                        // recupérer le taux chez le libelle..
@@ -401,19 +400,17 @@ class  Construncstocks
                        $recap_ids_lines[]= $ll['coeff_qte'].'%'.$ll['id_product_pere'].'%'.$index_libel[2].'%'.$index_libel[1];
                 }
             }
-         }
+          }
         }
 
-        
-        
-        $recap_ids_lines =  array_merge($rape_index_first,$plaque_index_first,$recap_ids_lines);
+         $recap_ids_lines =  array_merge($rape_index_first,$plaque_index_first,$recap_ids_lines);
 
           // ici .
           $this->setRapes($recap_ids_lines);
         
           $this->setdata($recap_ids_line);
 
-          dd($array_reverse);
+          //dd($array_reverse);
           
          return $array_reverse;
          

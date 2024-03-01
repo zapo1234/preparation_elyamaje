@@ -150,7 +150,6 @@
                                             @php
                                                 
                                                 $lim = explode('%',$lm);
-                                                
                                                 $namex = explode(' ',$lim[0]);
                                                 
                                                     if(count($namex)==2){
