@@ -362,11 +362,11 @@ class  Construncstocks
                   foreach($valis as $lmm => $valo){
                      // recupérer le id_parent haut.
                     $index_libel = explode('%',$lmm);
+                    dd($index_libel);
                       foreach($valo as $ll){
                        // recupérer le taux chez le libelle..
                          $taux_libelle = explode(' ',$ll['libelle_family']);
 
-                         dd($taux_libelle);
                          $recap_ids_line[]= $ll['coeff_qte'].'%'.$ll['id_product_pere'].'%'.$index_libel[2].'%'.$index_libel[1];
 
                   }
