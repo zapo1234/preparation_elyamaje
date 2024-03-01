@@ -667,8 +667,8 @@ class Admin extends BaseController
 
             try {
 
-                   // $this->transfers->Transfertext($order);
-                    $this->factorder->Transferorder($order);  
+                    $this->transfers->Transfertext($order);
+                   // $this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -1866,7 +1866,7 @@ class Admin extends BaseController
                 }
                  // bloquer ici
                    $message ="Stock de $list_libelle insuffisant pour créer le kit";
-                   return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                   return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
                }
           
 
