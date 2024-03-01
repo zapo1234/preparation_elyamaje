@@ -163,7 +163,7 @@
                                                     $name_list = $namex[3];
                                                 }
 
-                                               $a=10;
+                                               $a='10';
                                                 if($lim[1]<$a){
                                                    $list_libelle[] =['produit'=>$name_list;
                                                                     ];
