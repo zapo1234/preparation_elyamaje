@@ -167,7 +167,7 @@
                                                 if($lim[1]<$a){
                                                    $text ="Stocks insuffisant";
                                                 }else{
-                                                     $text="";
+                                                     $text="ZAPO";
                                                 }
 
                                             @endphp
