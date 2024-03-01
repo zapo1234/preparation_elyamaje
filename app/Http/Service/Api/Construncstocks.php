@@ -25,6 +25,8 @@ class  Construncstocks
 
       private $stocksproduct =[];
 
+      private $stocksrape =[];
+
        public function __construct(
         Api $api
        )
@@ -127,6 +129,23 @@ class  Construncstocks
      $this->stocksproduct = $stocksproduct;
      return $this;
    }
+
+
+     /**
+   * @return array
+    */
+    public function getStocksrape(): array
+    {
+     return $this->stocksrape;
+    }
+  
+  
+   public function setStockrape(array $stocksrape)
+   {
+     $this->stocksrape = $stocksrape;
+     return $this;
+   }
+
 
 
     
@@ -376,6 +395,8 @@ class  Construncstocks
             $recap_ids_lines =[];
 
             $list_product_limite_stocks =[];
+
+            $limit_product_limite_rape =[];
         
             foreach($array_reverse as $valus){
               foreach($valus as $sm => $valis){
@@ -424,6 +445,11 @@ class  Construncstocks
                 foreach($valis as $lmm => $valo){
                    // recupérer le id_parent haut.
                   $index_libel = explode('%',$lmm);
+                  
+                  if((int)$index_libel[2] < 10){
+                    $limit_product_limite_rape[] = $index_libel[0];
+                }
+
                     foreach($valo as $ll){
                      // recupérer le taux chez le libelle
                        $taux_libelle = explode(' ',$ll['libelle_family']);
@@ -432,6 +458,11 @@ class  Construncstocks
             }
           }
         }
+        
+
+        dd($list_product_limite_rape);
+        // recupérer le tableau de stock faible des rapes
+        $this->setStockrape( $limit_product_limite_rape);
 
          $recap_ids_lines =  array_merge($rape_index_first,$plaque_index_first,$recap_ids_lines);
 
