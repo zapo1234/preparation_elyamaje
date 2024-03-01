@@ -1445,7 +1445,7 @@ class Admin extends BaseController
          }
 
          if(count($list_faible_stocks)==0){
-            $$list_faible_stocks[] =[
+            $list_faible_stocks[]=[
               "produit"=>"Aucun mouvement produit"
 
             ];
@@ -1679,7 +1679,7 @@ class Admin extends BaseController
                    }
 
                    if(count($list_faible_stocks)==0){
-                    $$list_faible_stocks[] =[
+                     $list_faible_stocks[] =[
                       "produit"=>"Aucun mouvement produit"
 
                     ];
@@ -1954,7 +1954,7 @@ class Admin extends BaseController
         }
         
         if(count($list_faible_stocks)==0){
-            $$list_faible_stocks[] =[
+             $list_faible_stocks[] =[
               "produit"=>"Aucun mouvement produit"
 
             ];
