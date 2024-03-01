@@ -163,10 +163,17 @@
                                                     $name_list = $namex[3];
                                                 }
 
+                                               $a=10;
+                                                if($lim[1]<$a){
+                                                   $text ="Stocks insuffisant";
+                                                }else{
+                                                     $text="";
+                                                }
+
                                             @endphp
                                             
                                             <tr>
-                                                <td style="background-color: #333333;color:white;padding:10px;">{{ $name_list  }}  Nombre d'unités : {{  $lim[1] }} </td>
+                                                <td style="background-color: #333333;color:white;padding:10px;">{{ $name_list  }}  Nombre d'unités : {{  $lim[1] }}   <span> {{ $text  }}</span></td>
                                             </tr>
                                             
                                             @foreach($vv as $ls =>$vc)
