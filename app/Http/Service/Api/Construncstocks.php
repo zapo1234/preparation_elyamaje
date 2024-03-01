@@ -399,7 +399,7 @@ class  Construncstocks
            }
           }
            
-           dd($list_product_limite_stocks);
+           
           // recupérer les produit faible ens tocks moins de 10
            $this->setStocksproduct($list_product_limite_stocks);
            

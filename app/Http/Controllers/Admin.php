@@ -1433,6 +1433,8 @@ class Admin extends BaseController
     public function stockscat(){
         $data = $this->construcstocks->Constructstocks();
         $message="";
+         // recupérer les produit en stocks
+         $list_faible_stocks = $this->construcstocks->getStocksproduct();
         // recupérer les lines qu'il faut dans notification
         $list_product = $this->stocks->getAll();
         if(count($list_product)==0){
@@ -1442,13 +1444,16 @@ class Admin extends BaseController
             ];
          }
 
-        return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+        return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
     public function poststock(Request $request){
            
          $data = $this->construcstocks->Constructstocks();
          $data_id = $this->construcstocks->getdata();
+
+         // recupérer les produit en stocks
+         $list_faible_stocks = $this->construcstocks->getStocksproduct();
          $array_list1 = array_flip($data_id);//
 
           $existant = $request->get('qts');
@@ -1618,7 +1623,7 @@ class Admin extends BaseController
                      ];
                  }
                   $message ="Stock de $list_libelle insuffisant pour créer le kit";
-                  return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                  return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,' list_faible_stocks'=> $list_faible_stocks]);
               }
               
               
@@ -1665,7 +1670,7 @@ class Admin extends BaseController
 
                         ];
                    }
-                return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=> $list_faible_stocks]);
               
           }
     }
