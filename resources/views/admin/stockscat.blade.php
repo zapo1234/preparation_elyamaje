@@ -155,21 +155,20 @@
                                                 
                                                     if(count($namex)==2){
                                                     $name_list = $namex[1];
-                                                }
-                                                
-                                                elseif(count($namex)==3){
+                                                  }
+                                                 elseif(count($namex)==3){
                                                     $name_list = $namex[2];
                                                 }else{
                                                     $name_list = $namex[3];
                                                 }
 
-                                               $a='10';
-                                                if($lim[1]<$a){
+                                               $chiffre_stock =10;
+                                                if($lim[1]<$chiffre_stock){
                                                    $list_libelle[] =['produit'=>$name_list;
                                                                     ];
                                                 }else{
                                                       $list_libelle[] =[
-                                                            "produit"=>Auncun produit"
+                                                            'produit'=>"stocks stable de produit"
                                                      ];
                                                 }
 
