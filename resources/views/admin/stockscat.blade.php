@@ -165,9 +165,15 @@
 
                                                $a=10;
                                                 if($lim[1]<$a){
-                                                   $text ="Stocks insuffisant";
+                                                   $text ="a son stocks très faible";
+                                                   $list_libelle[] =['produit'=>$name_list;
+                                                                    ];
                                                 }else{
-                                                     $text="ZAPO";
+                                                     
+                                                     $list_libelle[] =[
+                                                            "produit"=>Auncun produit"
+
+                                                             ];
                                                 }
 
                                             @endphp
@@ -205,7 +211,20 @@
                                     </p>
                                     @endif
                                 @endforeach
-                            <div>                                    </form>
+
+                                @foreach($list_libelle as $vls)
+                                @if($vls['produit'] == "Auncun produit")
+                                    <p style="text-align: center;width:90%;">
+                                        {{ $vls['produit'] }}<br/>
+                                    </p>
+                                    @else
+                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
+                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $vls['produit'] }} est insuffisant<br/>
+                                    </p>
+                                    @endif
+
+                                @endforeach
+                            <div>          </form>
                 </div>
             </div>
         </div>
