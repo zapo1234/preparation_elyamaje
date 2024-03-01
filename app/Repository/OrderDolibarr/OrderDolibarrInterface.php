@@ -46,6 +46,10 @@ interface OrderDolibarrInterface
     public function getAllOrdersBeautyProfHistory($filters);
 
     public function getAllHistory();
+
+    public function getOrderDetails($order_id);
+
+    public function  updateStock($data, $typeUpdate);
 }
 
 

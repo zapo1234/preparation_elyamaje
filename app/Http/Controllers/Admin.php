@@ -1220,7 +1220,7 @@ class Admin extends BaseController
             }
 
             // Check if date is same than choice date
-            if($detail->date >= $date){
+            if($detail->date >= $date && ($detail->statut != "canceled" && $detail->statut != "pending")){
                 // Mise à jour des totaux card et cash pour cette commande
                 $caisse[$detail->caisseId]['total_card'] += $detail->amountCard;
                 $caisse[$detail->caisseId]['total_cash'] += $detail->total_order_ttc - $detail->amountCard;

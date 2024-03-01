@@ -616,6 +616,7 @@ class Order extends BaseController
 
 
     public function updateOrderStatus(Request $request){
+
       $order_id = $request->post('order_id');
       $status = $request->post('status');
       $user_id = $request->post('user_id');
@@ -666,6 +667,28 @@ class Order extends BaseController
           }
           echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
         } else {
+          
+          // Get details orders for incrementation or decrementation stock dolibarr
+          if(str_contains($order_id, 'BP')){
+            $res = true;
+            $data = $this->orderDolibarr->getOrderDetails($order_id);
+            if(count($data) > 0){
+              $actual_status = $data[0]['status'];
+
+              if($actual_status != "canceled" && $status == "canceled"){
+                $res = $this->orderDolibarr->updateStock($data,"incrementation");
+              } else if($actual_status == "canceled"){
+                $res = $this->orderDolibarr->updateStock($data,"decrementation");
+              }
+
+              if(!$res){
+                $update = $this->orderDolibarr->updateOneOrderStatus($status, $order_id);
+                echo json_encode(["success" => false, 'number_order_attributed' => count($number_order_attributed), 
+                'message' => 'Les stocks n\'ont pas pu être incrémenté ou décrémenté']);
+              }
+            }
+          }
+         
           $update = $this->orderDolibarr->updateOneOrderStatus($status, $order_id);
           echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
         }
