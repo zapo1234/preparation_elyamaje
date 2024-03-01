@@ -185,7 +185,11 @@
                                 @endforeach
                             </table>
                             <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:50%;">
-                                <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
+                                
+                            
+                               <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
+                               
+                               
                                 @foreach($list_product as $val)
                                     @if($val['libelle'] == "Aucun mouvement de stock")
                                     <p style="text-align: center;width:90%;">
