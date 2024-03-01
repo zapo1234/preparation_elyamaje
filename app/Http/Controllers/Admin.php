@@ -1451,8 +1451,6 @@ class Admin extends BaseController
             ];
          }
 
-         dd($list_faible_stocks);
-
         return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
@@ -1631,6 +1629,15 @@ class Admin extends BaseController
 
                      ];
                  }
+                
+                 if(count($list_faible_stocks)==0){
+                    $list_faible_stocks[]=[
+                      'produit'=>"Aucun mouvement produit"
+        
+                    ];
+                 }
+        
+
                   $message ="Stock de $list_libelle insuffisant pour créer le kit";
                   return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,' list_faible_stocks'=> $list_faible_stocks]);
               }
@@ -1889,9 +1896,17 @@ class Admin extends BaseController
 
                      ];
                 }
+
+                if(count($list_faible_stocks)==0){
+                    $list_faible_stocks[]=[
+                      'produit'=>"Aucun mouvement produit"
+        
+                    ];
+                 }
+        
                  // bloquer ici
                    $message ="Stock de $list_libelle insuffisant pour créer le kit";
-                   return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                   return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
                }
           
 
