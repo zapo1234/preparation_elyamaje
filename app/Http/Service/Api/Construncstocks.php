@@ -459,8 +459,6 @@ class  Construncstocks
           }
         }
         
-
-        dd($list_product_limite_rape);
         // recupérer le tableau de stock faible des rapes
         $this->setStockrape($list_product_limite_rape);
 

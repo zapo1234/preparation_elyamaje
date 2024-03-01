@@ -1679,6 +1679,8 @@ class Admin extends BaseController
            
          $data = $this->construcstocks->Constructstocks();
          $data_id = $this->construcstocks->getRapes();
+
+         $list_faible_stocks = $this->construcstocks->getStocksrape();
          $array_list1 = $data_id;//
 
            // recupérer les deux premiere chaine..
@@ -1934,7 +1936,7 @@ class Admin extends BaseController
 
             ];
         }
-          return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+          return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
         }
 
           
@@ -1948,6 +1950,7 @@ class Admin extends BaseController
     public function postrape(){
         $this->construcstocks->Constructstocks();
         $data = $this->construcstocks->getRape();
+        $list_faible_stocks = $this->construcstocks->getStocksrape();
         $message="";
         $list_product = $this->stocks->getAlls();
         if(count($list_product)==0){
@@ -1957,7 +1960,7 @@ class Admin extends BaseController
             ];
         }
 
-        return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+        return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
   
