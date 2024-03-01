@@ -3,6 +3,7 @@
 namespace App\Repository\OrderDolibarr;
 
 use Exception;
+use Throwable;
 use App\Models\OrderDolibarr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -624,6 +625,79 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       $list_orders = array_values($list_orders);
       return $list_orders;
+   }
+
+   public function getOrderDetails($order_id){
+      // récuperation du detail de commande.
+      $details_order = $this->model->select('orders_doli.statut', 'lines_commande_doli.id','id_commande','id_product','libelle','lines_commande_doli.price','qte','lines_commande_doli.remise_percent','lines_commande_doli.total_ht')
+      ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+      ->where('orders_doli.ref_order', '=', $order_id)
+      ->get();
+ 
+      $list_tiers_order = json_encode($details_order);
+      $list_tiers_order = json_decode($details_order,true);
+      $data_list_details =[];
+
+      foreach($list_tiers_order as $values){
+            $data_list_details[] =[
+            'id'=>$values['id'],
+            'id_commande'=>$values['id_commande'],
+            'id_product'=>$values['id_product'],
+            'nom'=>$values['libelle'],
+            'quantite'=>$values['qte'],
+            'prix'=>$values['price'],
+            'status' =>$values['statut']
+         ];
+
+      }
+
+      // afficher ici.
+      return $data_list_details;
+   }
+
+   public function  updateStock($data, $typeUpdate){
+      try {
+
+         if ($typeUpdate == "decrementation") {
+            $variable = "THEN warehouse_array_list -";
+         }else {
+            $variable = "THEN warehouse_array_list +";
+         }
+
+         DB::beginTransaction();
+
+         $updates = [];
+         foreach ($data as $item) {
+             $updates[$item['id_product']] = $item['quantite'];
+         }
+
+         $caseStatements = '';
+         foreach ($updates as $id_product => $decrementValue) {
+            $caseStatements .= "WHEN $id_product $variable $decrementValue ";
+         }
+
+         $res = DB::update("
+            UPDATE prepa_products_dolibarr
+            SET warehouse_array_list = CASE product_id
+               $caseStatements
+               ELSE warehouse_array_list
+            END
+            WHERE product_id IN (" . implode(',', array_keys($updates)) . ")
+         ");
+
+         
+         if (count($data) == $res) {
+            DB::commit();
+            return true;
+         }else {
+            DB::rollBack();
+            return false;
+         }
+
+      } catch (Throwable $th) {
+         return false;;
+      }
+      
    }
 }
 
