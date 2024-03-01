@@ -412,6 +412,8 @@ class  Construncstocks
           $this->setRapes($recap_ids_lines);
         
           $this->setdata($recap_ids_line);
+
+          dd($array_reverse);
           
          return $array_reverse;
          
