@@ -165,15 +165,12 @@
 
                                                $a=10;
                                                 if($lim[1]<$a){
-                                                   $text ="a son stocks très faible";
                                                    $list_libelle[] =['produit'=>$name_list;
                                                                     ];
                                                 }else{
-                                                     
-                                                     $list_libelle[] =[
+                                                      $list_libelle[] =[
                                                             "produit"=>Auncun produit"
-
-                                                             ];
+                                                     ];
                                                 }
 
                                             @endphp
