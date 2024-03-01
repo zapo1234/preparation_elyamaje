@@ -43,7 +43,7 @@
             </div>
             <div class="card-body p-0" style="background-color:white;">
                 <div class="d-flex w-100">
-                        <form method="POST" action="{{ route('admin.stocksrape') }}" style="overflow:hidden; width:70%;" class="radius-10 d-flex flex-wrap">
+                        <form method="POST" action="{{ route('admin.stockscatrap') }}" style="overflow:hidden; width:70%;" class="radius-10 d-flex flex-wrap">
                             @csrf
                             <table id="" style="width:100%" class="kitStockRape">
                                 @foreach($data as $key => $val)
@@ -94,8 +94,18 @@
                                     @endforeach  
                                 @endforeach
                             </table>
-                            <button style="position:fixed;top:50%;margin-left:70%" type="submit" class="btn btn-primary text-white">Modifier le stock</button>
-                        </form>
+                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px; top:50%;">
+                                <button type="submit" class="btn btn-primary text-white" style="margin-bottom:20px;">Modifier le stock</button>
+                                @foreach($list_product as $val)
+                                    @if($val['libelle'] == "Aucun mouvement de stock")
+                                        {{ $val['libelle'] }}<br/>
+                                    @else
+                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
+                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $val['libelle'] }} a été modifié.<br/>
+                                    </p>
+                                    @endif    
+                                @endforeach
+                            <div>                        </form>
                     </div>
             </div>
         </div>

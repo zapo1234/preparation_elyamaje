@@ -833,11 +833,14 @@ class  Construncstocks
 
             function updateinitialQtyLotToZero(){
 
+              $ids_rapes = [5466,5467,5469,5468];
+
               try {
                   $res = DB::table('products_dolibarr')
                   ->Join('products_association', 'products_dolibarr.product_id', '=', 'products_association.fk_product_pere')
                   ->where('products_association.qty', 10)
                   ->orWhere('products_association.qty', 5)
+                  ->orWhereIn('products_dolibarr.product_id', $ids_rapes)
                   ->update(['products_dolibarr.warehouse_array_list' => 0]);
                   ;
                   return ["success" => true, "message" => "Les quantités des kits on été mise a zéro"];

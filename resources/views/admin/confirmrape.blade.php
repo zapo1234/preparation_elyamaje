@@ -34,7 +34,7 @@
       <!-- Sidebar - Brand -->
     <div id="imc"><img src="" width="100px" height="auto"></div>
 
-     <div class="h2"> Vous avez bien à jours des ligne de stocks ! </div>
+     <div class="h2"> Vous avez bien à jours des ligne de stocks des rapes ! </div>
      <div class="loading">
      <div class="spinner-border text-dark" role="status">
      <span class="sr-only">Loading...</span>
@@ -43,7 +43,6 @@
      
      </div>
      </div>
-     
     
 
     <!-- Page level custom scripts -->
@@ -53,8 +52,8 @@
     
     <script type="text/javascript">
 
-      const route = "{{ route('admin.stockscat') }}";
-      
+      const route = "{{ route('admin.stocksrape') }}";
+
       function redirection() {
         window.location.replace(route);
       }      
