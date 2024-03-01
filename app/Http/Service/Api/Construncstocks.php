@@ -407,7 +407,7 @@ class  Construncstocks
 
                     dd($index_libel);
                      
-                    if((int)$index_libel[2] < 10){
+                    if((int)$index_libel[1] < 10){
                         $list_product_limite_stocks[] = $index_libel[0];
                     }
                     // recupérer les produit en unite qui sont moins de 10
@@ -448,7 +448,7 @@ class  Construncstocks
                    // recupérer le id_parent haut.
                   $index_libel = explode('%',$lmm);
                   
-                  if((int)$index_libel[2] < 10){
+                  if((int)$index_libel[1] < 10){
                     $list_product_limite_rape[] = $index_libel[0];
                 }
 
