@@ -189,6 +189,17 @@
                             
                                <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
                                
+                               @foreach($list_faible_stocks as $vl)
+                                    @if($vl['produit'] == "Aucun mouvement produit")
+                                    <p style="text-align: center;width:90%;">
+                                        {{ $vl['produit'] }}<br/>
+                                    </p>
+                                    @else
+                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
+                                        <i class="fadeIn animated bx bx-check-circle" style="color:#198754; fill:#198754;"></i>Le stock de {{ $vl['produit'] }} est insuffisant.<br/>
+                                    </p>
+                                    @endif
+                                @endforeach
                                
                                 @foreach($list_product as $val)
                                     @if($val['libelle'] == "Aucun mouvement de stock")
