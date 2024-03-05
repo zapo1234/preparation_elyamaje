@@ -69,7 +69,7 @@
                 </div>
                 <div class="modal-footer">
                     <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
-                    <button id="cofirme1" type="submit" form="resetQuantitiesForm1" class="btn btn-dark">Confirmer</button>
+                    <button id="" type="submit" form="resetQuantitiesForm1" class="btn btn-dark">Confirmer</button>
                 </div>
               </form>
             </div>
