@@ -52,7 +52,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form  method="POST" action="{{ route('admin.generateinvoices') }}">
+                    <form  method="POST" action="{{ route('admin.generatefacture') }}">
                         @csrf
                         <div class="col-md-12 mt-3">
 								<label for="order_id" class="form-label">Numéro de commande</label>
