@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Service;
+namespace App\Http\Service\PDF;
 use Exception;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
