@@ -16,6 +16,7 @@ use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\PDF\InvoicesPdf;
 use App\Http\Service\Api\Construncstocks;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
@@ -66,6 +67,7 @@ class Admin extends BaseController
     private $transfers;
     private $construcstocks;
     private $stocks;
+    private $pdf;
 
     public function __construct(
         Api $api, 
@@ -81,6 +83,7 @@ class Admin extends BaseController
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
         Transfertext $transfers,
+        InvoicesPdf $pdf,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
@@ -113,6 +116,7 @@ class Admin extends BaseController
         $this->caisse = $caisse;
         $this->construcstocks = $construcstocks;
         $this->stocks = $stocks;
+        $this->pdf=$pdf;
     }
 
     public function syncCategories(){
@@ -2018,7 +2022,8 @@ class Admin extends BaseController
 
   public function generatefacture(){
         
-    dd('zapo');
+    $this->pdf->
+     dd('zapo');
 
   }
   
