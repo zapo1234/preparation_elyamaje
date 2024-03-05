@@ -597,6 +597,8 @@ class TransferOrder
                                          $montant_fidelite = 0.000;
                                     }else{
                                           $index_int="";
+                                          $total_shipping = $donnees['shipping_amount']*1.2;
+                                          $montant_fidelite = $donnees['total_order']-$total_shipping;
                                           $montant_fidelite = $donnees['total_order'];
                                     }
 
@@ -710,6 +712,7 @@ class TransferOrder
                          }
                         */
                         
+                        dd($data_lines);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
