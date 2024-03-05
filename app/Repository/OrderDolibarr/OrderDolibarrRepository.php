@@ -740,7 +740,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
      public function getOrderidfact($ref_commande){
          // recupérer id de la commande...
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
-
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
         
