@@ -340,7 +340,7 @@ class TransferOrder
                         $gift_card="";
                         foreach($orders as $k => $donnees) {
                                 // créer des tiers pour dolibarr via les datas woocomerce. 
-                                dd($donnees['shipping_amount']);
+                                
                                 // créer le client via dolibarr à partir de woocomerce...
                                  $ref_client = rand(4,10);
                                  //  $email_true = mb_strtolower($donnees['billing']['email']);
