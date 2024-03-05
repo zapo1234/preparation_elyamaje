@@ -11,14 +11,12 @@
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="height: 50px;">
                         <h1 style="text-align:center;">Elyamaje vous remercie pour votre visite sur le Salon Beauty Prof 2024</h1>
                     </div>
-                     
-                    <p style="text-align:center;">L'équipe d'Elyamaje tient à vous remercier pour votre enthousiasme et la confiance que vous nous avez témoigné lors de l'événement Beauty Prof de Paris ce week-end. En raison du volume élevé de commandes, nous avons rencontré une erreur technique indépendante de notre volonté lors de la génération de votre facture initiale.</p>
-                    <p style="text-align:center;">Nous vous prions de bien vouloir trouver ci-joint votre facture définitive. N° {{ $ref_order }}</p>
+                    <p style="text-align:center;">Nous avons le plaisir de vous informer que votre commande est actuellement en cours de préparation.</p>
+                    <p style="text-align:center;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
                     <div style="text-align:center;">
-                        <p style="width:100%;"> 
-                         <br><br><strong style="font-size:18px;"></strong></p> 
-                        <p style="width:100%;">Nous nous excusons pour tout inconvénient que cela aurait pu causer et vous remercions pour votre compréhension.</p>
-                        <p>Cordialement</p>
+                        <p style="width:100%;">Nous sommes heureux de vous offrir un bon d'achat de <strong>{{ $percent }}% de réduction</strong> sur votre prochain commande en ligne* sur <a href="https://www.elyamaje.com">elyamaje.com</a>
+                        avec le code : <br><br><strong style="font-size:18px;">{{ $code_promo }}</strong></p> 
+                        <p style="width:100%;">Votre confiance est précieuse, nous espérons que vous apprécierez vos produits.</p>
                         <p style="width:100%;">L'Équipe Elyamaje</p>
 
                         </div>
@@ -34,10 +32,13 @@
                     <li>Pour toute réclamation concernant votre commande veuillez nous contacter par message via notre <a href="https://elyamaje.zendesk.com/hc/fr">espace SAV</a>.</li>
                     <li>Pour toute information supplémentaire, veuillez consulter nos <a href="https://www.elyamaje.com/c-g-v/">conditions générales de vente</a>.</li>
                 </ul>        
-                <p style="font-size:12px; text-align:center; width:100%;"></p>
+                <p style="font-size:12px; text-align:center; width:100%;">*Code à usage unique, valable un an à partir du 08 mars 2024 pour un achat minimum de 100€, non cumulable avec d'autres codes promotionnels.</p>
             </div>
         </td>
     </tr>
             </table>
         </td>
     </tr>
+</table>
+
+@endsection
