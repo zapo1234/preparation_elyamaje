@@ -182,6 +182,7 @@ class TransferOrder
       public function Transferorder($orders)
       {
              //dd($orders);
+
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -339,6 +340,7 @@ class TransferOrder
                         $gift_card="";
                         foreach($orders as $k => $donnees) {
                                 // créer des tiers pour dolibarr via les datas woocomerce. 
+                                
                                 // créer le client via dolibarr à partir de woocomerce...
                                  $ref_client = rand(4,10);
                                  //  $email_true = mb_strtolower($donnees['billing']['email']);
@@ -597,7 +599,9 @@ class TransferOrder
                                          $montant_fidelite = 0.000;
                                     }else{
                                           $index_int="";
-                                          $montant_fidelite = $donnees['total_order'];
+                                          $total_shipping = $donnees['shipping_amount']*1.2;
+                                          $montant_fidelite = $donnees['total_order']-$total_shipping;
+                                          
                                     }
 
                                     $data_options = [
@@ -710,6 +714,7 @@ class TransferOrder
                          }
                         */
                         
+                        dd($data_lines);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {

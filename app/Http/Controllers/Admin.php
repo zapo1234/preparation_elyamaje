@@ -667,8 +667,8 @@ class Admin extends BaseController
 
             try {
 
-                    $this->transfers->Transfertext($order);
-                   // $this->factorder->Transferorder($order);  
+                    //$this->transfers->Transfertext($order);
+                    $this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -2010,6 +2010,8 @@ class Admin extends BaseController
 
         return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
+
+    
 
   
 

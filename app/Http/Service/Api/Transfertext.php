@@ -651,7 +651,9 @@ class Transfertext
                                             $montant_fidelite = 0.000;
                                        }else{
                                              $index_int="";
-                                             $montant_fidelite = $donnees['total_order'];
+                                             $total_shipping = $donnees['shipping_amount']*1.2;
+                                             $montant_fidelite = $donnees['total_order']-$total_shipping;
+                                             
                                        }
 
                                       $data_options = [
