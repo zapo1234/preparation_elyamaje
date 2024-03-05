@@ -2018,7 +2018,9 @@ class Admin extends BaseController
     
   public function generateinvoices(){
       $message="";
-       return view('admin.generateinvoices',['message'=>$message]);
+      $css="no";
+      $divid="no";
+       return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
    }
 
   public function generatefacture(Request $request){
@@ -2026,13 +2028,19 @@ class Admin extends BaseController
       $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
       $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
 
-      dd($data);
-      // ref_commande.
-      $this->orderDolibarr->getOrderidfact($ref_commande);// recupérer id commande correspondant.
-      
-     dd('zapo');
-     $message ="facture à eté bien envoyé au client";
-     return  view('admin.generateinvoices',['message'=>$message]);
+      // verifie si y'a une clé existant renvoyé
+      if(array_search($ref_commande,$data)!=false){
+           $this->orderDolibarr->getOrderidfact($ref_commande);
+            $message ="facture à eté bien envoyé au client";
+            $css ="success";
+        }else{
+            $css="danger";
+            $message ="Attention cette commande est introuvable !";
+      }
+
+      $divid="yescam";
+
+      return  view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
 
      dd('zapo');
 

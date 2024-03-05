@@ -4,6 +4,10 @@
     <link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
     <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
     <link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
+    <style>
+      #no{display:none}
+      #yescam{display:block}
+    </style>
 @endsection
 
 @section("wrapper")
@@ -28,7 +32,11 @@
                     <div class="d-flex gap-2" style="margin-left:20px">
                         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Envoyer une facture</button>
                         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModals1">Renvoyer une facture</button>
-                    </div>
+                        <div id="{{ $divid }}" class="alert alert-{{ $css }}" role="alert">
+                           This is a success alert—check it out!
+                          </div>
+                    
+                      </div>
 
                 </div>    
             </div>
@@ -55,7 +63,9 @@
                  <div class="modal-footer">
                     <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
                     <button  type="submit"  class="btn btn-dark">Confirmer</button>
-                    <button type="" id="fact"></buton>
+                    <div class="alert alert-{{ $css }}" role="alert">
+                        {{ $message   }}
+                    </div>
                 </div>
               </form>
                <!-- Fin du formulaire -->
