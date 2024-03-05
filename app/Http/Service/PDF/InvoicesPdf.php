@@ -60,7 +60,7 @@ class InvoicesPdf
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoices) {
                       $message->to($to)
                       ->subject($subject)
-                    ->attach($path_invoices);
+                    ->attach($path_invoice);
                       
               });
             

@@ -14,8 +14,8 @@
                 
                     <p style="text-align:center;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
                     <div style="text-align:center;">
-                        <p style="width:100%;">Nous sommes heureux de vous offrir un bon d'achat de <strong>{{ $percent }}% de réduction</strong> sur votre prochain commande en ligne* sur <a href="https://www.elyamaje.com">elyamaje.com</a>
-                        avec le code : <br><br><strong style="font-size:18px;">{{ $code_promo }}</strong></p> 
+                        <p style="width:100%;"> <strong></strong> sur votre prochain commande en ligne sur <a href="https://www.elyamaje.com">elyamaje.com</a>
+                        avec le code : <br><br><strong style="font-size:18px;"></strong></p> 
                         <p style="width:100%;">Votre confiance est précieuse, nous espérons que vous apprécierez vos produits.</p>
                         <p style="width:100%;">L'Équipe Elyamaje</p>
 
@@ -32,7 +32,7 @@
                     <li>Pour toute réclamation concernant votre commande veuillez nous contacter par message via notre <a href="https://elyamaje.zendesk.com/hc/fr">espace SAV</a>.</li>
                     <li>Pour toute information supplémentaire, veuillez consulter nos <a href="https://www.elyamaje.com/c-g-v/">conditions générales de vente</a>.</li>
                 </ul>        
-                <p style="font-size:12px; text-align:center; width:100%;">*Code à usage unique, valable un an à partir du 08 mars 2024 pour un achat minimum de 100€, non cumulable avec d'autres codes promotionnels.</p>
+                <p style="font-size:12px; text-align:center; width:100%;"></p>
             </div>
         </td>
     </tr>
