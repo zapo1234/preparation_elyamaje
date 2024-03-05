@@ -44,6 +44,37 @@
             </div>
         </div>
     </div>
+
+
+    {{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+
+    <div class="modal fade" id="exampleDarkModal1" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title text-white">Renvoyer la facture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-white">
+                    <!-- Début du formulaire -->
+                    <form id="resetQuantitiesForm1" method="POST" action="{{}}">
+                        @csrf
+                        <div class="col-md-12 mt-3">
+								<label for="order_id" class="form-label">Numéro de commande</label>
+									<input required value="" name="order_id" type="text" class="form-control" id="order_id">
+							</div>
+                        <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
+                    </form>
+                    <!-- Fin du formulaire -->
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button id="cofirme1" type="submit" form="resetQuantitiesForm1" class="btn btn-dark">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- -------------------------------------------------------------------------------------------------------------------- --}}
 @endsection
 
 
