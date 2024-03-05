@@ -7,7 +7,6 @@ use Throwable;
 use App\Models\OrderDolibarr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Service\PDF\InvoicesPdf;
 
 
 class OrderDolibarrRepository implements OrderDolibarrInterface
@@ -15,10 +14,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    private $model;
 
-   public function __construct(OrderDolibarr $mode,
-    InvoicesPdf $pdf){
+   public function __construct(OrderDolibarr $model){
       $this->model = $model;
-      $this->pdf = $pdf;
    }
 
    public function getAllOrders(){
