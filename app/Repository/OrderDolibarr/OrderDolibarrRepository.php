@@ -731,6 +731,32 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       }
       return $labels; 
    }
+
+
+     public function getOrderidfact($ref_commande){
+       // recupérer la ref_commande...
+        $userdata =  DB::table('orders_doli')->select('id')->where('ref_order','=',$ref_commande);
+
+         $ids = json_encode($userdata);
+         $id_recup = json_decode($ids,true);
+         dd($id_recup);
+
+         $usersWithPosts = DB::table('orders_doli')
+       ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+       ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
+       'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
+       'orders_doli.billing_code_postal')
+       ->where('orders_doli.id','=',$id_commande)
+       ->get();
+      
+        $lists = json_encode($usersWithPosts);
+        $result = json_decode($lists,true);
+
+       // traiter le retour de la facture
+
+ 
+
+     }
 }
 
 
