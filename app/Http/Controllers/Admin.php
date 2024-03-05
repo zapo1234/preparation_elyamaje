@@ -2018,7 +2018,7 @@ class Admin extends BaseController
     
   public function generateinvoices(){
       $message="";
-       return view('admin.generateinvoices',['message'=>$messsage]);
+       return view('admin.generateinvoices',['message'=>$message]);
    }
 
   public function generatefacture(Request $request){
