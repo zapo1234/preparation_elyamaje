@@ -738,14 +738,14 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
      public function getOrderidfact($ref_commande){
-         // recupérer la ref_commande...
+         // recupérer id de la commande...
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
 
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
-         $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
         
          if(count($id_recup)!=0){
+            $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
             $usersWithPosts = DB::table('orders_doli')
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
              ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
