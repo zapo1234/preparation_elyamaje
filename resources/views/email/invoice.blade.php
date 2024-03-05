@@ -15,7 +15,7 @@
                     <p style="text-align:center;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
                     <div style="text-align:center;">
                         <p style="width:100%;"> <strong></strong> sur votre prochain commande en ligne sur <a href="https://www.elyamaje.com">elyamaje.com</a>
-                        avec le code : <br><br><strong style="font-size:18px;"></strong></p> 
+                         <br><br><strong style="font-size:18px;"></strong></p> 
                         <p style="width:100%;">Votre confiance est précieuse, nous espérons que vous apprécierez vos produits.</p>
                         <p style="width:100%;">L'Équipe Elyamaje</p>
 
