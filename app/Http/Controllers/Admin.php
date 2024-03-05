@@ -2023,6 +2023,8 @@ class Admin extends BaseController
        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
    }
 
+   
+
   public function generatefacture(Request $request){
       
       $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
