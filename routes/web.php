@@ -157,7 +157,6 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::post("/generateinvoices", [Admin::class, "generatefacture"])->name('admin.generatefacture'); 
 
     // renvoyer une facture de  bpp 
-    Route::post("/generateinvoices", [Admin::class, "generatefactures"])->name('admin.generatefactures'); 
    
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
