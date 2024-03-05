@@ -2017,7 +2017,8 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
-       return view('admin.generateinvoices');
+      $message="";
+       return view('admin.generateinvoices',['message'=>$messsage]);
    }
 
   public function generatefacture(Request $request){
@@ -2025,6 +2026,10 @@ class Admin extends BaseController
      $ref_commande = $request->get('order_id');
      // ref_commande.
      $this->orderDolibarr->getOrderidfact($ref_commande);
+      
+     dd('zapo');
+     $message ="facture à eté bien envoyé au client";
+     return  view('admin.generateinvoices',['message'=>$message]);
 
      dd('zapo');
 
