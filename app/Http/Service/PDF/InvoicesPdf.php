@@ -22,7 +22,7 @@ class InvoicesPdf
        public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise){
 
 
-        dump($ref_order);
+    
          //$ref_order="BP-marseille-000001";
          $date = date('Y-m-d H:i:s');
          $date = date('d/m/Y');
@@ -48,7 +48,7 @@ class InvoicesPdf
 
              $to="martial@elyamaje.com";
             // envoi de mail au client.
-            Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoices) {
+            Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to)
                       ->subject($subject)
                     ->attach($path_invoice);
