@@ -57,7 +57,7 @@
                 </div>
                 <div class="modal-body text-white">
                     <!-- Début du formulaire -->
-                    <form id="resetQuantitiesForm1" method="POST" action="{{}}">
+                    <form id="resetQuantitiesForm1" method="POST" action="">
                         @csrf
                         <div class="col-md-12 mt-3">
 								<label for="order_id" class="form-label">Numéro de commande</label>
