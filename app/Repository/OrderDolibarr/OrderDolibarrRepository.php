@@ -696,8 +696,40 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       } catch (Throwable $th) {
          return false;;
+      } 
+   }
+
+   public function getChronoLabelByDate($date){
+      $labels = [];
+      $labels_dolibarr = $this->model::select('orders_doli.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 
+      DB::raw("SUM(prepa_products.weight * prepa_label_product_order.quantity) as weight"))
+      ->leftJoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
+      ->leftJoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->leftJoin('products', 'products.product_woocommerce_id', '=', 'label_product_order.product_id')
+      ->where('labels.origin', 'chronopost')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
+      ->where('labels.bordereau_id', null)
+      ->groupBy('orders_doli.ref_order')
+      ->get();
+
+      foreach($labels_dolibarr as $label){
+         $labels[] = [
+            'order_woocommerce_id' => $label['ref_order'],
+            'weight' => $label['weight'],
+            'tracking_number' => $label['tracking_number'],
+            'shipping_method' => $label['shipping_method'],
+            'product_code' => null,
+            'shipping_customer_company' => $label['billing_company'],
+            'shipping_customer_last_name' => $label['billing_pname'],
+            'shipping_customer_first_name' => $label['billing_name'],
+            'shipping_customer_postcode' => $label['code_postal'],
+            'shipping_customer_city' => $label['city'],
+            'shipping_customer_country' => $label['contry'],
+            'customer_id' => $label['socid'] ?? null,
+            'total_order' => $label['total_order_ttc']
+         ];
       }
-      
+      return $labels; 
    }
 }
 
