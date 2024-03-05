@@ -29,7 +29,6 @@ class InvoicesPdf
         $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
         $content = 'Bonjour Merci de recevoir votre fature de commande';
         
-         $to = $destinataire;
         
       
         try{
@@ -38,7 +37,7 @@ class InvoicesPdf
             $pdfContent = $pdf->output();
             $filePath = 'invoices/'.$ref_order.'.pdf'; // Emplacement dans le dossier storage/app
 
-            $filePaths = 'other_invoices/'.$ref_order.'.pdf';
+            $filePaths = 'others_invoices/'.$ref_order.'.pdf';
             // Enregistrement du fichier PDF dans le répertoire de stockage
             Storage::put($filePath, $pdfContent);
             $path_invoices = "storage/app/$filePath";
