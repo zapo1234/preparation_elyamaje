@@ -103,58 +103,12 @@
             })
         })
 
-        $(".change_date_input").on('change', function(){
-            $(".change_date").submit();
-        })
-
-        $(".addMovementForm").submit(function(e){
-            var caisse_id = $(this).attr('data-caisse-id')
-            if(parseFloat($("#amount_"+caisse_id).val()) > parseFloat($("#amountCaisse_"+caisse_id).val())){
-                e.preventDefault();
-                $("#amount_"+caisse_id).css('border', '1px solid red')
-                $("#exampleSmallModal_"+caisse_id+" .my-1").css('color', 'red')
-            }
-        });
-
-        $(".validMovement").on('click', function(){
-            $("#movement_id").val($(this).attr('data-id'))
-            $("#caisse").val($(this).attr('data-name'))
-            $('#validMovementModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            })
-            $("#validMovementModal").modal('show')
-        })
-
-        $(".cancelMovement").on('click', function(){
-            $("#cancel_movement_id").val($(this).attr('data-id'))
-            $("#cancel_caisse").val($(this).attr('data-name'))
-            $('#cancelMovementModal').modal({
-                backdrop: 'static',
-                keyboard: false
-            })
-            $("#cancelMovementModal").modal('show')
-        })
+    
     </script>
 
 {{-- <script>
     $(document).ready(function() {
-        $('#cofirme').click(function() {
-            // Envoyer une requête Ajax vers la route
-            $.ajax({
-                url: '{{ route("initialQtyLot") }}',
-                type: 'GET',
-                dataType: 'json', // Changez ceci en fonction de votre retour de données
-                success: function(response) {
-                    // Traitement des données de retour si nécessaire
-                    console.log(response);
-                },
-                error: function(xhr, status, error) {
-                    // Gérer les erreurs
-                    console.error('Erreur lors de la requête : ' + status);
-                }
-            });
-        });
+       
     });
 </script> --}}
 
