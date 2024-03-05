@@ -152,7 +152,7 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     // requete stocks post
     Route::get("/stocksrape", [Admin::class, "postrape"])->name('admin.stocksrape'); 
     // généré une facture de la BPP
-    Route::get("/generate/invoices", [Admin::class, "generateinvoices"])->name('admin.generateinvoices'); 
+    Route::get("/generateinvoices", [Admin::class, "generateinvoices"])->name('admin.generateinvoices'); 
 
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
