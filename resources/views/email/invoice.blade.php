@@ -11,7 +11,7 @@
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="height: 50px;">
                         <h1 style="text-align:center;">Elyamaje vous remercie pour votre visite sur le Salon Beauty Prof 2024</h1>
                     </div>
-                    <p style="text-align:center;">Nous avons le plaisir de vous informer que votre commande est actuellement en cours de préparation.</p>
+                
                     <p style="text-align:center;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
                     <div style="text-align:center;">
                         <p style="width:100%;">Nous sommes heureux de vous offrir un bon d'achat de <strong>{{ $percent }}% de réduction</strong> sur votre prochain commande en ligne* sur <a href="https://www.elyamaje.com">elyamaje.com</a>

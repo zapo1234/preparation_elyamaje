@@ -27,7 +27,7 @@
 
                     <div class="d-flex gap-2" style="margin-left:20px">
                         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Envoyer une facture</button>
-                       
+                        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModals1">Renvoyer une facture</button>
                     </div>
 
                 </div>    
@@ -39,7 +39,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content bg-dark">
                 <div class="modal-header">
-                    <h5 class="modal-title text-white">Renvoyer la facture</h5>
+                    <h5 class="modal-title text-white">envoyer  la facture</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-white">
@@ -63,6 +63,44 @@
     </div>
     {{-- -------------------------------------------------------------------------------------------------------------------- --}}
 @endsection
+
+
+{{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+
+<div class="modal fade" id="exampleDarkModals1" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-white">Renvoyer la facture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-white">
+                <!-- Début du formulaire -->
+                <form  method="POST" action="{{ route('admin.generateinvoices') }}">
+                    @csrf
+                    <div class="col-md-12 mt-3">
+                            <label for="order_id" class="form-label">Numéro de commande</label>
+                                <input required value="" name="order_id" type="text" class="form-control" id="order_id">
+                        </div>
+                    <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
+                 </div>
+             <div class="modal-footer">
+                <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <button  type="submit"  class="btn btn-dark">Confirmer</button>
+            </div>
+          </form>
+           <!-- Fin du formulaire -->
+        </div>
+    </div>
+</div>
+{{-- -------------------------------------------------------------------------------------------------------------------- --}}
+@endsection
+
+
+
+
+
+
 
 
 @section("script")
