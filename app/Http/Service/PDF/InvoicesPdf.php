@@ -30,17 +30,7 @@ class InvoicesPdf
         $content = 'Bonjour Merci de recevoir votre fature de commande';
         
          $to = $destinataire;
-
-         $view = View::make('invoices.tiersinvoice', [
-          'date' => $date,
-          'data_line_order' => $data_line_order,
-          'tiers' => $tiers,
-          'ref_order' => $ref_order,
-          'total_ht' => $total_ht,
-          'total_ttc' => $total_ttc,
-          'code_promo'=>$code_promo,
-          'remise'=>$remise,
-      ]);
+        
       
         try{
 

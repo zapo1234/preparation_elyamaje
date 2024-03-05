@@ -19,7 +19,7 @@
             padding: 8px;
             border: 1px solid #fff;
             text-align: left;
-            font-size:13px;
+            font-size:16px;
         }
         th {
             background-color: #f2f2f2;
