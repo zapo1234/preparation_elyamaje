@@ -737,6 +737,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          // recupérer la ref_commande...
          $userdata =  DB::table('orders_doli')->select('id')->where('ref_order','=',$ref_commande);
 
+         dd($userdata);
+
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
          dd($id_recup);
