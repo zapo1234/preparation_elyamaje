@@ -856,8 +856,21 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
               dd('commande introuvable');
          }
 
- 
+  
 
+     }
+
+     public function getAllReforder(){
+       $order_all =[];
+       $userdata =  DB::table('orders_doli')->select('ref_order')->get();
+       $ids = json_encode($userdata);
+       $list_ids = json_decode($ids,true);
+
+       foreach($list_ids as $key => $val){
+           $order_all[$key] =$val['ref_order'];
+       }
+
+       return $order_all;
      }
 }
 

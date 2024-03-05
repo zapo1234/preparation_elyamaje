@@ -55,6 +55,7 @@
                  <div class="modal-footer">
                     <button id="cancelle1" type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
                     <button  type="submit"  class="btn btn-dark">Confirmer</button>
+                    <button type="" id="fact"></buton>
                 </div>
               </form>
                <!-- Fin du formulaire -->

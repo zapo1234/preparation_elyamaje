@@ -2023,9 +2023,12 @@ class Admin extends BaseController
 
   public function generatefacture(Request $request){
       
-     $ref_commande = $request->get('order_id');
-     // ref_commande.
-     $this->orderDolibarr->getOrderidfact($ref_commande);
+      $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
+      $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
+
+      dd($data);
+      // ref_commande.
+      $this->orderDolibarr->getOrderidfact($ref_commande);// recupérer id commande correspondant.
       
      dd('zapo');
      $message ="facture à eté bien envoyé au client";
