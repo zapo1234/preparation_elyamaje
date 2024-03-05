@@ -2023,14 +2023,13 @@ class Admin extends BaseController
        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
    }
 
-   
+
 
   public function generatefacture(Request $request){
       
       $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
       $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
-
-      // verifie si y'a une clé existant renvoyé
+     // verifie si y'a une clé existant renvoyé
       if(array_search($ref_commande,$data)!=false){
            $this->orderDolibarr->getOrderidfact($ref_commande);
             $message ="facture à eté bien envoyé au client";
@@ -2041,11 +2040,9 @@ class Admin extends BaseController
       }
 
         $divid="yescam";
-       return  view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
 
-     dd('zapo');
-
-  }
+    }
   
 
 

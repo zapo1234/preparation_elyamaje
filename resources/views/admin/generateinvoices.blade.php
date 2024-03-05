@@ -30,7 +30,7 @@
                         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal1">Envoyer une facture</button>
                         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModals1">Renvoyer une facture</button>
                         <div id="{{ $divid }}" class="alert alert-{{ $css }}" role="alert">
-                            {{  $message }}
+                            zapo
                           </div>
                     
                       </div>
