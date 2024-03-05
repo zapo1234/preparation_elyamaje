@@ -49,9 +49,10 @@ class InvoicesPdf
              $to="martial@elyamaje.com";
             // envoi de mail au client.
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
-                      $message->to($to)
-                      ->subject($subject)
-                    ->attach($path_invoice);
+                      $message->to($to);
+                      $message->subject($subject);
+                      $message->from('no-reply@elyamaje.com');
+                      $message->attach($path_invoice);
                       
               });
             
