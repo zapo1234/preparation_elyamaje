@@ -2012,7 +2012,11 @@ class Admin extends BaseController
     }
 
     
-
+  public function generateinvoices()
+  {
+       return view('admin.generateinvoices');
+       
+  }
   
 
 
