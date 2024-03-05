@@ -50,7 +50,7 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
-                    return '<div class="total_amount">'+parseFloat(row.total_amount).toFixed(2)+'</div>'
+                    return '<div class="total_amount_order">'+parseFloat(row.total_amount).toFixed(2)+'</div>'
                 }
             }
         ],
