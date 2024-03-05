@@ -2020,9 +2020,12 @@ class Admin extends BaseController
        return view('admin.generateinvoices');
    }
 
-  public function generatefacture(){
-        
-    $this->pdf->
+  public function generatefacture(Request $request){
+      
+     $ref_commande = $request->get('order_id');
+     // ref_commande.
+     $this->order->getOrderidfact($ref_commande);
+
      dd('zapo');
 
   }
