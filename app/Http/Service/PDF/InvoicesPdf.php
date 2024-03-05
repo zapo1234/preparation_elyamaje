@@ -38,8 +38,8 @@ class InvoicesPdf
             $filePath = 'invoices/'.$ref_order.'.pdf'; // Emplacement dans le dossier storage/app
 
             $filePaths = 'others_invoices/'.$ref_order.'.pdf';
-            // Enregistrement du fichier PDF dans le répertoire de stockage
-            Storage::put($filePath, $pdfContent);
+            // Enregistrement du fichier PDF dans le répertoire de stockage....
+            Storage::put($filePaths, $pdfContent);
             $path_invoices = "storage/app/$filePath";
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
