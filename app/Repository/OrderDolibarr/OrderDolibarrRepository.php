@@ -744,21 +744,22 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
          $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
-
-         $usersWithPosts = DB::table('orders_doli')
-       ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
-       ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
-       'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
-       'orders_doli.billing_code_postal')
-        ->where('orders_doli.id','=',$id_commande)
-        ->get();
+        
+         if(count($id_recup)!=0){
+            $usersWithPosts = DB::table('orders_doli')
+            ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+             ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
+            'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
+            'orders_doli.billing_code_postal')
+            ->where('orders_doli.id','=',$id_commande)
+            ->get();
       
-         $lists = json_encode($usersWithPosts);
-         $result = json_decode($lists,true);
+            $lists = json_encode($usersWithPosts);
+            $result = json_decode($lists,true);
 
-          // traiter le retour de la facture
+            // traiter le retour de la facture
            // verifions l'existence des resultats.
-         if(count($result)!=0){
+            if(count($result)!=0){
               // recupérer les variables utile pour envoyé la facture et l'email au clients.
             $tiers =[
            'ref_order'=>$result[0]['ref_order'],
@@ -773,66 +774,64 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            'city' => $result[0]['city']
            ];
      
-           // construire le tableau des produit liée dans la commande.
+             // construire le tableau des produit liée dans la commande.
            foreach($result as $val){
-              $data_line_order[] = [
-             'id_commande'=> $val['id_commande'],
-              'libelle' => $val['libelle'],
-              'price'=> $val['price'],
-              'qte'=> $val['qte'],
-              'total_ht'=> number_format($val['total_ht'], 2),
-              'total_ttc'=> number_format($val['total_ttc'], 2),
-              'remise' => 30,
-              'prix_remise'=> number_format($val['total_ttc'], 2)*0.7,
-              'total_tva'=> number_format($val['total_ttc'] - $val['total_ht'], 2),
-         ];
-      }
+                $data_line_order[] = [
+                'id_commande'=> $val['id_commande'],
+                 'libelle' => $val['libelle'],
+                'price'=> $val['price'],
+                'qte'=> $val['qte'],
+                'total_ht'=> number_format($val['total_ht'], 2),
+                'total_ttc'=> number_format($val['total_ttc'], 2),
+                 'remise' => 30,
+                'prix_remise'=> number_format($val['total_ttc'], 2)*0.7,
+              ' total_tva'=> number_format($val['total_ttc'] - $val['total_ht'], 2),
+           ];
+        }
  
-         // le destinatire et la date d'aujourdhuit.
-         $destinataire = $result[0]['email'];
-         $total_ttc = $result[0]['total_order_ttc'];
-         // definir le pourcentage du code promo envoyé  au tiers
+           // le destinatire et la date d'aujourdhuit.
+           $destinataire = $result[0]['email'];
+           $total_ttc = $result[0]['total_order_ttc'];
+           // definir le pourcentage du code promo envoyé  au tiers
         
-         if($total_ttc >= 80){
+           if($total_ttc >= 80){
               $percent=10;
-         }
-         if($total_ttc < 80){
-             $percent=5;
-         }
-         $total_ht = number_format($total_ttc * 0.8, 2);
-        // ref de la commande
-        $ref_order = $result[0]['ref_order'];
-        // recupérer les 4 premiers lettre du nom de la cliente...
-        $name_code = substr($result[0]['pname'], 0, 4);
-        // Mettre en majuscule le resultat.
-        $name_prefix_code = strtoupper($name_code);
-        // génére un code promo a donner au clients.
-        $code_promos ="BPP-$id_commande$name_prefix_code-2024";
+           }
+            if($total_ttc < 80){
+               $percent=5;
+           }
+           $total_ht = number_format($total_ttc * 0.8, 2);
+         // ref de la commande
+          $ref_order = $result[0]['ref_order'];
+           // recupérer les 4 premiers lettre du nom de la cliente...
+           $name_code = substr($result[0]['pname'], 0, 4);
+         // Mettre en majuscule le resultat.
+          $name_prefix_code = strtoupper($name_code);
+          // génére un code promo a donner au clients.
+          $code_promos ="BPP-$id_commande$name_prefix_code-2024";
 
-        $res_name = str_replace( array( '%', '@', '\'', ';', '<', '>' ), ' ', $code_promos);// filtre sur les caractère spéciaux
-        //$code_promo = preg_replace("/\s+/", "", $res_name);// suprime les espace dans la chaine.
-        
-        $code_promo ="";
+          $res_name = str_replace( array( '%', '@', '\'', ';', '<', '>' ), ' ', $code_promos);// filtre sur les caractère spéciaux
+         //$code_promo = preg_replace("/\s+/", "", $res_name);// suprime les espace dans la chaine.
+         $code_promo ="";
 
-        $remise_true = env('DISCOUNT');
-        $remise = $remise_true*100;
+         $remise_true = env('DISCOUNT');
+         $remise = $remise_true*100;
         
-         // declencher la génération de facture et envoi de mail.
+          // declencher la génération de facture et envoi de mail.
          $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent);
          // insert dans la base de données...
-        $datas_promo =[
-       'id_commande'=>$id_commande,
-       'code_promo'=>$code_promo,
-       'percent'=>$percent,
-       'email'=>$result[0]['email'],
-       'created_at'=> date('Y-m-d H:i:s'),
-       'updated_at'=> date('Y-m-d H:i:s'),
-       ];
-        // insert les données dans la base de données.
-       //  DB::table('code_promos')->insert($datas_promo);
-
-        return $ref_order;
-     }
+          $datas_promo =[
+         'id_commande'=>$id_commande,
+         'code_promo'=>$code_promo,
+         'percent'=>$percent,
+         'email'=>$result[0]['email'],
+         'created_at'=> date('Y-m-d H:i:s'),
+         'updated_at'=> date('Y-m-d H:i:s'),
+         ];
+         // insert les données dans la base de données.
+         //  DB::table('code_promos')->insert($datas_promo);
+          return $ref_order;
+      }
       else{
              // afficher une erreur ....
              // insert dans la table des erreur log.
@@ -849,6 +848,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                $this->geterrorcommande($datas);
      
               echo json_encode(['success' => false, 'message' => $message]);
+         }
+
+          }
+
+         else{
+
+              dd('commande introuvable');
          }
 
  
