@@ -749,7 +749,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
              ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
             'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
-            'orders_doli.billing_code_postal')
+            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name')
             ->where('orders_doli.id','=',$id_commande)
             ->get();
       
@@ -762,15 +762,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
               // recupérer les variables utile pour envoyé la facture et l'email au clients.
             $tiers =[
            'ref_order'=>$result[0]['ref_order'],
-           'name' => $result[0]['name'],
-           'pname' => $result[0]['pname'],
+           'name' => $result[0]['billing_name'],
+           'pname' => $result[0]['billing_pname'],
            'adresse' => $result[0]['billing_adresse'],
            'code_postal' => $result[0]['billing_code_postal'],
            'city'=> $result[0]['billing_city'],
             'contry' => 'FR',
            'email' =>$result[0]['email'],
            'phone' => $result[0]['phone'],
-           'city' => $result[0]['city']
+           
            ];
      
              // construire le tableau des produit liée dans la commande.
