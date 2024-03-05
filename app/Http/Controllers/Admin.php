@@ -2024,7 +2024,7 @@ class Admin extends BaseController
       
      $ref_commande = $request->get('order_id');
      // ref_commande.
-     $this->order->getOrderidfact($ref_commande);
+     $this->orderDolibarr->getOrderidfact($ref_commande);
 
      dd('zapo');
 
