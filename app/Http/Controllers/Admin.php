@@ -2012,10 +2012,14 @@ class Admin extends BaseController
     }
 
     
-  public function generateinvoices()
-  {
+  public function generateinvoices(){
        return view('admin.generateinvoices');
-       
+   }
+
+  public function generatefacture(){
+        
+    dd('zapo');
+
   }
   
 
