@@ -228,6 +228,7 @@
                     <li><a href="{{ url('cashier') }}">Caisse</a></li>
                     <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                     <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
+                    <li><a href="{{ url('stockscat') }}">Envoyer des factures BP</a></li>
                 </ul>
             </li>
         @endif

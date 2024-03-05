@@ -174,14 +174,12 @@ class  Construncstocks
       
       
          // recupérer le tableau
-            $this->setLinesproduct($line_product);
+           $this->setLinesproduct($line_product);
           // aller recupérer la table product association dolibar.
            // filtrer directement avec une requete sql depuis dolibar.
          $data = DB::connection('mysql2')->select("SELECT fk_product_fils,fk_product_pere,qty  FROM llxyq_product_association");
          $list_assoc = json_encode($data);
          $list_assocs = json_decode($list_assoc,true);
-
-
          $datas =[];
          foreach($list_assocs as $values){
               
