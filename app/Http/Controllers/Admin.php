@@ -2038,9 +2038,8 @@ class Admin extends BaseController
             $message ="Attention cette commande est introuvable !";
       }
 
-      $divid="yescam";
-
-      return  view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+        $divid="yescam";
+       return  view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
 
      dd('zapo');
 
