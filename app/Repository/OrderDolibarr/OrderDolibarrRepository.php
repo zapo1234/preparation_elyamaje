@@ -757,7 +757,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
              
-            dd($result);
+            
             // traiter le retour de la facture
            // verifions l'existence des resultats.
             if(count($result)!=0){
@@ -774,6 +774,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            'phone' => $result[0]['phone'],
            
            ];
+
+           dd($tiers);
      
              // construire le tableau des produit liée dans la commande.
            foreach($result as $val){
