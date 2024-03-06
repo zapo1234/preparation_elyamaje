@@ -717,6 +717,7 @@ class Admin extends BaseController
                     'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
                     'finished_count' => $histo['status'] == "finished" ? 1 : 0,
                     'items_picked' => $histo['status'] == "prepared" ? $histo['total_product'] : 0,
+                    'items_packed' => $histo['status'] == "finished" ? $histo['total_product'] : 0,
                     'date' => date('d/m/Y', strtotime($histo['created_at']))
                 ];
             } else {
@@ -728,6 +729,7 @@ class Admin extends BaseController
                 $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
                 $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
                 $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_product'] : 0;
+                $histo['status'] == "finished" ? $list_histories[$id][$histo['id']]['items_packed'] = $list_histories[$id][$histo['id']]['items_packed'] + $histo['total_product'] : 0;
             }
         }
 

@@ -54,6 +54,11 @@ $(document).ready(function() {
             },
             {data: null, 
                 render: function(data, type, row) {
+                    return row.items_packed ?? "?"
+                }
+            },
+            {data: null, 
+                render: function(data, type, row) {
                     return row.date
                 }
             }
@@ -91,7 +96,8 @@ $(document).ready(function() {
             $('td:nth-child(2)', nRow).attr('data-label', 'Commandes Préparées');
             $('td:nth-child(3)', nRow).attr('data-label', 'Commandes Emballées');
             $('td:nth-child(4)', nRow).attr('data-label', 'Prouits Bippés');
-            $('td:nth-child(5)', nRow).attr('data-label', 'Date');
+            $('td:nth-child(5)', nRow).attr('data-label', 'Prouits Emballés');
+            $('td:nth-child(6)', nRow).attr('data-label', 'Date');
 
             return nRow;
         },

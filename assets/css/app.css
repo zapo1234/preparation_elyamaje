@@ -5900,16 +5900,16 @@ textarea::placeholder {
 	}
 	
 	.analytics_preparation .table tr td:nth-child(2){
-		width: 28%;
+		width: 23%;
 	}
 	
 	.analytics_preparation .table tr td:nth-child(3){
-		width: 27%;
+		width: 24%;
 	}
-	
+
 	
 	.analytics_preparation .table tr td:first-child{
-		width: 18%;
+		width: 12%;
 	}
 
 	/* BP ANALYTICS */
@@ -6688,6 +6688,12 @@ a{
 .dashboard_leader .show_detail_customer,
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
+	cursor: pointer;
+	color: #333333;
+}
+
+.show_tracking_status{
+	font-size: 20px !important;
 	cursor: pointer;
 	color: #333333;
 }
