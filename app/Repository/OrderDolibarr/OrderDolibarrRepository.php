@@ -812,7 +812,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
           $res_name = str_replace( array( '%', '@', '\'', ';', '<', '>' ), ' ', $code_promos);// filtre sur les caractère spéciaux
          //$code_promo = preg_replace("/\s+/", "", $res_name);// suprime les espace dans la chaine.
-         $code_promo ="AAAAA";
+         $code_promo = $res_name;
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
