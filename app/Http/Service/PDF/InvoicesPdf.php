@@ -41,7 +41,7 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="martial@elyamaje.com";
+             $to="zapomartial@yahoo.fr";
             // envoi de mail au client.
         
             if($indexs=="xxxv1"){
@@ -52,6 +52,8 @@ class InvoicesPdf
                       $message->attach($path_invoice);
                       
               });
+
+              dd('recu');
 
             }
 
