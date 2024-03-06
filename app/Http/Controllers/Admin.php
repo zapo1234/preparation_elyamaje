@@ -2051,7 +2051,6 @@ class Admin extends BaseController
         $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
         $index = $request->get('index_value');
-        dd($index);
 
         if(array_search($ref_commande,$data)!=false){
             $this->orderDolibarr->getOrderidfact($ref_commande,$index);
