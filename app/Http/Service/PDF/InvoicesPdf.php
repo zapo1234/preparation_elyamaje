@@ -23,8 +23,7 @@ class InvoicesPdf
          //$ref_order="BP-marseille-000001";
          $date = date('Y-m-d H:i:s');
          $date = date('d/m/Y');
-         
-         dd($indexs);
+          dd($indexs);
         // $destinataire ='zapomartial@yahoo.fr';
         $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
         $content = 'Bonjour Merci de recevoir votre fature de commande';
