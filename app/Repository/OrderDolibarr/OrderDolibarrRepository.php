@@ -756,7 +756,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
-
+             
+            dd($result);
             // traiter le retour de la facture
            // verifions l'existence des resultats.
             if(count($result)!=0){
