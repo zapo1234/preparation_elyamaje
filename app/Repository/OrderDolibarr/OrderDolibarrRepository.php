@@ -817,7 +817,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $remise = $remise_true*100;
         
           // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent);
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$index);
          // insert dans la base de données...
           $datas_promo =[
          'id_commande'=>$id_commande,
