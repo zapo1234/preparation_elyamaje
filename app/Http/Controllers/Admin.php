@@ -2029,10 +2029,10 @@ class Admin extends BaseController
       
       $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
       $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
-      $index = $request->get('index_value');
+      $indexs = $request->get('index_value');
      // verifie si y'a une clé existant renvoyé
       if(array_search($ref_commande,$data)!=false){
-           $this->orderDolibarr->getOrderidfact($ref_commande,$index);
+           $this->orderDolibarr->getOrderidfact($ref_commande,$indexs);
             $message ="facture à eté bien envoyé au client";
             $css ="success";
         }else{

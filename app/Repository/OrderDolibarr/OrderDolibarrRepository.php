@@ -737,7 +737,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
 
-     public function getOrderidfact($ref_commande,$index){
+     public function getOrderidfact($ref_commande,$indexs){
          // recupérer id de la commande...
          
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
@@ -818,7 +818,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $remise = $remise_true*100;
          
           // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$index);
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
          // insert dans la base de données...
           $datas_promo =[
          'id_commande'=>$id_commande,
