@@ -45,6 +45,7 @@ class InvoicesPdf
             // envoi de mail au client.
         
             if($indexs=="xxxv1"){
+                dd('zapo');
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
                       $message->subject($subject);
