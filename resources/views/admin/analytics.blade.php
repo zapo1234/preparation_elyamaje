@@ -49,6 +49,7 @@
 							<h5>Commandes Préparées</h5>
 							<h5>Commandes Emballées</h5>
 							<h5>Produits Bippés</h5>
+							<h5>Produits Emballés</h5>
 							<h5>Date</h5>
 						</div>
 					</div>
