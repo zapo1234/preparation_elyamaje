@@ -58,7 +58,7 @@
 
                             <div class="col-md-12 mt-3">
 								
-									<input type="hidden value=" name="index_value"  value="xxxv1">
+									<input type="hidden" name="index_value"  value="xxxv1">
 							</div>
                         <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
                      </div>
@@ -97,7 +97,7 @@
                         </div>
                         <div class="col-md-12 mt-3">
 								
-									<input type="hidden value=" name="index_value"  value="xxxv2">
+									<input type="hidden"  name="index_value"  value="xxxv2">
 							</div>
                     <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
                  </div>
