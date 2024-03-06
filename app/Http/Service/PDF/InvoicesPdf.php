@@ -54,8 +54,6 @@ class InvoicesPdf
                       
               });
 
-              dd('bien recu');
-
             }
 
             if($index=="xxxv2"){
