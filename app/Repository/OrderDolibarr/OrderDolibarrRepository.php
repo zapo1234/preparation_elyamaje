@@ -774,8 +774,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            'phone' => $result[0]['phone'],
            
            ];
-
-           dd($tiers);
      
              // construire le tableau des produit liée dans la commande.
            foreach($result as $val){

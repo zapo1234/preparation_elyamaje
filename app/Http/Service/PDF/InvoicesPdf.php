@@ -58,7 +58,7 @@ class InvoicesPdf
 
             if($indexs=="xxxv2"){
 
-                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
+                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to,$subject_news, $content,$path_invoice) {
                     $message->to($to);
                     $message->subject($subject_news);
                     $message->from('no-reply@elyamaje.com');
