@@ -2052,6 +2052,18 @@ class Admin extends BaseController
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
         $index = $request->get('index_value');
 
+        if(array_search($ref_commande,$data)!=false){
+            $this->orderDolibarr->getOrderidfact($ref_commande,$index);
+             $message ="facture à eté bien envoyé au client";
+             $css ="success";
+         }else{
+             $css="danger";
+             $message ="Attention cette commande est introuvable !";
+       }
+ 
+         $divid="yescam";
+         return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+ 
     }
 
 

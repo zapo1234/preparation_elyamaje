@@ -45,6 +45,7 @@ class InvoicesPdf
 
              $to="emilie@elyamaje.com";
             // envoi de mail au client.
+            if($index=="xxxv1"){
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
                       $message->subject($subject);
@@ -52,6 +53,19 @@ class InvoicesPdf
                       $message->attach($path_invoice);
                       
               });
+
+            }
+
+            if($index=="xxxv2"){
+
+                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
+                    $message->to($to);
+                    $message->subject($subject);
+                    $message->from('no-reply@elyamaje.com');
+                    $message->attach($path_invoice);
+                    
+               });
+            }
             
         } catch(Exception $e){
 
