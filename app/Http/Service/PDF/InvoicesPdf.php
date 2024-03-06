@@ -42,7 +42,7 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="emilie@elyamaje.com";
+             $to="martial@elyamaje.com";
             // envoi de mail au client.
         
             if($indexs=="xxxv1"){
@@ -51,10 +51,7 @@ class InvoicesPdf
                       $message->subject($subject);
                       $message->from('no-reply@elyamaje.com');
                       $message->attach($path_invoice);
-                      
-              });
-
-              dd('recu');
+                 });
 
             }
 
@@ -65,8 +62,7 @@ class InvoicesPdf
                     $message->subject($subject);
                     $message->from('no-reply@elyamaje.com');
                     $message->attach($path_invoice);
-                    
-               });
+                });
             }
             
         } catch(Exception $e){
