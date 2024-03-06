@@ -16,6 +16,7 @@ use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\PDF\InvoicesPdf;
 use App\Http\Service\Api\Construncstocks;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
@@ -66,6 +67,7 @@ class Admin extends BaseController
     private $transfers;
     private $construcstocks;
     private $stocks;
+    private $pdf;
 
     public function __construct(
         Api $api, 
@@ -81,6 +83,7 @@ class Admin extends BaseController
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
         Transfertext $transfers,
+        InvoicesPdf $pdf,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
@@ -113,6 +116,7 @@ class Admin extends BaseController
         $this->caisse = $caisse;
         $this->construcstocks = $construcstocks;
         $this->stocks = $stocks;
+        $this->pdf=$pdf;
     }
 
     public function syncCategories(){
@@ -667,8 +671,8 @@ class Admin extends BaseController
 
             try {
 
-                    //$this->transfers->Transfertext($order);
-                    $this->factorder->Transferorder($order);  
+                    $this->transfers->Transfertext($order);
+                    //$this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -2014,8 +2018,55 @@ class Admin extends BaseController
     }
 
     
+  public function generateinvoices(){
+      $message="";
+      $css="no";
+      $divid="no";
+       return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+   }
 
+
+
+  public function generatefacture(Request $request){
+      
+      $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
+      $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
+      $indexs = $request->get('index_value');
+     // verifie si y'a une clé existant renvoyé
+      if(array_search($ref_commande,$data)!=false){
+           $this->orderDolibarr->getOrderidfact($ref_commande,$indexs);
+            $message ="facture à eté bien envoyé au client";
+            $css ="success";
+        }else{
+            $css="danger";
+            $message ="Attention cette commande est introuvable !";
+      }
+
+        $divid="yescam";
+        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+
+    }
   
+
+    public function generatefactures(Request $request){
+
+        $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
+        $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
+        $index = $request->get('index_value');
+
+        if(array_search($ref_commande,$data)!=false){
+            $this->orderDolibarr->getOrderidfact($ref_commande,$index);
+             $message ="facture à eté bien envoyé au client";
+             $css ="success";
+         }else{
+             $css="danger";
+             $message ="Attention cette commande est introuvable !";
+       }
+ 
+         $divid="yescam";
+         return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+ 
+    }
 
 
     function initialQtyLot(){

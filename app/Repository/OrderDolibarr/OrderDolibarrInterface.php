@@ -52,6 +52,10 @@ interface OrderDolibarrInterface
     public function  updateStock($data, $typeUpdate);
 
     public function getChronoLabelByDate($date);
+
+    public function getOrderidfact($ref_commande,$indexs);
+
+    public function getAllReforder();
 }
 
 
