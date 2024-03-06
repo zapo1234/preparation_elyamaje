@@ -873,6 +873,16 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
        return $order_all;
      }
+
+     public function  getTiersBp(){
+
+
+     }
+
+     public function  getOrderBp(){
+
+      
+     }
 }
 
 
