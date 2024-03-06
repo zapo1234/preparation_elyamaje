@@ -21,7 +21,7 @@ class InvoicesPdf
 
        public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$percent,$indexs){
         
-         dd($indexs);
+    
         // $destinataire ='zapomartial@yahoo.fr';
         $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
         $content = 'Bonjour Merci de recevoir votre fature de commande';
@@ -41,10 +41,10 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="zapomartial@yahoo.fr";
+             $to="martial@elyamaje.com";
             // envoi de mail au client.
         
-            if($index=="xxxv1"){
+            if($indexs=="xxxv1"){
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
                       $message->subject($subject);
@@ -55,7 +55,7 @@ class InvoicesPdf
 
             }
 
-            if($index=="xxxv2"){
+            if($indexs=="xxxv2"){
 
                 Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                     $message->to($to);
