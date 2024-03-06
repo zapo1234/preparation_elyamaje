@@ -27,6 +27,8 @@ class InvoicesPdf
          // $destinataire ='zapomartial@yahoo.fr';
          $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
          $content = 'Bonjour Merci de recevoir votre fature de commande';
+
+         dd($indexs);
         
          try{
 
