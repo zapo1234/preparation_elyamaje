@@ -274,6 +274,11 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/ordersDetails", [Order::class, "ordersDetails"])->name('ordersDetails');
 });
 
+// ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
+Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
+    Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
+});
+
 // Vendeuse
 Route::group(['middleware' =>  ['auth', 'role:8']], function () {
     Route::get("/shop", [Controller::class, "shop"])->name('shop');
