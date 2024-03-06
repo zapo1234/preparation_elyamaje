@@ -45,7 +45,7 @@ class InvoicesPdf
 
              $to="zapomartial@yahoo.fr";
             // envoi de mail au client.
-            dd($index);
+        
             if($index=="xxxv1"){
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
