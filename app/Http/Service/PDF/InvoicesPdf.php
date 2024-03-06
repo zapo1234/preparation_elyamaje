@@ -28,7 +28,6 @@ class InvoicesPdf
          $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
          $content = 'Bonjour Merci de recevoir votre fature de commande';
          
-         dd($tiers['email']);
         
          try{
 
@@ -43,9 +42,10 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="martial@elyamaje.com";
+             $to="emilie@elyamaje.com";
+             //$to = $tiers['email'];
             // envoi de mail au client.
-             dd('attends');
+            
             if($indexs=="xxxv1"){
             Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=>$percent], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
