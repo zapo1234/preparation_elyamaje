@@ -53,7 +53,7 @@ interface OrderDolibarrInterface
 
     public function getChronoLabelByDate($date);
 
-    public function getOrderidfact($ref_commande);
+    public function getOrderidfact($ref_commande,$index);
 
     public function getAllReforder();
 }

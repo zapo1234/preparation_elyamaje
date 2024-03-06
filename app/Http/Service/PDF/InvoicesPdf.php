@@ -19,10 +19,7 @@ class InvoicesPdf
           $this->pdf = $pdf;
       }
 
-       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise){
-
-
-    
+       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$index){
          //$ref_order="BP-marseille-000001";
          $date = date('Y-m-d H:i:s');
          $date = date('d/m/Y');
@@ -67,5 +64,7 @@ class InvoicesPdf
             return;
         }
       }
+
+    
 }
 

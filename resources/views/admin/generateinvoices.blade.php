@@ -38,7 +38,7 @@
                 </div>    
             </div>
            
-    {{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+    {{-- Modal d'envoi de facture --}}
 
     <div class="modal fade" id="exampleDarkModal1" tabindex="-1" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -54,6 +54,11 @@
                         <div class="col-md-12 mt-3">
 								<label for="order_id" class="form-label">Numéro de commande</label>
 									<input required value="" name="order_id" type="text" class="form-control" id="order_id">
+							</div>
+
+                            <div class="col-md-12 mt-3">
+								
+									<input type="hidden value=" name="index_value"  value="xxxv1">
 							</div>
                         <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
                      </div>
@@ -73,7 +78,7 @@
 @endsection
 
 
-{{-- Modal de confirmation Mise à zéro des quantités des kits limes --}}
+{{-- Modal de renvoi de facture --}}
 
 <div class="modal fade" id="exampleDarkModals1" tabindex="-1" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -84,12 +89,16 @@
             </div>
             <div class="modal-body text-white">
                 <!-- Début du formulaire -->
-                <form  method="POST" action="{{ route('admin.generateinvoices') }}">
+                <form  method="POST" action="{{ route('admin.generatefactures') }}">
                     @csrf
                     <div class="col-md-12 mt-3">
                             <label for="order_id" class="form-label">Numéro de commande</label>
                                 <input required value="" name="order_id" type="text" class="form-control" id="order_id">
                         </div>
+                        <div class="col-md-12 mt-3">
+								
+									<input type="hidden value=" name="index_value"  value="xxxv2">
+							</div>
                     <!-- Ajoutez d'autres champs de formulaire si nécessaire -->
                  </div>
              <div class="modal-footer">
