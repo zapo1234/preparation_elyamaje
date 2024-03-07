@@ -5656,11 +5656,26 @@ textarea::placeholder {
 }
 
 
+@media screen and (min-width: 621px) {
+	.step_tracking .current:before {
+		width: 4em;
+		height: 4em;
+		line-height: 4em;
+		border-radius: 4em;
+		margin-top: -6px;
+		left: 47% !important;
+	}
+}
+
 @media screen and (max-width: 620px) {
 
 	.step_tracking{
 		display: flex;
 		flex-direction: column;
+	}
+
+	.tracking_colissimo li{
+		width:100% !important;
 	}
 
 	.step_tracking li{
@@ -8895,7 +8910,7 @@ select option[disabled] {
 .step_tracking {
 	 background-color: white;
 	 position: relative;
-	 overflow: hidden;
+	 /* overflow: hidden; */
 	 counter-reset: wizard;
 	 margin-top: 50px;
 	 margin-bottom: 50px;
@@ -8911,7 +8926,7 @@ select option[disabled] {
 }
 
 .tracking_colissimo li{
-	width: 16.5% !important;
+	width: 16.5%;
 }
 
 .tracking_colissimo{
@@ -8940,6 +8955,7 @@ select option[disabled] {
 	margin-left: -1.5em;
 	z-index: 1;
 }
+
 
 .step_tracking .current ~ li:before {
 	background-color: white;
