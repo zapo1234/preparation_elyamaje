@@ -250,6 +250,20 @@
                 </ul>
             </li>
             <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu beauty_prof_menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                </ul>
+            </li>
+            <li>
                 <a href="{{ url('sav') }}">
                     <i class='bx bx-support'></i>
                     <span class="link_name">Sav</span>

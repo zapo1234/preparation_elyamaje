@@ -134,13 +134,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/seller", [Admin::class, "seller"])->name('admin.seller'); 
     Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
     Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
-    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
     Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
     Route::post("/cashMovement", [Admin::class, "cashMovement"])->name('admin.cashMovement'); 
     Route::post("/updateCashMovement", [Admin::class, "updateCashMovement"])->name('admin.updateCashMovement'); 
     Route::post("/cancelCashMovement", [Admin::class, "cancelCashMovement"])->name('admin.cancelCashMovement'); 
     Route::post("/addCashMovement", [Admin::class, "addCashMovement"])->name('admin.addCashMovement'); 
-    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
     // gestion de stocks lime et rape.
    Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
@@ -281,6 +279,12 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
 // ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
 Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
     Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
+});
+
+// ADMIN - CHEF D'ÉQUIPE & SAV
+Route::group(['middleware' => ['auth', 'role:1,6']], function () {
+    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
+    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 });
 
 // Vendeuse
