@@ -385,7 +385,7 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 $(".detail_status_label_tracking").remove()
 
                 // Step colissimo
-                if(data_tracking.parcel.step){
+                if(data_tracking.parcel){
                     $(".details_tracking_wizard").append(
                         `
                             <ol class="step_tracking tracking_colissimo">
