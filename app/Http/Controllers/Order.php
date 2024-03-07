@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use stdClass;
 use Exception;
 use League\Csv\Reader;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
-use App\Events\NotificationPusher;
 // use Illuminate\Support\Facades\Mail;
+use App\Events\NotificationPusher;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
+use App\Http\Service\Api\ColissimoTracking;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
@@ -61,6 +63,7 @@ class Order extends BaseController
     private $reassort;
     private $orderDolibarr;
     private $commandeids;
+    private $colissimoTracking;
 
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
@@ -82,7 +85,8 @@ class Order extends BaseController
       LogErrorRepository $logError,
       ReassortRepository $reassort,
       OrderDolibarrRepository $orderDolibarr,
-      CommandeidsRepository $commandeids
+      CommandeidsRepository $commandeids,
+      ColissimoTracking $colissimoTracking
     ){
       $this->api = $api;
       $this->user = $user;
@@ -106,6 +110,7 @@ class Order extends BaseController
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
       $this->commandeids = $commandeids;
+      $this->colissimoTracking = $colissimoTracking;
     }
   
     public function orders($id = null, $distributeur = false){
@@ -1367,6 +1372,44 @@ class Order extends BaseController
     $query = "UPDATE prepa_histories SET total_product = (CASE order_id {$cases} END)";
     DB::statement($query);
     dd("Ok !");
+  }
+
+  public function getTrackingStatus(Request $request) {
+
+    $request->validate([
+      'order_id' => 'required',
+      'tracking_number' => 'required',
+      'origin' => 'required',
+    ]); 
+
+    $object = new stdClass();
+    $object->tracking_number = $request->post('tracking_number');
+    $object->order_id = $request->post('order_id');
+    $stepChrono = 0;
+    $status_code = $this->chronopost->getStatusCode();
+
+    // Tracking status for colissimo / chronopost
+    if($request->post('origin') == "chronopost"){
+      $found = [];
+      $trackingLabelChronopost = array_reverse($this->chronopost->getStatusDetails([$object]));     
+      $status_list = $this->chronopost->getStatusCode();
+      foreach($trackingLabelChronopost as $tracking){
+        $code = str_replace(' ','', $tracking["code"].trim(''));
+   
+        foreach($status_list as $key => $list){
+          if(in_array($code, $list)){
+            $found[$key] = $code;
+          }
+        }
+      }
+
+      $stepChrono = max(array_keys($found));
+     
+    } else if($request->post('origin') == "colissimo"){
+      $trackingLabelColissimo = $this->colissimoTracking->getStatus([$object], true);
+    }
+    
+    return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono]);
   }
 
   // private function checkGiftCard($order){

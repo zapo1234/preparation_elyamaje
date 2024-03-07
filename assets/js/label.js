@@ -359,3 +359,134 @@ $('body').on('click', '.valid_edit_detail_order', function() {
         }
     })
 })
+
+function showTrackingStatus(order_id, tracking_number, origin){
+    $("#trackingStatusLabel").modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+
+    $.ajax({
+        url: "getTrackingStatus",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: order_id, tracking_number: tracking_number, origin: origin}
+    }).done(function(data) {
+        if(JSON.parse(data).success){
+            var data_tracking = JSON.parse(data).details
+
+            $(".shipping_method").removeClass('shipping_chrono_logo')
+            $(".shipping_method").removeClass('shipping_colissimo_logo')
+
+            if(origin == "colissimo"){
+
+                $(".shipping_method").addClass('shipping_colissimo_logo')
+                $(".details_tracking").children('table').remove()
+                $(".details_tracking_wizard").children('.step_tracking').remove()
+
+                // Step colissimo
+                $(".details_tracking_wizard").append(
+                    `
+                        <ol class="step_tracking">
+                            `+
+                                Object.entries(data_tracking.parcel.step).map(([index, value]) => {
+                                    if(index > 0){
+
+                                        if(parseInt(index) + 1 < data_tracking.parcel.step.length){
+                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${value.labelShort}</li>`
+                                        } else {
+                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${value.labelShort}</li>`
+                                        }
+                                        
+                                    }
+                                }).join('')
+                            +`
+                           
+                        
+                        </ol>
+                    `
+                )
+
+                // Step colissimo board
+                $(".details_tracking").prepend(
+                    `<table class="table-scroll table_mobile_responsive table_details_tracking">
+                        <thead>
+                            <tr>
+                                <th>Date et heure</th>
+                                <th>Étapes de livraison</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        `
+                        +
+                            Object.entries(data_tracking.parcel.event).map(([index, value]) => {
+                                return `<tr>
+                                            <td data-label="Date et heure">${value.date}</td>
+                                            <td data-label="Étapes de livraison">
+                                                <span class="text-bold">${value.labelLong}</span><br>
+                                                <span>${value.siteCode}</span><br>
+                                                <span>${value.siteName}</span><br>
+                                                <span>${value.siteZipCode}</span><br>
+                                            </td>
+                                        </tr>`;
+                            }).join('') 
+                        +
+                    `</tbody>
+                    </table>`
+                );
+            } else if(origin == "chronopost"){
+               
+                $(".details_tracking").children('table').remove()
+                $(".details_tracking_wizard").children('.step_tracking').remove()
+                $(".shipping_method").addClass('shipping_chrono_logo')
+                $(".details_tracking").prepend(
+                    `<table class="table_details_tracking">
+                        <thead>
+                            <tr>
+                                <th>Date et heure</th>
+                                <th>Étapes de livraison</th>
+                                <th>Complément</th>
+                            </tr>
+                        </thead>
+                      
+                        `
+                        +
+                            Object.entries(data_tracking).map(([index, value]) => {
+                                var detailsHTML = ""
+                                if(value.details){
+                                    detailsHTML = value.details.map(detail => {
+                                        return `<span><span class="text-bold">${detail.name[0]} :</span><span> ${detail.value[0]}<span><br>`;
+                                    }).join('');
+                                }
+                              
+                                return `<tr>
+                                            <td>${value.date[0]}</td>
+                                            <td>${value.step}</td>
+                                            <td>
+                                                ${detailsHTML}
+                                            </td>
+                                        </tr>`;
+                            }).join('') 
+                        +
+                    `</table>`
+                );  
+
+                $(".details_tracking_wizard").append(
+                    `
+                        <ol class="step_tracking">
+                            <li class="${JSON.parse(data).stepChrono == 0 ? 'current' : ''}">En préparation chez l'expéditeur</li>
+                            <li class="${JSON.parse(data).stepChrono == 1 ? 'current' : ''}">Pris en charge par Chronopost</li>
+                            <li class="${JSON.parse(data).stepChrono == 2 ? 'current' : ''}">En cours d'acheminement</li>
+                            <li class="${JSON.parse(data).stepChrono == 3 ? 'current' : ''}">Envoi en cours de livraison</li>
+                            <li class="${JSON.parse(data).stepChrono == 4 ? 'current' : ''}">Livré</li>
+                        </ol>
+                    `
+                )
+            }
+            $("#trackingStatusLabel").modal('show')
+          
+
+        } else {
+            alert('Erreur')
+        }
+    })
+}
