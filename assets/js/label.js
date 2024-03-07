@@ -382,9 +382,10 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 $(".shipping_method").addClass('shipping_colissimo_logo')
                 $(".details_tracking").children('table').remove()
                 $(".details_tracking_wizard").children('.step_tracking').remove()
+                $(".detail_status_label_tracking").remove()
 
                 // Step colissimo
-                if(data_tracking.parcel.step.lenght){
+                if(data_tracking.parcel.step){
                     $(".details_tracking_wizard").append(
                         `
                             <ol class="step_tracking tracking_colissimo">
@@ -432,7 +433,7 @@ function showTrackingStatus(order_id, tracking_number, origin){
                         </table>`
                     );
                 } else {
-                    $(".details_tracking_wizard").append('<span class="font-20 text-center font-bold">Votre colis va bientôt nous être confié !</span>')
+                    $(".details_tracking_wizard").append('<span class="detail_status_label_tracking font-20 text-center font-bold">Votre colis va bientôt nous être confié !</span>')
                 }
             } else if(origin == "chronopost"){
                
