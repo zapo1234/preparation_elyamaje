@@ -432,10 +432,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllProductsPickedDolibarr(){
       $productsPicked = DB::table('lines_commande_doli')
-      ->select('products.product_woocommerce_id', 'id_commande as order_id', 'pick')
+      ->select('products.product_woocommerce_id', 'ref_order as order_id', 'pick')
       ->join('orders_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
       ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
       ->where('pick', '>',  0)
+      ->whereNotIn('orders_doli.statut', ['canceled', 'pending', 'finished'])
       ->get()
       ->toArray();
 

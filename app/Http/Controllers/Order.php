@@ -626,7 +626,6 @@ class Order extends BaseController
 
 
     public function updateOrderStatus(Request $request){
-
       $order_id = $request->post('order_id');
       $status = $request->post('status');
       $user_id = $request->post('user_id');

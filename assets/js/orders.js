@@ -88,9 +88,12 @@ $(document).ready(function() {
                     
                     if(order.line_items.length == 1){
                         Object.entries(order.line_items).forEach(([key, value]) => {
-                            if(value.name.includes("Carte Cadeau")){
-                                take_order = false;
+                            if(value.name){
+                                if(value.name.includes("Carte Cadeau")){
+                                    take_order = false;
+                                }
                             }
+                           
                         })
                     } 
 
