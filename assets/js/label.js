@@ -384,7 +384,7 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 $(".details_tracking_wizard").children('.step_tracking').remove()
 
                 // Step colissimo
-                if(data_tracking.parcel.step){
+                if(data_tracking.parcel.step.lenght){
                     $(".details_tracking_wizard").append(
                         `
                             <ol class="step_tracking tracking_colissimo">
@@ -403,35 +403,37 @@ function showTrackingStatus(order_id, tracking_number, origin){
                             </ol>
                         `
                     )
+
+                    // Step colissimo board
+                    $(".details_tracking").prepend(
+                        `<table class="table-scroll table_mobile_responsive table_details_tracking">
+                            <thead>
+                                <tr>
+                                    <th>Date et heure</th>
+                                    <th>Étapes de livraison</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            `
+                            +
+                                Object.entries(data_tracking.parcel.event).map(([index, value]) => {
+                                    return `<tr>
+                                                <td data-label="Date et heure">${value.date}</td>
+                                                <td data-label="Étapes de livraison">
+                                                    <span class="text-bold">${value.labelLong}</span><br>
+                                                    <span>${value.siteCode}</span><br>
+                                                    <span>${value.siteName}</span><br>
+                                                    <span>${value.siteZipCode}</span><br>
+                                                </td>
+                                            </tr>`;
+                                }).join('') 
+                            +
+                        `</tbody>
+                        </table>`
+                    );
+                } else {
+                    $(".details_tracking_wizard").append('<span class="font-20 text-center font-bold">Votre colis va bientôt nous être confié !</span>')
                 }
-             
-                // Step colissimo board
-                $(".details_tracking").prepend(
-                    `<table class="table-scroll table_mobile_responsive table_details_tracking">
-                        <thead>
-                            <tr>
-                                <th>Date et heure</th>
-                                <th>Étapes de livraison</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        `
-                        +
-                            Object.entries(data_tracking.parcel.event).map(([index, value]) => {
-                                return `<tr>
-                                            <td data-label="Date et heure">${value.date}</td>
-                                            <td data-label="Étapes de livraison">
-                                                <span class="text-bold">${value.labelLong}</span><br>
-                                                <span>${value.siteCode}</span><br>
-                                                <span>${value.siteName}</span><br>
-                                                <span>${value.siteZipCode}</span><br>
-                                            </td>
-                                        </tr>`;
-                            }).join('') 
-                        +
-                    `</tbody>
-                    </table>`
-                );
             } else if(origin == "chronopost"){
                
                 $(".details_tracking").children('table').remove()
