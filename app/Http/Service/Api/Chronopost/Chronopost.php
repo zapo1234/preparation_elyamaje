@@ -16,7 +16,7 @@ class Chronopost
 
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
-        $SaturdayShipping = 1;
+        $SaturdayShipping = 0;
 
         // ASSURANCE COLIS
         $insuredValue = $this->getInsuredValue($order['total_order'], $weight);

@@ -384,27 +384,27 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 $(".details_tracking_wizard").children('.step_tracking').remove()
 
                 // Step colissimo
-                $(".details_tracking_wizard").append(
-                    `
-                        <ol class="step_tracking tracking_colissimo">
-                            `+
-                                Object.entries(data_tracking.parcel.step).map(([index, value]) => {
-                                    var label = value.labelShort && parseInt(index) > 0 ? value.labelShort : JSON.parse(data).stepColissimo[index]
-                                    if(parseInt(index) + 1 < data_tracking.parcel.step.length && label){
+                if(data_tracking.parcel.step){
+                    $(".details_tracking_wizard").append(
+                        `
+                            <ol class="step_tracking tracking_colissimo">
+                                `+
+                                    Object.entries(data_tracking.parcel.step).map(([index, value]) => {
+                                        var label = value.labelShort && parseInt(index) > 0 ? value.labelShort : JSON.parse(data).stepColissimo[index]
+                                        if(parseInt(index) + 1 < data_tracking.parcel.step.length && label){
+                                            
+                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
+                                        } else if(label){
+                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
+                                        }
                                         
-                                        return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
-                                    } else if(label){
-                                        return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
-                                    }
-                                    
-                                }).join('')
-                            +`
-                           
-                        
-                        </ol>
-                    `
-                )
-
+                                    }).join('')
+                                +`
+                            </ol>
+                        `
+                    )
+                }
+             
                 // Step colissimo board
                 $(".details_tracking").prepend(
                     `<table class="table-scroll table_mobile_responsive table_details_tracking">
