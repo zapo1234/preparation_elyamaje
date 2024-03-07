@@ -1403,12 +1403,12 @@ class Order extends BaseController
         }
       }
 
-      $stepChrono = max(array_keys($found));
+      $stepChrono = count($found) > 0 ? max(array_keys($found)) : 0;
      
     } else if($request->post('origin') == "colissimo"){
       $trackingLabelColissimo = $this->colissimoTracking->getStatus([$object], true);
     }
-    
+
     return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono]);
   }
 
