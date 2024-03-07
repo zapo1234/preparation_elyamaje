@@ -439,38 +439,41 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 $(".details_tracking").children('table').remove()
                 $(".details_tracking_wizard").children('.step_tracking').remove()
                 $(".shipping_method").addClass('shipping_chrono_logo')
-                $(".details_tracking").prepend(
-                    `<table class="table_details_tracking">
-                        <thead>
-                            <tr>
-                                <th>Date et heure</th>
-                                <th>Étapes de livraison</th>
-                                <th>Complément</th>
-                            </tr>
-                        </thead>
-                      
-                        `
-                        +
-                            Object.entries(data_tracking).map(([index, value]) => {
-                                var detailsHTML = ""
-                                if(value.details){
-                                    detailsHTML = value.details.map(detail => {
-                                        return `<span><span class="text-bold">${detail.name[0]} :</span><span> ${detail.value[0]}<span><br>`;
-                                    }).join('');
-                                }
-                              
-                                return `<tr>
-                                            <td>${value.date[0]}</td>
-                                            <td>${value.step}</td>
-                                            <td>
-                                                ${detailsHTML}
-                                            </td>
-                                        </tr>`;
-                            }).join('') 
-                        +
-                    `</table>`
-                );  
 
+                if(data_tracking.length > 0){
+                    $(".details_tracking").prepend(
+                        `<table class="table_details_tracking">
+                            <thead>
+                                <tr>
+                                    <th>Date et heure</th>
+                                    <th>Étapes de livraison</th>
+                                    <th>Complément</th>
+                                </tr>
+                            </thead>
+                          
+                            `
+                            +
+                                Object.entries(data_tracking).map(([index, value]) => {
+                                    var detailsHTML = ""
+                                    if(value.details){
+                                        detailsHTML = value.details.map(detail => {
+                                            return `<span><span class="text-bold">${detail.name[0]} :</span><span> ${detail.value[0]}<span><br>`;
+                                        }).join('');
+                                    }
+                                  
+                                    return `<tr>
+                                                <td>${value.date[0]}</td>
+                                                <td>${value.step}</td>
+                                                <td>
+                                                    ${detailsHTML}
+                                                </td>
+                                            </tr>`;
+                                }).join('') 
+                            +
+                        `</table>`
+                    );
+                }
+                
                 $(".details_tracking_wizard").append(
                     `
                         <ol class="step_tracking">
