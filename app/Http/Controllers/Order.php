@@ -370,8 +370,6 @@ class Order extends BaseController
         }
       }
 
-
-
       // Liste des commandes Woocommerce
       $orders = $this->orders();
 

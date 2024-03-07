@@ -8898,6 +8898,7 @@ select option[disabled] {
 	 overflow: hidden;
 	 counter-reset: wizard;
 	 margin-top: 50px;
+	 margin-bottom: 50px;
 }
 
 .step_tracking li {

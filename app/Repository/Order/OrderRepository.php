@@ -181,7 +181,10 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersByUsersNotFinished(){
-      return $this->model->select('orders.*', 'users.name')->where('status', '!=', 'finished')->join('users', 'users.id', '=', 'orders.user_id')->get();
+      return $this->model->select('orders.*', 'users.name', 'products_order.*')->where('status', '!=', 'finished')
+      ->join('users', 'users.id', '=', 'orders.user_id')
+      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->get();
    }
 
    public function getUsersWithOrder(){
