@@ -558,7 +558,14 @@ class Order extends BaseController
       $from_transfers = $request->post('from_transfers') == "true" ? true : false;
 
       if($from_dolibarr){
-        $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+        // Get id commande by ref order
+        $orderRef = $this->orderDolibarr->getOrderByRef($order_id)->toArray();
+        if(count($orderRef) != 0){
+          $order_id = $orderRef[0]['id'];
+          $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+        } else {
+          echo json_encode(["success" => false]);
+        }
       } else if($from_transfers){
         $orderReset = $this->reassort->orderResetTransfers($order_id);
       } else {

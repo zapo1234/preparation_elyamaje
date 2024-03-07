@@ -130,8 +130,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          foreach($orders as $key => $order){
             $list[$order['ref_order']]['details'] = [
                'id' => $order['ref_order'],
-               'first_name' => $order['firstname'],
-               'last_name' => $order['firstname'] != $order['lastname'] ? $order['lastname'] : '',
+               'first_name' => $order['billing_name'] ?? $order['firstname'],
+               'last_name' => $order['billing_pname'] ? ($order['billing_pname'] != $order['billing_name'] ? $order['billing_pname'] : '') : 
+               ($order['lastname'] != $order['firstname'] ? $order['lastname'] : ''),
                'date' => $order['date'],
                'total' => floatval($order['total_order_ttc']),
                'total_tax' => floatval($order['total_tax']),
@@ -885,6 +886,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
      }
+
+   public function getOrderByRef($ref_order){
+      return $this->model::where('ref_order', $ref_order)->get();
+   }
 }
 
 
