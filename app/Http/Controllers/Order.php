@@ -1386,7 +1386,13 @@ class Order extends BaseController
     $object->tracking_number = $request->post('tracking_number');
     $object->order_id = $request->post('order_id');
     $stepChrono = 0;
-    $status_code = $this->chronopost->getStatusCode();
+    $stepColissimo = [
+      "Votre Colissimo va bientôt nous être confié !",
+      "Votre colis est entre nos mains.",
+      "Il est en traitement dans notre réseau.",
+      "Il arrive !",
+      "Votre colis est livré."
+    ];
 
     // Tracking status for colissimo / chronopost
     if($request->post('origin') == "chronopost"){
@@ -1409,7 +1415,7 @@ class Order extends BaseController
       $trackingLabelColissimo = $this->colissimoTracking->getStatus([$object], true);
     }
 
-    return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono]);
+    return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono, 'stepColissimo' => $stepColissimo]);
   }
 
   // private function checkGiftCard($order){

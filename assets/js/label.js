@@ -386,18 +386,17 @@ function showTrackingStatus(order_id, tracking_number, origin){
                 // Step colissimo
                 $(".details_tracking_wizard").append(
                     `
-                        <ol class="step_tracking">
+                        <ol class="step_tracking tracking_colissimo">
                             `+
                                 Object.entries(data_tracking.parcel.step).map(([index, value]) => {
-                                    if(index > 0){
-
-                                        if(parseInt(index) + 1 < data_tracking.parcel.step.length){
-                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${value.labelShort}</li>`
-                                        } else {
-                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${value.labelShort}</li>`
-                                        }
+                                    var label = value.labelShort && parseInt(index) > 0 ? value.labelShort : JSON.parse(data).stepColissimo[index]
+                                    if(parseInt(index) + 1 < data_tracking.parcel.step.length && label){
                                         
+                                        return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
+                                    } else if(label){
+                                        return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
                                     }
+                                    
                                 }).join('')
                             +`
                            

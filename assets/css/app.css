@@ -8908,6 +8908,16 @@ select option[disabled] {
 	 color: #333333;
 	 font-weight: bold;
 }
+
+.tracking_colissimo li{
+	width: 16.5% !important;
+}
+
+.tracking_colissimo{
+	display: flex;
+	justify-content: center;
+}
+
 .step_tracking .current ~ li {
 	color: rgba(0, 0, 0, .4);
 }
