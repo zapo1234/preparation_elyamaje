@@ -51,7 +51,7 @@
                 </td>
                 <td style="width: 48%; text-align: left;">
                     <h3 style="margin-bottom:0!important;"><strong>Adressé à</strong></h3><br>
-                    {{ $tiers['name'] }}<br>
+                    {{ $tiers['name'] }}   {{ $tiers['pname']  }}<br>
                     {{  $tiers['adresse'] }}<br>
                     {{ $tiers['code_postal'] }} {{ $tiers['city'] }}<br>
                     Téléphone : {{  $tiers['phone']  }}<br/><br/>

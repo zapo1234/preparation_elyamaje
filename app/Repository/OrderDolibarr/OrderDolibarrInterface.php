@@ -56,6 +56,9 @@ interface OrderDolibarrInterface
     public function getOrderidfact($ref_commande,$indexs);
 
     public function getAllReforder();
+
+    public function getTiersBp();
+    public function getOrderBp();
 }
 
 

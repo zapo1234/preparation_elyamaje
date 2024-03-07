@@ -19,18 +19,16 @@ class InvoicesPdf
           $this->pdf = $pdf;
       }
 
-       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$indexs){
-         //$ref_order="BP-marseille-000001";
+       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$percent,$indexs){
+        
          $date = date('Y-m-d H:i:s');
          $date = date('d/m/Y');
+        
+         // $destinataire ='zapomartial@yahoo.fr';
+         $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';// envoi de facture
+         $subject_news ='Facture définitive commande  Beauty Prof Paris 2024'; // renvoi de facture
+         $content = 'Bonjour Merci de recevoir votre fature de commande';
          
-         dd($indexs);
-        // $destinataire ='zapomartial@yahoo.fr';
-        $subject = 'Confirmation de commande Elyamaje lors de la Beauty Prof Paris 2024';
-        $content = 'Bonjour Merci de recevoir votre fature de commande';
-        
-        
-      
         try{
 
             $pdf =  $this->pdf->loadView('admin.tiersinvoice',['date'=>$date,'data_line_order'=>$data_line_order,'tiers'=>$tiers,'ref_order'=>$ref_order,'total_ht'=>$total_ht,'total_ttc'=>$total_ttc,'code_promo'=>$code_promo,'remise'=>$remise]);
@@ -44,29 +42,28 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="zapomartial@yahoo.fr";
+             //$to="martial@elyamaje.com";
+             $to = $tiers['email'];
             // envoi de mail au client.
-        
-            if($index=="xxxv1"){
-            Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
+            
+            if($indexs=="xxxv1"){
+            Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=>$percent], function ($message) use ($to, $subject, $content,$path_invoice) {
                       $message->to($to);
                       $message->subject($subject);
                       $message->from('no-reply@elyamaje.com');
                       $message->attach($path_invoice);
-                      
-              });
+                 });
 
             }
 
-            if($index=="xxxv2"){
+            if($indexs=="xxxv2"){
 
-                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to, $subject, $content,$path_invoice) {
+                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to,$subject_news, $content,$path_invoice) {
                     $message->to($to);
-                    $message->subject($subject);
+                    $message->subject($subject_news);
                     $message->from('no-reply@elyamaje.com');
                     $message->attach($path_invoice);
-                    
-               });
+                });
             }
             
         } catch(Exception $e){

@@ -11,11 +11,10 @@
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="height: 50px;">
                         <h1 style="text-align:center;">Elyamaje vous remercie pour votre visite sur le Salon Beauty Prof 2024</h1>
                      </div>
-                      <p style="text-align:center;">L'équipe d'Elyamaje tient à vous remercier pour votre enthousiasme et la confiance que vous nous avez témoigné lors de l'événement Beauty Prof de Paris ce week-end. En raison du volume élevé de commandes, nous avons rencontré une erreur technique indépendante de notre volonté lors de la génération de votre facture initiale.</p>
-                     <p style="text-align:center;">Nous vous prions de bien vouloir trouver ci-joint votre facture définitive. N° {{ $ref_order }}</p>
-                    <div style="text-align:center;">
-                        <p style="width:100%;"> 
-                         <br><br><strong style="font-size:18px;"></strong></p> 
+                      <p style="text-align:center;">L'équipe d'Elyamaje tient à vous remercier pour votre enthousiasme et la confiance que vous nous avez témoigné lors de l'événement Beauty Prof de Paris ce week-end.</p>
+                      <p> En raison du volume élevé de commandes, nous avons rencontré une erreur technique indépendante de notre volonté lors de la génération de votre facture initiale.</p>
+                     <p style="text-align:center;">Nous vous prions de bien vouloir trouver ci-joint votre facture définitive. <strong>N° {{ $ref_order }}</strong></p>
+                    <div style="text-align:center;"> 
                         <p style="width:100%;">Nous nous excusons pour tout inconvénient que cela aurait pu causer et vous remercions pour votre compréhension.</p>
                         <p>Cordialement</p>
                         <p style="width:100%;">L'Équipe Elyamaje</p>

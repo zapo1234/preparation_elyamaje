@@ -756,7 +756,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
-
+             
+            
             // traiter le retour de la facture
            // verifions l'existence des resultats.
             if(count($result)!=0){
@@ -812,7 +813,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
           $res_name = str_replace( array( '%', '@', '\'', ';', '<', '>' ), ' ', $code_promos);// filtre sur les caractère spéciaux
          //$code_promo = preg_replace("/\s+/", "", $res_name);// suprime les espace dans la chaine.
-         $code_promo ="AAAAA";
+         $code_promo = $res_name;
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
@@ -829,7 +830,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          'updated_at'=> date('Y-m-d H:i:s'),
          ];
          // insert les données dans la base de données.
-         //  DB::table('code_promos')->insert($datas_promo);
+           DB::table('code_promos')->insert($datas_promo);
           return $ref_order;
       }
       else{
@@ -872,6 +873,17 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
        }
 
        return $order_all;
+     }
+
+     public function  getTiersBp(){
+       // faire du traiement sur les clients
+
+
+     }
+
+     public function  getOrderBp(){
+
+
      }
 }
 
