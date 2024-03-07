@@ -434,7 +434,9 @@
 															</div>
 														</div>
 													</div>
-													<i style="margin-left: 15px" onclick="showTrackingStatus('{{ $order[0]['order_woocommerce_id'] }}', '{{ $order[0]['tracking_number'] }}', '{{ $order[0]['origin'] }}')" class="show_tracking_status lni lni-map-marker"></i>
+													@if($order[0]['tracking_number'])
+														<i style="margin-left: 15px" onclick="showTrackingStatus('{{ $order[0]['order_woocommerce_id'] }}', '{{ $order[0]['tracking_number'] }}', '{{ $order[0]['origin'] }}')" class="show_tracking_status lni lni-map-marker"></i>
+													@endif
 											</td>
 										</tr>
 									@endforeach
