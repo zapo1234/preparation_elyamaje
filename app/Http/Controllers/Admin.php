@@ -348,9 +348,11 @@ class Admin extends BaseController
 
         $total_order = 0;
         foreach($histories as $histo){
-            $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order'] + $histo['total_order_ttc'] : $total_order;
-
-
+            if($histo['total_order']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order'] : $total_order;
+            } else if($histo['total_order_ttc']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order_ttc'] : $total_order;
+            }
         }
 
         $list_histories = [];
