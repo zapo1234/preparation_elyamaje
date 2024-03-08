@@ -1390,13 +1390,7 @@ class Order extends BaseController
     $object->tracking_number = $request->post('tracking_number');
     $object->order_id = $request->post('order_id');
     $stepChrono = 0;
-    $stepColissimo = [
-      "Votre Colissimo va bientôt nous être confié !",
-      "Votre colis est entre nos mains.",
-      "Il est en traitement dans notre réseau.",
-      "Il arrive !",
-      "Votre colis est livré."
-    ];
+    $stepColissimo = 0;
 
     // Tracking status for colissimo / chronopost
     if($request->post('origin') == "chronopost"){
@@ -1417,6 +1411,14 @@ class Order extends BaseController
      
     } else if($request->post('origin') == "colissimo"){
       $trackingLabelColissimo = $this->colissimoTracking->getStatus([$object], true);
+
+      if(isset($trackingLabelColissimo["parcel"]["step"])){
+        foreach($trackingLabelColissimo["parcel"]["step"] as $key => $tracking){
+          if($tracking['status'] == "STEP_STATUS_ACTIVE"){
+            $stepColissimo = $key;
+          }
+        }
+      }
     }
 
     return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono, 'stepColissimo' => $stepColissimo]);

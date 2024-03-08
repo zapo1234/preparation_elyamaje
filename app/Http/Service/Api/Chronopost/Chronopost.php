@@ -541,8 +541,8 @@ class Chronopost
     public function getStatusCode(){
         $status_code = [
             [],
-            ['A', 'A1', 'A2', 'AB', 'AC', 'AN', 'AP', 'T'],
-            ['AT', 'AV', 'B', 'BA', 'BD', 'BL', 'CA', 'CC', 'CR', 'DO', 'DP', 'EC', 'ED', 'EE', 'EI', 'EJ', 'HD', 'I', 'I1', 'I2', 'I9', 'IA', 'IS', 
+            ['A', 'AB', 'AC', 'AN', 'AP', 'T'],
+            ['AT', 'A1', 'A2', 'AV', 'B', 'BA', 'BD', 'BL', 'CA', 'CC', 'CR', 'DO', 'DP', 'EC', 'ED', 'EE', 'EI', 'EJ', 'HD', 'I', 'I1', 'I2', 'I9', 'IA', 'IS', 
             'L', 'LC', 'LW', 'O', 'PC', 'PE', 'PT', 'RA', 'SC', 'SD', 'TP', 'TS', 'VD', 'VO', 'W', 'ZS'],
             ['CO', 'BW', 'DI', 'DS', 'DV', 'DY', 'IN', 'LR', 'LT', 'NA', 'N', 'NL', 'P', 'PA', 'RB', 'RC', 'TA', 'TI', 'TO', 'WD', 'X', 'ZA', 'ZC', 'ZI', 'ZT'],
             ['D', 'D1', 'D2', 'D6', 'D7', 'DD', 'RI', 'MD', 'U', 'VC', 'Y'],

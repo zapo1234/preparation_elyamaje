@@ -389,25 +389,12 @@ function showTrackingStatus(order_id, tracking_number, origin){
                     $(".details_tracking_wizard").append(
                         `
                             <ol class="step_tracking tracking_colissimo">
-                                `+
-                                    Object.entries(data_tracking.parcel.step).map(([index, value]) => {
-                                        if( parseInt(index) == 0){
-                                            var label = JSON.parse(data).stepColissimo[index]
-                                        } else if(data_tracking.parcel.step > 0){
-                                            var label = value.labelShort
-                                        } else {
-                                            var label =  JSON.parse(data).stepColissimo[index]
-                                        }
-
-                                       
-                                        if(parseInt(index) + 1 < data_tracking.parcel.step.length && label){
-                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" && data_tracking.parcel.step[parseInt(index) + 1].status != "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
-                                        } else if(label){
-                                            return `<li class="${value.status == "STEP_STATUS_ACTIVE" ? "current" : ""}">${label}</li>`
-                                        }
-                                        
-                                    }).join('')
-                                +`
+                                <li class="${JSON.parse(data).stepColissimo == 0 ? 'current' : ''}">Votre Colissimo va bientôt nous être confié !</li>
+                                <li class="${JSON.parse(data).stepColissimo == 1 ? 'current' : ''}">Votre colis est entre nos mains</li>
+                                <li class="${JSON.parse(data).stepColissimo == 2 ? 'current' : ''}">Il est en traitement dans notre réseau</li>
+                                <li class="${JSON.parse(data).stepColissimo == 3 ? 'current' : ''}">En cours d'acheminement</li>
+                                <li class="${JSON.parse(data).stepColissimo == 4 ? 'current' : ''}">En cours de livraison</li>
+                                <li class="${JSON.parse(data).stepColissimo == 5 ? 'current' : ''}">Votre colis est livré</li>
                             </ol>
                         `
                     )
