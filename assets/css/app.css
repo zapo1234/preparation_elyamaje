@@ -8459,7 +8459,7 @@ select option[disabled] {
 	font-weight: bold;
 	font-size: 1.2rem;
 }
-.order_prepared, .order_finished{
+.order_prepared, .order_finished, .order_total{
 	color: #45CB3F;
 }
 

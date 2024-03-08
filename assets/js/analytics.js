@@ -21,8 +21,8 @@ $(document).ready(function() {
             url: 'getAnalytics',
             async: true,
             dataSrc: function(json) {
-                console.log(parseFloat(json.total_order).toFixed(2))
                 var data = []
+                $(".order_total").text(parseFloat(json.total_order).toFixed(2) ?? 0)
                 Object.keys(json.histories).forEach(function(k, v){
                     Object.keys(json.histories[k]).forEach(function(a, b){
                         data.push(json.histories[k][a])
