@@ -8948,8 +8948,8 @@ select option[disabled] {
 
 .step_tracking .current ~ li:before {
 	background-color: white;
-	color: rgba(0, 0, 0, .4) !important;
-	border-color: rgba(0, 0, 0, .4);
+	color: rgba(0, 0, 0, .3) !important;
+	border-color: rgba(0, 0, 0, .3);
 }
 .step_tracking li + li:after {
 	 content: "";
@@ -8963,7 +8963,7 @@ select option[disabled] {
 	 z-index: 0;
 }
 .step_tracking .current ~ li:after {
-	 background-color: rgba(0, 0, 0, .4);
+	 background-color: rgba(0, 0, 0, .3);
 }
 
 .step_tracking li::marker{
