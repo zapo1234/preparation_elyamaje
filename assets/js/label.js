@@ -376,13 +376,13 @@ function showTrackingStatus(order_id, tracking_number, origin){
 
             $(".shipping_method").removeClass('shipping_chrono_logo')
             $(".shipping_method").removeClass('shipping_colissimo_logo')
+            $(".detail_status_label_tracking").remove()
 
             if(origin == "colissimo"){
 
                 $(".shipping_method").addClass('shipping_colissimo_logo')
                 $(".details_tracking").children('table').remove()
                 $(".details_tracking_wizard").children('.step_tracking').remove()
-                $(".detail_status_label_tracking").remove()
 
                 // Step colissimo
                 if(data_tracking.parcel){
