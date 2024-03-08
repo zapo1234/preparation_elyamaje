@@ -392,9 +392,9 @@ function showTrackingStatus(order_id, tracking_number, origin){
                                 <li class="${JSON.parse(data).stepColissimo == 0 ? 'current' : ''}">Votre Colissimo va bientôt nous être confié !</li>
                                 <li class="${JSON.parse(data).stepColissimo == 1 ? 'current' : ''}">Votre colis est entre nos mains</li>
                                 <li class="${JSON.parse(data).stepColissimo == 2 ? 'current' : ''}">Il est en traitement dans notre réseau</li>
-                                <li class="${JSON.parse(data).stepColissimo == 3 ? 'current' : ''}">En cours d'acheminement</li>
-                                <li class="${JSON.parse(data).stepColissimo == 4 ? 'current' : ''}">En cours de livraison</li>
-                                <li class="${JSON.parse(data).stepColissimo == 5 ? 'current' : ''}">Votre colis est livré</li>
+                                <li class="${JSON.parse(data).stepColissimo == 3 ? 'current' : ''}">Votre colis est arrivé sur son site de livraison</li>
+                                <li class="${JSON.parse(data).stepColissimo == 4 ? 'current' : ''}">Nous préparons votre colis pour sa livraison</li>
+                                <li class="${JSON.parse(data).stepColissimo == 5 ? 'current' : ''}">Votre colis a été livré</li>
                             </ol>
                         `
                     )
