@@ -58,10 +58,12 @@ class HistoryRepository implements HistoryInterface
 
    // Uniquement utilisé par l'admin
    public function getHistoryAdmin($date){
-      return $this->model::select('orders.total_order', 'users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'total_product',
+      return $this->model::select('orders.total_order', 'orders.total_order_ttc', 'users.id', 'users.name', 'histories.status', 'histories.order_id', 'histories.poste', 'total_product',
          // DB::raw('SUM(prepa_products_order.quantity) as total_quantity'), 'products_order.product_woocommerce_id', 
          'histories.created_at')
          ->leftJoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
+         ->leftJoin('orders_doli', 'orders_doli.ref_order', '=', 'histories.order_id')
+
          ->leftJoin('users', 'users.id', '=', 'histories.user_id')
          ->groupBy('histories.id')
          ->where('histories.created_at', 'LIKE', '%'.$date.'%')
