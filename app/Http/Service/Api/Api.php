@@ -438,6 +438,23 @@ class Api
   return $result;   
 }
 
+  public function insertCronRequest($data){
+
+    $token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMjkyZmIwNDY5NmQ2MDE5NDU1MDNiZTA2NTVkZTExNWM1MDIxYmIzOTNjNDk4MWZmZjk4MjA4ZGY5ZmE4NGNjOGI4N2M1MmVhMDkzYTdjZmEiLCJpYXQiOjE2ODIzMjYyOTEuMjMwNTE3LCJuYmYiOjE2ODIzMjYyOTEuMjMwNTQxLCJleHAiOjQ4MzgwMDM0OTAuODExMTM3LCJzdWIiOiIiLCJzY29wZXMiOlsiKiJdfQ.Gk2PIxGYUHsvwRuTMxzmZ8o4iip8qdoaowIgDbBceAXqic9Kb_MmflUKkcGSKiICSR8DvcRjVCuF5waFyyEkvQ";
+    $url = "https://www.cron.elyamaje.com/api/cron";
+    $ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_URL, $url); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data); 
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . $token)); 
+    $response = curl_exec($ch); 
+    curl_close($ch); 
+  
+
+    return $response;
+
+  }
 
 
 }

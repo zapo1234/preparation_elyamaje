@@ -40,8 +40,7 @@ class PdoDolibarr
             $stmt->execute();
             $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-       
- 
+
         return $res;
 
     }
@@ -186,6 +185,100 @@ class PdoDolibarr
        
  
         return $res;
+
+    }
+
+    function getStockAlerteMin($entrepot_destination){
+
+
+
+        $sql = 'SELECT fk_product, fk_entrepot, seuil_stock_alerte, desiredstock FROM llxyq_product_warehouse_properties WHERE fk_entrepot = :entrepot_destination';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':entrepot_destination', $entrepot_destination, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Créer un tableau associatif indexé par la colonne 'id'
+        $indexed_result = [];
+        foreach ($res as $row) {
+            $indexed_result[$row['fk_product']] = $row;
+        }
+        
+        return $indexed_result;
+        
+
+    }
+
+    
+    function getStockProductByEntrepot($entrepot_destination){
+
+
+
+        $sql = 'SELECT fk_product, reel FROM llxyq_product_stock WHERE fk_entrepot = :entrepot';
+        
+        $stmt = $this->pdo->prepare($sql);
+
+
+        $stmt->bindParam(':entrepot', $entrepot_destination, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $indexed_result = [];
+        foreach ($res as $row) {
+            $indexed_result[$row['fk_product']] = $row;
+        }
+
+               
+        return $indexed_result;
+        
+
+    }
+
+    function getAllProduct(){
+
+
+
+        $sql = 'SELECT rowid AS product_id,label,barcode FROM llxyq_product';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+       
+
+        
+        $indexed_result = [];
+        foreach ($res as $index => $row) {
+            
+            $indexed_result[$row['product_id']] = $row;
+        }
+              
+        return $indexed_result;
+        
+
+    }
+
+    function getAllEntrepot(){
+
+
+        $sql = 'SELECT rowid AS id_entrepot, ref AS name_entrepot FROM llxyq_entrepot WHERE rowid IN(15,6)';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+       
+
+        
+        $indexed_result = [];
+        foreach ($res as $index => $row) {
+
+
+            $res[$index]["name_entrepot"] = utf8_encode($row["name_entrepot"]);
+
+            $indexed_result[$row['id_entrepot']] = $res[$index];
+        }
+              
+        return $indexed_result;
+        
 
     }
 

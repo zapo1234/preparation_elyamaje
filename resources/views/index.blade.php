@@ -2,7 +2,7 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+			<link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
 			<link href="assets/css/pace.min.css" rel="stylesheet" />
 
@@ -35,7 +35,7 @@
 											<input class="role_user_input" id="user_{{ $team['user_id'] }}" type="hidden" value="{{ implode(',',$team['role_id']) }}">
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
-													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
+													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
 													<h6 class="mb-1 font-14">
@@ -331,7 +331,7 @@
 		<script src="assets/js/pace.min.js"></script>
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
+		<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 		<script src="assets/js/orders.js"></script>
 
 	@endsection

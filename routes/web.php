@@ -22,6 +22,9 @@ use App\Http\Controllers\TiersController;
 |
 */
 
+// sans connexion
+Route::get('/alerteStockCron/{token}', [Controller::class, 'alerteStockCron'])->name('alerteStockCron');
+
 Route::get('/index', function () {
     return redirect()->route('/');
 })->name('index');
@@ -221,9 +224,14 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
     Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
     Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
+    
     // Route pour approvisionnement
     Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+    Route::get('/alertStocks/{idEntrepot}/{Njour}', [Controller::class, 'alertStocks'])->name('alertStocks');
+
+
+
     // Missing Labels
     Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
     Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
