@@ -153,9 +153,8 @@
 
                 <ul class="sub-menu beauty_prof_menu">
                     <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
-
-
-                    <li><a href="{{ url('alertStocks/15/1') }}">Alertes de stock</a></li>
+                    <li><a href="{{ url('alertStocks/15/1') }}">States des vente</a></li>
+                    {{-- <li><a href="{{ url('listeAlerte') }}">Liste des alertes</a></li> --}}
                 </ul>
              
             </li>

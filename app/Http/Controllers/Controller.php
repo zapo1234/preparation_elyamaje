@@ -724,7 +724,7 @@ class Controller extends BaseController
                 $writer->save(storage_path('app/public/alertes/' . $fileName));
     
                 // Retournez une réponse de téléchargement pour le fichier Excel
-                return ["response" => true, "message" => "réassort créer avec succés"];
+                return ["response" => true, "message" => "Fichier d'alerte créer avec succés"];
             }
 
 
@@ -790,7 +790,7 @@ class Controller extends BaseController
         // $mois = 1; // nombre de mois
         // $jours = $mois*28;
         $interval = date("Y-m-d", strtotime("-$Njour days")); 
-        $coef = 1;  //(1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
+        $coef = (1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
 
         $array_factures_total = array();
 
@@ -1275,7 +1275,7 @@ class Controller extends BaseController
                 $mois = 1; // nombre de mois
                 $jours = $mois*28;
                 $interval = date("Y-m-d", strtotime("-$jours days")); 
-                $coef = 1;  //(1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
+                $coef = (1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
 
                
 
