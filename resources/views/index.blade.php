@@ -35,7 +35,7 @@
 											<input class="role_user_input" id="user_{{ $team['user_id'] }}" type="hidden" value="{{ implode(',',$team['role_id']) }}">
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
-													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
+													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
 													<h6 class="mb-1 font-14">
