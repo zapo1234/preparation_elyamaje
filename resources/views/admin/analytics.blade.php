@@ -26,7 +26,13 @@
 							<div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
 						</div>
 					</div>
-					<div style="width:105px"></div>
+					<div class="d-flex pe-3 analytics_data_title align-items-center">
+						Revenu : 
+						<div class="align-items-center d-flex">
+							<span class="ml-1 data_number order_total">0.00</span>
+							<div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+						</div>
+					</div>
 				</div>
 
 				@if(session()->has('success'))
@@ -49,6 +55,7 @@
 							<h5>Commandes Préparées</h5>
 							<h5>Commandes Emballées</h5>
 							<h5>Produits Bippés</h5>
+							<h5>Produits Emballés</h5>
 							<h5>Date</h5>
 						</div>
 					</div>

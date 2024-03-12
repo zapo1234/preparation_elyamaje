@@ -3,18 +3,23 @@
 namespace App\Repository\OrderDolibarr;
 
 use Exception;
+use Throwable;
 use App\Models\OrderDolibarr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Service\PDF\InvoicesPdf;
 
 
 class OrderDolibarrRepository implements OrderDolibarrInterface
 {
 
    private $model;
+    private $pdf;
 
-   public function __construct(OrderDolibarr $model){
+   public function __construct(OrderDolibarr $model,
+   InvoicesPdf $pdf){
       $this->model = $model;
+      $this->pdf = $pdf;
    }
 
    public function getAllOrders(){
@@ -109,24 +114,38 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrdersDolibarrByIdUser($user_id){
+      // List orders
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent')
-         ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
-         ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->leftJoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
+         ->leftJoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('products.status', 'publish')
          ->where('orders_doli.user_id', $user_id)
          ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->orderBy('products.menu_order', 'ASC')
          ->get();
 
          $orders = json_decode(json_encode($orders), true);
          $list = [];
+      
+      // List of categories
+      $categories = DB::table('categories')->select('category_id_woocommerce', 'parent_category_id', 'order_display')->get();
+      $list_categories = [];
+      foreach($categories as $cat){
+         $list_categories[$cat->category_id_woocommerce] = $cat->order_display;
+         $list_categories[$cat->parent_category_id] = $cat->order_display;
+      }
 
          foreach($orders as $key => $order){
+            $category_parent_id = explode(',', $order['category_id']);
+            $category_parent_id = $category_parent_id[count($category_parent_id) - 1];
+
             $list[$order['ref_order']]['details'] = [
                'id' => $order['ref_order'],
-               'first_name' => $order['firstname'],
-               'last_name' => $order['firstname'] != $order['lastname'] ? $order['lastname'] : '',
+               'first_name' => $order['billing_name'] ?? $order['firstname'],
+               'last_name' => $order['billing_pname'] ? ($order['billing_pname'] != $order['billing_name'] ? $order['billing_pname'] : '') : 
+               ($order['lastname'] != $order['firstname'] ? $order['lastname'] : ''),
                'date' => $order['date'],
                'total' => floatval($order['total_order_ttc']),
                'total_tax' => floatval($order['total_tax']),
@@ -142,6 +161,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ];
 
             $list[$order['ref_order']]['items'][] = [
+               "order_display" => isset($list_categories[$category_parent_id]) ? $list_categories[$category_parent_id] : 999,
                "variation" => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
                "name" => $order['productName'],
                "barcode" => $order['barcode'],
@@ -155,6 +175,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                'pick' => $order['pick'],
                'product_woocommerce_id' => $order['product_woocommerce_id'],
             ];
+         }
+
+         // order product by order_display
+         foreach($list as $key => $lis){
+            usort($list[$key]['items'], function($a, $b) {
+               return $a['order_display'] - $b['order_display'];
+           });
          }
 
          return ['orders' => $list];
@@ -273,7 +300,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersAndLabelByFilter($filters){
          $query = $this->model::select('orders_doli.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-         'labels.cn23', 'labels.download_cn23')
+         'labels.cn23', 'labels.download_cn23', 'labels.origin')
          ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
          ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
 
@@ -350,7 +377,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersAndLabel(){
       $date = date('Y-m-d');
       $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23')
+      'labels.cn23', 'labels.download_cn23', 'labels.origin')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
@@ -405,10 +432,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllProductsPickedDolibarr(){
       $productsPicked = DB::table('lines_commande_doli')
-      ->select('products.product_woocommerce_id', 'id_commande as order_id', 'pick')
+      ->select('products.product_woocommerce_id', 'ref_order as order_id', 'pick')
       ->join('orders_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
       ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
       ->where('pick', '>',  0)
+      ->whereNotIn('orders_doli.statut', ['canceled', 'pending', 'finished'])
       ->get()
       ->toArray();
 
@@ -624,6 +652,265 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       $list_orders = array_values($list_orders);
       return $list_orders;
+   }
+
+   public function getOrderDetails($order_id){
+      // récuperation du detail de commande.
+      $details_order = $this->model->select('orders_doli.statut', 'lines_commande_doli.id','id_commande','id_product','libelle','lines_commande_doli.price','qte','lines_commande_doli.remise_percent','lines_commande_doli.total_ht')
+      ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+      ->where('orders_doli.ref_order', '=', $order_id)
+      ->get();
+ 
+      $list_tiers_order = json_encode($details_order);
+      $list_tiers_order = json_decode($details_order,true);
+      $data_list_details =[];
+
+      foreach($list_tiers_order as $values){
+            $data_list_details[] =[
+            'id'=>$values['id'],
+            'id_commande'=>$values['id_commande'],
+            'id_product'=>$values['id_product'],
+            'nom'=>$values['libelle'],
+            'quantite'=>$values['qte'],
+            'prix'=>$values['price'],
+            'status' =>$values['statut']
+         ];
+
+      }
+
+      // afficher ici.
+      return $data_list_details;
+   }
+
+   public function  updateStock($data, $typeUpdate){
+      try {
+
+         if ($typeUpdate == "decrementation") {
+            $variable = "THEN warehouse_array_list -";
+         }else {
+            $variable = "THEN warehouse_array_list +";
+         }
+
+         DB::beginTransaction();
+
+         $updates = [];
+         foreach ($data as $item) {
+             $updates[$item['id_product']] = $item['quantite'];
+         }
+
+         $caseStatements = '';
+         foreach ($updates as $id_product => $decrementValue) {
+            $caseStatements .= "WHEN $id_product $variable $decrementValue ";
+         }
+
+         $res = DB::update("
+            UPDATE prepa_products_dolibarr
+            SET warehouse_array_list = CASE product_id
+               $caseStatements
+               ELSE warehouse_array_list
+            END
+            WHERE product_id IN (" . implode(',', array_keys($updates)) . ")
+         ");
+
+         
+         if (count($data) == $res) {
+            DB::commit();
+            return true;
+         }else {
+            DB::rollBack();
+            return false;
+         }
+
+      } catch (Throwable $th) {
+         return false;;
+      } 
+   }
+
+   public function getChronoLabelByDate($date){
+      $labels = [];
+      $labels_dolibarr = $this->model::select('orders_doli.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 
+      DB::raw("SUM(prepa_products.weight * prepa_label_product_order.quantity) as weight"))
+      ->leftJoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
+      ->leftJoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->leftJoin('products', 'products.product_woocommerce_id', '=', 'label_product_order.product_id')
+      ->where('labels.origin', 'chronopost')
+      ->where('labels.created_at', 'LIKE', '%'.$date.'%')
+      ->where('labels.bordereau_id', null)
+      ->groupBy('orders_doli.ref_order')
+      ->get();
+
+      foreach($labels_dolibarr as $label){
+         $labels[] = [
+            'order_woocommerce_id' => $label['ref_order'],
+            'weight' => $label['weight'],
+            'tracking_number' => $label['tracking_number'],
+            'shipping_method' => $label['shipping_method'],
+            'product_code' => null,
+            'shipping_customer_company' => $label['billing_company'],
+            'shipping_customer_last_name' => $label['billing_pname'],
+            'shipping_customer_first_name' => $label['billing_name'],
+            'shipping_customer_postcode' => $label['code_postal'],
+            'shipping_customer_city' => $label['city'],
+            'shipping_customer_country' => $label['contry'],
+            'customer_id' => $label['socid'] ?? null,
+            'total_order' => $label['total_order_ttc']
+         ];
+      }
+      return $labels; 
+   }
+
+
+     public function getOrderidfact($ref_commande,$indexs){
+         // recupérer id de la commande...
+         
+         $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
+         $ids = json_encode($userdata);
+         $id_recup = json_decode($ids,true);
+        
+         if(count($id_recup)!=0){
+            $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
+            $usersWithPosts = DB::table('orders_doli')
+            ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
+             ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
+            'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
+            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name')
+            ->where('orders_doli.id','=',$id_commande)
+            ->get();
+      
+            $lists = json_encode($usersWithPosts);
+            $result = json_decode($lists,true);
+             
+            
+            // traiter le retour de la facture
+           // verifions l'existence des resultats.
+            if(count($result)!=0){
+              // recupérer les variables utile pour envoyé la facture et l'email au clients.
+            $tiers =[
+           'ref_order'=>$result[0]['ref_order'],
+           'name' => $result[0]['billing_name'],
+           'pname' => $result[0]['billing_pname'],
+           'adresse' => $result[0]['billing_adresse'],
+           'code_postal' => $result[0]['billing_code_postal'],
+           'city'=> $result[0]['billing_city'],
+            'contry' => 'FR',
+           'email' =>$result[0]['email'],
+           'phone' => $result[0]['phone'],
+           
+           ];
+     
+             // construire le tableau des produit liée dans la commande.
+           foreach($result as $val){
+                $data_line_order[] = [
+                'id_commande'=> $val['id_commande'],
+                 'libelle' => $val['libelle'],
+                'price'=> $val['price'],
+                'qte'=> $val['qte'],
+                'total_ht'=> number_format($val['total_ht'], 2),
+                'total_ttc'=> number_format($val['total_ttc'], 2),
+                 'remise' => 30,
+                'prix_remise'=> number_format($val['total_ttc'], 2)*0.7,
+              ' total_tva'=> number_format($val['total_ttc'] - $val['total_ht'], 2),
+           ];
+        }
+ 
+           // le destinatire et la date d'aujourdhuit.
+           $destinataire = $result[0]['email'];
+           $total_ttc = $result[0]['total_order_ttc'];
+           // definir le pourcentage du code promo envoyé  au tiers
+        
+           if($total_ttc >= 80){
+              $percent=10;
+           }
+            if($total_ttc < 80){
+               $percent=5;
+           }
+           $total_ht = number_format($total_ttc * 0.8, 2);
+         // ref de la commande
+          $ref_order = $result[0]['ref_order'];
+           // recupérer les 4 premiers lettre du nom de la cliente...
+           $name_code = substr($result[0]['pname'], 0, 4);
+         // Mettre en majuscule le resultat.
+          $name_prefix_code = strtoupper($name_code);
+          // génére un code promo a donner au clients.
+          $code_promos ="BPP-$id_commande$name_prefix_code-2024";
+
+          $res_name = str_replace( array( '%', '@', '\'', ';', '<', '>' ), ' ', $code_promos);// filtre sur les caractère spéciaux
+         //$code_promo = preg_replace("/\s+/", "", $res_name);// suprime les espace dans la chaine.
+         $code_promo = $res_name;
+
+         $remise_true = env('DISCOUNT');
+         $remise = $remise_true*100;
+         
+          // declencher la génération de facture et envoi de mail.
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
+         // insert dans la base de données...
+          $datas_promo =[
+         'id_commande'=>$id_commande,
+         'code_promo'=>$code_promo,
+         'percent'=>$percent,
+         'email'=>$result[0]['email'],
+         'created_at'=> date('Y-m-d H:i:s'),
+         'updated_at'=> date('Y-m-d H:i:s'),
+         ];
+         // insert les données dans la base de données.
+           DB::table('code_promos')->insert($datas_promo);
+          return $ref_order;
+      }
+      else{
+             // afficher une erreur ....
+             // insert dans la table des erreur log.
+             $message =" Attention la commande Beauty proof paris $id_commande ne contient pas de produits !";
+             $datas = [
+               'order_id'=> $id_commande,
+               'message'=> $message,
+               'created_at'=>date('Y-m-d h:i:s'),
+               'created_at'=>date('Y-m-d h:i:s'),
+               'updated_at'=>date('Y-m-d h:i:s')
+              ];
+
+               // insert dans la table 
+               $this->geterrorcommande($datas);
+     
+              echo json_encode(['success' => false, 'message' => $message]);
+         }
+
+          }
+
+         else{
+
+              dd('commande introuvable');
+         }
+
+  
+
+     }
+
+     public function getAllReforder(){
+       $order_all =[];
+       $userdata =  DB::table('orders_doli')->select('ref_order')->get();
+       $ids = json_encode($userdata);
+       $list_ids = json_decode($ids,true);
+
+       foreach($list_ids as $key => $val){
+           $order_all[$key] =$val['ref_order'];
+       }
+
+       return $order_all;
+     }
+
+     public function  getTiersBp(){
+       // faire du traiement sur les clients
+
+
+     }
+
+     public function  getOrderBp(){
+
+
+     }
+
+   public function getOrderByRef($ref_order){
+      return $this->model::where('ref_order', $ref_order)->get();
    }
 }
 

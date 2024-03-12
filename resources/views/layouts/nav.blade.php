@@ -168,6 +168,24 @@
                     <li><a class="link_name" href="{{ url('errorLogs') }}">Journaux d'erreurs</a></li>
                 </ul>
             </li> 
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu beauty_prof_menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('seller') }}">Analytics</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
+                    <li><a href="{{ url('cashier') }}">Caisse</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                    <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
+                    <li><a href="{{ url('generateinvoices') }}">Renvoyer une facture au client</a></li>
+                </ul>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
@@ -220,23 +238,6 @@
                     <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
                 </ul>
             </li>
-            <li>
-                <div class="icon-link">
-                <a href="#">
-                    <span class="link_text font-bold text-light">BP</span>
-                    <span class="link_name">Beauty Prof's</span>
-                </a>
-                <i class='bx bxs-chevron-down arrow' ></i>
-                </div>
-                <ul class="sub-menu beauty_prof_menu">
-                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
-                    <li><a href="{{ url('seller') }}">Analytics</a></li>
-                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
-                    <li><a href="{{ url('cashier') }}">Caisse</a></li>
-                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
-                    <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
-                </ul>
-            </li>
         @endif
 
         <!-- Espace Sav -->
@@ -262,6 +263,20 @@
                 </a>
                 <ul class="sub-menu blank">
                     <li><a class="link_name" href="{{ url('sav') }}">Sav</a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu beauty_prof_menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                 </ul>
             </li>
         @endif

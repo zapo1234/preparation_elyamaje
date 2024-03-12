@@ -22,6 +22,7 @@ $(document).ready(function() {
             async: true,
             dataSrc: function(json) {
                 var data = []
+                $(".order_total").text(parseFloat(json.total_order).toFixed(2) ?? 0)
                 Object.keys(json.histories).forEach(function(k, v){
                     Object.keys(json.histories[k]).forEach(function(a, b){
                         data.push(json.histories[k][a])
@@ -50,6 +51,11 @@ $(document).ready(function() {
             {data: null, 
                 render: function(data, type, row) {
                     return row.items_picked ?? "?"
+                }
+            },
+            {data: null, 
+                render: function(data, type, row) {
+                    return row.items_packed ?? "?"
                 }
             },
             {data: null, 
@@ -91,7 +97,8 @@ $(document).ready(function() {
             $('td:nth-child(2)', nRow).attr('data-label', 'Commandes Préparées');
             $('td:nth-child(3)', nRow).attr('data-label', 'Commandes Emballées');
             $('td:nth-child(4)', nRow).attr('data-label', 'Prouits Bippés');
-            $('td:nth-child(5)', nRow).attr('data-label', 'Date');
+            $('td:nth-child(5)', nRow).attr('data-label', 'Prouits Emballés');
+            $('td:nth-child(6)', nRow).attr('data-label', 'Date');
 
             return nRow;
         },

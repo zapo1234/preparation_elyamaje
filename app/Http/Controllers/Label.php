@@ -106,6 +106,7 @@ class Label extends BaseController
                     'label_format' => $order['label_format'],
                     'cn23' => $order['cn23'],
                     'download_cn23' => $order['download_cn23'],
+                    'origin' => $order['origin'],
                     // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             } else if(count($clesRecherchees) > 0){
@@ -116,6 +117,7 @@ class Label extends BaseController
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                     'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
                     'download_cn23' => $order['download_cn23'],
+                    'origin' => $order['origin'],
                     // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             }
@@ -298,7 +300,14 @@ class Label extends BaseController
         }
 
         if(in_array('chronopost', $origin)){
+
+            // Chrono WordPress (orders)
             $orders = $this->order->getChronoLabelByDate($date)->toArray();
+
+            // Chrono dolibarr / Beauty Prof (orders_doli)
+            $orders_doli = $this->orderDolibarr->getChronoLabelByDate($date);
+            $orders = array_merge($orders, $orders_doli);
+
             $order_detail = [];
             $tracking_number = [];
             $total_weight = 0;
@@ -342,7 +351,8 @@ class Label extends BaseController
                 $pdf = $this->pdf->generateBordereauChrono($order_detail);
 
                 if($pdf){
-                    if($this->label->saveBordereau(time(), $tracking_number) && $this->bordereau->save(time(), $pdf, $date, "chronopost")){
+                    $time = time();
+                    if($this->label->saveBordereau($time, $tracking_number) && $this->bordereau->save($time, $pdf, $date, "chronopost")){
                         $success['Chronopost'] = "Borderau généré avec succès !";
                     }  
                 } else {

@@ -46,6 +46,22 @@ interface OrderDolibarrInterface
     public function getAllOrdersBeautyProfHistory($filters);
 
     public function getAllHistory();
+
+    public function getOrderDetails($order_id);
+
+    public function  updateStock($data, $typeUpdate);
+
+    public function getChronoLabelByDate($date);
+
+    public function getOrderidfact($ref_commande,$indexs);
+
+    public function getAllReforder();
+
+    public function getTiersBp();
+
+    public function getOrderBp();
+
+    public function getOrderByRef($ref_order);
 }
 
 

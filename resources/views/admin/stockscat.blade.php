@@ -150,7 +150,6 @@
                                             @php
                                                 
                                                 $lim = explode('%',$lm);
-                                                
                                                 $namex = explode(' ',$lim[0]);
                                                 
                                                     if(count($namex)==2){
@@ -185,9 +184,24 @@
                                     @endforeach  
                                 @endforeach
                             </table>
-                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:50%;">
-                                <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
-                                @foreach($list_product as $val)
+                            <div class="d-flex flex-wrap align-items-center justify-content-center"style="width:25%;position:fixed;right:30px;top:30%;">
+                                
+                            @foreach($list_faible_stocks as $vl)
+                                    @if($vl['produit'] == "Aucun mouvement produit")
+                                    <p style="text-align: center;width:90%;">
+                                        STOCK OK !<br/>
+                                    </p>
+                                    @else
+                                    <p style="text-align: left;width:90%;" class="d-flex gap-1">
+                                        <i class="lni lni-warning" style="color:#CD2A28; fill:#CD2A28;"></i>Le stock de {{ $vl['produit'] }} est insuffisant.<br/>
+                                    </p>
+                                    @endif
+                                @endforeach
+                            
+                               <button type="submit" class="btn btn-primary text-white"  style="margin-bottom:20px;">Modifier le stock</button>
+                               
+                             
+                                 @foreach($list_product as $val)
                                     @if($val['libelle'] == "Aucun mouvement de stock")
                                     <p style="text-align: center;width:90%;">
                                         {{ $val['libelle'] }}<br/>

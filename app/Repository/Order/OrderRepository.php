@@ -181,7 +181,10 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersByUsersNotFinished(){
-      return $this->model->select('orders.*', 'users.name')->where('status', '!=', 'finished')->join('users', 'users.id', '=', 'orders.user_id')->get();
+      return $this->model->select('orders.*', 'users.name', 'products_order.*')->where('status', '!=', 'finished')
+      ->join('users', 'users.id', '=', 'orders.user_id')
+      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->get();
    }
 
    public function getUsersWithOrder(){
@@ -772,7 +775,7 @@ class OrderRepository implements OrderInterface
 
       $date = date('Y-m-d');
       return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23')
+      'labels.cn23', 'labels.download_cn23',  'labels.origin')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
@@ -783,7 +786,7 @@ class OrderRepository implements OrderInterface
 
    public function getAllOrdersAndLabelByFilter($filters){
       $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23')
+      'labels.cn23', 'labels.download_cn23', 'labels.origin')
       ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
 

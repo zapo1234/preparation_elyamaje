@@ -159,7 +159,7 @@
 										<th class="col-md-2">Visualiser</th>
 										<th class="col-md-2">Imprimer</th>
 										<th class="col-md-2">Douane</th>
-										<th class="col-md-1">Expédition</th>
+										<th class="col-md-1">Détails</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -258,7 +258,7 @@
 													@endforeach
 												@endif
 											</td>
-											<td data-label="Expédition">
+											<td data-label="Détails">
 
 												
 													<i onclick="showCustomerOrderDetail('{{ $order[0]['order_woocommerce_id'] }}')" class="show_detail_customer lni lni-delivery"></i>
@@ -358,7 +358,7 @@
 																	</div>
 
 																	<div class="mt-3 d-flex flex-column w-100 customer_shipping">
-																		<span class="customer_detail_title badge bg-dark">Expédition</span>
+																		<span class="customer_detail_title badge bg-dark">Détails</span>
 
 																		@if($order[0]['shipping_customer_first_name'])
 																			<div class="d-flex w-100 justify-content-between">
@@ -434,7 +434,9 @@
 															</div>
 														</div>
 													</div>
-												
+													@if($order[0]['tracking_number'])
+														<i style="margin-left: 15px" onclick="showTrackingStatus('{{ $order[0]['order_woocommerce_id'] }}', '{{ $order[0]['tracking_number'] }}', '{{ $order[0]['origin'] }}')" class="show_tracking_status lni lni-map-marker"></i>
+													@endif
 											</td>
 										</tr>
 									@endforeach
@@ -469,7 +471,7 @@
 			</div>
 
 			<!-- Modal supression -->
-			<div class="modal fade" id="deleteLabelModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal fade modal_radius" id="deleteLabelModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 				<div class="modal-dialog modal-dialog-centered" role="document">
 					<div class="modal-content">
 						<div class="modal-body">
@@ -489,38 +491,60 @@
 			</div>
 
 
-			  <!-- Modal generate label -->
-			  <div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_radius generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-					<div class="modal-dialog modal-dialog-centered" role="document">
-						<div class="modal-content">
-							<div class="modal-body">	
-								<form class="h-100" method="POST" action="{{ route('label.generate') }}">
-									@csrf
-									<input id="order_id_label" type="hidden" name="order_id" value="">
-									<input id="from_dolibarr" type="hidden" name="from_dolibarr" value="">
-									<div class="h-100 d-flex flex-column justify-content-between">
-										<div class="d-flex flex-column">
-											<div class="mb-2 d-flex w-100 justify-content-between">
-												<span style="width: 50px"><input data-id="" class="form-check-input check_all" type="checkbox" value="" aria-label="Checkbox for product order"></span>
-												<span class="head_1 w-50">Article</span>
-												<span class="head_2 w-25">P.U (€)</span>
-												<span class="head_3 w-25">Quantité</span>
-												<span class="head_4 w-25">Poids (kg)</span>
-											</div>
-											<div class="body_line_items_label">
-											
-											</div>
+			<!-- Modal generate label -->
+			<div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_radius generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">	
+							<form class="h-100" method="POST" action="{{ route('label.generate') }}">
+								@csrf
+								<input id="order_id_label" type="hidden" name="order_id" value="">
+								<input id="from_dolibarr" type="hidden" name="from_dolibarr" value="">
+								<div class="h-100 d-flex flex-column justify-content-between">
+									<div class="d-flex flex-column">
+										<div class="mb-2 d-flex w-100 justify-content-between">
+											<span style="width: 50px"><input data-id="" class="form-check-input check_all" type="checkbox" value="" aria-label="Checkbox for product order"></span>
+											<span class="head_1 w-50">Article</span>
+											<span class="head_2 w-25">P.U (€)</span>
+											<span class="head_3 w-25">Quantité</span>
+											<span class="head_4 w-25">Poids (kg)</span>
 										</div>
-										<div class="button_validate_modal_label d-flex justify-content-center mt-3 w-100">
-											<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
-											<button  onclick="this.disabled=true;this.form.submit();" style="margin-left:15px" type="submit" class="valid_generate_label btn btn-dark px-5">Générer</button>
+										<div class="body_line_items_label">
+										
 										</div>
 									</div>
-								</form>
+									<div class="button_validate_modal_label d-flex justify-content-center mt-3 w-100">
+										<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+										<button  onclick="this.disabled=true;this.form.submit();" style="margin-left:15px" type="submit" class="valid_generate_label btn btn-dark px-5">Générer</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<!-- Modal tracking status label -->
+			<div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_order_admin modal_detail_order modal_order modal_radius modal fade" id="trackingStatusLabel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body" style="overflow-y: auto;">	
+							<div class="shipping_method"></div>
+							<div class="d-flex flex-column justify-content-between details_tracking_wizard">
+
+							</div>
+							<div class="d-flex flex-column justify-content-between details_tracking">
+								
+							</div>
+							<div class="d-flex justify-content-center mt-3 w-100">
+								<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
 							</div>
 						</div>
 					</div>
 				</div>
+			</div>
 
 		@endsection
 

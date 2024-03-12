@@ -137,28 +137,28 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/seller", [Admin::class, "seller"])->name('admin.seller'); 
     Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
     Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
-    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
     Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
     Route::post("/cashMovement", [Admin::class, "cashMovement"])->name('admin.cashMovement'); 
     Route::post("/updateCashMovement", [Admin::class, "updateCashMovement"])->name('admin.updateCashMovement'); 
     Route::post("/cancelCashMovement", [Admin::class, "cancelCashMovement"])->name('admin.cancelCashMovement'); 
     Route::post("/addCashMovement", [Admin::class, "addCashMovement"])->name('admin.addCashMovement'); 
-    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
-   // gestion de stocks lime et rape.
+    // gestion de stocks lime et rape.
    Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
-
-   // requete stocks post
+    // requete stocks post
    Route::post("/stockscat", [Admin::class, "poststock"])->name('admin.stockscat'); 
-
-
-   // rape gere le calcule des raps et plaquante
+    // rape gere le calcule des raps et plaquante
    Route::post("/stockscatrap", [Admin::class, "poststockrap"])->name('admin.stockscatrap'); 
-
- // traiter les rapes
+   // traiter les rapes
     // requete stocks post
     Route::get("/stocksrape", [Admin::class, "postrape"])->name('admin.stocksrape'); 
+    // généré une facture de la BPP
+    Route::get("/generateinvoices", [Admin::class, "generateinvoices"])->name('admin.generateinvoices'); 
+    // envoyer une facture BPP
+    Route::post("/generateinvoices", [Admin::class, "generatefacture"])->name('admin.generatefacture'); 
 
+    // renvoyer une facture de  bpp 
+    Route::post("/generateinvoice", [Admin::class, "generatefactures"])->name('admin.generatefactures'); 
     // Terminaux de paiements
     Route::get("/paymentTerminal", [Admin::class, "paymentTerminal"])->name('admin.paymentTerminal'); 
     Route::post("/addTerminal", [Admin::class, "addTerminal"])->name('terminal.add');
@@ -282,6 +282,17 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
     Route::get("/ordersDetails", [Order::class, "ordersDetails"])->name('ordersDetails');
+});
+
+// ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
+Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
+    Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
+});
+
+// ADMIN - CHEF D'ÉQUIPE & SAV
+Route::group(['middleware' => ['auth', 'role:1,6']], function () {
+    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
+    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 });
 
 // Vendeuse

@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use stdClass;
 use Exception;
 use League\Csv\Reader;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Api;
-use App\Events\NotificationPusher;
 // use Illuminate\Support\Facades\Mail;
+use App\Events\NotificationPusher;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
-use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
+use App\Http\Service\Api\ColissimoTracking;
 use App\Repository\History\HistoryRepository;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
@@ -61,6 +63,7 @@ class Order extends BaseController
     private $reassort;
     private $orderDolibarr;
     private $commandeids;
+    private $colissimoTracking;
 
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
@@ -82,7 +85,8 @@ class Order extends BaseController
       LogErrorRepository $logError,
       ReassortRepository $reassort,
       OrderDolibarrRepository $orderDolibarr,
-      CommandeidsRepository $commandeids
+      CommandeidsRepository $commandeids,
+      ColissimoTracking $colissimoTracking
     ){
       $this->api = $api;
       $this->user = $user;
@@ -106,6 +110,7 @@ class Order extends BaseController
       $this->reassort = $reassort;
       $this->orderDolibarr = $orderDolibarr;
       $this->commandeids = $commandeids;
+      $this->colissimoTracking = $colissimoTracking;
     }
   
     public function orders($id = null, $distributeur = false){
@@ -365,8 +370,6 @@ class Order extends BaseController
         }
       }
 
-
-
       // Liste des commandes Woocommerce
       $orders = $this->orders();
 
@@ -553,7 +556,14 @@ class Order extends BaseController
       $from_transfers = $request->post('from_transfers') == "true" ? true : false;
 
       if($from_dolibarr){
-        $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+        // Get id commande by ref order
+        $orderRef = $this->orderDolibarr->getOrderByRef($order_id)->toArray();
+        if(count($orderRef) != 0){
+          $order_id = $orderRef[0]['id'];
+          $orderReset = $this->orderDolibarr->orderResetDolibarr($order_id);
+        } else {
+          echo json_encode(["success" => false]);
+        }
       } else if($from_transfers){
         $orderReset = $this->reassort->orderResetTransfers($order_id);
       } else {
@@ -666,6 +676,28 @@ class Order extends BaseController
           }
           echo json_encode(["success" => $this->order->updateOrdersById([$order_id], $status), 'number_order_attributed' => count($number_order_attributed)]);
         } else {
+          
+          // Get details orders for incrementation or decrementation stock dolibarr
+          if(str_contains($order_id, 'BP')){
+            $res = true;
+            $data = $this->orderDolibarr->getOrderDetails($order_id);
+            if(count($data) > 0){
+              $actual_status = $data[0]['status'];
+
+              if($actual_status != "canceled" && $status == "canceled"){
+                $res = $this->orderDolibarr->updateStock($data,"incrementation");
+              } else if($actual_status == "canceled"){
+                $res = $this->orderDolibarr->updateStock($data,"decrementation");
+              }
+
+              if(!$res){
+                $update = $this->orderDolibarr->updateOneOrderStatus($status, $order_id);
+                echo json_encode(["success" => false, 'number_order_attributed' => count($number_order_attributed), 
+                'message' => 'Les stocks n\'ont pas pu être incrémenté ou décrémenté']);
+              }
+            }
+          }
+         
           $update = $this->orderDolibarr->updateOneOrderStatus($status, $order_id);
           echo json_encode(["success" => $update, 'number_order_attributed' => count($number_order_attributed)]);
         }
@@ -1344,6 +1376,52 @@ class Order extends BaseController
     $query = "UPDATE prepa_histories SET total_product = (CASE order_id {$cases} END)";
     DB::statement($query);
     dd("Ok !");
+  }
+
+  public function getTrackingStatus(Request $request) {
+
+    $request->validate([
+      'order_id' => 'required',
+      'tracking_number' => 'required',
+      'origin' => 'required',
+    ]); 
+
+    $object = new stdClass();
+    $object->tracking_number = $request->post('tracking_number');
+    $object->order_id = $request->post('order_id');
+    $stepChrono = 0;
+    $stepColissimo = 0;
+
+    // Tracking status for colissimo / chronopost
+    if($request->post('origin') == "chronopost"){
+      $found = [];
+      $trackingLabelChronopost = array_reverse($this->chronopost->getStatusDetails([$object]));     
+      $status_list = $this->chronopost->getStatusCode();
+      foreach($trackingLabelChronopost as $tracking){
+        $code = str_replace(' ','', $tracking["code"].trim(''));
+   
+        foreach($status_list as $key => $list){
+          if(in_array($code, $list)){
+            $found[$key] = $code;
+          }
+        }
+      }
+
+      $stepChrono = count($found) > 0 ? max(array_keys($found)) : 0;
+     
+    } else if($request->post('origin') == "colissimo"){
+      $trackingLabelColissimo = $this->colissimoTracking->getStatus([$object], true);
+
+      if(isset($trackingLabelColissimo["parcel"]["step"])){
+        foreach($trackingLabelColissimo["parcel"]["step"] as $key => $tracking){
+          if($tracking['status'] == "STEP_STATUS_ACTIVE"){
+            $stepColissimo = $key;
+          }
+        }
+      }
+    }
+
+    return json_encode(['success' => true, 'details' => $request->post('origin') == "colissimo" ? $trackingLabelColissimo : $trackingLabelChronopost, 'stepChrono' => $stepChrono, 'stepColissimo' => $stepColissimo]);
   }
 
   // private function checkGiftCard($order){

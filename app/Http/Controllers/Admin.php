@@ -16,6 +16,7 @@ use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
 use App\Http\Service\Api\Transfertext;
+use App\Http\Service\PDF\InvoicesPdf;
 use App\Http\Service\Api\Construncstocks;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
@@ -66,6 +67,7 @@ class Admin extends BaseController
     private $transfers;
     private $construcstocks;
     private $stocks;
+    private $pdf;
 
     public function __construct(
         Api $api, 
@@ -81,6 +83,7 @@ class Admin extends BaseController
         WoocommerceService $woocommerce,
         TransferOrder $factorder,
         Transfertext $transfers,
+        InvoicesPdf $pdf,
         LabelMissingRepository $labelMissing,
         OrderDolibarrRepository $orderDolibarr,
         TransferOrder $facture,
@@ -113,6 +116,7 @@ class Admin extends BaseController
         $this->caisse = $caisse;
         $this->construcstocks = $construcstocks;
         $this->stocks = $stocks;
+        $this->pdf=$pdf;
     }
 
     public function syncCategories(){
@@ -342,10 +346,19 @@ class Admin extends BaseController
         $date = $request->get('date') ?? date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
 
+        $total_order = 0;
+        foreach($histories as $histo){
+            if($histo['total_order']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order'] : $total_order;
+            } else if($histo['total_order_ttc']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order_ttc'] : $total_order;
+            }
+        }
+
         $list_histories = [];
         try{
             $list_histories = $this->buildHistory($histories);
-            echo json_encode(['success' => true, 'histories' => $list_histories /*, 'average_by_name' => $average_by_name*/]);
+            echo json_encode(['success' => true, 'histories' => $list_histories, 'total_order' => $total_order /*, 'average_by_name' => $average_by_name*/]);
         } catch(Exception $e){
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -667,8 +680,8 @@ class Admin extends BaseController
 
             try {
 
-                   // $this->transfers->Transfertext($order);
-                    $this->factorder->Transferorder($order);  
+                    $this->transfers->Transfertext($order);
+                    //$this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -713,7 +726,8 @@ class Admin extends BaseController
                     'prepared_count' => $histo['status'] == "prepared" ? 1 : 0,
                     'finished_count' => $histo['status'] == "finished" ? 1 : 0,
                     'items_picked' => $histo['status'] == "prepared" ? $histo['total_product'] : 0,
-                    'date' => date('d/m/Y', strtotime($histo['created_at']))
+                    'items_packed' => $histo['status'] == "finished" ? $histo['total_product'] : 0,
+                    'date' => date('d/m/Y', strtotime($histo['created_at'])),
                 ];
             } else {
                 $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);
@@ -724,6 +738,7 @@ class Admin extends BaseController
                 $list_histories[$id][$histo['id']]['prepared_count'] = count($list_histories[$id][$histo['id']]['prepared_order']);
                 $list_histories[$id][$histo['id']]['finished_count'] = count($list_histories[$id][$histo['id']]['finished_order']);
                 $histo['status'] == "prepared" ? $list_histories[$id][$histo['id']]['items_picked'] = $list_histories[$id][$histo['id']]['items_picked'] + $histo['total_product'] : 0;
+                $histo['status'] == "finished" ? $list_histories[$id][$histo['id']]['items_packed'] = $list_histories[$id][$histo['id']]['items_packed'] + $histo['total_product'] : 0;
             }
         }
 
@@ -1220,7 +1235,7 @@ class Admin extends BaseController
             }
 
             // Check if date is same than choice date
-            if($detail->date >= $date){
+            if($detail->date >= $date && ($detail->statut != "canceled" && $detail->statut != "pending")){
                 // Mise à jour des totaux card et cash pour cette commande
                 $caisse[$detail->caisseId]['total_card'] += $detail->amountCard;
                 $caisse[$detail->caisseId]['total_cash'] += $detail->total_order_ttc - $detail->amountCard;
@@ -1433,6 +1448,8 @@ class Admin extends BaseController
     public function stockscat(){
         $data = $this->construcstocks->Constructstocks();
         $message="";
+         // recupérer les produit en stocks
+         $list_faible_stocks = $this->construcstocks->getStocksproduct();
         // recupérer les lines qu'il faut dans notification
         $list_product = $this->stocks->getAll();
         if(count($list_product)==0){
@@ -1442,13 +1459,23 @@ class Admin extends BaseController
             ];
          }
 
-        return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+         if(count($list_faible_stocks)==0){
+            $list_faible_stocks[]=[
+              'produit'=>"Aucun mouvement produit"
+
+            ];
+         }
+
+        return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
     public function poststock(Request $request){
            
          $data = $this->construcstocks->Constructstocks();
          $data_id = $this->construcstocks->getdata();
+
+         // recupérer les produit en stocks
+         $list_faible_stocks = $this->construcstocks->getStocksproduct();
          $array_list1 = array_flip($data_id);//
 
           $existant = $request->get('qts');
@@ -1617,8 +1644,17 @@ class Admin extends BaseController
 
                      ];
                  }
+                
+                 if(count($list_faible_stocks)==0){
+                    $list_faible_stocks[]=[
+                      'produit'=>"Aucun mouvement produit"
+        
+                    ];
+                 }
+        
+
                   $message ="Stock de $list_libelle insuffisant pour créer le kit";
-                  return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                  return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,' list_faible_stocks'=> $list_faible_stocks]);
               }
               
               
@@ -1665,7 +1701,16 @@ class Admin extends BaseController
 
                         ];
                    }
-                return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+
+                   if(count($list_faible_stocks)==0){
+                     $list_faible_stocks[] =[
+                      'produit'=>"Aucun mouvement produit"
+
+                    ];
+                 }
+
+                
+                return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=> $list_faible_stocks]);
               
           }
     }
@@ -1674,6 +1719,8 @@ class Admin extends BaseController
            
          $data = $this->construcstocks->Constructstocks();
          $data_id = $this->construcstocks->getRapes();
+
+         $list_faible_stocks = $this->construcstocks->getStocksrape();
          $array_list1 = $data_id;//
 
            // recupérer les deux premiere chaine..
@@ -1864,9 +1911,17 @@ class Admin extends BaseController
 
                      ];
                 }
+
+                if(count($list_faible_stocks)==0){
+                    $list_faible_stocks[]=[
+                      'produit'=>"Aucun mouvement produit"
+        
+                    ];
+                 }
+        
                  // bloquer ici
                    $message ="Stock de $list_libelle insuffisant pour créer le kit";
-                   return view('admin.stockscat',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+                   return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
                }
           
 
@@ -1929,7 +1984,15 @@ class Admin extends BaseController
 
             ];
         }
-          return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+        
+        if(count($list_faible_stocks)==0){
+             $list_faible_stocks[] =[
+              "produit"=>"Aucun mouvement produit"
+
+            ];
+         }
+
+          return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
         }
 
           
@@ -1943,6 +2006,7 @@ class Admin extends BaseController
     public function postrape(){
         $this->construcstocks->Constructstocks();
         $data = $this->construcstocks->getRape();
+        $list_faible_stocks = $this->construcstocks->getStocksrape();
         $message="";
         $list_product = $this->stocks->getAlls();
         if(count($list_product)==0){
@@ -1952,10 +2016,67 @@ class Admin extends BaseController
             ];
         }
 
-        return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product]);
+        if(count($list_faible_stocks)==0){
+             $list_faible_stocks[] =[
+              'produit'=>"Aucun mouvement produit"
+
+            ];
+         }
+
+        return view('admin.stocksrape',['data'=>$data,'message'=>$message,'list_product'=>$list_product,'list_faible_stocks'=>$list_faible_stocks]);
     }
 
+    
+  public function generateinvoices(){
+      $message="";
+      $css="no";
+      $divid="no";
+       return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+   }
+
+
+
+  public function generatefacture(Request $request){
+      
+      $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
+      $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
+      $indexs = $request->get('index_value');
+      
+     // verifie si y'a une clé existant renvoyé
+      if(array_search($ref_commande,$data)!=false){
+           $this->orderDolibarr->getOrderidfact($ref_commande,$indexs);
+            $message ="facture à eté bien envoyé au client";
+            $css ="success";
+        }else{
+            $css="danger";
+            $message ="Attention cette commande est introuvable !";
+      }
+
+        $divid="yescam";
+        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+
+    }
   
+
+    public function generatefactures(Request $request){
+
+        $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
+        $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
+        $indexs = $request->get('index_value');
+
+        if(array_search($ref_commande,$data)!=false){
+            $this->orderDolibarr->getOrderidfact($ref_commande,$indexs);
+             $message ="facture à eté bien envoyé au client";
+             $css ="success";
+         }else{
+             $css="danger";
+             $message ="Attention cette commande est introuvable !";
+       }
+ 
+         $divid="yescam";
+         return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
+ 
+    }
 
 
     function initialQtyLot(){

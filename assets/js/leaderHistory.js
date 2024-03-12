@@ -49,7 +49,7 @@ $(document).ready(function() {
                     });
                 }
             } else {
-                alert('Erreur !')
+                alert(JSON.parse(data).message ?? 'Erreur !')
             }
         });
 
