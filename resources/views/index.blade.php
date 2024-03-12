@@ -4,7 +4,6 @@
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
-			<link href="assets/css/pace.min.css" rel="stylesheet" />
 
 		@endsection 
 
@@ -14,7 +13,11 @@
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
 						<div class="d-flex flex-wrap justify-content-center">
 							<div class="breadcrumb-title pe-3">Commandes</div>
-							<div class="pe-3 number_order_pending"></div>
+							<div class="pe-3 number_order_pending">
+								<div class="spinner-border text-success spinner-border-sm" role="status"> 
+									<span class="visually-hidden">Loading...</span>
+                                </div>
+							</div>
 						</div>
 						@csrf
 						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Gérer les commandes</button>
@@ -179,6 +182,9 @@
 											</select>
 
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
+												<div class="d-none loading_show_detail_order w-100 d-flex justify-content-center">
+													<div class="spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
+												</div>
 												<!-- <thead>
 													<tr>
 														<th scope="col">Commande</th>
@@ -225,10 +231,11 @@
 													<div class="d-none spinner-border loading_allocation" role="status"> 
 														<span class="visually-hidden">Loading...</span>
 													</div>
-													<!-- <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button> -->
-													<button style="margin-left:15px" type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
-													<button style="margin-left:15px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
-
+													<div class="d-flex justify-content-between w-75">
+														<button type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
+														<button style="margin-left: 10px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
+													</div>
+												
 													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>
 											</div>
@@ -273,6 +280,7 @@
 												<input type="hidden" id="order_id_dolibarr" value="">
 												<input type="hidden" id="product_dolibarr_id" value="">
 												<input type="hidden" id="product_order_id_dolibarr"value="">
+												<input type="hidden" id="ref_order"value="">
 												<div class="w-100">
 													<label>Quantité :</label>
 													<input class="custom_input w-100 mb-3" type="number" id="quantity_order_dolibarr"value="1">
@@ -328,7 +336,6 @@
 
 	
 	@section("script")
-		<script src="assets/js/pace.min.js"></script>
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="assets/plugins/select2/js/select2.min.js"></script>

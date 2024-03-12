@@ -37,7 +37,10 @@ class OrderRepository implements OrderInterface
                   $coupons = [];
                   $discount = [];
                   $amount = [];
-      
+                  
+                  // Total products for each orders
+                  $quantity = 0;
+
                   if(isset($orderData['coupon_lines'])){
                      foreach($orderData['coupon_lines'] as $coupon){
                         $coupons[] = $coupon['code'];
@@ -59,6 +62,33 @@ class OrderRepository implements OrderInterface
                   }
                  
                   if(isset($orderData['cart_hash'])){
+
+                     // Insert produits
+                     $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
+                     foreach($orderData['line_items'] as $value){
+
+                        // Check for gift card
+                        $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
+
+                        if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
+                           $quantity = intval($value['quantity']) + $quantity;
+                           $productsToInsert[] = [
+                              'order_id' => $orderData['id'],
+                              'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                              'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                              'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                              'quantity' => $value['quantity'],
+                              'cost' => $value['subtotal'] / $value['quantity'],
+                              'subtotal_tax' =>  $value['subtotal_tax'],
+                              'total_tax' =>  $value['total_tax'],
+                              'total_price' => $value['total'],
+                              'pick' => $is_virtual ? $value['quantity'] : 0,
+                              'line_item_id' => $value['id'],
+                              'pick_control' => 0
+                           ];
+                        }
+                     }
+
                      $ordersToInsert[] = [
                         'order_woocommerce_id' => $orderData['id'],
                         'customer_id' => $orderData['customer_id'],
@@ -95,11 +125,12 @@ class OrderRepository implements OrderInterface
                         'date' => $orderData['date_created'],
                         'total_tax_order' => $orderData['total_tax'],
                         'total_order' => $orderData['total'],
+                        'total_products' => $quantity,
                         'user_id' => $userId,
                         'status' => $orderData['status'],
                         'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
                         'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
-                        'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? $orderData['shipping_lines'][0]['total'] : null,
+                        'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? floatval($orderData['shipping_lines'][0]['total']) : null,
       
                         'product_code' => $productCode,
                         'pick_up_location_id' => $pickUpLocationId,
@@ -107,31 +138,6 @@ class OrderRepository implements OrderInterface
                         'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
                      ];
                      
-                     // Insert produits
-                     $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
-                     foreach($orderData['line_items'] as $value){
-
-                        // Check for gift card
-                        $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
-
-                        if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
-                           $productsToInsert[] = [
-                              'order_id' => $orderData['id'],
-                              'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                              'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                              'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                              'quantity' => $value['quantity'],
-                              'cost' => $value['subtotal'] / $value['quantity'],
-                              'subtotal_tax' =>  $value['subtotal_tax'],
-                              'total_tax' =>  $value['total_tax'],
-                              'total_price' => $value['total'],
-                              'pick' => $is_virtual ? $value['quantity'] : 0,
-                              'line_item_id' => $value['id'],
-                              'pick_control' => 0
-                           ];
-                        }
-                     }
-
                      if(in_array($orderData['customer_id'], $distributors_list)){
                         $is_distributor = true;
                      }
@@ -180,11 +186,17 @@ class OrderRepository implements OrderInterface
       return $this->model->select('orders.*', 'users.name')->whereIn('orders.status', ['en-attente-de-pai', 'processing', 'waiting_to_validate', 'waiting_validate', 'order-new-distrib'])->join('users', 'users.id', '=', 'orders.user_id')->get();
    }
 
+   // With products
    public function getAllOrdersByUsersNotFinished(){
-      return $this->model->select('orders.*', 'users.name', 'products_order.*')->where('status', '!=', 'finished')
-      ->join('users', 'users.id', '=', 'orders.user_id')
-      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      return $this->model->select('orders.*', 'users.name')->where('status', '!=', 'finished')
+      ->Leftjoin('users', 'users.id', '=', 'orders.user_id')
+      // ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->get();
+   }
+
+   // Without products
+   public function getAllOrdersNotFinished(){
+      return $this->model->select('orders.order_woocommerce_id')->where('status', '!=', 'finished')->get();
    }
 
    public function getUsersWithOrder(){
@@ -603,154 +615,195 @@ class OrderRepository implements OrderInterface
       }
    }
 
-   public function updateOneOrderAttribution($order_id, $user_id, $is_distributor){
+   public function updateMultipleOrderAttribution($array_user){
 
+      $order_id_list = [];
+     
       try{
-         if($user_id == "Non attribuée"){
-            $order = $this->model::where('order_woocommerce_id', $order_id)->delete();
-            DB::table('products_order')->where('order_id', $order_id)->delete();
-         } else {
-            $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
-            if(count($order) == 0){
-               $insert_order_by_user = $this->api->getOrderById($order_id);
+         // Construire une chaîne de requête SQL pour la mise à jour conditionnelle en utilisant CASE WHEN
+         $updateQuery = "UPDATE prepa_orders SET user_id = ( CASE order_woocommerce_id";
 
-               $coupons = [];
-               $discount = [];
-               $amount = [];
-
-               if(isset($insert_order_by_user['coupon_lines'])){
-                  foreach($insert_order_by_user['coupon_lines'] as $coupon){
-                     $coupons[] = $coupon['code'];
-                     $discount[] = $coupon['discount'];
-                     $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
-                  }
-               }
-
-               // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-               if(isset($insert_order_by_user['meta_data'])){
-                  $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
-                  $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId") ?? $this->getValueByKey($insert_order_by_user['meta_data'], "_shipping_method_chronorelais", "chrono");
-                  $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
-               } else {
-                  $productCode = null;
-                  $pickUpLocationId = null;
-                  $is_professional = false;
-               }
-             
-               // Insert commande
-               $ordersToInsert = [
-                  'order_woocommerce_id' => $insert_order_by_user['id'],
-                  'customer_id' => $insert_order_by_user['customer_id'],
-                  'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
-                  'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
-                  'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
-                  'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
-                  'billing_customer_last_name' => $insert_order_by_user['billing']['last_name'] ?? null,
-                  'billing_customer_company' => $insert_order_by_user['billing']['company'] ?? null,
-                  'billing_customer_address_1' => $insert_order_by_user['billing']['address_1'] ?? null,
-                  'billing_customer_address_2' => $insert_order_by_user['billing']['address_2'] ?? null,
-                  'billing_customer_city' => $insert_order_by_user['billing']['city'] ?? null,
-                  'billing_customer_state' => $insert_order_by_user['billing']['state'] ?? null,
-                  'billing_customer_postcode' => $insert_order_by_user['billing']['postcode'] ?? null,
-                  'billing_customer_country' => $insert_order_by_user['billing']['country'] ?? null,
-                  'billing_customer_email' => $insert_order_by_user['billing']['email'] ?? null,
-                  'billing_customer_phone' => $insert_order_by_user['billing']['phone'] ?? null,
-                  'shipping_customer_first_name' => $insert_order_by_user['shipping']['first_name'] ?? null,
-                  'shipping_customer_last_name' => $insert_order_by_user['shipping']['last_name'] ?? null,
-                  'shipping_customer_company' => $insert_order_by_user['shipping']['company'] ?? null,
-                  'shipping_customer_address_1' => $insert_order_by_user['shipping']['address_1'] ?? null,
-                  'shipping_customer_address_2' => $insert_order_by_user['shipping']['address_2'] ?? null,
-                  'shipping_customer_city' => $insert_order_by_user['shipping']['city'] ?? null,
-                  'shipping_customer_state' => $insert_order_by_user['shipping']['state'] ?? null,
-                  'shipping_customer_postcode' => $insert_order_by_user['shipping']['postcode'] ?? null,
-                  'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
-                  'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
-
-                  'payment_method' => $insert_order_by_user['payment_method'] ? $insert_order_by_user['payment_method'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
-                  'payment_method_title' => $insert_order_by_user['payment_method_title'] ? $insert_order_by_user['payment_method_title'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
-                  'gift_card_amount' => isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0,
-
-                  'date' => $insert_order_by_user['date_created'],
-                  'total_tax_order' => $insert_order_by_user['total_tax'],
-                  'total_order' => $insert_order_by_user['total'],
-                  'user_id' => $user_id,
-                  'status' => $insert_order_by_user['status'],
-                  'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
-                  'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
-                  'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
-                  'product_code' => $productCode,
-                  'pick_up_location_id' => $pickUpLocationId,
-                  'customer_note' => $insert_order_by_user['customer_note'],
-                  'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
-               ];
-
-               // Insert produits
-               $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
-               foreach($insert_order_by_user['line_items'] as $value){
-
-                  // Check for gift card
-                  $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
-
-                  if (!$is_virtual || ($is_virtual && count($insert_order_by_user['line_items']) != 1)){
-                     $productsToInsert[] = [
-                        'order_id' => $insert_order_by_user['id'],
-                        'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                        'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                        'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                        'quantity' => $value['quantity'],
-                        'cost' => $value['subtotal'] / $value['quantity'],
-                        'subtotal_tax' =>  $value['subtotal_tax'],
-                        'total_tax' =>  $value['total_tax'],
-                        'total_price' => $value['total'],
-                        'pick' =>  $is_virtual ? $value['quantity'] : 0,
-                        'line_item_id' => $value['id'],
-                        'pick_control' => 0
-                     ];
-                  }
-               }
-
-               // IF distributor add bag 30 for 1000 euros
-               if($is_distributor == "true" && $total_order >= 1000){
-                  $montant_par_tranche = 1000;
-                  $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
-                  $productsToInsert[] = [
-                     'order_id' => $order_id,
-                     'product_woocommerce_id' => 110203,
-                     'category' =>  '',
-                     'category_id' => '',
-                     'quantity' => $nbr_sac,
-                     'cost' => 0,
-                     'subtotal_tax' =>  0,
-                     'total_tax' =>  0,
-                     'total_price' => 0,
-                     'pick' => 0,
-                     'line_item_id' => $order_id.''.time(),
-                     'pick_control' => 0
-                  ];
-               }
-
-               $this->model->insert($ordersToInsert);
-               DB::table('products_order')->insert($productsToInsert);
-
-            } else {
-               $update_one_order_attribution =  $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
+         foreach ($array_user as $key => $distribution) {
+            foreach ($distribution['order_id'] as $order_id) {
+               $order_id_list[] = $order_id;
+               $updateQuery .= " WHEN $order_id THEN $key ";
             }
          }
+
+         $updateQuery .= " END) WHERE order_woocommerce_id IN (".implode(',',$order_id_list).")";
+         DB::update(DB::raw($updateQuery));
+
          return true;
       } catch(Exception $e){
          return $e->getMessage();
       }
    }
 
+   public function updateOneOrderAttribution($order_id, $user_id, $is_distributor){
+
+      /* ---------------- New function, just update user_id 0 if not assigned ---------------- */
+      try{
+         return $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
+      } catch(Exception $e){
+         return $e->getMessage();
+      }
+      
+
+      /* ---------------- Old function, create order or delete if not assigned ---------------- */
+      // try{
+      //    if($user_id == "Non attribuée"){
+      //       $order = $this->model::where('order_woocommerce_id', $order_id)->delete();
+      //       DB::table('products_order')->where('order_id', $order_id)->delete();
+      //    } else {
+      //       $order = $this->model::where('order_woocommerce_id', $order_id)->get()->toArray();
+      //       if(count($order) == 0){
+      //          $insert_order_by_user = $this->api->getOrderById($order_id);
+
+      //          $coupons = [];
+      //          $discount = [];
+      //          $amount = [];
+
+      //          if(isset($insert_order_by_user['coupon_lines'])){
+      //             foreach($insert_order_by_user['coupon_lines'] as $coupon){
+      //                $coupons[] = $coupon['code'];
+      //                $discount[] = $coupon['discount'];
+      //                $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+      //             }
+      //          }
+
+      //          // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
+      //          if(isset($insert_order_by_user['meta_data'])){
+      //             $productCode = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpProductCode");
+      //             $pickUpLocationId = $this->getValueByKey($insert_order_by_user['meta_data'], "_lpc_meta_pickUpLocationId") ?? $this->getValueByKey($insert_order_by_user['meta_data'], "_shipping_method_chronorelais", "chrono");
+      //             $is_professional = $this->getValueByKey($insert_order_by_user['meta_data'], "billing_customer_is_professional");
+      //          } else {
+      //             $productCode = null;
+      //             $pickUpLocationId = null;
+      //             $is_professional = false;
+      //          }
+             
+      //          // Insert commande
+      //          $ordersToInsert = [
+      //             'order_woocommerce_id' => $insert_order_by_user['id'],
+      //             'customer_id' => $insert_order_by_user['customer_id'],
+      //             'coupons' => count($coupons) > 0 ? implode(',', $coupons) : "",
+      //             'discount' => count($discount) > 0 ? implode(',', $discount) : 0,
+      //             'discount_amount' => count($amount) > 0 ? implode(',', $amount) : 0,
+      //             'billing_customer_first_name' => $insert_order_by_user['billing']['first_name'] ?? null,
+      //             'billing_customer_last_name' => $insert_order_by_user['billing']['last_name'] ?? null,
+      //             'billing_customer_company' => $insert_order_by_user['billing']['company'] ?? null,
+      //             'billing_customer_address_1' => $insert_order_by_user['billing']['address_1'] ?? null,
+      //             'billing_customer_address_2' => $insert_order_by_user['billing']['address_2'] ?? null,
+      //             'billing_customer_city' => $insert_order_by_user['billing']['city'] ?? null,
+      //             'billing_customer_state' => $insert_order_by_user['billing']['state'] ?? null,
+      //             'billing_customer_postcode' => $insert_order_by_user['billing']['postcode'] ?? null,
+      //             'billing_customer_country' => $insert_order_by_user['billing']['country'] ?? null,
+      //             'billing_customer_email' => $insert_order_by_user['billing']['email'] ?? null,
+      //             'billing_customer_phone' => $insert_order_by_user['billing']['phone'] ?? null,
+      //             'shipping_customer_first_name' => $insert_order_by_user['shipping']['first_name'] ?? null,
+      //             'shipping_customer_last_name' => $insert_order_by_user['shipping']['last_name'] ?? null,
+      //             'shipping_customer_company' => $insert_order_by_user['shipping']['company'] ?? null,
+      //             'shipping_customer_address_1' => $insert_order_by_user['shipping']['address_1'] ?? null,
+      //             'shipping_customer_address_2' => $insert_order_by_user['shipping']['address_2'] ?? null,
+      //             'shipping_customer_city' => $insert_order_by_user['shipping']['city'] ?? null,
+      //             'shipping_customer_state' => $insert_order_by_user['shipping']['state'] ?? null,
+      //             'shipping_customer_postcode' => $insert_order_by_user['shipping']['postcode'] ?? null,
+      //             'shipping_customer_country' => $insert_order_by_user['shipping']['country'] ?? null,
+      //             'shipping_customer_phone' => $insert_order_by_user['shipping']['phone'] ?? null,
+
+      //             'payment_method' => $insert_order_by_user['payment_method'] ? $insert_order_by_user['payment_method'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
+      //             'payment_method_title' => $insert_order_by_user['payment_method_title'] ? $insert_order_by_user['payment_method_title'] : (count($insert_order_by_user['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
+      //             'gift_card_amount' => isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0,
+
+      //             'date' => $insert_order_by_user['date_created'],
+      //             'total_tax_order' => $insert_order_by_user['total_tax'],
+      //             'total_order' => $insert_order_by_user['total'],
+      //             'user_id' => $user_id,
+      //             'status' => $insert_order_by_user['status'],
+      //             'shipping_method' => isset($insert_order_by_user['shipping_lines'][0]['method_id']) ? $insert_order_by_user['shipping_lines'][0]['method_id'] : null,
+      //             'shipping_method_detail' => isset($insert_order_by_user['shipping_lines'][0]['method_title']) ? $insert_order_by_user['shipping_lines'][0]['method_title'] : null,
+      //             'shipping_amount' => isset($insert_order_by_user['shipping_lines'][0]['total']) ? $insert_order_by_user['shipping_lines'][0]['total'] : null,
+      //             'product_code' => $productCode,
+      //             'pick_up_location_id' => $pickUpLocationId,
+      //             'customer_note' => $insert_order_by_user['customer_note'],
+      //             'is_professional' => $is_professional == "1" || $is_professional == 1 ? 1 : 0
+      //          ];
+
+      //          // Insert produits
+      //          $total_order = floatval($insert_order_by_user['total']) + floatval(isset($insert_order_by_user['pw_gift_cards_redeemed'][0]['amount']) ? $insert_order_by_user['pw_gift_cards_redeemed'][0]['amount'] : 0);
+      //          foreach($insert_order_by_user['line_items'] as $value){
+
+      //             // Check for gift card
+      //             $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
+
+      //             if (!$is_virtual || ($is_virtual && count($insert_order_by_user['line_items']) != 1)){
+      //                $productsToInsert[] = [
+      //                   'order_id' => $insert_order_by_user['id'],
+      //                   'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+      //                   'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+      //                   'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+      //                   'quantity' => $value['quantity'],
+      //                   'cost' => $value['subtotal'] / $value['quantity'],
+      //                   'subtotal_tax' =>  $value['subtotal_tax'],
+      //                   'total_tax' =>  $value['total_tax'],
+      //                   'total_price' => $value['total'],
+      //                   'pick' =>  $is_virtual ? $value['quantity'] : 0,
+      //                   'line_item_id' => $value['id'],
+      //                   'pick_control' => 0
+      //                ];
+      //             }
+      //          }
+
+      //          // IF distributor add bag 30 for 1000 euros
+      //          if($is_distributor == "true" && $total_order >= 1000){
+      //             $montant_par_tranche = 1000;
+      //             $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+      //             $productsToInsert[] = [
+      //                'order_id' => $order_id,
+      //                'product_woocommerce_id' => 110203,
+      //                'category' =>  '',
+      //                'category_id' => '',
+      //                'quantity' => $nbr_sac,
+      //                'cost' => 0,
+      //                'subtotal_tax' =>  0,
+      //                'total_tax' =>  0,
+      //                'total_price' => 0,
+      //                'pick' => 0,
+      //                'line_item_id' => $order_id.''.time(),
+      //                'pick_control' => 0
+      //             ];
+      //          }
+
+      //          $this->model->insert($ordersToInsert);
+      //          DB::table('products_order')->insert($productsToInsert);
+
+      //       } else {
+      //          $update_one_order_attribution =  $this->model::where('order_woocommerce_id', $order_id)->update(['user_id' => $user_id]);
+      //       }
+      //    }
+      //    return true;
+      // } catch(Exception $e){
+      //    return $e->getMessage();
+      // }
+   }
+
    public function getOrderById($order_id){
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation', 'products.image', 'products.ref', 'users.name as preparateur')
+      'products.variation', 'products.image', 'products.ref', 'users.name as preparateur', 'products_order.line_item_id')
       ->where('order_woocommerce_id', $order_id)
-      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-      ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-      ->join('users', 'orders.user_id', '=', 'users.id')
+      ->Leftjoin('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+      ->Leftjoin('users', 'orders.user_id', '=', 'users.id')
+      ->get()
+      ->toArray();
+   }
+
+   public function getOrderByIdWithoutProducts($order_id){
+      return $this->model::select('orders.*', 'users.name as preparateur')
+      ->where('order_woocommerce_id', $order_id)
+      ->Leftjoin('users', 'orders.user_id', '=', 'users.id')
       ->get()
       ->toArray();
    }
@@ -1014,14 +1067,9 @@ class OrderRepository implements OrderInterface
 
    public function unassignOrders(){
       try{
-         DB::table('products_order')
-            ->join('orders', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-            ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
-            ->delete();
-
          $this->model
             ->whereIn('orders.status', ['processing', 'order-new-distrib', 'en-attente-de-pai'])
-            ->delete();
+            ->update(['user_id' => 0]);
 
          echo json_encode(['success' => true]);
       } catch(Exception $e){

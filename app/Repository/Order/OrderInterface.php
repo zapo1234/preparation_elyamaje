@@ -8,6 +8,8 @@ interface OrderInterface
 {
    public function getOrderById($order_id);
 
+   public function getOrderByIdWithoutProducts($order_id);
+
    public function getOrderByIdWithCustomer($order_id);
 
    public function getAllOrdersAndLabel();
@@ -19,6 +21,8 @@ interface OrderInterface
    public function getOrdersByUsers();
 
    public function getAllOrdersByUsersNotFinished();
+
+   public function getAllOrdersNotFinished();
 
    public function getUsersWithOrder();
 
@@ -37,6 +41,8 @@ interface OrderInterface
    public function orderReset($order_id);
 
    public function updateOrderAttribution($from_user, $to_user);
+
+   public function updateMultipleOrderAttribution($array_user);
 
    public function updateOneOrderAttribution($order_id, $user_id, $is_distributor);
 

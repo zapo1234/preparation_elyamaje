@@ -6350,7 +6350,7 @@ button:focus{
     color: #15ca20;
 	font-weight: bold;
 	display: flex;
-	align-items: end;
+	align-items: center;
 }
 
 .btn-primary{
@@ -6728,7 +6728,13 @@ a{
 	color: #333333;
 }
 
-.show_detail_button[disabled],.show_detail_button:disabled{
+.detail_products{
+	border: none !important;
+	background: transparent !important;
+}
+
+.show_detail_button[disabled],.show_detail_button:disabled, 
+.detail_products:disabled{
 	border: none !important;
 	background: transparent !important;
 }
@@ -8984,10 +8990,14 @@ select option[disabled] {
 .table-scroll thead th {
 	position: sticky;
 	top: -1;
-  }
-  .table-scroll tfoot td {
+}
+.table-scroll tfoot td {
 	position: sticky;
 	bottom: 0;
-  }
+}
 
+
+#allocationOrders .modal-body{
+	padding: 35px 0px 25px 0px !important;
+}
 

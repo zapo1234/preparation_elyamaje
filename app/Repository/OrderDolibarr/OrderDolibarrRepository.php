@@ -42,6 +42,23 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       return $array_order;
    }
 
+   public function getAllOrdersWithoutProducts(){
+      $array_order = [];
+      $orders = $this->model::select('orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
+      'users.name as preparateur')
+         ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         ->whereNotIn('orders_doli.statut', ['pending', 'finished', 'canceled'])
+         ->get();
+
+      $orders = json_decode(json_encode($orders), true);
+
+      foreach($orders as $order){
+         $array_order[$order['id']][] =  $order;
+      }
+
+      return $array_order;
+   }
+
 
    // Pour l'emballage d'une commande
    public function getOrdersDolibarrById($order_id){
