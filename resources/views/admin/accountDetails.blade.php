@@ -62,7 +62,7 @@
                             <div class="card-body d-flex align-items-center justify-content-center">
                                 <div class="d-flex flex-column align-items-center text-center">
                                     <div class="edit_profil_image">
-                                        <img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle p-1 bg-dark" width="110">
+                                        <img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle p-1 bg-dark" width="110">
                                         <button data-bs-toggle="modal" data-bs-target="#editProfilImage">
                                             <i class="fadeIn animated bx bx-edit"></i>
                                         </button>
@@ -309,7 +309,7 @@
                                         <div class="col-lg-6 block_display_image" align="center">
                                             <div id="display_image_div">
                                                 <div style="margin-bottom: -50px" class="loading_image d-none spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
-                                                <img name="display_image_data" data-value="{{ $user['picture'] ? $user['picture'] : 'default_avatar.png' }}" width="150px" id="display_image_data" src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" alt="Picture">
+                                                <img name="display_image_data" data-value="{{ $user['picture'] ? $user['picture'] : 'default_avatar.png' }}" width="150px" id="display_image_data" src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : asset('assets/images/avatars/default_avatar.png') }}" alt="Picture">
                                             </div>
                                             <input type="hidden" name="cropped_image_data" id="cropped_image_data">
                                             <input type="hidden" name="user_id" value="{{ $user['user_id'] }}">

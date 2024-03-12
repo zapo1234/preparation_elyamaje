@@ -2,7 +2,7 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+			<link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
 		@endsection 
 
@@ -36,7 +36,7 @@
 										@foreach($teams as $key => $team)
 											<div class="flex-wrap customers-list-item d-flex align-items-center border-top p-2 cursor-pointer">
 												<div class="">
-													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
+													<img src="{{ $team['picture'] ? 'storage/app/images/'.$team['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
 												</div>
 												<div class="ms-2">
 													<h6 class="mb-1 font-14">
@@ -76,7 +76,7 @@
 											@foreach($teams_have_order as $key => $team)
 												<div class="justify-content-between flex-wrap customers-list-item d-flex align-items-center border-top {{ $key == count($teams) - 1 ? 'border-bottom' : '' }} p-2 cursor-pointer">
 													<div class="d-flex align-items-center">
-														<img src="assets/images/avatars/default_avatar.png" class="rounded-circle" width="46" height="46" alt="">
+														<img src="{{asset('assets/images/avatars/default_avatar.png')}}" class="rounded-circle" width="46" height="46" alt="">
 														<div class="ms-2">
 															<h6 id="team_user_{{ $team['id'] }}" class="mb-1 font-14">
 																@if(Auth()->user()->id == $team['id'])
@@ -347,7 +347,7 @@
 		@section("script")
 			<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 			<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-			<script src="assets/plugins/select2/js/select2.min.js"></script>
+			<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 			<script src="assets/js/orders.js"></script>
 		@endsection
 

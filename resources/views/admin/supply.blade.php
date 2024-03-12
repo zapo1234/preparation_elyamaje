@@ -3,7 +3,7 @@
 
 @section("style")
     <link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-    <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
     <link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
     <link href="assets/css/style_reassort.css" rel="stylesheet" />
 
@@ -212,7 +212,8 @@
                                                     @else
                                                         <input class="form-check-input" type="checkbox" id="first_transfert" name="first_transfert">
                                                     @endif
-                                                    <label class="form-check-label" for="first_transfert">State de vente</label>
+                                                    <label class="form-check-label" for="first_transfert">State de vente</label>                                                    
+
                                                 </div>
                                             </div>
                                             <div class="col-12 d-flex justify-content-center">
@@ -268,9 +269,22 @@
                                                 <div class="col-md-4">
                                                     <button id="id_sub_calcul_reassort" onclick="this.disabled=true;this.form.submit();" class="btn btn-primary" type="submit">Générer le réassort</button>
                                                 </div>
+
+                                              
+
                                             </div>
 
-                                            <div class="col-md-2"></div>
+                                            <div class="col-md-2">
+                                                @if (isset($url))                                                
+                                                    @if ($url)
+                                                        <a href="{{$url}}" download="{{ $fileNameReassort }}" class="btn btn-outline-info px-5 radius-30">
+                                                            <i class="bx bx-cloud-download mr-1"></i>
+                                                            Réassort du lundi
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                               
+                                            </div>
 
                 
                                             
@@ -815,7 +829,7 @@
 
 <script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-<script src="assets/plugins/select2/js/select2.min.js"></script>
+<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 
 <script src="{{asset('assets/plugins/datetimepicker/js/legacy.js')}}"></script>
 <script src="{{asset('assets/plugins/datetimepicker/js/picker.js')}}"></script>
@@ -1097,6 +1111,7 @@
         $("#id_sub_validation_reassort").html(spinner);
 
 
+        console.log(tabProduitReassort1);
 
         $.ajax({
             url: urlCreateReassort,
@@ -1114,6 +1129,8 @@
                 'X-CSRF-TOKEN': csrfToken
             },                       
             success: function(response) {
+
+                console.log(tabProduitReassort1);
 
                 if (response.response == true) {
 
