@@ -413,13 +413,21 @@ function notificationAlertStock(url_notification,_token){
 				data : {_token: _token, cle: cle, value: value}
 			}).done(function(data) {
 				if (data.response) {
-					if (cle == "alerte_stockReassort") {
-						$("#alerte_liste").html(data.data.nouvelleValeur)
-						$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_reassort").html()))
-					}else if(cle == "alerte_reassortEnAttente"){
-						$("#alerte_reassort").html(data.data.nouvelleValeur)
-						$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_liste").html()))
+					if ($("#alerte_liste").html()) {
+						if (cle == "alerte_stockReassort") {
+							$("#alerte_liste").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_reassort").html()))
+						}else if(cle == "alerte_reassortEnAttente"){
+							$("#alerte_reassort").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_liste").html()))
+						}
+					}else{
+						if (cle == "alerte_reassortEnAttente") {
+							$("#alerte_reassort").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur))
+						}
 					}
+					
 
 				}else{
 					console.log('erreur pusher');
