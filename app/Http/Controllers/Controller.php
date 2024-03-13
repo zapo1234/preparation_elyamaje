@@ -2000,7 +2000,7 @@ class Controller extends BaseController
                 "start_date_origin" => $start_date_origin,
                 "end_date_origin" => $end_date_origin,
                 "by_file" => $by_file,
-                "by_reassort_auto" => $by_reassort_auto,
+                "by_reassort_auto" => isset($by_reassort_auto)? $by_reassort_auto : NULL,
 
                 
             ]);
