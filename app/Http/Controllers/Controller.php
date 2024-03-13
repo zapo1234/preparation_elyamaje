@@ -571,8 +571,9 @@ class Controller extends BaseController
     function alerteStockCron($token){
 
      
-     
-        if ($token == 'yO9fvwI829u93Pme83gxDmKH7GnjvKTHMj7IqRGg1rw1F6hV1bbTb5i8jSqtDC4e') {       
+        https://preparation.elyamaje.com/alerteStockCron/yO9fvwI829u93Pme83gxDmKH7GnjvKTHMj7IqRGg1rw1F6hV1bbTb5i8jSqtDC4e
+
+        if ($token == env('TOKEN_REASSOT')) {       
 
             $numeroJour = date('N');
 
@@ -618,43 +619,73 @@ class Controller extends BaseController
 
                 if ($numeroJour == 5) {
 
-                    // On crée un fichier excel qui contiendra le réassort de lundi
-                    $res = $this->exportExcel($datasAlerte,$percent_min);
-                    if ($res["response"] == true) {
-                        // injecter la réponse dans la table cron 
+                    if ($datasAlerte) {
+                        // On crée un fichier excel qui contiendra le réassort de lundi
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
 
-                        $data = 
-                        [
-                            'name' => 'Generate_reassort_lundi', 
-                            'origin' => 'preparation', 
-                            'error' => 0,
-                            'message' =>  $res["message"], 
-                            'code' => null, 
-                            'from_cron' => 1
-                        ];
-            
-                        $this->api->insertCronRequest($data);  
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data);  
 
-                    }else {
-                        $data = 
-                        [
-                            'name' => 'Generate_reassort_lundi', 
-                            'origin' => 'preparation', 
-                            'error' => 1,
-                            'message' =>  $res["message"], 
-                            'code' => null, 
-                            'from_cron' => 1
-                        ];
-            
-                        $this->api->insertCronRequest($data); 
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data); 
+                        }
                     }
+                    
                                     
                 }else {
-                    // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+                    if ($datasAlerte) {
+                        // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
 
-                    $res = $this->exportExcel($datasAlerte,$percent_min);
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
 
-                    dd($res);
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }
+                        $this->api->insertCronRequest($data);
+                    }
+                    
                 }
 
             }else {
@@ -685,6 +716,8 @@ class Controller extends BaseController
                 foreach ($datasAlerte as $key => $value) {
 
                     $qte = ($percent_min * $value["desiredstock"]) - $value["stock_actuel"];
+
+                    
     
                     $sheet->setCellValue('A' . $row, $value['fk_product']);
                     $sheet->setCellValue('B' . $row, $value['label']);
@@ -742,7 +775,7 @@ class Controller extends BaseController
     
     function alertStocks($entrepot_destination, $Njour, $token = NULL){
 
-        if ($token && $token != "yO9fvwI829u93Pme83gxDmKH7GnjvKTHMj7IqRGg1rw1F6hV1bbTb5i8jSqtDC4e") {
+        if ($token && $token != env('TOKEN_REASSOT')) {
             dd("acces interdit");
         }
 
