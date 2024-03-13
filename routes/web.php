@@ -232,6 +232,10 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::get('/listeAlerte', [Controller::class, 'listeAlerte'])->name('listeAlerte');
 
     Route::get('/deplacerFichier/{nomFichier}', [Controller::class, 'deplacerFichier'])->name('deplacerFichier');
+    Route::post('/updateSessionByNotif', [Controller::class, 'updateSessionByNotif'])->name('updateSessionByNotif');
+
+
+    
 
     
 

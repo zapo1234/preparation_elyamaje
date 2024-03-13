@@ -309,16 +309,27 @@ class Controller extends BaseController
         $status = $request->post('status');
 
         if($transfer_id && $status){
-            return $this->reassort->updateStatusReassort($transfer_id, $status);
+            // envoyer une notof pour décrémenter les alerte reassort 
+
+            
+            $res = $this->reassort->updateStatusReassort($transfer_id, $status);
+            if ($res) {
+                $this->api->updateSessionStockAlerte("alerte_reassortEnAttente", -1);
+                return true;
+            }
+            return true;
         }
         
     }
 
     function getVieuxSplay (){
 
+        // $donneesSession = session()->all();
+        // dd($donneesSession);
+
         $url = "";
         if (date('N') == 1) {
-            $url = asset('public/storage/reassorts/notraite'.date('d-m-y').'_reassort.csv');
+            $url = asset('public/storage/reassorts/notraite/'.date('d-m-y').'_reassort.csv');
         }
         
              
@@ -571,7 +582,7 @@ class Controller extends BaseController
     function alerteStockCron($token){
 
      
-        https://preparation.elyamaje.com/alerteStockCron/yO9fvwI829u93Pme83gxDmKH7GnjvKTHMj7IqRGg1rw1F6hV1bbTb5i8jSqtDC4e
+        
 
         if ($token == env('TOKEN_REASSOT')) {       
 
@@ -585,10 +596,10 @@ class Controller extends BaseController
                 $datasIncompletes = array();
         
                 $tab_min = [
-                    1 => 1.8,  // lundi      à 22h
-                    2 => 1.6,  // Mardi      à 22h      
-                    3 => 1.4,  // Mercredi   à 22h
-                    4 => 1.2,  // Jeudi      à 22h
+                    1 => 1.8,  // lundi      à 22h  Alerte
+                    2 => 1.6,  // Mardi      à 22h  Alerte      
+                    3 => 1.4,  // Mercredi   à 22h  Alerte
+                    4 => 1.2,  // Jeudi      à 22h  Alerte
                     5 => 2,  // Vendredi   à 22h  // on génère un reassort
                     // 6 => 0.6,  // Samedi     à 22h
                     // 7 => 0.6,  // Dimanche   à 22h
@@ -688,9 +699,10 @@ class Controller extends BaseController
                     
                 }
 
-            }else {
-                dd("Vous n'avez pas accèes à cette route");
             }
+
+        }else {
+            dd("Vous n'avez pas accèes à cette route");
         }
 
     }
@@ -1026,7 +1038,9 @@ class Controller extends BaseController
         // Vérifiez si le répertoire existe
         $dossiers = [
             storage_path('app/public/alertes/traite'),
-            storage_path('app/public/alertes/notraite')
+            storage_path('app/public/alertes/notraite'),
+            storage_path('app/public/reassorts/notraite'),
+            storage_path('app/public/reassorts/traite'),
         ];
         foreach ($dossiers as $key => $value) {
 
@@ -1067,11 +1081,21 @@ class Controller extends BaseController
 
     function deplacerFichier($nomFichier) {
 
-        // Chemin du répertoire "notraite"
-        $cheminSource = storage_path('app/public/alertes/notraite');
-    
-        // Chemin du répertoire "traite"
-        $cheminDestination = storage_path('app/public/alertes/traite');
+
+        if (strpos($nomFichier, "reassorts")) {
+            // Chemin du répertoire "notraite"
+            $cheminSource = storage_path('app/public/reassorts/notraite');
+            // Chemin du répertoire "traite"
+            $cheminDestination = storage_path('app/public/reassorts/traite');
+        }elseif (strpos($nomFichier, "alerte")) {
+            // Chemin du répertoire "notraite"
+            $cheminSource = storage_path('app/public/alertes/notraite');
+            // Chemin du répertoire "traite"
+            $cheminDestination = storage_path('app/public/alertes/traite');
+        }else {
+            return redirect()->back()->with("error",  "Le fichier ".$nomFichier." n'existe pas dans les alerte non traité");
+        }
+     
     
         // Vérifier si le fichier existe dans le répertoire source
         if (file_exists($cheminSource . '/' . $nomFichier)) {
@@ -1079,7 +1103,8 @@ class Controller extends BaseController
             $deplacementReussi = rename($cheminSource . '/' . $nomFichier, $cheminDestination . '/' . $nomFichier);
     
             if ($deplacementReussi) {
-                
+
+                $this->api->updateSessionStockAlerte("alerte_stockReassort", -1);
                 return redirect()->back()->with("success", "L'alerte a bien été mise au statut traité");
 
             } else {
@@ -2136,6 +2161,10 @@ class Controller extends BaseController
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
 
+                // envoi de notif pour incrémenter les alertes de reassort
+
+                $this->api->updateSessionStockAlerte("alerte_reassortEnAttente", 1);
+
                 return ["response" => true,"decrementation" => $decrementation,"incrementation" => $incrementation,"resDB" => $resDB];
            
 
@@ -2558,4 +2587,30 @@ class Controller extends BaseController
             }
         } 
     }
+
+    function updateSessionByNotif(Request $request){
+        try {
+
+            $cle = $request->post('cle');
+            $value = $request->post('value');
+
+            // Récupérer la valeur actuelle de la variable de session
+            $ancienneValeur = session()->get($cle);
+            // Décrémenter la valeur
+            $nouvelleValeur = $ancienneValeur + $value;
+            // Réattribuer la nouvelle valeur à la variable de session
+            session()->put($cle, $nouvelleValeur);
+        
+            return['response' => true, 'data' => [
+                    'nouvelleValeur' => $nouvelleValeur,
+                    'cle' => $cle,
+                    'value' => $value
+                    ]];
+    
+        } catch (\Throwable $th) {
+
+            return['response' => false, 'message' => $th->getMessage()];
+        }
+    }
+
 }

@@ -81,8 +81,13 @@
 		var user_role_logged = '<?php echo json_encode(Auth()->user()->roles, JSON_HEX_APOS); ?>'
 		// Notification Pusher
 		notificationsListener(user_role_logged)
+		var url_notification = "{{route('updateSessionByNotif')}}"
+		var _token = "{{session()->all()['_token']}}"
+		notificationAlertStock(url_notification,_token);
+		
 	</script>
 	@yield("script")
 </body>
+
 
 </html>
