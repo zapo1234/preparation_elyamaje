@@ -702,7 +702,7 @@ class Controller extends BaseController
                 
     
     
-                $writer->save(storage_path('app/public/reassorts/notraite' . $fileName));
+                $writer->save(storage_path('app/public/reassorts/notraite/' . $fileName));
     
                 // Retournez une réponse de téléchargement pour le fichier Excel
                 return ["response" => true, "message" => "réassort créer avec succés"];
@@ -724,7 +724,7 @@ class Controller extends BaseController
                 $date = date("d-m-y", strtotime("+1 days")); 
                 $fileName = $date.'_alerte.csv'; // Nom du fichier              
     
-                $writer->save(storage_path('app/public/alertes/notraite' . $fileName));
+                $writer->save(storage_path('app/public/alertes/notraite/' . $fileName));
     
                 // Retournez une réponse de téléchargement pour le fichier Excel
                 return ["response" => true, "message" => "Fichier d'alerte créer avec succés"];
