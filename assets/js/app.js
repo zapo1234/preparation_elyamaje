@@ -1,5 +1,6 @@
 
-function filter_mobile(width){
+// Create close tab mobile
+function filter_mobile(){
     if($(".page-wrapper").find('.dashboard_leader').length == 0 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 1 || $("#example_length .select2_custom").length > 1)){
         if($(".filter_mobile").length == 0){
             $(".table_mobile_responsive").before(`
@@ -27,17 +28,15 @@ function filter_mobile(width){
         }
     } else {
         if($(".filter_mobile").length > 0){
-            
-            // $(".modal-backdrop").remove()
             $(".modal-body > .row").last().prependTo('#example_wrapper')
             $('select[name="example_length"]').parent().last().prependTo('.dataTables_length')
-          
             $(".filter_mobile").remove()
             $(".modal_filter_mobile").remove()
         }
     }
 }
 
+// Close filter tab when click outside
 document.addEventListener('click', function(event) {
 
 	if(!$(".filter_tab").hasClass('d-none')){
@@ -45,17 +44,12 @@ document.addEventListener('click', function(event) {
 		var targetDiv2 = document.getElementsByClassName('box_filter')[0];
 		var clickedInside = targetDiv.contains(event.target);
 		var clickedInside2 = targetDiv2.contains(event.target);
-		
+
 		if (!clickedInside && !clickedInside2) {
 			$(".filter_tab").toggleClass('d-none')
 		}
 	}
-  
 });
-
-$(window).resize(function(){
-    filter_mobile($( window ).width())
-})
 
 $(function () {
 
@@ -284,7 +278,7 @@ $(function () {
 $( document ).ready(function() {
 
 	$('body').on( 'init.dt', function ( e, ctx ) {
-		filter_mobile($( window ).width())
+		filter_mobile()
 	})
 
 	if($.fn.dataTable){

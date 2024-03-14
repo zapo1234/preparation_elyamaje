@@ -8998,6 +8998,11 @@ select option[disabled] {
 		top: -169px;
 	}
 }
+
+.nav-links li:hover i{
+	animation: shakeCustom 0.3s linear; 
+}
+
 .table_details_tracking{
 	border-radius: 10px;
 }

@@ -84,13 +84,14 @@ class Chronopost
             ],
 
             // Client's ref. value / Code barre client
-            'refValue' => $this->getRefValue($order, $productCode),
+            'refValue' => $this->getRefValue($order),
 
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
                 "mode"           => explode('_', $format)[0],
             ],
         ]; 
+
 
         try{
             $url = "https://ws.chronopost.fr/shipping-cxf/ShippingServiceWS?wsdl";
@@ -530,21 +531,20 @@ class Chronopost
         }
     }
 
-    protected function getRefValue($order, $productCode){
+    protected function getRefValue($order){
 
-        if($order['pick_up_location_id'] != false && ($productCode == "86" || $productCode == "80" || $productCode == "3T" || $productCode == "3K")){
+        if($order['pick_up_location_id'] != false){
             $refValue = [
                 "customerSkybillNumber"     => $order['order_id'], 
-                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
-                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais     
-                "idRelais"                  => $order['pick_up_location_id']
-                    
+                "recipientRef"              => $order['pick_up_location_id'], // Ref destinataire, champ libre
+                "shipperRef"                => $order['pick_up_location_id'],  // Libre ou mettre code point relais     
+                "idRelais"                  => $order['pick_up_location_id'] 
              ];
         } else {
             $refValue = [
                 "customerSkybillNumber"     => $order['order_id'], 
-                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
-                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais                         
+                "recipientRef"              => $order['customer_id'] ?? '', // Ref destinataire, champ libre
+                "shipperRef"                => $order['order_id'],  // Libre ou mettre code point relais                         
              ];
         }
         return $refValue;
