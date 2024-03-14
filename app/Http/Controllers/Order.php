@@ -148,7 +148,7 @@ class Order extends BaseController
             $distributors_list[] = $dis->customer_id;
           }
 
-          if(count($orderDolibarr) > 0){
+          if(count($orderDolibarr) > 0){ 
             foreach($orderDolibarr as $ord){
               $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
               $orders[] = $orderDolibarr[0];
