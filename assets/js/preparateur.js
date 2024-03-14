@@ -92,7 +92,7 @@ function progress_bar(){
         } else if(progress[order_id] < 50){
             $("#progress_"+order_id).find(".progress-bar").css('background-color', '#ffc107')
         } else {
-            $("#progress_"+order_id).find(".progress-bar").css('background-color', '#29cc39')
+            $("#progress_"+order_id).find(".progress-bar").css('background-color', '#3edd76')
         }
 
         $("#progress_"+order_id).find(".progress-bar").css('width', progress[order_id]+'%')

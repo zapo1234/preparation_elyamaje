@@ -16,7 +16,6 @@ class Chronopost
 
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
-        $SaturdayShipping = 0;
 
         // ASSURANCE COLIS
         $insuredValue = $this->getInsuredValue($order['total_order'], $weight);
@@ -72,10 +71,10 @@ class Chronopost
                 "insuredValue"              => intval($order['total_order']) < 450 ? 0 : intval($order['total_order']) * 100,
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
-                "service"                   => $SaturdayShipping,   
+                "service"                   => '0', // Jour de livraison : 0 - Normal | 1 - Livraison lundi (FR) | 6 - Livraison samedi (FR) (string)
                 'as'                        => $order['shipping_method'] == "chronotoshopdirect" ? "A15" : "",        
                 "shipDate"                  => date('c'),       
-                "shipHour"                  => date('H'),      
+                "shipHour"                  => date('G'),      
                 "weight"                    => $weight,  
                 "weightUnit"                => 'KGM',                   
                 "bulkNumber"                => 1, 
@@ -84,19 +83,12 @@ class Chronopost
 				'width'                     => 0,
             ],
 
-            // client's ref. value / Code barre client
-            'refValue' => [
-                "customerSkybillNumber"     => $order['order_id'], 
-                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
-                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais     
-                "idRelais"                  => $order['pick_up_location_id'] ?? ''
-                    
-            ],
+            // Client's ref. value / Code barre client
+            'refValue' => $this->getRefValue($order, $productCode),
 
             // Skybill Params Value / Etiquette de livraison - format de fichiers /datas
             'skybillParamsValue' => [
                 "mode"           => explode('_', $format)[0],
-                'withReservation' => 2,
             ],
         ]; 
 
@@ -536,6 +528,26 @@ class Chronopost
 
             return isset($account[$method]) ? $account[$method] : $chrono13;
         }
+    }
+
+    protected function getRefValue($order, $productCode){
+
+        if($order['pick_up_location_id'] != false && ($productCode == "86" || $productCode == "80" || $productCode == "3T" || $productCode == "3K")){
+            $refValue = [
+                "customerSkybillNumber"     => $order['order_id'], 
+                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
+                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais     
+                "idRelais"                  => $order['pick_up_location_id']
+                    
+             ];
+        } else {
+            $refValue = [
+                "customerSkybillNumber"     => $order['order_id'], 
+                "recipientRef"              => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : ($order['customer_id'] ?? ''), // Ref destinataire, champ libre
+                "shipperRef"                => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : $order['order_id'],  // Libre ou mettre code point relais                         
+             ];
+        }
+        return $refValue;
     }
 
     public function getStatusCode(){

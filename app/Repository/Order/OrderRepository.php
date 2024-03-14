@@ -616,23 +616,44 @@ class OrderRepository implements OrderInterface
    }
 
    public function updateMultipleOrderAttribution($array_user){
-
-      $order_id_list = [];
-     
       try{
-         // Construire une chaîne de requête SQL pour la mise à jour conditionnelle en utilisant CASE WHEN
-         $updateQuery = "UPDATE prepa_orders SET user_id = ( CASE order_woocommerce_id";
+         // Woocommerce
+         $woocommerceUpdate = "UPDATE prepa_orders SET user_id = ( CASE order_woocommerce_id";
+
+         // Dolibarr
+         $dolibarrUpdate = "UPDATE prepa_orders_doli SET user_id = ( CASE ref_order";
 
          foreach ($array_user as $key => $distribution) {
-            foreach ($distribution['order_id'] as $order_id) {
-               $order_id_list[] = $order_id;
-               $updateQuery .= " WHEN $order_id THEN $key ";
+            // Traitement pour Woocommerce
+            $woocommerce_order_ids = $distribution['woocommerce']['order_id'];
+            $woocommerce_order_id_chunks = array_chunk($woocommerce_order_ids, 200);
+
+            foreach ($woocommerce_order_id_chunks as $chunk) {
+               $updateQueryChunk = $woocommerceUpdate;
+               foreach ($chunk as $order_id) {
+                  $updateQueryChunk .= " WHEN $order_id THEN $key ";
+               }
+               $updateQueryChunk .= " END) WHERE order_woocommerce_id IN ('" . implode("','", $chunk) . "')";
+               DB::update(DB::raw($updateQueryChunk));
+            }
+
+            // Traitement pour Dolibarr
+            $dolibarr_order_ids = $distribution['dolibarr']['order_id'];
+            $dolibarr_order_id_chunks = array_chunk($dolibarr_order_ids, 100);
+
+            foreach ($dolibarr_order_id_chunks as $chunk) {
+               $updateQuery2Chunk = $dolibarrUpdate;
+               foreach ($chunk as $order_id) {
+                  $updateQuery2Chunk .= " WHEN '".$order_id."' THEN $key ";
+               }
+
+
+               $updateQuery2Chunk .= " END) WHERE ref_order IN ('" . implode("','", $chunk) . "')";
+               DB::update(DB::raw($updateQuery2Chunk));
+
+               sleep(1);
             }
          }
-
-         $updateQuery .= " END) WHERE order_woocommerce_id IN (".implode(',',$order_id_list).")";
-         DB::update(DB::raw($updateQuery));
-
          return true;
       } catch(Exception $e){
          return $e->getMessage();
@@ -838,10 +859,11 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-      $query = DB::table('orders')->select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+
+      $query = DB::table('orders')->select('orders.*', /*'label_product_order.*',*/ 'labels.id as label_id', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23', 'labels.origin')
-      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
-      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
+      // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id');
 
       $haveFilter = false;
       foreach($filters as $key => $filter){
@@ -851,8 +873,12 @@ class OrderRepository implements OrderInterface
                $query->where("labels.".$key."","LIKE",  "%".$filter."%");
             } else if($key == "origin"){
                $query->where("labels.origin", $filter);
-            } else {
-               $query->where("orders.".$key."", $filter);
+            } else if($key == "order_woocommerce_id"){
+               if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO')){
+                  $query->where("labels.tracking_number", $filter);
+               } else {
+                  $query->where("orders.".$key."", $filter);
+               }
             }
          }
       }
@@ -861,9 +887,10 @@ class OrderRepository implements OrderInterface
          $date = date('Y-m-d');
          $query->where("labels.created_at","LIKE",  "%".$date."%");
       }
+
       $query->groupBy('labels.tracking_number');
       $query->orderBy('labels.created_at', 'DESC');
-      $query->limit(500);
+      $query->limit(100);
       $results = $query->get();
       return $results;
    }

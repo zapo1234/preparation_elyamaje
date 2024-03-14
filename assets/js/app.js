@@ -1,39 +1,52 @@
 
 function filter_mobile(width){
-    if(width < 900 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 0 || $("#example_length .select2_custom").length > 0)){
+    if($(".page-wrapper").find('.dashboard_leader').length == 0 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 1 || $("#example_length .select2_custom").length > 1)){
         if($(".filter_mobile").length == 0){
             $(".table_mobile_responsive").before(`
             <div class="filter_mobile">
                 <div class="box_filter">
                     <i class="font-20 bx bx-filter-alt"></i>
                 </div>
+				<div class="d-none filter_tab">
+					<span class="filter_tab_title">Filtres</span>
+
+				</div>
+				<div class="other_element d-flex"></div>
             </div>
         `)
 
         if($(".modal_filter_mobile").length == 0){
-            $("body").append(`
-                <div class="modal modal_filter_mobile" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-fullscreen" role="document">
-                        <div class="modal-content">
-                        <div class="modal-body">
-                        
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-            `)
 
-            setTimeout(function(){
-                $("#example_wrapper > .row:first-child").appendTo('.modal_filter_mobile .modal-body')
-                $('select[name="example_length"]').parent().last().appendTo('.filter_mobile')
-            },0)
+			
+            // $("body").append(`
+            //     <div class="modal modal_filter_mobile" tabindex="-1" role="dialog">
+            //         <div class="modal-dialog modal-fullscreen" role="document">
+            //             <div class="modal-content">
+            //             <div class="modal-body">
+                        
+            //             </div>
+            //             <div class="modal-footer">
+            //                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+            //             </div>
+            //             </div>
+            //         </div>
+            //     </div>
+            // `)
+
+			$("#example_wrapper > .row:first-child").appendTo('.filter_tab')
+			$('#example_filter').appendTo('.other_element')
+			$('select[name="example_length"]').parent().last().appendTo('.other_element')
+
+			
+            // setTimeout(function(){
+            //     $("#example_wrapper > .row:first-child").appendTo('.modal_filter_mobile .modal-body')
+            //     $('select[name="example_length"]').parent().last().appendTo('.filter_mobile')
+            // },0)
         }
 
             $('body').on('click', '.box_filter', function () {
-                $(".modal_filter_mobile").modal('show')
+				// if($(".filter_tab").hasClass(''))
+                $(".filter_tab").toggleClass('d-none')
             })
         }
     } else {

@@ -88,7 +88,7 @@ class Label extends BaseController
 
         $labels = $this->label->getAllLabels()->toArray();
         $array_order = [];
-
+        
         foreach($orders as $order){
 
             if(!isset($array_order[$order['order_woocommerce_id']])){
@@ -414,6 +414,9 @@ class Label extends BaseController
         $column = array_column($label_product_order, "product_id");
 
         foreach($product_order as $key => $product){
+            $product_order[$key]["name"] = $product['name'] == null ? "_" : $product_order[$key]["name"];
+            $product_order[$key]["weight"] = $product['weight'] == null ? 0.01:  $product_order[$key]["weight"];
+
             $product_found = array_keys($column,  $product['product_woocommerce_id']);
             if(count($product_found) > 0){
                 $quantity = 0;

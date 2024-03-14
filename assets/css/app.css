@@ -28,6 +28,41 @@ File: app.css
   - Responsive
 */
 
+html, body, .wrapper{
+	height: 100%;
+}
+
+.alert{
+	position: absolute;
+	z-index: 10;
+    bottom: 0px;
+    right: 15px;
+    width: 380px;
+    min-height: 80px;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	animation: slideLeft 0.6s linear;
+}
+
+.alert div{
+	word-break: break-word;
+	margin-left: 25px;
+}
+
+.alert-success{
+	background-color: #4EB779 !important;
+	color: white !important;
+}
+
+@keyframes slideLeft {
+	0% {
+	  right: -500px; /* Départ à droite de la boîte */
+	}
+	100% {
+		right: 15px; /* Arrivée à gauche de la boîte */
+	}
+  }
 
 /* BP Gestion des stocks */
  
@@ -422,7 +457,6 @@ a {
 	}
 
 }
-
 
 @media (max-width:900px) { 
 
@@ -2465,7 +2499,7 @@ a {
 }
 
 .nav_div_mobile_responsive span{
-	font-size: 1.2em !important;
+	font-size: 1.1em !important;
 }
 
 
@@ -5821,6 +5855,16 @@ textarea::placeholder {
 	height: 100%;
 }
 
+.body_detail_product_order .detail_product_order_line:first-child{
+	border-top-left-radius: 15px !important;
+	border-top-right-radius: 15px !important;
+}
+
+.body_detail_product_order .detail_product_order_line:last-child{
+	border-bottom-left-radius: 15px !important;
+	border-bottom-right-radius: 15px !important;
+}
+
 .modal_order .modal-content, 
 .modal_success .modal-content{
 	border-radius: 0px !important;
@@ -6195,7 +6239,7 @@ textarea::placeholder {
 	.team_board h6,
 	.team_board p,
 	.user-info p{
-		font-size: 18px !important;
+		font-size: 16px !important;
 	}
 
 	.table_mobile_responsive td{
@@ -6376,6 +6420,11 @@ a{
 	top: 15%;
 	width: inherit;
 	justify-content: center;
+}
+
+
+.body_detail_product_order .column44{
+	min-width: 65px;
 }
 
 @media screen and (max-width: 650px) {
@@ -6593,6 +6642,8 @@ a{
 
 .order_history{
 	background-color: #ffc107;
+	width: 170px;
+	text-align: center;
 }
 
 .show_order_history,
@@ -6622,7 +6673,7 @@ a{
 }
 
 .pick{
-	background-color: #16e15e;
+	background-color: #3edd76;
 	color: white !important
 }
 
@@ -7431,11 +7482,6 @@ textarea:focus{
 	position: absolute;
 	left: 15px;
 	color: white;
-}
-
-.alert-success{
-	background-color: #86de7e !important;
-	color: white !important;
 }
 
 .alert-success div:not(#successReassort)::before{
@@ -8561,10 +8607,11 @@ select option[disabled] {
 
 /* FILTRE MOBILES & TABLETTES */
 .box_filter{
+	border-radius: 5px;
 	width: auto;
 	padding: 15px;
-	width: 50px;
-	height: 50px;
+	width: 40px;
+	height: 40px;
 	border: 1px solid #333333;
 	display: flex;
 	justify-content: center;
@@ -8572,10 +8619,81 @@ select option[disabled] {
 	cursor: pointer;
 	transition: 0.3s;
 	background-color: #333333;
+	position: relative;
 }
 
 .box_filter i{
 	color: white;
+}
+
+.other_element{
+	align-items: baseline;
+}
+
+.other_element .dataTables_filter{
+	margin-right: 8px !important;
+}
+
+.filter_tab form, .filter_tab .dataTables_length {
+	display: flex;
+	flex-direction: column !important;
+	width: 100%;
+}
+
+.filter_tab button{
+	display: flex;
+	justify-content: center;
+}
+
+.filter_tab_title{
+    display: flex;
+    justify-content: center;
+    font-size: 1.3em;
+	color: #000000;
+	font-weight: bold;
+}
+
+.filter_tab select, .filter_tab input, .filter_tab .select2, .filter_tab .col-md-6, .filter_tab button {
+	width: 100% !important;
+	margin: 0px !important;
+	margin-bottom: 15px !important;
+	height: 100% !important;
+}
+
+.filter_tab .custom_input{
+	padding: 10px !important;
+}
+
+.filter_tab span{
+	height: 40px !important;
+	line-height: 40px !important;
+}
+
+
+.filter_tab{
+	border-left: 2px solid #000000;
+	position: absolute;
+	width: 75%;
+	max-width: 300px;
+	top: 60px;
+	z-index: 10;
+	background-color: white;
+	padding: 10px 12px 0px 12px;
+	border-radius: 5px;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	-webkit-animation: bar 0.2s linear;
+}
+
+@keyframes bar {
+	0% {
+        transform: scaleY(0)
+    }
+    80% {
+        transform: scaleY(1.1)
+    }
+    100% {
+        transform: scaleY(1)
+    }
 }
 
 .filter_mobile{

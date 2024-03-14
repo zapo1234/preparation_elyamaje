@@ -342,7 +342,7 @@ Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrap
 Route::get("/bordereauChrono", [Controller::class, "bordereauChrono"])->name('bordereauChrono');
 
 // Get orders WordPress
-Route::get("/getOrders", [Order::class, "getOrders"])->name('getOrders');
+Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders');
 
 // Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
 

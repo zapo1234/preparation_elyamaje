@@ -224,7 +224,7 @@ $(document).ready(function() {
                             <i class="show_detail bx bx-cube"></i>
                         </button>
 
-                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade modal_radius" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                 <div class="modal-body">
@@ -556,10 +556,10 @@ $(".allocationOrdersConfirm").on("click", function(){
             $(".allocationOrdersTitle").text("Commandes réparties avec succès !")
             setTimeout(function(){ location.reload(); }, 800);
         } else {
-            alert(JSON.parse(data).message ?? 'Erreur !')
-            $("#allocationOrders button").removeClass('d-none')
             $(".loading_allocation").addClass("d-none")
-            $("#allocationOrders").modal('hide')
+            $(".bx-error-circle").removeClass('d-none')
+            $(".allocationOrdersTitle").text(JSON.parse(data).message ?? 'Erreur !')
+            setTimeout(function(){ location.reload(); }, 1500);
         }
     });
 })
@@ -580,10 +580,10 @@ $(".unassignOrdersConfirm").on("click", function(){
             $(".allocationOrdersTitle").text("Commandes désattribuées avec succès !")
             setTimeout(function(){ location.reload(); }, 1000);
         } else {
-            alert(JSON.parse(data).message ?? 'Erreur !')
-            $("#allocationOrders button").removeClass('d-none')
             $(".loading_allocation").addClass("d-none")
-            $("#allocationOrders").modal('hide')
+            $(".bx-error-circle").removeClass('d-none')
+            $(".allocationOrdersTitle").text(JSON.parse(data).message ?? 'Erreur !')
+            setTimeout(function(){ location.reload(); }, 1500);
         }
     });
 })
@@ -801,7 +801,7 @@ function show(id){
                                             ${order[0].coupons && order[0].coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+order[0].coupons+` (-`+order[0].coupons_amount+`€)</strong></span>` : ``}
                                             ${order[0].discount_amount > 0 ? `<span class="text-success">Réduction: <strong>-`+order[0].discount+`€ (-`+order[0].discount_amount+`%)</strong></span>` : ``}
                                         
-                                            <span class="montant_total_order">Expédition:<strong> `+order[0].shipping_amount+`€</strong></span>
+                                            ${order[0].shipping_amount ? `<span class="montant_total_order">Expédition:<strong>`+order[0].shipping_amount+`€</strong></span>` : `<span class="montant_total_order">Expédition:<strong>0€</strong></span>`}
                                             <span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
 
                                             ${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>-`+gift_card+`€</strong></span>` : ``}

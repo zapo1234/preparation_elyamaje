@@ -136,53 +136,57 @@ class Order extends BaseController
 
         // Récupère les commandes en base de données 
         $orders = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
-       
-        // Liste des distributeurs
-        $distributors = $this->distributor->getDistributors();
-        $distributors_list = [];
-        foreach($distributors as $dis){
-          $distributors_list[] = $dis->customer_id;
-        }
-
-        // Récupère également les commandes créées depuis dolibarr vers préparation
-        $orderDolibarr = $this->orderDolibarr->getAllOrdersWithoutProducts();
-        if(count($orderDolibarr) > 0){
-          foreach($orderDolibarr as $ord){
-            $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
-            $orders[] = $orderDolibarr[0];
+        
+        if(count($orders) > 0){
+          // Liste des distributeurs
+          $distributors = $this->distributor->getDistributors();
+          $distributors_list = [];
+          foreach($distributors as $dis){
+            $distributors_list[] = $dis->customer_id;
           }
-        } 
 
-        foreach($orders as $key => $order){
-            if(!isset($order['from_dolibarr'])){
-              $orders[$key] = $this->woocommerce->transformArrayOrder([$order], $specific_product = [], $withProducts = false);
-              $orders[$key][0]['total'] = $orders[$key][0]['total_order'];
-              $orders[$key][0]['total_tax'] = $orders[$key][0]['total_tax_order'];
-              $orders[$key][0]['date_created'] = $orders[$key][0]['date'];
-              $orders[$key] = $orders[$key][0];
-            } 
-
-            // Check if is distributor
-            if(in_array($order['customer_id'], $distributors_list)){
-              $orders[$key]['is_distributor'] = true;
-            } else {
-              $orders[$key]['is_distributor'] = false;
+          // Récupère également les commandes créées depuis dolibarr vers préparation
+          $orderDolibarr = $this->orderDolibarr->getAllOrdersWithoutProducts();
+          if(count($orderDolibarr) > 0){
+            foreach($orderDolibarr as $ord){
+              $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
+              $orders[] = $orderDolibarr[0];
             }
+          } 
 
-            // Pour les commandes depuis dolibarr
-            if(isset($order['from_dolibarr'])){
-              $orders[$key]['user_id'] = $orders[$key]['user_id'];
-              $orders[$key]['name'] = $orders[$key]['user_id'] ? "" : "Non attribuée";
-              $orders[$key]['status'] =  $orders[$key]['status'];
-              $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
-            } else {
-                $orders[$key]['name'] = $orders[$key]['name'] != null ? $orders[$key]['name'] : "Non attribuée";
+          foreach($orders as $key => $order){
+              if(!isset($order['from_dolibarr'])){
+                $orders[$key] = $this->woocommerce->transformArrayOrder([$order], $specific_product = [], $withProducts = false);
+                $orders[$key][0]['total'] = $orders[$key][0]['total_order'];
+                $orders[$key][0]['total_tax'] = $orders[$key][0]['total_tax_order'];
+                $orders[$key][0]['date_created'] = $orders[$key][0]['date'];
+                $orders[$key] = $orders[$key][0];
+              } 
+
+              // Check if is distributor
+              if(in_array($order['customer_id'], $distributors_list)){
+                $orders[$key]['is_distributor'] = true;
+              } else {
+                $orders[$key]['is_distributor'] = false;
+              }
+
+              // Pour les commandes depuis dolibarr
+              if(isset($order['from_dolibarr'])){
+                $orders[$key]['user_id'] = $orders[$key]['user_id'];
+                $orders[$key]['name'] = $orders[$key]['user_id'] ? "" : "Non attribuée";
+                $orders[$key]['status'] =  $orders[$key]['status'];
                 $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
-            }
-            $list_orders[] = $orders[$key];
-        }
+              } else {
+                  $orders[$key]['name'] = $orders[$key]['name'] != null ? $orders[$key]['name'] : "Non attribuée";
+                  $orders[$key]['status_text'] = __('status.'.$orders[$key]['status']);
+              }
+              $list_orders[] = $orders[$key];
+          }
 
-        return $list_orders;
+          return $list_orders;
+        } else {
+          return array();
+        }
       }
     } 
 
@@ -210,21 +214,31 @@ class Order extends BaseController
       return $this->orders(Auth()->user()->id, true);
     }
 
-    // Répartis les commandes woocommerce
+    // Assigne all orders between users
     public function distributionOrders(){
-
-
-      // Liste des utilisateurs avec le rôle préparateur
-      $users =  $this->user->getUsersByRole([2]);
 
       $array_user = [];
       $orders_user = [];
       $orders_id = [];
       $list_preparateur = [];
 
+      // Liste des commandes déjà réparties entres les utilisateurs
+      $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
+      $orderDolibarr = $this->orderDolibarr->getAllOrders();
+
+      // If not orders
+      if(count($orders_user) == 0 && count($orderDolibarr) == 0){
+        echo json_encode(['success' => false, 'message' => 'Il n\'y a pas de commande à attribuer !']);
+        return;
+      }
+
+      // Liste des utilisateurs avec le rôle préparateur
+      $users =  $this->user->getUsersByRole([2]);
+
       foreach($users as $user){
         $array_user[$user['user_id']]['total_products'] = 0;
-        $array_user[$user['user_id']]['order_id'] = [];
+        $array_user[$user['user_id']]['woocommerce']['order_id'] = [];
+        $array_user[$user['user_id']]['dolibarr']['order_id'] = [];
         $list_preparateur[] = $user['user_id'];
       }
 
@@ -233,12 +247,6 @@ class Order extends BaseController
         return;
       }
 
-      // Liste des commandes déjà réparties entres les utilisateurs
-      $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
-
-      
-
-      $orderDolibarr = $this->orderDolibarr->getAllOrders();
       if(count($orderDolibarr) > 0){
         foreach($orderDolibarr as $ord){
           $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord);
@@ -252,7 +260,6 @@ class Order extends BaseController
             if($order['status'] == "processing"){
               $array_user[$order['user_id']]['total_products'] += $order['total_products'];  
             }
-
             $orders_id [] = $order['order_woocommerce_id'];
           }
         }
@@ -262,6 +269,7 @@ class Order extends BaseController
       usort($orders_user, function($a, $b) {
         return $b['total_products'] - $a['total_products'];
       });
+
 
       // Attribuez les commandes en fonction du nombre de produits qu'elles contiennent
       foreach ($orders_user as $order) {
@@ -276,12 +284,21 @@ class Order extends BaseController
                   $min_products_index = $index;
               }
           }
-  
-          $array_user[$min_products_index]['order_id'][] = $order['order_woocommerce_id'];
+
+          if(!isset($order['from_dolibarr'])){
+            $array_user[$min_products_index]['woocommerce']['order_id'][] = $order['order_woocommerce_id'];
+          } else {
+            if($order['from_dolibarr']){
+              $array_user[$min_products_index]['dolibarr']['order_id'][] = $order['order_woocommerce_id'];
+            } else {
+              $array_user[$min_products_index]['woocommerce']['order_id'][] = $order['order_woocommerce_id'];
+            }
+          }
+         
           $array_user[$min_products_index]['total_products'] += $order['total_products'];
         }
       }
-   
+
       if(count($array_user) > 0){
         $assignedOrder = $this->order->updateMultipleOrderAttribution($array_user);
         if($assignedOrder == true){
@@ -1291,79 +1308,98 @@ class Order extends BaseController
   }
 
 
-  public function getOrders()
+  public function getOrders($token)
   {
    
-    $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
-    $per_page = 100;
-    $page = 1;
-    $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-
-    if(isset($orders['message'])){
-      $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
-      return false;
-    }
-
-    if(!$orders){
-      return array();
-    } 
-    
-    $count = count($orders);
-
-    // Check if others page
-    if($count == 100){
-      while($count == 100){
-        $page = $page + 1;
-        $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-       
-        if(count($orders_other ) > 0){
-          $orders = array_merge($orders, $orders_other);
-        }
-      
-        $count = count($orders_other);
+    if($token == "BcVTcO9aqWdtP0ZVvujOJXQxjGT9wtRGG3iGZt8ZvwsZ58kMeJAM9TJlUumqb23C"){
+      $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
+      $per_page = 100;
+      $page = 1;
+      $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+  
+      if(isset($orders['message'])){
+        $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
+        return false;
       }
-    }  
-
-    // Check if already in database
-    $ids = [];
-    $ordersAlreadyInDatabase = $this->order->getAllOrdersNotFinished()->toArray();
-    foreach ($ordersAlreadyInDatabase as $element) {
-      if (isset($element['order_woocommerce_id'])) {
-          $ids[] = $element['order_woocommerce_id'];
-      }
-    }
-
-    // Check if not already in database
-    $listOrdersToCreate = [];
-    foreach ($orders as $order) {
-      // Ne prend pas les commandes de Nice & Marseille
-      $take_order = true;
-      if(isset($order['shipping_lines'])){
-        if(count($order['shipping_lines']) > 0){
-          if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait Dans Notre Magasin À Nice")
-            || str_contains($order['shipping_lines'][0]['method_title'], "Retrait Dans Notre Magasin À Marseille")){
-            $take_order = false;
-          }
-        } 
+  
+      if(!$orders){
+        return array();
       } 
+      
+      $count = count($orders);
+  
+      // Check if others page
+      if($count == 100){
+        while($count == 100){
+          $page = $page + 1;
+          $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page);
+         
+          if(count($orders_other ) > 0){
+            $orders = array_merge($orders, $orders_other);
+          }
+        
+          $count = count($orders_other);
+        }
+      }  
 
-      if(!in_array($order['id'], $ids) && $take_order){
-        $listOrdersToCreate[0][] = $order;
+      // Check if already in database
+      $ids = [];
+      $ordersAlreadyInDatabase = $this->order->getAllOrdersNotFinished()->toArray();
+      foreach ($ordersAlreadyInDatabase as $element) {
+        if (isset($element['order_woocommerce_id'])) {
+            $ids[] = $element['order_woocommerce_id'];
+        }
       }
-    }
-
-    // Liste des distributeurs
-    $distributors = $this->distributor->getDistributors();
-    $distributors_list = [];
-    foreach($distributors as $dis){
-      $distributors_list[] = $dis->customer_id;
-    }
-
-    if(count($listOrdersToCreate) > 0){
-      return $this->order->insertOrdersByUsers($listOrdersToCreate, $distributors_list);
+  
+      // Check if not already in database
+      $listOrdersToCreate = [];
+      foreach ($orders as $order) {
+        $item_gift_card = 0;
+        $take_order = true;
+  
+        // Check if order have not only gift card
+        foreach($order['line_items'] as $or){
+          if(str_contains($or['name'], 'Carte Cadeau')){
+              $item_gift_card = $item_gift_card + 1;
+          }
+        }
+  
+        // Don't take order with only gift card
+        if($item_gift_card == count($order['line_items'])){
+          $take_order = false;
+        }
+  
+        // Ne prend pas les commandes de Nice & Marseille
+        if(isset($order['shipping_lines'])){
+          if(count($order['shipping_lines']) > 0){
+            if(str_contains($order['shipping_lines'][0]['method_title'], "Retrait Dans Notre Magasin À Nice")
+              || str_contains($order['shipping_lines'][0]['method_title'], "Retrait Dans Notre Magasin À Marseille")){
+              $take_order = false;
+            }
+          } 
+        } 
+  
+        if(!in_array($order['id'], $ids) && $take_order){
+          $listOrdersToCreate[0][] = $order;
+        }
+      }
+  
+      // Liste des distributeurs
+      $distributors = $this->distributor->getDistributors();
+      $distributors_list = [];
+      foreach($distributors as $dis){
+        $distributors_list[] = $dis->customer_id;
+      }
+      
+      if(count($listOrdersToCreate) > 0){
+        return $this->order->insertOrdersByUsers($listOrdersToCreate, $distributors_list);
+      } else {
+        return true;
+      }
     } else {
-      return true;
+      dd("Token invalide !");
     }
+   
   }
 
   // private function checkGiftCard($order){

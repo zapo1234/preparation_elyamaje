@@ -228,15 +228,18 @@
 											<div class="modal-body">
 												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
 												<div class="w-100 d-flex justify-content-center">
-													<div class="d-none spinner-border loading_allocation" role="status"> 
-														<span class="visually-hidden">Loading...</span>
-													</div>
-													<div class="d-flex justify-content-between w-75">
+													
+													<div class="d-flex justify-content-center w-75">
+														<div class="d-none spinner-border loading_allocation" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+														<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
+														<i style="font-size:50px" class="d-none text-danger fadeIn animated bx bx-error-circle"></i>
+
 														<button type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
 														<button style="margin-left: 10px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
 													</div>
 												
-													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>
 											</div>
 										</div>
@@ -244,7 +247,7 @@
 								</div>
 
 								<!-- Modal confirmation supression produit commande Woocommerce -->
-								<div class="modal fade modal_backfrop_fixe" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal fade modal_backfrop_fixe modal_radius" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div class="modal-body">

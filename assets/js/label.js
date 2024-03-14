@@ -98,7 +98,7 @@ $(document).ready(function() {
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
-            $("#example_filter").parent().remove()
+            // $("#example_filter").parent().remove()
             // $("#example_length select").css('margin-right', '10px')
             $(".order_research").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')

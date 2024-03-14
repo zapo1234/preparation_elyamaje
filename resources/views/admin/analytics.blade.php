@@ -27,7 +27,7 @@
 						</div>
 					</div>
 					<div class="d-flex pe-3 analytics_data_title align-items-center">
-						Revenu : 
+						Facturées : 
 						<div class="align-items-center d-flex">
 							<span class="ml-1 data_number order_total">0.00</span>
 							<div class="ml-1 text-success load_spinner spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
