@@ -16,36 +16,12 @@ function filter_mobile(width){
         `)
 
         if($(".modal_filter_mobile").length == 0){
-
-			
-            // $("body").append(`
-            //     <div class="modal modal_filter_mobile" tabindex="-1" role="dialog">
-            //         <div class="modal-dialog modal-fullscreen" role="document">
-            //             <div class="modal-content">
-            //             <div class="modal-body">
-                        
-            //             </div>
-            //             <div class="modal-footer">
-            //                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
-            //             </div>
-            //             </div>
-            //         </div>
-            //     </div>
-            // `)
-
 			$("#example_wrapper > .row:first-child").appendTo('.filter_tab')
 			$('#example_filter').appendTo('.other_element')
 			$('select[name="example_length"]').parent().last().appendTo('.other_element')
-
-			
-            // setTimeout(function(){
-            //     $("#example_wrapper > .row:first-child").appendTo('.modal_filter_mobile .modal-body')
-            //     $('select[name="example_length"]').parent().last().appendTo('.filter_mobile')
-            // },0)
         }
 
             $('body').on('click', '.box_filter', function () {
-				// if($(".filter_tab").hasClass(''))
                 $(".filter_tab").toggleClass('d-none')
             })
         }
@@ -61,6 +37,22 @@ function filter_mobile(width){
         }
     }
 }
+
+document.addEventListener('click', function(event) {
+
+	if(!$(".filter_tab").hasClass('d-none')){
+		var targetDiv = document.getElementsByClassName('filter_tab')[0];
+		var targetDiv2 = document.getElementsByClassName('box_filter')[0];
+		var clickedInside = targetDiv.contains(event.target);
+		var clickedInside2 = targetDiv2.contains(event.target);
+		
+		if (!clickedInside && !clickedInside2) {
+			$(".filter_tab").toggleClass('d-none')
+		}
+	}
+  
+});
+
 $(window).resize(function(){
     filter_mobile($( window ).width())
 })
