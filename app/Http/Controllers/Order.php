@@ -136,6 +136,7 @@ class Order extends BaseController
 
         // Récupère les commandes en base de données 
         $orders = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
+        dd($orders);
         
         if(count($orders) > 0){
           // Liste des distributeurs
