@@ -1046,6 +1046,7 @@ class Controller extends BaseController
 
             $chemin = $value;
 
+
             if (File::exists($chemin)) {
                 // Récupérez la liste des fichiers dans le répertoire
                 $fichiers = File::files($chemin);
@@ -1062,14 +1063,13 @@ class Controller extends BaseController
                             "filme_name" => $nomFichier = pathinfo($fichier, PATHINFO_BASENAME),
                             "contenu" => $this->parseCSV(File::get($chemin."/".$nomFichier)),
                             "date" => date(str_replace('-', '/', substr($nomFichier, 0, 8))),
-                            "url" => asset('public/storage/alertes/'.$nomFichier),
+                            "url" => asset('public/storage/'.explode("public/",$chemin)[1]."/".$nomFichier),
                             "etat" => (basename(dirname($chemin."/".$nomFichier)) == "traite")? "Traitée" : "Non traitée",
                         ]);
                     }
                 }
             }
         }
-
 
       
         return view('admin.listesAlertes',
