@@ -1342,8 +1342,6 @@ class Order extends BaseController
         }
       }  
 
-      dd($orders);
-
       // Check if already in database
       $ids = [];
       $ordersAlreadyInDatabase = $this->order->getAllOrdersNotFinished()->toArray();
