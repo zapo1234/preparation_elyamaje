@@ -13,11 +13,14 @@ use App\Models\ProductDolibarr;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\PdoDolibarr;
+use App\Http\Service\Api\Transferkdo;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\Role\RoleRepository;
 use App\Repository\User\UserRepository;
 use App\Repository\Order\OrderRepository;
 use App\Repository\Tiers\TiersRepository;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Repository\Printer\PrinterRepository;
 use App\Repository\Product\ProductRepository;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -30,7 +33,9 @@ use App\Repository\Commandeids\CommandeidsRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Http\Service\Api\Transferkdo;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use Illuminate\Support\Facades\File;
+
 
 
 class Controller extends BaseController
@@ -304,14 +309,29 @@ class Controller extends BaseController
         $status = $request->post('status');
 
         if($transfer_id && $status){
-            return $this->reassort->updateStatusReassort($transfer_id, $status);
+            // envoyer une notof pour décrémenter les alerte reassort 
+
+            
+            $res = $this->reassort->updateStatusReassort($transfer_id, $status);
+            if ($res) {
+                $this->api->updateSessionStockAlerte("alerte_reassortEnAttente", -1);
+                return true;
+            }
+            return true;
         }
         
     }
 
     function getVieuxSplay (){
 
+        // $donneesSession = session()->all();
+        // dd($donneesSession);
 
+        $url = "";
+        if (date('N') == 1) {
+            $url = asset('public/storage/reassorts/notraite/'.date('d-m-y').'_reassort.csv');
+        }
+        
              
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
@@ -433,6 +453,7 @@ class Controller extends BaseController
                 "disabled" => $disabled,
                 "syncro" => $etatSyncro,
                 "detail_reassort" => [],
+                
             ];
         }
 
@@ -491,29 +512,660 @@ class Controller extends BaseController
                 "start_date_origin" => "",
                 "end_date_origin" => "",
                 "users" => $users,
+                "url"=> $url,
+                "fileNameReassort" => date('d-m-y').'_reassort.csv',
             ]);
 
     }
 
-    function createReassort(Request $request){       
+    function calcul_equart_type($array) {
+        // Calcul de la moyenne
+        $mean = array_sum($array) / count($array);
+    
+        // Calcul de la somme des carrés des écarts à la moyenne
+        $sum_of_squares = array_sum(array_map(function($x) use ($mean) { return pow($x - $mean, 2); }, $array));
+    
+        // Calcul de la variance
+        $variance = $sum_of_squares / count($array);
+    
+        // Calcul de l'écart-type comme la racine carrée de la variance
+        $standard_deviation = sqrt($variance);
+    
+        return $standard_deviation;
+    }
+
+
+    function completeDates($array) {
+        // Récupère la première clé du tableau
+
+        $keys = array_keys($array); // Récupère les clés du tableau
+        // $start_date = reset($keys);
+        $last_date = date('d/m/Y');
+        $start_date = DateTime::createFromFormat('d/m/Y', $last_date)->modify('-28 day')->format('d/m/Y');
+
+
+        $date_p_1 = $start_date;
 
 
 
+        while ($date_p_1 != $last_date) {
+            if (!isset($array[$date_p_1])) {
+                $array[$date_p_1] = 0;
+            }
+            $date_p_1 = DateTime::createFromFormat('d/m/Y', $date_p_1)->modify('+1 day')->format('d/m/Y');
+        }
+
+        // on ajoute la date d'auj
+        // if (!isset($array[$last_date])) {
+        //     $array[$last_date] = 0;
+        // }
+
+        // on enlève la vente d'auj a voir avec walid
+        if (isset($array[$last_date])) {
+            unset($array[$last_date]);
+        }
+
+        uksort($array, function($a, $b) {
+            $date_a = DateTime::createFromFormat('d/m/Y', $a);
+            $date_b = DateTime::createFromFormat('d/m/Y', $b);
+            return $date_a <=> $date_b;
+        });
+
+        $equart_type = round($this->calcul_equart_type($array),2);
+        $array["sum"] = array_sum($array);
+
+        $array["equart_type"] = $equart_type;
+
+        return $array; // Retourne le tableau résultat
+    }
+
+    function alerteStockCron($token){
+
+     
+        
+
+        if ($token == env('TOKEN_REASSOT')) {       
+
+            $numeroJour = date('N');
+
+            // $numeroJour = 5;
+
+            if ($numeroJour <= 5 ) {
+
+                $datasAlerte = array();
+                $datasIncompletes = array();
+        
+                $tab_min = [
+                    1 => 1.8,  // lundi      à 22h  Alerte
+                    2 => 1.6,  // Mardi      à 22h  Alerte      
+                    3 => 1.4,  // Mercredi   à 22h  Alerte
+                    4 => 1.2,  // Jeudi      à 22h  Alerte
+                    5 => 2,  // Vendredi   à 22h  // on génère un reassort
+                    // 6 => 0.6,  // Samedi     à 22h
+                    // 7 => 0.6,  // Dimanche   à 22h
+                ];
+
+                $percent_min = $tab_min[$numeroJour];
+
+
+                $result = $this->alertStocks(15, 0, $token);
+
+
+                $vente_by_product = $result["vente_by_product"];
+
+            
+                foreach ($vente_by_product as $key => $value) {
+                    if ($value["stock_actuel"] == 'inconnu' || $value["desiredstock"] == 'inconnu') {
+
+                        array_push($datasIncompletes,$value);
+
+                    }else {
+                        if (($value["stock_actuel"]/$value["desiredstock"]) < $percent_min) {
+                            array_push($datasAlerte,$value);
+                        }
+                    }
+                    
+                }
+
+
+                if ($numeroJour == 5) {
+
+                    if ($datasAlerte) {
+                        // On crée un fichier excel qui contiendra le réassort de lundi
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
+
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data);  
+
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data); 
+                        }
+                    }
+                    
+                                    
+                }else {
+                    if ($datasAlerte) {
+                        // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
+
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
+
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }
+                        $this->api->insertCronRequest($data);
+                    }
+                    
+                }
+
+            }
+
+        }else {
+            dd("Vous n'avez pas accèes à cette route");
+        }
+
+    }
+
+    public function exportExcel($datasAlerte,$percent_min)
+    {
+
+
+        try {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            
+            // Ajoutez les entêtes
+            $sheet->setCellValue('A1', 'ID');
+            $sheet->setCellValue('B1', 'Libelle');
+            $sheet->setCellValue('C1', 'Quantité vendu');
+            $sheet->setCellValue('D1', 'Catégorie');
+            
+            // Ajoutez vos données ici en fonction de votre logique
+            $row = 2;
+
+            if (date('N') == 5) {
+                foreach ($datasAlerte as $key => $value) {
+
+                    $qte = ($percent_min * $value["desiredstock"]) - $value["stock_actuel"];
+
+                    
+    
+                    $sheet->setCellValue('A' . $row, $value['fk_product']);
+                    $sheet->setCellValue('B' . $row, $value['label']);
+                    $sheet->setCellValue('C' . $row, $qte);
+                    $sheet->setCellValue('D' . $row, "");
+                    
+                    $row++;
+                }
+    
+                // Créez un Excel et sauvegardez le fichier
+                $writer = new Csv($spreadsheet);
+                $dateLundi = date("d-m-y", strtotime("+3 days")); 
+                $fileName = $dateLundi.'_reassort.csv'; // Nom du fichier
+    
+                
+    
+    
+                $writer->save(storage_path('app/public/reassorts/notraite/' . $fileName));
+    
+                // Retournez une réponse de téléchargement pour le fichier Excel
+                return ["response" => true, "message" => "réassort créer avec succés"];
+            }else {
+                foreach ($datasAlerte as $key => $value) {
+
+                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]) + (2 - 1.2)*$value["desiredstock"];
+    
+                    $sheet->setCellValue('A' . $row, $value['fk_product']);
+                    $sheet->setCellValue('B' . $row, $value['label']);
+                    $sheet->setCellValue('C' . $row, $qte);
+                    $sheet->setCellValue('D' . $row, "");
+                    
+                    $row++;
+                }  
+                
+                // Créez un Excel et sauvegardez le fichier
+                $writer = new Csv($spreadsheet);
+                $date = date("d-m-y", strtotime("+1 days")); 
+                $fileName = $date.'_alerte.csv'; // Nom du fichier              
+    
+                $writer->save(storage_path('app/public/alertes/notraite/' . $fileName));
+    
+                // Retournez une réponse de téléchargement pour le fichier Excel
+                return ["response" => true, "message" => "Fichier d'alerte créer avec succés"];
+            }
+
+
+
+
+
+        } catch (\Throwable $th) {
+            return ["response" => false, "message" => $th->getMessage()];
+        }
+    }
+
+    
+    function alertStocks($entrepot_destination, $Njour, $token = NULL){
+
+        if ($token && $token != env('TOKEN_REASSOT')) {
+            dd("acces interdit");
+        }
+
+        
+        $method = "GET";
+        $apiKey = env('KEY_API_DOLIBAR'); 
+        $apiUrl = env('KEY_API_URL');
+
+        
+        if ($entrepot_destination== "15" || $entrepot_destination== "1") {
+
+            $filterHowTC = "t.ref LIKE '%TC1%'";
+            $produitParam = array(
+                'apikey' => $apiKey,
+                'limit' => 10000,
+            );
+        }
+
+        if ($entrepot_destination== "6") {
+
+            $filterHowTC = "t.ref LIKE '%FA%'";
+            $produitParam = array(
+                'apikey' => $apiKey,
+                'limit' => 10000,
+            );
+        }
+
+        // On récupère les produits et leurs stock dans l'entrepos selectionner 
+        
+
+        $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+        $stocks_products = $pdoDolibarr->getStockProductByEntrepot($entrepot_destination);
+
+        // Récupérer la liste des entrepots 
+        $liste_entrepot = $pdoDolibarr->getAllEntrepot();
+        // récupération du nom de l'entrepot
+        $name_entrepot = (isset($liste_entrepot[$entrepot_destination])) ? $liste_entrepot[$entrepot_destination]['name_entrepot'] : "inconnu";
+
+        // on récupère les infos de stock alerte et de stock souhaité (llxyq_product_warehouse_properties)  
+        $infos_stock_min = $pdoDolibarr->getStockAlerteMin(1); // remettre la variable après
+
+        // On récupère tout lesproduits 
+        $all_products = $pdoDolibarr->getAllProduct(); 
+        
+        // dd($all_products);
+        
+
+        // $mois = 1; // nombre de mois
+        // $jours = $mois*28;
+        $interval = date("Y-m-d", strtotime("-$Njour days")); 
+        $coef = 1;//(1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
+
+        $array_factures_total = array();
+
+
+        if (!$token) {
+            $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".date('Y-m-d')." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+        }else {
+            $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d", strtotime("-1 days"))." 23:59:59'";
+        }
+
+
+        $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+        $factures = json_decode($listinvoice,true); 
+            if (!isset($factures["error"])) {
+            array_push($array_factures_total,$factures);
+        }
+
+        
+
+        $vente_by_product = array();
+        $vente_by_product_by_date = array();
+        $products_dolibarrs_first_tr = array();
+
+        $kit = $this->reassort->getKits();
+        $lot_de_limes_ids = $kit["all_id_pere_kits"];
+        $lot_de_limes_vs_corresp = $kit["composition_by_pere"];
+
+
+
+        foreach ($array_factures_total as $ktotal => $factures) {
+            foreach ($factures as $key => $facture) {
+                $lines = $facture["lines"];
+                foreach ($lines as $kline => $line) {
+
+                    // $date = date("d/m/Y", $facture["date"]);
+
+                    if ($line["fk_product"] !="") {
+
+                        $id_product = $line["fk_product"];
+                        $qty = $line["qty"];  
+
+                        if (in_array($id_product,$lot_de_limes_ids)) {
+
+                            // on coverti le kit en unité dont il est composé
+                            $tab_cores = $lot_de_limes_vs_corresp[$id_product];
+                            foreach ($tab_cores as $xx => $comp) {
+                                $id_product = $comp[0];
+                                $qty = $qty*$comp[1]; 
+
+                                if (!isset($vente_by_product[$id_product])) {
+                                    $vente_by_product[$id_product] = 
+                                    [
+                                        "total_vente" => $qty*$coef,
+                                        "fk_product" => $id_product,
+                                        "name_entrepot" => $name_entrepot,
+                                        "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
+                                        "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
+                                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                        "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
+                                    ];
+
+                                }else {
+                                    // premier ajout de l'element dans le tableau ($products_dolibarrs_first_tr)
+                                    $vente_by_product[$id_product]["total_vente"] = $vente_by_product[$id_product]["total_vente"] + $qty*$coef;
+                                }
+
+                            }
+                        }else {
+
+                            if (!isset($vente_by_product[$id_product])) {
+                                $vente_by_product[$id_product] = 
+                                [
+                                    "total_vente" => $qty*$coef,
+                                    "fk_product" => $id_product,
+                                    "name_entrepot" => $name_entrepot,
+                                    "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
+                                    "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
+                                    "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                    "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
+
+                                ];
+                            }else {
+                                $vente_by_product[$id_product]["total_vente"] = $vente_by_product[$id_product]["total_vente"] + $qty*$coef;
+                            }
+
+                        }
+
+                            
+
+                    }
+                }
+            }
+        }
+
+        // ajouter les produits invendu en j-1 poir avoir leurs infos 
+        foreach ($all_products as $id_product => $value) {
+
+
+            if (!isset($vente_by_product[$id_product])) {
+                if (in_array($id_product,$lot_de_limes_ids)) {
+                    // on coverti le kit en unité dont il est composé
+                    $tab_cores = $lot_de_limes_vs_corresp[$id_product];
+
+                    foreach ($tab_cores as $xx => $comp) {
+                        $id_product = $comp[0];
+    
+                        if (!isset($vente_by_product[$id_product])) {
+                            $vente_by_product[$id_product] = 
+                            [
+                                "total_vente" => 0,
+                                "fk_product" => $id_product,
+                                "name_entrepot" => $name_entrepot,
+                                "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
+                                "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
+                                "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
+
+                            ];
+    
+                        }
+    
+                    }
+
+
+
+                }else {
+                    $vente_by_product[$id_product] = 
+                    [
+                        "total_vente" => 0,
+                        "fk_product" => $id_product,
+                        "name_entrepot" => $name_entrepot,
+                        "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
+                        "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
+                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                        "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
+
+                    ];
+                }
+                
+            }
+        }
+
+
+        if ($token) {
+            return
+            [
+                "vente_by_product" => $vente_by_product,
+                "liste_entrepot" => $liste_entrepot,
+                "interval" => "Vente J-".$Njour,
+                "name_entrepot" => $name_entrepot,
+                "id_enrepot" => $entrepot_destination,
+                "nbrJ" => $Njour,
+            ];
+        }else {
+            return view('admin.ventes_alertes',
+            [
+                "vente_by_product" => $vente_by_product,
+                "liste_entrepot" => json_encode($liste_entrepot),
+                "interval" => "Vente J-".$Njour,
+                "name_entrepot" => $name_entrepot,
+                "id_enrepot" => $entrepot_destination,
+                "nbrJ" => $Njour,
+            ]);
+        }
+
+        
+        
+
+    }
+
+ 
+    function parseCSV($contenu) {
+
+        $lignes = explode("\n", $contenu);
+        $tableauDonnees = [];
+        $cles = str_getcsv(array_shift($lignes));
+        foreach ($lignes as $ligne) {
+
+            if ($ligne) {
+                $donneesLigne = str_getcsv($ligne);
+                $ligneAssoc = array_combine($cles, $donneesLigne);
+                $tableauDonnees[] = $ligneAssoc;
+            }
+           
+
+        }
+    
+        return $tableauDonnees;
+    }
+
+
+    function listeAlerte(){
+
+        $dataAlertes = array();
        
+
+        // Vérifiez si le répertoire existe
+        $dossiers = [
+            storage_path('app/public/alertes/traite'),
+            storage_path('app/public/alertes/notraite'),
+            storage_path('app/public/reassorts/notraite'),
+            storage_path('app/public/reassorts/traite'),
+        ];
+        foreach ($dossiers as $key => $value) {
+
+            $chemin = $value;
+
+
+            if (File::exists($chemin)) {
+                // Récupérez la liste des fichiers dans le répertoire
+                $fichiers = File::files($chemin);
+    
+                // Bouclez à travers les fichiers pour récupérer leurs noms
+                foreach ($fichiers as $fichier) {
+    
+                    $nomFichier = pathinfo($fichier, PATHINFO_BASENAME);
+    
+                    if (pathinfo($fichier, PATHINFO_EXTENSION) === 'csv') {
+    
+                        array_push($dataAlertes,
+                        [
+                            "filme_name" => $nomFichier = pathinfo($fichier, PATHINFO_BASENAME),
+                            "contenu" => $this->parseCSV(File::get($chemin."/".$nomFichier)),
+                            "date" => date(str_replace('-', '/', substr($nomFichier, 0, 8))),
+                            "url" => asset('public/storage/'.explode("public/",$chemin)[1]."/".$nomFichier),
+                            "etat" => (basename(dirname($chemin."/".$nomFichier)) == "traite")? "Traitée" : "Non traitée",
+                        ]);
+                    }
+                }
+            }
+        }
+
+      
+        return view('admin.listesAlertes',
+        [
+            "dataAlertes" => $dataAlertes
+        ]);
+
+    }
+
+    function deplacerFichier($nomFichier) {
+
+
+        if (strpos($nomFichier, "reassorts")) {
+            // Chemin du répertoire "notraite"
+            $cheminSource = storage_path('app/public/reassorts/notraite');
+            // Chemin du répertoire "traite"
+            $cheminDestination = storage_path('app/public/reassorts/traite');
+        }elseif (strpos($nomFichier, "alerte")) {
+            // Chemin du répertoire "notraite"
+            $cheminSource = storage_path('app/public/alertes/notraite');
+            // Chemin du répertoire "traite"
+            $cheminDestination = storage_path('app/public/alertes/traite');
+        }else {
+            return redirect()->back()->with("error",  "Le fichier ".$nomFichier." n'existe pas dans les alerte non traité");
+        }
+     
+    
+        // Vérifier si le fichier existe dans le répertoire source
+        if (file_exists($cheminSource . '/' . $nomFichier)) {
+            // Déplacer le fichier vers le répertoire de destination
+            $deplacementReussi = rename($cheminSource . '/' . $nomFichier, $cheminDestination . '/' . $nomFichier);
+    
+            if ($deplacementReussi) {
+
+                $this->api->updateSessionStockAlerte("alerte_stockReassort", -1);
+                return redirect()->back()->with("success", "L'alerte a bien été mise au statut traité");
+
+            } else {
+
+                return redirect()->back()->with('error',  "Erreur lors du déplacement du fichier.");
+
+            }
+        } else {
+
+            return redirect()->back()->with("error",  "Le fichier ".$nomFichier." n'existe pas dans les alerte non traité");
+        }
+    }
+    
+    // Utilisation de la fonction avec un exemple de nom de fichier
+    
+
+    function verifieFormatNameFichier($nomDuFichier) {
+        // Expression régulière pour vérifier le format du nom de fichier
+        $pattern = '/^\d{2}-\d{2}-\d{2}_(reassort|alerte)\.csv$/';
+    
+        // Vérifie si le nom du fichier correspond au format attendu
+        if (preg_match($pattern, $nomDuFichier)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    function createReassort(Request $request){  
+
 
         $by_file = $request->hasFile('file_reassort') && $request->file('file_reassort')->isValid();
 
+       
+
+     
+
         if ($by_file) {
             $file = $request->file('file_reassort');
+
+         
             $csvContent = $file->getContent();
+
             $reader = Reader::createFromString($csvContent);
             $reader->setHeaderOffset(0);
-            $csvDataArray = iterator_to_array($reader->getRecords());
-    
-    
+            $csvDataArray = iterator_to_array($reader->getRecords()); 
+
             if (!isset($csvDataArray[1]["ID"]) || !isset($csvDataArray[1]["Libelle"]) || !isset($csvDataArray[1]["Quantité vendu"]) || !isset($csvDataArray[1]["Catégorie"])) {
                 return redirect()->back()->with('error',  "le format du fichier n'est pas bon");
             }
+
+            // on récupère la liste des produit et leurs stock d'alerte 
+
+            $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+            $infos_stock_min = $pdoDolibarr->getStockAlerteMin(1);
+
+            $fileNameR = $file->getClientOriginalName();
+
+            $by_reassort_auto = $this->verifieFormatNameFichier($fileNameR);
+
         }
 
 
@@ -523,6 +1175,7 @@ class Controller extends BaseController
 
         $start_date = $request->post('start_date');
         $end_date = $request->post('end_date');
+
 
         $start_date_origin = $start_date;
         $end_date_origin = $end_date;
@@ -660,7 +1313,7 @@ class Controller extends BaseController
             }
 
            // boutique elyamaje
-           if ($entrepot_destination== "1" || $entrepot_destination== "15") {
+            if ($entrepot_destination== "1" || $entrepot_destination== "15") {
 
                 $filterHowTC = "t.ref LIKE '%TC1%'";
                 $produitParam = array(
@@ -803,7 +1456,9 @@ class Controller extends BaseController
                 $mois = 1; // nombre de mois
                 $jours = $mois*28;
                 $interval = date("Y-m-d", strtotime("-$jours days")); 
-                $coef = (1.10)/($jours/7);
+                $coef = (1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
+
+               
 
                 if ($ignore_bp && $interval <= "2023-10-07") {
                     $date_start_bp = "2023-10-07";
@@ -825,9 +1480,10 @@ class Controller extends BaseController
                     if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
                     }
-                }else {
+                }else { 
+                    
+                   
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-
                     $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
                     $factures = json_decode($listinvoice,true); 
                       if (!isset($factures["error"])) {
@@ -847,9 +1503,7 @@ class Controller extends BaseController
         $cat_no_exist = array();
         $product_no_cat = array();
 
-
-
-
+        // on ajoute dans les infos pour tout les lines  (fk_cat, label cat, parents) 
         foreach ($array_factures_total as $xx => $factures) {           
             foreach ($factures as $kf => $fac) {
                 foreach ($fac["lines"] as $kl => $product) {
@@ -886,9 +1540,9 @@ class Controller extends BaseController
 
             }
         }
+
     
         // 2- on recupere les produit et leurs stock dans les différents entropot
-
         $produitParamProduct = array(
             'apikey' => $apiKey,
             'limit' => $limite,
@@ -960,7 +1614,9 @@ class Controller extends BaseController
         }
 
 
+
         $vente_by_product = array();
+        $vente_by_product_by_date = array();
 
         $kit = $this->reassort->getKits();
         $lot_de_limes_ids = $kit["all_id_pere_kits"];
@@ -969,6 +1625,8 @@ class Controller extends BaseController
 
 
         if ($by_file) {
+
+          
             foreach ($csvDataArray as $key => $value) {
                 $id_product = $value["ID"];
                 $qty = $value["Quantité vendu"];  
@@ -1026,6 +1684,9 @@ class Controller extends BaseController
                 foreach ($factures as $key => $facture) {
                     $lines = $facture["lines"];
                     foreach ($lines as $kline => $line) {
+
+                        $date = date("d/m/Y", $facture["date"]);
+
                         if ($line["fk_product"] !="") {
     
                             $id_product = $line["fk_product"];
@@ -1038,7 +1699,8 @@ class Controller extends BaseController
                                 foreach ($tab_cores as $xx => $comp) {
                                     $id_product = $comp[0];
                                     $qty = $qty*$comp[1]; 
-    
+
+                                    // l'élément existe déja dans le tableau ($products_dolibarrs_first_tr)
                                     if (!isset($vente_by_product[$id_product])) {
                                         $vente_by_product[$id_product] = 
                                         [
@@ -1052,7 +1714,9 @@ class Controller extends BaseController
                                             "label_cat" => $products_dolibarrs_first_tr[$id_product]["label_cat"],
                                             "fk_parent" => $products_dolibarrs_first_tr[$id_product]["fk_parent"],
                                         ];
+
                                     }else {
+                                        // premier ajout de l'element dans le tableau ($products_dolibarrs_first_tr)
                                         $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
                                     }
     
@@ -1074,6 +1738,22 @@ class Controller extends BaseController
                                 }else {
                                     $vente_by_product[$id_product]["qty"] = $vente_by_product[$id_product]["qty"] + $qty*$coef;
                                 }
+
+                                // remplissage du tableau de vente des produits par date 
+
+                                // if (!isset($vente_by_product_by_date[$id_product])) {
+
+                                //     $vente_by_product_by_date[$id_product][$date] = intval($qty);
+
+                                // }else {
+                                //     if (!isset($vente_by_product_by_date[$id_product][$date])) {
+                                //         $vente_by_product_by_date[$id_product][$date] = intval($qty);
+                                //     }else {
+                                //         $vente_by_product_by_date[$id_product][$date] = $vente_by_product_by_date[$id_product][$date]+ $qty;
+                                //     }
+                                // }
+
+
                             }
     
                                 
@@ -1084,7 +1764,12 @@ class Controller extends BaseController
             }
         }
 
-       
+        
+        //  trier tout les tableaux vente_by_product_by_date par date :
+        // foreach ($vente_by_product_by_date as $key => $value) {
+        //     $vente_by_product_by_date[$key] = $this->completeDates($value);
+        // }
+        // dd($vente_by_product_by_date);
 
         // 3- on récupère les entrepots existant 
         $warehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");  
@@ -1183,7 +1868,7 @@ class Controller extends BaseController
                     }
                 }
             }
-       }
+        }
 
        
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
@@ -1241,23 +1926,50 @@ class Controller extends BaseController
                 // on compare les vente par semaine et la quantité dont on dispose dans l'entrepot
 
                 if ($by_file) {
-                    array_push($products_reassort,[
-                        "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
-                        "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
-                        "qte_en_stock_in_source" => $qte_en_stock_in_source,
-                        "libelle" => $stock_in_war["libelle"],
-                        "product_id" => $kproduct,
-                        "barcode" => $stock_in_war["barcode"],
-                        "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
-                        "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
-                        "demande" => ceil($vente_by_product[$kproduct]["qty"]),
-                        "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3,
+                    
+                    // dd($infos_stock_min);
 
-                        "fk_cat" => $stock_in_war["fk_cat"],
-                        "label_cat" => $stock_in_war["label_cat"],
-                        "fk_parent" => $stock_in_war["fk_parent"],
+                    // depuis un fichier reassort automatique
 
-                    ]);
+                    if ($by_reassort_auto == true) {
+                        array_push($products_reassort,[
+                            "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
+                            "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                            "qte_en_stock_in_source" => $qte_en_stock_in_source,
+                            "libelle" => $stock_in_war["libelle"],
+                            "product_id" => $kproduct,
+                            "barcode" => $stock_in_war["barcode"],
+                            "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                            "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
+                            "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+
+                            "qte_optimale" => ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*2 : 0,
+    
+                            "fk_cat" => $stock_in_war["fk_cat"],
+                            "label_cat" => $stock_in_war["label_cat"],
+                            "fk_parent" => $stock_in_war["fk_parent"],
+    
+                        ]);
+                    }else {
+                        array_push($products_reassort,[
+                            "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
+                            "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                            "qte_en_stock_in_source" => $qte_en_stock_in_source,
+                            "libelle" => $stock_in_war["libelle"],
+                            "product_id" => $kproduct,
+                            "barcode" => $stock_in_war["barcode"],
+                            "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                            "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
+                            "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+                            "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3,
+    
+                            "fk_cat" => $stock_in_war["fk_cat"],
+                            "label_cat" => $stock_in_war["label_cat"],
+                            "fk_parent" => $stock_in_war["fk_parent"],
+    
+                        ]);
+                    }
+                   
                 }else {
                     if ($stock_in_war["stock"] < $vente_by_product[$kproduct]["qty"]) {
                         array_push($products_reassort,[
@@ -1270,7 +1982,7 @@ class Controller extends BaseController
                             "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
                             "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
                             "demande" => ceil($vente_by_product[$kproduct]["qty"]),
-                            "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3,
+                            "qte_optimale" => $by_file? ceil($vente_by_product[$kproduct]["qty"]) : ceil($vente_by_product[$kproduct]["qty"])*3, /// iciiiii
     
                             "fk_cat" => $stock_in_war["fk_cat"],
                             "label_cat" => $stock_in_war["label_cat"],
@@ -1346,6 +2058,7 @@ class Controller extends BaseController
                 "start_date_origin" => $start_date_origin,
                 "end_date_origin" => $end_date_origin,
                 "by_file" => $by_file,
+                "by_reassort_auto" => isset($by_reassort_auto)? $by_reassort_auto : NULL,
 
                 
             ]);
@@ -1354,81 +2067,106 @@ class Controller extends BaseController
 
 
 
-    function postReassort(Request $request){
+    function postReassort(Request $request,$data = NULL){
+
+        
+       
 
 
         try {
-          
+
+            $methode = $request->isMethod('post');
+
             $data_save = array();
             $incrementation = 0;
             $decrementation = 0;
-            $user_id = $request->post('user');
-            $tabProduitReassort1 = $request->post('tabProduitReassort1');
-            $entrepot_source = $request->post('entrepot_source');
-            $entrepot_destination = $request->post('entrepot_destination');
-            $name_date_reassort = $request->post('libele_reassort')? $request->post('libele_reassort'):"reassort_du_".date('Y-m-d H:i:s');
             $identifiant_reassort = time();
-            $sense_transfert = $entrepot_source."to".$entrepot_destination;
 
-            foreach ($tabProduitReassort1 as $key => $lineR) {
+            if ($methode) { 
+                          
+                
+                $user_id = $request->post('user');
+                $tabProduitReassort1 = $request->post('tabProduitReassort1');
+                $entrepot_source = $request->post('entrepot_source');
+                $entrepot_destination = $request->post('entrepot_destination');
+                $name_date_reassort = $request->post('libele_reassort')? $request->post('libele_reassort'):"reassort_du_".date('Y-m-d H:i:s');
+                $sense_transfert = $entrepot_source."to".$entrepot_destination;
+            }else {
 
-                if ($lineR["qte_transfere"] != 0) {           
-                    $data1 = array(
-                        'product_id' => $lineR["product_id"],
-                        'warehouse_id' => $entrepot_source, 
-                        'qty' => $lineR["qte_transfere"] * (-1), 
-                        'type' => 1, 
-                        'movementcode' => NULL, 
-                        'movementlabel' => 'Transfere via preparation', 
-                        'price' => $lineR["price"], 
-                        'datem' => date('Y-m-d'), 
-                        'dlc' => date('Y-m-d'), 
-                        'dluo' => date('Y-m-d'), 
-                    );
+                $user_id = $request->post('user');
+                $tabProduitReassort1 = $request->post('tabProduitReassort1');
+                $entrepot_source = $request->post('entrepot_source');
+                $entrepot_destination = $request->post('entrepot_destination');
+                $name_date_reassort = $request->post('libele_reassort')? $request->post('libele_reassort'):"reassort_du_".date('Y-m-d H:i:s');
+                $sense_transfert = $entrepot_source."to".$entrepot_destination;
 
-                        $data1["libelle_reassort"] = $name_date_reassort;
-                        $data1["id_reassort"] = 0;
-                        $data1["barcode"] = $lineR["barcode"];
-                        $data1["identifiant_reassort"] = $identifiant_reassort;
-                        $data1["sense"] = $sense_transfert;
-                        $data1["user_id"] = $user_id;
-                        array_push($data_save,$data1);
-                        $decrementation++;
-                    $data2 = array(
-                        'product_id' => $lineR["product_id"],
-                        'warehouse_id' => $entrepot_destination, 
-                        'qty' => $lineR["qte_transfere"], 
-                        'type' => 0, 
-                        'movementcode' => NULL,
-                        'movementlabel' => 'Transfere via preparation',
-                        'price' => $lineR["price"],
-                        'datem' => date('Y-m-d'),
-                        'dlc' => date('Y-m-d'),
-                        'dluo' => date('Y-m-d'),
-                    );
+            }
 
-                        $data2["libelle_reassort"] = $name_date_reassort;
-                        $data2["id_reassort"] = 0;
-                        $data2["barcode"] = $lineR["barcode"];
-                        $data2["identifiant_reassort"] = $identifiant_reassort;
-                        $data2["sense"] = $sense_transfert;
-                        $data2["user_id"] = $user_id;
-                        array_push($data_save,$data2);
-                        $incrementation++;
+
+                foreach ($tabProduitReassort1 as $key => $lineR) {
+
+                    if ($lineR["qte_transfere"] != 0) {           
+                        $data1 = array(
+                            'product_id' => $lineR["product_id"],
+                            'warehouse_id' => $entrepot_source, 
+                            'qty' => $lineR["qte_transfere"] * (-1), 
+                            'type' => 1, 
+                            'movementcode' => NULL, 
+                            'movementlabel' => 'Transfere via preparation', 
+                            'price' => $lineR["price"], 
+                            'datem' => date('Y-m-d'), 
+                            'dlc' => date('Y-m-d'), 
+                            'dluo' => date('Y-m-d'), 
+                        );
+
+                            $data1["libelle_reassort"] = $name_date_reassort;
+                            $data1["id_reassort"] = 0;
+                            $data1["barcode"] = $lineR["barcode"];
+                            $data1["identifiant_reassort"] = $identifiant_reassort;
+                            $data1["sense"] = $sense_transfert;
+                            $data1["user_id"] = $user_id;
+                            array_push($data_save,$data1);
+                            $decrementation++;
+                        $data2 = array(
+                            'product_id' => $lineR["product_id"],
+                            'warehouse_id' => $entrepot_destination, 
+                            'qty' => $lineR["qte_transfere"], 
+                            'type' => 0, 
+                            'movementcode' => NULL,
+                            'movementlabel' => 'Transfere via preparation',
+                            'price' => $lineR["price"],
+                            'datem' => date('Y-m-d'),
+                            'dlc' => date('Y-m-d'),
+                            'dluo' => date('Y-m-d'),
+                        );
+
+                            $data2["libelle_reassort"] = $name_date_reassort;
+                            $data2["id_reassort"] = 0;
+                            $data2["barcode"] = $lineR["barcode"];
+                            $data2["identifiant_reassort"] = $identifiant_reassort;
+                            $data2["sense"] = $sense_transfert;
+                            $data2["user_id"] = $user_id;
+                            array_push($data_save,$data2);
+                            $incrementation++;
+                    }
                 }
-            }
 
-            if ($incrementation != $decrementation) {
-                return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
-            }
+                if ($incrementation != $decrementation) {
+                    return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
+                }
 
-            try {
-                $resDB = DB::table('hist_reassort')->insert($data_save);
-            } catch (\Throwable $th) {
-                return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
-            }
+                try {
+                    $resDB = DB::table('hist_reassort')->insert($data_save);
+                } catch (\Throwable $th) {
+                    return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
+                }
 
-            return ["response" => true,"decrementation" => $decrementation,"incrementation" => $incrementation,"resDB" => $resDB];
+                // envoi de notif pour incrémenter les alertes de reassort
+
+                $this->api->updateSessionStockAlerte("alerte_reassortEnAttente", 1);
+
+                return ["response" => true,"decrementation" => $decrementation,"incrementation" => $incrementation,"resDB" => $resDB];
+           
 
         } catch (\Throwable $th) {
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
@@ -1849,4 +2587,30 @@ class Controller extends BaseController
             }
         } 
     }
+
+    function updateSessionByNotif(Request $request){
+        try {
+
+            $cle = $request->post('cle');
+            $value = $request->post('value');
+
+            // Récupérer la valeur actuelle de la variable de session
+            $ancienneValeur = session()->get($cle);
+            // Décrémenter la valeur
+            $nouvelleValeur = $ancienneValeur + $value;
+            // Réattribuer la nouvelle valeur à la variable de session
+            session()->put($cle, $nouvelleValeur);
+        
+            return['response' => true, 'data' => [
+                    'nouvelleValeur' => $nouvelleValeur,
+                    'cle' => $cle,
+                    'value' => $value
+                    ]];
+    
+        } catch (\Throwable $th) {
+
+            return['response' => false, 'message' => $th->getMessage()];
+        }
+    }
+
 }

@@ -22,6 +22,9 @@ use App\Http\Controllers\TiersController;
 |
 */
 
+// sans connexion
+Route::get('/alerteStockCron/{token}', [Controller::class, 'alerteStockCron'])->name('alerteStockCron');
+
 Route::get('/index', function () {
     return redirect()->route('/');
 })->name('index');
@@ -134,13 +137,11 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/seller", [Admin::class, "seller"])->name('admin.seller'); 
     Route::get("/analyticsSeller", [Admin::class, "analyticsSeller"])->name('analyticsSeller');
     Route::get("/analyticsSellerTotal", [Admin::class, "analyticsSellerTotal"])->name('analyticsSellerTotal');
-    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
     Route::get("/cashier", [Admin::class, "cashier"])->name('admin.cashier'); 
     Route::post("/cashMovement", [Admin::class, "cashMovement"])->name('admin.cashMovement'); 
     Route::post("/updateCashMovement", [Admin::class, "updateCashMovement"])->name('admin.updateCashMovement'); 
     Route::post("/cancelCashMovement", [Admin::class, "cancelCashMovement"])->name('admin.cancelCashMovement'); 
     Route::post("/addCashMovement", [Admin::class, "addCashMovement"])->name('admin.addCashMovement'); 
-    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
     // gestion de stocks lime et rape.
    Route::get("/stockscat", [Admin::class, "stockscat"])->name('admin.stockscat'); 
@@ -223,9 +224,24 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/printers", [Admin::class, "addPrinter"])->name('printer.add');
     Route::post("/updatePrinters", [Admin::class, "updatePrinter"])->name('printer.update');
     Route::post("/deletePrinters", [Admin::class, "deletePrinter"])->name('printer.delete');
+    
     // Route pour approvisionnement
     Route::get("/getVieuxSplay", [Controller::class, "getVieuxSplay"])->name('getVieuxSplay');
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
+    Route::get('/alertStocks/{idEntrepot}/{Njour}', [Controller::class, 'alertStocks'])->name('alertStocks');
+    Route::get('/listeAlerte', [Controller::class, 'listeAlerte'])->name('listeAlerte');
+
+    Route::get('/deplacerFichier/{nomFichier}', [Controller::class, 'deplacerFichier'])->name('deplacerFichier');
+    Route::post('/updateSessionByNotif', [Controller::class, 'updateSessionByNotif'])->name('updateSessionByNotif');
+
+
+    
+
+    
+
+    
+
+
     // Missing Labels
     Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
     Route::post("/validLabelMissing", [Admin::class, "validLabelMissing"])->name('validLabelMissing');
@@ -281,6 +297,12 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
 // ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
 Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
     Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
+});
+
+// ADMIN - CHEF D'ÉQUIPE & SAV
+Route::group(['middleware' => ['auth', 'role:1,6']], function () {
+    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
+    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 });
 
 // Vendeuse

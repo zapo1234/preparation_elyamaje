@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class ColissimoTracking
 {
-    public function getStatus($trackingNumbers){
+    public function getStatus($trackingNumbers, $details = false){
         $orders_status = [];
 
         foreach($trackingNumbers as $key => $trackingNumber){
@@ -33,26 +33,31 @@ class ColissimoTracking
             try {
 
                 if ($response->status() === 200) {
-                    $responseData = $response->json();
-                    $orders_status[] = [
-                        'order_id' => $trackingNumber->order_id,
-                        'step' => 0,
-                    ];
 
-                    if(isset($responseData['parcel'])){
-                        foreach($responseData['parcel']['step'] as $step){
-                            if($step['status'] == "STEP_STATUS_ACTIVE"){
-                                if(isset($step['labelShort']) && $step['stepId'] == 4){
-                                    if($step['labelShort'] == "Votre colis vous attend dans votre point de retrait"){
-                                        $step['stepId'] = 5;
+                    if($details){
+                        $orders_status = $response->json();
+                    } else {
+                        $responseData = $response->json();
+                        $orders_status[] = [
+                            'order_id' => $trackingNumber->order_id,
+                            'step' => 0,
+                        ];
+    
+                        
+                        if(isset($responseData['parcel'])){
+                            foreach($responseData['parcel']['step'] as $step){
+                                if($step['status'] == "STEP_STATUS_ACTIVE"){
+                                    if(isset($step['labelShort']) && $step['stepId'] == 4){
+                                        if($step['labelShort'] == "Votre colis vous attend dans votre point de retrait"){
+                                            $step['stepId'] = 5;
+                                        }
                                     }
+                                    $orders_status[$key]['step'] = $step['stepId'];
+                                    $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
                                 }
-                                $orders_status[$key]['step'] = $step['stepId'];
-                                $orders_status[$key]['message'] = isset($step['labelShort']) ? $step['labelShort'] : '';
                             }
                         }
-                    }
-                    
+                    } 
                 }
             } catch(Exception $e){
                 return;

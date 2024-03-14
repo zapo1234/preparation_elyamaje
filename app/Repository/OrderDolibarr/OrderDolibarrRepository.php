@@ -114,24 +114,38 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrdersDolibarrByIdUser($user_id){
+      // List orders
       $orders = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent')
-         ->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
-         ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->leftJoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
+         ->leftJoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('products.status', 'publish')
          ->where('orders_doli.user_id', $user_id)
          ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->orderBy('products.menu_order', 'ASC')
          ->get();
 
          $orders = json_decode(json_encode($orders), true);
          $list = [];
+      
+      // List of categories
+      $categories = DB::table('categories')->select('category_id_woocommerce', 'parent_category_id', 'order_display')->get();
+      $list_categories = [];
+      foreach($categories as $cat){
+         $list_categories[$cat->category_id_woocommerce] = $cat->order_display;
+         $list_categories[$cat->parent_category_id] = $cat->order_display;
+      }
 
          foreach($orders as $key => $order){
+            $category_parent_id = explode(',', $order['category_id']);
+            $category_parent_id = $category_parent_id[count($category_parent_id) - 1];
+
             $list[$order['ref_order']]['details'] = [
                'id' => $order['ref_order'],
-               'first_name' => $order['firstname'],
-               'last_name' => $order['firstname'] != $order['lastname'] ? $order['lastname'] : '',
+               'first_name' => $order['billing_name'] ?? $order['firstname'],
+               'last_name' => $order['billing_pname'] ? ($order['billing_pname'] != $order['billing_name'] ? $order['billing_pname'] : '') : 
+               ($order['lastname'] != $order['firstname'] ? $order['lastname'] : ''),
                'date' => $order['date'],
                'total' => floatval($order['total_order_ttc']),
                'total_tax' => floatval($order['total_tax']),
@@ -147,6 +161,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ];
 
             $list[$order['ref_order']]['items'][] = [
+               "order_display" => isset($list_categories[$category_parent_id]) ? $list_categories[$category_parent_id] : 999,
                "variation" => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
                "name" => $order['productName'],
                "barcode" => $order['barcode'],
@@ -160,6 +175,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                'pick' => $order['pick'],
                'product_woocommerce_id' => $order['product_woocommerce_id'],
             ];
+         }
+
+         // order product by order_display
+         foreach($list as $key => $lis){
+            usort($list[$key]['items'], function($a, $b) {
+               return $a['order_display'] - $b['order_display'];
+           });
          }
 
          return ['orders' => $list];
@@ -410,10 +432,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllProductsPickedDolibarr(){
       $productsPicked = DB::table('lines_commande_doli')
-      ->select('products.product_woocommerce_id', 'id_commande as order_id', 'pick')
+      ->select('products.product_woocommerce_id', 'ref_order as order_id', 'pick')
       ->join('orders_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
       ->join('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
       ->where('pick', '>',  0)
+      ->whereNotIn('orders_doli.statut', ['canceled', 'pending', 'finished'])
       ->get()
       ->toArray();
 
@@ -885,6 +908,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
      }
+
+   public function getOrderByRef($ref_order){
+      return $this->model::where('ref_order', $ref_order)->get();
+   }
 }
 
 

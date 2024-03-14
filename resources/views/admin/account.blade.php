@@ -3,7 +3,7 @@
 
 		@section("style")
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-			<link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+			<link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
 		@endsection
 
@@ -143,7 +143,8 @@
 									@foreach ($users as $user)
 										<tr>
 											<td data-label="Profil">
-												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : 'assets/images/avatars/default_avatar.png' }}" class="rounded-circle" width="46" height="46" alt="">
+
+												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
 											</td>
 											<td data-label="Nom">{{ $user['name'] }}</td>
 											<td data-label="Rôles">	
@@ -316,7 +317,7 @@
 
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-		<script src="assets/plugins/select2/js/select2.min.js"></script>
+		<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 		<script>
 
 			

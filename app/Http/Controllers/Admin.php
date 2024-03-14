@@ -346,10 +346,19 @@ class Admin extends BaseController
         $date = $request->get('date') ?? date('Y-m-d');
         $histories = $this->history->getHistoryAdmin($date);
 
+        $total_order = 0;
+        foreach($histories as $histo){
+            if($histo['total_order']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order'] : $total_order;
+            } else if($histo['total_order_ttc']){
+                $total_order = $histo['status'] == "finished" ?  $total_order + $histo['total_order_ttc'] : $total_order;
+            }
+        }
+
         $list_histories = [];
         try{
             $list_histories = $this->buildHistory($histories);
-            echo json_encode(['success' => true, 'histories' => $list_histories /*, 'average_by_name' => $average_by_name*/]);
+            echo json_encode(['success' => true, 'histories' => $list_histories, 'total_order' => $total_order /*, 'average_by_name' => $average_by_name*/]);
         } catch(Exception $e){
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -718,7 +727,7 @@ class Admin extends BaseController
                     'finished_count' => $histo['status'] == "finished" ? 1 : 0,
                     'items_picked' => $histo['status'] == "prepared" ? $histo['total_product'] : 0,
                     'items_packed' => $histo['status'] == "finished" ? $histo['total_product'] : 0,
-                    'date' => date('d/m/Y', strtotime($histo['created_at']))
+                    'date' => date('d/m/Y', strtotime($histo['created_at'])),
                 ];
             } else {
                 $histo['status'] == "prepared" ? array_push($list_histories[$id][$histo['id']]['prepared_order'],$histo['order_id']) : array_push($list_histories[$id][$histo['id']]['finished_order'],$histo['order_id']);

@@ -16,7 +16,7 @@ class Chronopost
 
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
-        $SaturdayShipping = 1;
+        $SaturdayShipping = 0;
 
         // ASSURANCE COLIS
         $insuredValue = $this->getInsuredValue($order['total_order'], $weight);
@@ -72,7 +72,8 @@ class Chronopost
                 "insuredValue"              => intval($order['total_order']) < 450 ? 0 : intval($order['total_order']) * 100,
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
-                "service"                   => $SaturdayShipping,          
+                "service"                   => $SaturdayShipping,   
+                'as'                        => $order['shipping_method'] == "chronotoshopdirect" ? "A15" : "",        
                 "shipDate"                  => date('c'),       
                 "shipHour"                  => date('H'),      
                 "weight"                    => $weight,  
@@ -130,37 +131,98 @@ class Chronopost
     }
 
 
-    public function getStatus($trackingNumbers){
+    public function getStatus($trackingNumbers, $getAllStatus = false){
 
         $orders_status = [];
         foreach($trackingNumbers as $key => $trackingNumber){
-            try {
 
-                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/searchPOD?accountNumber=".config('app.chronopost_accountNumber')."&password=".config('app.chronopost_password')."&language=fr_FR&skybillNumber=".$trackingNumber->tracking_number."&pdf=true");
+            // Type of contract 
+            if(str_contains($trackingNumber->tracking_number, 'XR')){
+                $accountNumber = config('app.chronopost_relais_accountNumber');
+                $accountPassword = config('app.chronopost_relais_password');
+            } else if(str_contains($trackingNumber->tracking_number, 'XW')){
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            } else if(str_contains($trackingNumber->tracking_number, 'XA')){
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            } else {
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            }
+
+            try {
+                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/trackXX?accountNumber=".$accountNumber."&password=".$accountPassword."&language=fr_FR&skybillNumber=".$trackingNumber->tracking_number."&pdf=true");
 
                 // Vérifiez si la requête HTTP a réussi
                 if ($response->successful()) {
-                  
                     $xml = simplexml_load_string($response->body());
                     $statusCode = $xml->xpath('//statusCode');
 
                     if (!empty($statusCode)) {
                         $statusCodeValue = (string)$statusCode[0];
-                        if($statusCodeValue == 5){
+                        if($statusCodeValue == 5 || $getAllStatus){
                             $orders_status[] = [
                                 'order_id' => $trackingNumber->order_id,
-                                'step' => 5,
-                                'message' => ''
+                                'step' => intval($statusCodeValue),
+                                'message' => '',
+                                'tracking_number' => $trackingNumber->tracking_number,
+
                             ];
                         }
                     } 
                 }
             } catch(Exception $e){
-
+                // dd($e->getMessage());
             }
         }
 
         return $orders_status;
+    }
+
+    public function getStatusDetails($trackingNumbers, $getAllStatus = false) {
+        $orders_details = [];
+        foreach($trackingNumbers as $key => $trackingNumber){
+
+            // Type of contract 
+            if(str_contains($trackingNumber->tracking_number, 'XR')){
+                $accountNumber = config('app.chronopost_relais_accountNumber');
+                $accountPassword = config('app.chronopost_relais_password');
+            } else if(str_contains($trackingNumber->tracking_number, 'XW')){
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            } else if(str_contains($trackingNumber->tracking_number, 'XA')){
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            } else {
+                $accountNumber = config('app.chronopost_accountNumber');
+                $accountPassword = config('app.chronopost_password');
+            }
+
+            try {
+                $response = Http::withHeaders(['Content-Type' => 'application/json'])->get("https://ws.chronopost.fr/tracking-cxf/TrackingServiceWS/trackSkybillV2?accountNumber=".$accountNumber."&password=".$accountPassword."&language=fr_FR&skybillNumber=".$trackingNumber->tracking_number."&pdf=true");
+
+                // Vérifiez si la requête HTTP a réussi
+                if ($response->successful()) {
+                    $xml = simplexml_load_string($response->body());
+                    foreach ($xml->xpath('//listEventInfoComp/events') as $key => $event) {
+                        $orders_details[$key] = [
+                            'date' => $event->eventDate,
+                            'step' => $event->officeLabel.' '.$event->eventLabel,
+                            'code' => $event->code
+                        ];
+
+                        foreach($event->infoCompList as $e){
+                            $orders_details[$key]['details'][] = ['name' => $e->name, 'value' => $e->value];
+                        }
+                    }
+                }
+            } catch(Exception $e){
+                // dd($e->getMessage());
+            }
+        }
+
+        return $orders_details;
     }
 
     public function trackingStatusLabel($tracking_number){
@@ -474,6 +536,19 @@ class Chronopost
 
             return isset($account[$method]) ? $account[$method] : $chrono13;
         }
+    }
+
+    public function getStatusCode(){
+        $status_code = [
+            [],
+            ['A', 'AB', 'AC', 'AN', 'AP', 'T'],
+            ['AT', 'A1', 'A2', 'AV', 'B', 'BA', 'BD', 'BL', 'CA', 'CC', 'CR', 'DO', 'DP', 'EC', 'ED', 'EE', 'EI', 'EJ', 'HD', 'I', 'I1', 'I2', 'I9', 'IA', 'IS', 
+            'L', 'LC', 'LW', 'O', 'PC', 'PE', 'PT', 'RA', 'SC', 'SD', 'TP', 'TS', 'VD', 'VO', 'W', 'ZS'],
+            ['CO', 'BW', 'DI', 'DS', 'DV', 'DY', 'IN', 'LR', 'LT', 'NA', 'N', 'NL', 'P', 'PA', 'RB', 'RC', 'TA', 'TI', 'TO', 'WD', 'X', 'ZA', 'ZC', 'ZI', 'ZT'],
+            ['D', 'D1', 'D2', 'D6', 'D7', 'DD', 'RI', 'MD', 'U', 'VC', 'Y'],
+        ];
+
+        return $status_code;
     }
     
 }

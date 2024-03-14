@@ -5651,12 +5651,27 @@ textarea::placeholder {
 
 
 	}
-
-
 }
 
 
 @media screen and (max-width: 620px) {
+
+	.step_tracking{
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tracking_colissimo li{
+		width:100% !important;
+	}
+
+	.step_tracking li{
+		width: 100% !important;
+	}
+
+	.step_tracking li + li:after{
+		display: none !important;
+	}
 	.topbar .navbar .dropdown-menu::after {
 		display: none;
 	}
@@ -7817,6 +7832,15 @@ tr:has(.chronopost_shipping){
     background-repeat: no-repeat;
 }
 
+.shipping_colissimo_logo{
+	background-image: url(../images/icons/colissimo.png);
+    width: 125px;
+    background-size: contain;
+    height: 25px;
+    background-repeat: no-repeat;
+}
+
+
 .chronopost_shipping_method_preparateur{
 	background-image: url(../images/icons/chronopost.png);
     width: 125px;
@@ -8435,7 +8459,7 @@ select option[disabled] {
 	font-weight: bold;
 	font-size: 1.2rem;
 }
-.order_prepared, .order_finished{
+.order_prepared, .order_finished, .order_total{
 	color: #45CB3F;
 }
 
@@ -8847,3 +8871,123 @@ select option[disabled] {
 		top: -169px;
 	}
 }
+.table_details_tracking{
+	border-radius: 10px;
+}
+.table_details_tracking tr{
+	border: 1px solid #333333;
+}
+
+.table_details_tracking td{
+	border: 1px solid #333333;
+	padding: 10px;
+}
+
+.table_details_tracking th{
+	padding: 10px;
+	background-color: #333333;
+	color: white;
+}
+
+.text-bold{
+	font-weight: bold;
+}
+
+
+.step_tracking {
+	 background-color: white;
+	 position: relative;
+	 /* overflow: hidden; */
+	 counter-reset: wizard;
+	 margin-top: 50px;
+	 margin-bottom: 50px;
+}
+
+.step_tracking li {
+	position: relative;
+	float: left;
+	width: 20%;
+	text-align: center;
+	color: #333333;
+	font-weight: bold;
+	font-size: 13px;
+}
+
+
+.tracking_colissimo li{
+	width: 16.5%;
+}
+
+.tracking_colissimo{
+	display: flex;
+	justify-content: center;
+}
+
+.step_tracking .current ~ li {
+	color: rgba(0, 0, 0, .3);
+}
+.step_tracking li:before {
+	counter-increment: wizard;
+	content: counter(wizard);
+	display: block;
+	color: white !important;
+	background-color: #333333;
+	border: 2px solid #333333;
+	text-align: center;
+	width: 3em;
+	height: 3em;
+	line-height: 3em;
+	border-radius: 3em;
+	position: relative;
+	left: 50%;
+	margin-bottom: 1em;
+	margin-left: -1.5em;
+	z-index: 1;
+}
+
+
+.step_tracking .current ~ li:before {
+	background-color: white;
+	color: rgba(0, 0, 0, .3) !important;
+	border-color: rgba(0, 0, 0, .3);
+}
+.step_tracking li + li:after {
+	 content: "";
+	 display: block;
+	 width: 100%;
+	 background-color: #333333;
+	 height: 2px;
+	 position: absolute;
+	 left: -50%;
+	 top: 1.5em;
+	 z-index: 0;
+}
+.step_tracking .current ~ li:after {
+	 background-color: rgba(0, 0, 0, .3);
+}
+
+.step_tracking li::marker{
+	color: white !important
+}
+
+.details_tracking thead th{
+	border-top-left-radius: 0px !important;
+	border-top-right-radius: 0px !important;
+}
+
+.details_tracking{
+	display: inline-block;
+    height: 50vh;
+	overflow-y: auto;
+}
+
+.table-scroll thead th {
+	position: sticky;
+	top: -1;
+  }
+  .table-scroll tfoot td {
+	position: sticky;
+	bottom: 0;
+  }
+
+

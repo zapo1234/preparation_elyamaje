@@ -3,7 +3,7 @@
 
 @section("style")
     <link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
-    <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
     <link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
     <link href="assets/css/style_reassort.css" rel="stylesheet" />
 
@@ -212,7 +212,8 @@
                                                     @else
                                                         <input class="form-check-input" type="checkbox" id="first_transfert" name="first_transfert">
                                                     @endif
-                                                    <label class="form-check-label" for="first_transfert">State de vente</label>
+                                                    <label class="form-check-label" for="first_transfert">State de vente</label>                                                    
+
                                                 </div>
                                             </div>
                                             <div class="col-12 d-flex justify-content-center">
@@ -268,9 +269,22 @@
                                                 <div class="col-md-4">
                                                     <button id="id_sub_calcul_reassort" onclick="this.disabled=true;this.form.submit();" class="btn btn-primary" type="submit">Générer le réassort</button>
                                                 </div>
+
+                                              
+
                                             </div>
 
-                                            <div class="col-md-2"></div>
+                                            <div class="col-md-2">
+                                                @if (isset($url))                                                
+                                                    @if ($url)
+                                                        <a href="{{$url}}" download="{{ $fileNameReassort }}" class="btn btn-outline-info px-5 radius-30">
+                                                            <i class="bx bx-cloud-download mr-1"></i>
+                                                            Réassort du lundi
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                               
+                                            </div>
 
                 
                                             
@@ -460,7 +474,7 @@
 
                 @if (isset($products_reassort))
 
-                {{-- @dd($by_file) --}}
+                    {{-- @dd($by_file) --}}
 
 
                     <div id="id_reassor1" class="card card_product_commande">
@@ -473,7 +487,13 @@
                                         <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
                                         <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th>
                                         <th title="L'entrepôt qui va être décrémenté">Entrepôt source (Qté)</th>
-                                        <th title="Points actuellement valide de l'utilisateur">Demande/sem</th>
+                                      
+                                        @if (isset($by_reassort_auto) && $by_reassort_auto == true)
+                                            <th title="Points actuellement valide de l'utilisateur">Demande</th>
+                                        @else
+                                            <th title="Points actuellement valide de l'utilisateur">Demande/sem</th>
+                                        @endif
+
                                         <th title="L'entrepôt qui va être alimenter">Entrepôt de destination (Qté)</th>
                                         <th title="Points actuellement valide de l'utilisateur">Qté souhaité</th>
 
@@ -518,19 +538,32 @@
 
 
 
-
                                             @if ($value["qte_act"] < 0 || $value["qte_en_stock_in_source"] <= 0)
                                                 <td data-key="qte_transfere" data-value="0" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="0" disabled></td>
                                             @else
-                                                @if ((($value["qte_optimale"] - $value["qte_act"])/($value["qte_en_stock_in_source"]))>0.2)
-                                                {{-- Quantité demandée trop elevée on donne juste 20% de la reserve --}}
-                                                <td class="alerte_stock" data-key="qte_transfere" data-value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" disabled>
-                                                    <i title="La demande ne peux pas être transférer en entier (20%)" class="fadeIn animated bx bx-error"></i>
-                                                </td>
-                                                @else
-                                                <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
-                                                @endif
 
+                                                @if (isset($by_reassort_auto) && $by_reassort_auto == true)
+                                                    @if ((($value["demande"])/($value["qte_en_stock_in_source"])) > 0.2)
+                                                        {{-- Quantité demandée trop elevée on donne juste 20% de la reserve --}}
+                                                        <td class="alerte_stock" data-key="qte_transfere" data-value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" disabled>
+                                                            <i title="La demande ne peux pas être transférer en entier (20%)" class="fadeIn animated bx bx-error"></i>
+                                                        </td>
+                                                    @else
+                                                        <td data-key="qte_transfere" data-value="{{$value["demande"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["demande"]}}" disabled></td>
+                                                    @endif
+                                               
+                                               
+                                                    @else
+                                                    @if ((($value["qte_optimale"] - $value["qte_act"])/($value["qte_en_stock_in_source"])) > 0.2)
+                                                    {{-- Quantité demandée trop elevée on donne juste 20% de la reserve --}}
+                                                    <td class="alerte_stock" data-key="qte_transfere" data-value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{floor(($value["qte_en_stock_in_source"])*0.2)}}" disabled>
+                                                        <i title="La demande ne peux pas être transférer en entier (20%)" class="fadeIn animated bx bx-error"></i>
+                                                    </td>
+                                                    @else
+                                                        <td data-key="qte_transfere" data-value="{{$value["qte_optimale"] - $value["qte_act"]}}" id="{{$value["product_id"]}}_qte_transfere"><input class="text-center" style="width: 50px" type="text" value="{{$value["qte_optimale"] - $value["qte_act"]}}" disabled></td>
+                                                    @endif
+                                                @endif
+                                                
                                             @endif
 
 
@@ -815,7 +848,7 @@
 
 <script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
-<script src="assets/plugins/select2/js/select2.min.js"></script>
+<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 
 <script src="{{asset('assets/plugins/datetimepicker/js/legacy.js')}}"></script>
 <script src="{{asset('assets/plugins/datetimepicker/js/picker.js')}}"></script>
@@ -1097,6 +1130,7 @@
         $("#id_sub_validation_reassort").html(spinner);
 
 
+        console.log(tabProduitReassort1);
 
         $.ajax({
             url: urlCreateReassort,
@@ -1114,6 +1148,8 @@
                 'X-CSRF-TOKEN': csrfToken
             },                       
             success: function(response) {
+
+                console.log(tabProduitReassort1);
 
                 if (response.response == true) {
 

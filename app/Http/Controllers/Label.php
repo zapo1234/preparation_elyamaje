@@ -106,6 +106,7 @@ class Label extends BaseController
                     'label_format' => $order['label_format'],
                     'cn23' => $order['cn23'],
                     'download_cn23' => $order['download_cn23'],
+                    'origin' => $order['origin'],
                     // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             } else if(count($clesRecherchees) > 0){
@@ -116,6 +117,7 @@ class Label extends BaseController
                     'label_format' => $labels[$clesRecherchees[0]]['label_format'], 
                     'cn23' => $labels[$clesRecherchees[0]]['cn23'], 
                     'download_cn23' => $order['download_cn23'],
+                    'origin' => $order['origin'],
                     // 'from_dolibarr' => isset($order["fk_commande"]) ? true : false
                 ];
             }

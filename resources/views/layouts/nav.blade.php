@@ -3,9 +3,10 @@
       <!-- <i class='bx bxl-c-plus-plus'></i> -->
       <!-- <span class="logo_name">CodingLab</span> -->
         <div class="div_short_icon">
-            <img src="assets{{ ('/images/short_logo_blanc.png') }}" class="logo-short" alt="logo icon">
+
+            <img src="{{(asset('assets/images/short_logo_blanc.png'))}}" class="logo-short" alt="logo icon">
         </div>
-        <img src="assets{{ ('/images/elyamaje_logo_long_blanc.png') }}" class="logo_name logo-icon" alt="logo icon">
+        <img src="{{ asset('assets/images/elyamaje_logo_long_blanc.png') }}" class="logo_name logo-icon" alt="logo icon">
     </div>
     <ul class="nav-links">
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
@@ -46,16 +47,30 @@
                     <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                 </ul>
             </li>
+
+
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
                     <i class='bx bx-transfer'></i>
+                    <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_reassortEnAttente')) : 0}}</span>
                     <span class="link_name">Transferts</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
+                    <li>
+                        <a class="link_name" href="{{ url('getVieuxSplay') }}">
+                            Transferts
+                            <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+
+                        </a>
+                    </li>
                 </ul>
             </li>
+
+
         @endif
+
+
+
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
                 <a href="{{ url('indexAdmin') }}">
@@ -144,13 +159,33 @@
                 </ul>
             </li>
             <li>
+             
+
                 <a href="{{ url('getVieuxSplay') }}">
                     <i class='bx bx-transfer'></i>
+                    <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_stockReassort') && session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_stockReassort') + session()->get('alerte_reassortEnAttente')) : 0}}</span>
                     <span class="link_name">Transferts</span>
                 </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
+
+                <ul class="sub-menu beauty_prof_menu">
+                    <li>
+                        <a class="link_name" href="{{ url('getVieuxSplay') }}">
+                            Transferts
+                            <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('alertStocks/15/1') }}">State de ventes</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('listeAlerte') }}">
+                            Liste des alertes
+                            <span class="alert-count" style="left: 130px" id="alerte_liste">{{session()->has('alerte_stockReassort')? session()->get('alerte_stockReassort') : 0}}</span>
+                        </a>
+                    </li>
+
                 </ul>
+             
             </li>
             <li>
                 <a href="{{ url('errorLogs') }}">
@@ -161,6 +196,24 @@
                     <li><a class="link_name" href="{{ url('errorLogs') }}">Journaux d'erreurs</a></li>
                 </ul>
             </li> 
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu beauty_prof_menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('seller') }}">Analytics</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
+                    <li><a href="{{ url('cashier') }}">Caisse</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                    <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
+                    <li><a href="{{ url('generateinvoices') }}">Renvoyer une facture au client</a></li>
+                </ul>
+            </li>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <li>
@@ -213,24 +266,6 @@
                     <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
                 </ul>
             </li>
-            <li>
-                <div class="icon-link">
-                <a href="#">
-                    <span class="link_text font-bold text-light">BP</span>
-                    <span class="link_name">Beauty Prof's</span>
-                </a>
-                <i class='bx bxs-chevron-down arrow' ></i>
-                </div>
-                <ul class="sub-menu beauty_prof_menu">
-                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
-                    <li><a href="{{ url('seller') }}">Analytics</a></li>
-                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
-                    <li><a href="{{ url('cashier') }}">Caisse</a></li>
-                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
-                    <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
-                    <li><a href="{{ url('generateinvoices') }}">Renvoyer une facture au client</a></li>
-                </ul>
-            </li>
         @endif
 
         <!-- Espace Sav -->
@@ -258,12 +293,28 @@
                     <li><a class="link_name" href="{{ url('sav') }}">Sav</a></li>
                 </ul>
             </li>
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <span class="link_text font-bold text-light">BP</span>
+                    <span class="link_name">Beauty Prof's</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu beauty_prof_menu">
+                    <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                    <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
+                    <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
+                </ul>
+            </li>
         @endif
 
         <li>
             <div class="profile-details">
                 <div class="profile-content">
-                    <img src="{{ Auth()->user()->picture ? 'storage/app/images/'.Auth()->user()->picture : 'assets/images/avatars/default_avatar.png' }}" class="user-img" alt="user avatar">
+                    
+
+                    <img src="{{ Auth()->user()->picture ? 'storage/app/images/'.Auth()->user()->picture : asset('assets/images/avatars/default_avatar.png') }}" class="user-img" alt="user avatar">
                 </div>
                 <div class="name-job">
                     <div class="profile_name">{{ Auth()->user() ?  Auth()->user()->name : "Inconnu" }}</div>
