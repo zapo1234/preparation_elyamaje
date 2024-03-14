@@ -829,6 +829,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          'created_at'=> date('Y-m-d H:i:s'),
          'updated_at'=> date('Y-m-d H:i:s'),
          ];
+          
          // insert les données dans la base de données.
            DB::table('code_promos')->insert($datas_promo);
           return $ref_order;
@@ -876,8 +877,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
      }
 
      public function  getTiersBp(){
-       // faire du traiement sur les clients
-
+     
 
      }
 
