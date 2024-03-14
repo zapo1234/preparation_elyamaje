@@ -1,4 +1,55 @@
 $(document).ready(function() {
+
+    $("#get_sync_orders").on('click', function(){
+        if(!$("#get_sync_orders").hasClass('rotate')){
+            $("#get_sync_orders").addClass('rotate')
+
+            $.ajax({
+                url: "getOrders/BcVTcO9aqWdtP0ZVvujOJXQxjGT9wtRGG3iGZt8ZvwsZ58kMeJAM9TJlUumqb23C",
+                method: 'GET',
+            }).done(function(data) {
+                $("#get_sync_orders").removeClass('rotate');
+    
+                if(JSON.parse(data).success){
+                    $(".wrapper").append(`
+                        <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                            <div class=" text-white">Les commandes ont bien été récupérées</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
+    
+                    var table = $('#example').DataTable();
+                    var order_progress = 0
+                    var attribution = 0
+    
+                    // Pour recharger les données du DataTable en utilisant AJAX
+                    table.ajax.reload(function(data){
+                        data.orders.map((element) => {
+                            if (element.user_id != null && element.user_id != 0) {
+                                attribution = attribution + 1;
+                            }
+                            if (element.status == "processing" || element.status == "waiting_validate" || element.status == "waiting_to_validate" || element.status == "order-new-distrib" || element.status == "en-attente-de-pai") {
+                                order_progress = order_progress + 1;
+                            }
+                        });
+        
+        
+                        $(".number_order_pending").children().remove()
+                        $(".number_order_pending").append('<span>'+data.orders.length+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
+                    });
+                 
+                } else {
+                    $(".wrapper").append(`
+                        <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                            <div class=" text-white">`+JSON.parse(data).message+`</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
+                }
+            });
+        }
+    })
+
     $(".list_product_to_add").select2({width: "350px", dropdownParent: $("#addProductOrderModal")})
     // // Sélection de la div
     // const paceProgress = document.querySelector('.pace-progress');
@@ -464,6 +515,8 @@ $(document).ready(function() {
         },
 
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+
+            var info = $('#example').DataTable().page.info();
             var selectElements = nRow.getElementsByClassName('order_attribution');
             for (var i = 0; i < selectElements.length; i++) {
                 var select = selectElements[i];

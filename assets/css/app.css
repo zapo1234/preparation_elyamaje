@@ -9119,3 +9119,25 @@ select option[disabled] {
 	padding: 35px 0px 25px 0px !important;
 }
 
+.sync_orders{
+	background-color: transparent;
+	border: none !important;
+}
+
+.sync_orders i{
+	font-size: 22px;
+}
+
+.rotate {
+    animation: rotation 1s linear infinite; 
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-360deg);
+    }
+}
+

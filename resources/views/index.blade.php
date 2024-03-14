@@ -18,6 +18,9 @@
 									<span class="visually-hidden">Loading...</span>
                                 </div>
 							</div>
+							<button id="get_sync_orders" class="sync_orders">
+								<i class="fadeIn animated bx bx-sync"></i>
+							</button>
 						</div>
 						@csrf
 						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Gérer les commandes</button>

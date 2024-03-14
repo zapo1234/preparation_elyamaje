@@ -176,8 +176,6 @@ class OrderRepository implements OrderInterface
             } catch(Exception $e){ 
                echo json_encode(['success' => false]);
             }
-         
-       
       }
       echo json_encode(['success' => true]);
    }

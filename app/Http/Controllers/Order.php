@@ -1390,14 +1390,15 @@ class Order extends BaseController
       foreach($distributors as $dis){
         $distributors_list[] = $dis->customer_id;
       }
-      
+
+      // dd($listOrdersToCreate);
       if(count($listOrdersToCreate) > 0){
         return $this->order->insertOrdersByUsers($listOrdersToCreate, $distributors_list);
       } else {
-        return true;
+        echo json_encode(['success' => false, 'message' => 'Aucune commande à récupérer']);
       }
     } else {
-      dd("Token invalide !");
+      echo json_encode(['success' => false, 'message' => 'Token invalide !']);
     }
    
   }
