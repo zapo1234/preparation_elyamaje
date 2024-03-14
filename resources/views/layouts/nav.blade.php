@@ -47,16 +47,30 @@
                     <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                 </ul>
             </li>
+
+
             <li>
                 <a href="{{ url('getVieuxSplay') }}">
                     <i class='bx bx-transfer'></i>
+                    <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_reassortEnAttente')) : 0}}</span>
                     <span class="link_name">Transferts</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
+                    <li>
+                        <a class="link_name" href="{{ url('getVieuxSplay') }}">
+                            Transferts
+                            <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+
+                        </a>
+                    </li>
                 </ul>
             </li>
+
+
         @endif
+
+
+
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <li>
                 <a href="{{ url('indexAdmin') }}">
@@ -145,16 +159,31 @@
                 </ul>
             </li>
             <li>
+             
+
                 <a href="{{ url('getVieuxSplay') }}">
                     <i class='bx bx-transfer'></i>
-                    <span class="alert-count" style="left: 40px">0</span>
+                    <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_stockReassort') && session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_stockReassort') + session()->get('alerte_reassortEnAttente')) : 0}}</span>
                     <span class="link_name">Transferts</span>
                 </a>
 
                 <ul class="sub-menu beauty_prof_menu">
-                    <li><a class="link_name" href="{{ url('getVieuxSplay') }}">Transferts</a></li>
-                    <li><a href="{{ url('alertStocks/15/1') }}">States des vente</a></li>
-                    {{-- <li><a href="{{ url('listeAlerte') }}">Liste des alertes</a></li> --}}
+                    <li>
+                        <a class="link_name" href="{{ url('getVieuxSplay') }}">
+                            Transferts
+                            <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('alertStocks/15/1') }}">State de ventes</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('listeAlerte') }}">
+                            Liste des alertes
+                            <span class="alert-count" style="left: 130px" id="alerte_liste">{{session()->has('alerte_stockReassort')? session()->get('alerte_stockReassort') : 0}}</span>
+                        </a>
+                    </li>
+
                 </ul>
              
             </li>

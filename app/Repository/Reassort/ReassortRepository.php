@@ -214,7 +214,13 @@ class ReassortRepository implements ReassortInterface
     }
 
     public function updateStatusReassort($transfer_id, $status){
-        return $this->model::where('identifiant_reassort', $transfer_id)->update(['id_reassort' => $status]);
+
+        $statusActuel = $ligneAvantMiseAJour = $this->model::where('identifiant_reassort', $transfer_id)->first()['id_reassort'];
+        if ($statusActuel != $status) {
+            return $this->model::where('identifiant_reassort', $transfer_id)->update(['id_reassort' => $status]);
+        }
+        return false;
+
     }
 
 

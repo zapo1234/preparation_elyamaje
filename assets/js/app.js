@@ -401,3 +401,60 @@ function notificationsListener(user_role_logged){
 		}
 	});
 }
+
+
+function notificationAlertStock(url_notification,_token){
+
+
+
+	var pusher = new Pusher('1095a816bf393d278517', {
+		cluster: 'eu',
+		forceTLS: true
+	});
+
+	var channel = pusher.subscribe('preparation');
+	channel.bind('notification', function(data) {
+		if(data.message.type == "alerteStock"){
+
+			cle = data.message.cle;
+			value = data.message.value;
+
+			$.ajax({
+				url: url_notification,
+				method: "POST",
+				async: false,
+				data : {_token: _token, cle: cle, value: value}
+			}).done(function(data) {
+				if (data.response) {
+					if ($("#alerte_liste").html()) {
+						if (cle == "alerte_stockReassort") {
+							$("#alerte_liste").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_reassort").html()))
+						}else if(cle == "alerte_reassortEnAttente"){
+							$("#alerte_reassort").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur) + parseInt($("#alerte_liste").html()))
+						}
+					}else{
+						if (cle == "alerte_reassortEnAttente") {
+							$("#alerte_reassort").html(data.data.nouvelleValeur)
+							$("#alerte_liste_total").html(parseInt(data.data.nouvelleValeur))
+						}
+					}
+					
+
+				}else{
+					console.log('erreur pusher');
+				}
+			});
+
+
+
+
+
+
+
+
+
+		}
+	});
+}

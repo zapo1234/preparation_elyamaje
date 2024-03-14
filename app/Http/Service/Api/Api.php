@@ -3,8 +3,12 @@
 namespace App\Http\Service\Api;
 
 use Exception;
+use App\Events\NotificationPusher;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+
 
 class Api
 {
@@ -455,6 +459,79 @@ class Api
     return $response;
 
   }
+
+  function getAlertes(){
+
+    $dossiers = [
+      "chemin_reassorts" => storage_path('app/public/reassorts/notraite'),
+      "chemin_alertes" => storage_path('app/public/alertes/notraite')
+    ];
+
+    $nbr_alertes_reassorts = 0;
+    $nbr_alerte_stock = 0;
+
+    foreach ($dossiers as $key => $chemin) {
+
+      if ($key == "chemin_reassorts") {
+
+        $fichiers1 = File::files($chemin);
+        $nbr_alertes_reassorts = $nbr_alertes_reassorts + count($fichiers1);
+
+      }elseif ($key == "chemin_alertes") {
+
+        $fichiers2 = File::files($chemin);
+        $nbr_alerte_stock = $nbr_alerte_stock + count($fichiers2);
+
+      }
+
+    
+
+    }
+
+    // Les reassort en attente 
+    $alerte_reassortEnAttente = DB::table('hist_reassort')
+      ->where('id_reassort', 0)
+      ->distinct()
+      ->count('identifiant_reassort');
+
+
+    return [
+      "alerte_stockReassort" => $nbr_alerte_stock + $nbr_alertes_reassorts,
+      "alerte_reassortEnAttente" => $alerte_reassortEnAttente
+    ];
+    
+
+  }
+
+  function updateSessionStockAlerte($cle, $value){
+
+  
+
+    try {
+
+      // Pusher notification partial order  
+      $notification_push = [
+
+        'cle' => $cle,
+        'value' => $value,
+        'type' => "alerteStock"
+      ];      
+
+      event(New NotificationPusher($notification_push));
+
+      return true;
+
+    } catch (\Throwable $th) {
+      return false;;
+    }
+
+
+
+  }
+
+ 
+
+
 
 
 }

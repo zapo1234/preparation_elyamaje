@@ -21,15 +21,26 @@ class Auth extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     private $user;
+    private $api;
 
-    public function __construct(UserRepository $user){
+    public function __construct(UserRepository $user,Api $api){
         $this->user = $user;
+        $this->api = $api;
     }
 
     public function login(){
+
         if(!Auth()->user()){
             $date = Carbon::parse(date('Y-m-d H:i:s'));
             $newDate = $date->isoFormat('dddd DD MMM YYYY');
+            // Lyes ajouter une variable session par rapport aux alertes
+            $alertes = $this->api->getAlertes();
+
+            session()->put([
+                'alerte_stockReassort' => $alertes["alerte_stockReassort"],
+                'alerte_reassortEnAttente' => $alertes["alerte_reassortEnAttente"],
+            ]);
+
             return view('login',['date' => $newDate]);
         } else {
             return redirect()->route('/');
