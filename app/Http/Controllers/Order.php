@@ -136,8 +136,11 @@ class Order extends BaseController
 
         // Récupère les commandes en base de données 
         $orders = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
-        
-        if(count($orders) > 0){
+
+        // Récupère également les commandes créées depuis dolibarr vers préparation
+        $orderDolibarr = $this->orderDolibarr->getAllOrdersWithoutProducts();
+
+        if(count($orders) > 0 && count($orderDolibarr)){
           // Liste des distributeurs
           $distributors = $this->distributor->getDistributors();
           $distributors_list = [];
@@ -145,14 +148,13 @@ class Order extends BaseController
             $distributors_list[] = $dis->customer_id;
           }
 
-          // Récupère également les commandes créées depuis dolibarr vers préparation
-          $orderDolibarr = $this->orderDolibarr->getAllOrdersWithoutProducts();
           if(count($orderDolibarr) > 0){
             foreach($orderDolibarr as $ord){
               $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
               $orders[] = $orderDolibarr[0];
             }
           } 
+
 
           foreach($orders as $key => $order){
               if(!isset($order['from_dolibarr'])){
