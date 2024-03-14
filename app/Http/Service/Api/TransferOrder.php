@@ -600,7 +600,7 @@ class TransferOrder
                                     }else{
                                           $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
-                                          $montant_fidelite = $donnees['total_order']-$total_shipping;
+                                          $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                                           
                                     }
 
