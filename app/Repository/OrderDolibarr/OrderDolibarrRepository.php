@@ -139,7 +139,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->leftJoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->where('products.status', 'publish')
          ->where('orders_doli.user_id', $user_id)
-         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate'])
+         ->whereIn('orders_doli.statut', ['processing', 'waiting_to_validate', 'waiting_validate', 'prepared-order'])
          ->orderBy('products.menu_order', 'ASC')
          ->get();
 
