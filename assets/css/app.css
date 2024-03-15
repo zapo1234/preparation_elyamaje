@@ -7874,6 +7874,10 @@ button[disabled]{
     max-height: 27vh !important;
 }
 
+.role_list .badge{
+	font-weight: 100 !important;
+}
+
 .colissimo_form, .billing_form{
 	max-width: 600px;
 }
