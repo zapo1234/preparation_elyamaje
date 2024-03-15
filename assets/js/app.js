@@ -42,12 +42,16 @@ document.addEventListener('click', function(event) {
 	if(!$(".filter_tab").hasClass('d-none')){
 		var targetDiv = document.getElementsByClassName('filter_tab')[0];
 		var targetDiv2 = document.getElementsByClassName('box_filter')[0];
-		var clickedInside = targetDiv.contains(event.target);
-		var clickedInside2 = targetDiv2.contains(event.target);
 
-		if (!clickedInside && !clickedInside2) {
-			$(".filter_tab").toggleClass('d-none')
+		if(targetDiv && targetDiv2){
+			var clickedInside = targetDiv.contains(event.target);
+			var clickedInside2 = targetDiv2.contains(event.target);
+	
+			if (!clickedInside && !clickedInside2) {
+				$(".filter_tab").toggleClass('d-none')
+			}
 		}
+		
 	}
 });
 
