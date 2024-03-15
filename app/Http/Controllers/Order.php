@@ -732,7 +732,8 @@ class Order extends BaseController
     public function ordersHistory(){
       $history = $this->order->getHistoryByUser(Auth()->user()->id);
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
+      
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false, 'preparateur' => []]);
     }
 
     // Fonction à appelé après validation d'une commande

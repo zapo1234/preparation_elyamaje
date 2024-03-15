@@ -12,17 +12,16 @@
 						<div class="breadcrumb-title pe-3">Historique des commandes</div>
 						<input id="order_selected" type="hidden" value="">
 
-
-						<div  class="ms-auto ms-auto-responsive d-flex">
-							<select name="preparateur" class="select2_custom_history input_form_type">
-								<option value="">Préparateur</option>
-								@if(count($preparateur) > 0)
-									@foreach($preparateur as $prep)
-										<option value="{{ trim($prep) }}">{{$prep}}</option>
-									@endforeach
-								@endif	
-							</select>
-						</div>
+						@if(count($preparateur) > 0)
+							<div  class="ms-auto ms-auto-responsive d-flex">
+								<select name="preparateur" class="select2_custom_history input_form_type">
+									<option value="">Préparateur</option>
+										@foreach($preparateur as $prep)
+											<option value="{{ trim($prep) }}">{{$prep}}</option>
+										@endforeach
+								</select>
+							</div>
+						@endif	
 					</div>
 					
 
