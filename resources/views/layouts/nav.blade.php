@@ -266,6 +266,22 @@
                     <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
                 </ul>
             </li>
+
+            <li>
+                <div class="icon-link">
+                <a href="#">
+                    <i class='lni lni-mailchimp'></i>
+                    <span class="link_name">Commandes fournisseur</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a class="link_name" href="#">Commandes fournisseur</a></li>
+                    <li><a href="{{ route('listeSupplierorders') }}">Listes des commande</a></li>
+                </ul>
+            </li>
+
+
         @endif
 
         <!-- Espace Sav -->

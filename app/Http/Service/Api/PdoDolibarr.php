@@ -282,8 +282,88 @@ class PdoDolibarr
 
     }
 
+    function updateStockByIdProductAndEntrepot($id_entrepot, $csvDataArray) {
+        try {
 
+            $array_product_id = array();
+            $new_stock_min = array();
 
+            foreach ($csvDataArray as $key => $value) {
+                array_push($array_product_id,$value["id_product"]);
+                array_push($new_stock_min,[
+                    "fk_product" => intval($value["id_product"]),
+                    "fk_entrepot" => intval($id_entrepot),
+                    "seuil_stock_alerte" => floatval(intval($value["stock_desire"]*0.5)),
+                    "desiredstock" => floatval($value["stock_desire"]),
+                ]);
+            }
+         
+    
+            // Récupérer les valeurs à updater si jamais y'a un souci on les réinjecte 
+            $sql1 = 'SELECT fk_product, fk_entrepot, seuil_stock_alerte, desiredstock, import_key
+                    FROM llxyq_product_warehouse_properties 
+                    WHERE fk_entrepot ='. $id_entrepot.'
+                    AND fk_product IN (' . implode(',', $array_product_id) . ')';
+            $stmt1 = $this->pdo->prepare($sql1);
+
+            $stmt1->execute($array_product_id);
+            $data_origin = $stmt1->fetchAll(PDO::FETCH_ASSOC);  
+
+            // On supprime ligne qu'on vient de récupérer 
+
+            $sql2 = 'DELETE FROM llxyq_product_warehouse_properties 
+            WHERE fk_entrepot ='. $id_entrepot.'
+            AND fk_product IN (' . implode(',', $array_product_id) . ')';
+            $stmt2 = $this->pdo->prepare($sql2);
+            $res_delete = $stmt2->execute();
+
+            
+
+            // On injecte les nouvelles valeurs Construisez la requête SQL d'insertion en masse
+
+            $sql3 = 'INSERT INTO llxyq_product_warehouse_properties (fk_product, fk_entrepot, seuil_stock_alerte, desiredstock) VALUES ';
+            $values = [];
+            $bindings = [];
+
+            foreach ($new_stock_min as $key => $row) {
+                $values[] = '(:fk_product' . $key . ', :fk_entrepot' . $key . ', :seuil_stock_alerte' . $key . ', :desiredstock' . $key . ')';
+                $bindings[':fk_product' . $key] = $row['fk_product'];
+                $bindings[':fk_entrepot' . $key] = $row['fk_entrepot'];
+                $bindings[':seuil_stock_alerte' . $key] = $row['seuil_stock_alerte'];
+                $bindings[':desiredstock' . $key] = $row['desiredstock'];
+            }
+
+            $sql3 .= implode(', ', $values);
+            $stmt3 = $this->pdo->prepare($sql3);
+            $insert = $stmt3->execute($bindings);
+           
+            return true;
+    
+        } catch (\Throwable $th) {
+
+            if ($res_delete && !$insert) {
+
+                $sql3 = 'INSERT INTO llxyq_product_warehouse_properties (fk_product, fk_entrepot, seuil_stock_alerte, desiredstock) VALUES ';
+                $values = [];
+                $bindings = [];
+    
+                foreach ($data_origin as $key => $row) {
+                    $values[] = '(:fk_product' . $key . ', :fk_entrepot' . $key . ', :seuil_stock_alerte' . $key . ', :desiredstock' . $key . ')';
+                    $bindings[':fk_product' . $key] = $row['fk_product'];
+                    $bindings[':fk_entrepot' . $key] = $row['fk_entrepot'];
+                    $bindings[':seuil_stock_alerte' . $key] = $row['seuil_stock_alerte'];
+                    $bindings[':desiredstock' . $key] = $row['desiredstock'];
+                }
+    
+                $sql3 .= implode(', ', $values);
+                $stmt3 = $this->pdo->prepare($sql3);
+                $res = $stmt3->execute($bindings);
+
+            }
+
+            return false;
+        }
+    }
 
 }
 

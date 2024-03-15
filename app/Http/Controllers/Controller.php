@@ -2278,7 +2278,6 @@ class Controller extends BaseController
 
     function preparationCommandeByToken(Request $request){
 
-
         try {
 
             
@@ -2610,6 +2609,48 @@ class Controller extends BaseController
         } catch (\Throwable $th) {
 
             return['response' => false, 'message' => $th->getMessage()];
+        }
+    }
+
+    function updateStockAlertAndStockDesire(Request $request){
+
+        
+        
+
+        try {
+            $file = $request->hasFile('file_stock_min') && $request->file('file_stock_min')->isValid();
+            $id_entrepot_select = $request->post('id_entrepot_select');
+
+            if ($file && $id_entrepot_select) {
+                $file = $request->file('file_stock_min');         
+                $csvContent = $file->getContent();
+                $reader = Reader::createFromString($csvContent);
+                $reader->setHeaderOffset(0);
+                $csvDataArray = iterator_to_array($reader->getRecords()); 
+
+                if (!isset($csvDataArray[1]["id_product"]) || !isset($csvDataArray[1]["stock_desire"])) {
+                    return redirect()->back()->with('error',  "le format du fichier n'est pas bon");
+                }
+
+
+                // on récupère la liste des produit et leurs stock d'alerte 
+                // $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),"mamo9937_doli54","mamo9937_dolib54","]14]1pSxvS");
+
+                // $id_entrepot_select = 1;
+                $response = $pdoDolibarr->updateStockByIdProductAndEntrepot($id_entrepot_select, $csvDataArray);
+
+                if ($response) {
+                    return redirect()->back()->with('success', 'Les stocks minimum et alertes ont été mis à jour');
+                }else {
+                    return redirect()->back()->with('error',  "Une érreur s'est produite code 1");
+                }
+
+            }else {
+                return redirect()->back()->with('error',  "Merci de selectionner l'entrepot et un fichier au bon format");
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error',  $th->getMessage());
         }
     }
 

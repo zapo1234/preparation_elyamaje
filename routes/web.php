@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Distributors;
 use App\Http\Controllers\Notification;
 use App\Http\Controllers\TiersController;
+use App\Http\Controllers\SupplierOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -230,12 +231,16 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
     Route::get('/alertStocks/{idEntrepot}/{Njour}', [Controller::class, 'alertStocks'])->name('alertStocks');
     Route::get('/listeAlerte', [Controller::class, 'listeAlerte'])->name('listeAlerte');
+    
+    Route::get('/listeSupplierorders', [SupplierOrderController::class, 'listeSupplierorders'])->name('listeSupplierorders');
+
 
     Route::get('/deplacerFichier/{nomFichier}', [Controller::class, 'deplacerFichier'])->name('deplacerFichier');
     Route::post('/updateSessionByNotif', [Controller::class, 'updateSessionByNotif'])->name('updateSessionByNotif');
 
-
     
+    Route::post("/updateStockAlertAndStockDesire", [Controller::class, "updateStockAlertAndStockDesire"])->name('updateStockAlertAndStockDesire');
+
 
     
 
