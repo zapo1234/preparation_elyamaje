@@ -5693,6 +5693,13 @@ textarea::placeholder {
 
 @media screen and (max-width: 620px) {
 
+	.alert{
+		right: 0px !important;
+		width: 100% !important;
+		margin: 0px !important;
+		bottom: 5px !important;
+	}
+
 	.step_tracking{
 		display: flex;
 		flex-direction: column;
