@@ -4,13 +4,15 @@ namespace App\Http\Service\Woocommerce;
 
 class WoocommerceService
 {
-
-    public function transformArrayOrder($order, $specific_product = []){
+    // $order => details orders, $specific_product => orders with only some products, not all products of orders, $withProducts => if show list products of order or not
+    public function transformArrayOrder($order, $specific_product = [], $withProducts = true){
         $order_new_array = [];
         $products = [];
         $total_product = 0;
 
         $order[0]['order_id'] = $order[0]['order_woocommerce_id'];
+        $order[0]['id'] = $order[0]['order_woocommerce_id'];
+
         $billing = [
           "first_name" => $order[0]['billing_customer_first_name'],
           "last_name" => $order[0]['billing_customer_last_name'],
@@ -46,55 +48,58 @@ class WoocommerceService
             $order[$key]['discount_amount'] = 0;
           }
 
-          $total_product = $total_product + intval($or['quantity']);
+          if($withProducts){
+            $total_product = $total_product + intval($or['quantity']);
 
-          // Récupère que des produits spécifique de la commande
-          if(count($specific_product) > 0){
-              if(in_array($or['product_woocommerce_id'], $specific_product)){
-
-                  $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                  'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-                  'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-
-                  // for amb gift
-                  if($or['total_price'] == 0){
-                    $key_line_item = count($products['line_items']) - 1;
-                    $products['line_items'][$key_line_item]['real_price'] = $or['price'];
-                  }
-
-
-              
-                  // for fem gift
-                  if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
-                    $key_line_item = count($products['line_items']) - 1;
-                    $products['line_items'][$key_line_item]['quantity'] = $products['line_items'][$key_line_item]['quantity'] > 1 ? $products['line_items'][$key_line_item]['quantity'] - 1 : 1;
-                    $products['line_items'][$key_line_item]['subtotal_tax'] = $products['line_items'][$key_line_item]['total_tax'] * $products['line_items'][$key_line_item]['quantity'];
+            // Récupère que des produits spécifique de la commande
+            if(count($specific_product) > 0){
+                if(in_array($or['product_woocommerce_id'], $specific_product)){
+  
                     $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
+                    'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
+                    'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+  
+                    // for amb gift
+                    if($or['total_price'] == 0){
+                      $key_line_item = count($products['line_items']) - 1;
+                      $products['line_items'][$key_line_item]['real_price'] = $or['price'];
+                    }
+  
+  
+                
+                    // for fem gift
+                    if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
+                      $key_line_item = count($products['line_items']) - 1;
+                      $products['line_items'][$key_line_item]['quantity'] = $products['line_items'][$key_line_item]['quantity'] > 1 ? $products['line_items'][$key_line_item]['quantity'] - 1 : 1;
+                      $products['line_items'][$key_line_item]['subtotal_tax'] = $products['line_items'][$key_line_item]['total_tax'] * $products['line_items'][$key_line_item]['quantity'];
+                      $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
+                      'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
+                      'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
+                    }
+                }
+            } else {
+                $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
+                'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
+                'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
+  
+                // for amb gift or fem
+                if($or['total_price'] == 0){
+                  $key_line_item = count($products['line_items']) - 1;
+                  $products['line_items'][$key_line_item]['real_price'] = $or['price'];
+                }
+  
+                // for fem gift
+                if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
+                  $key_line_item = count($products['line_items']) - 1;
+                  $products['line_items'][$key_line_item]['quantity'] = $products['line_items'][$key_line_item]['quantity'] > 1 ? $products['line_items'][$key_line_item]['quantity'] - 1 : 1;
+                  $products['line_items'][$key_line_item]['subtotal_tax'] = $products['line_items'][$key_line_item]['total_tax'] * $products['line_items'][$key_line_item]['quantity'];
+                  $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
                     'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
                     'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
-                  }
-              }
-          } else {
-              $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-              'quantity' => $or['quantity'], 'subtotal' => $or['cost'], 'total' => $or['total_price'],  'subtotal_tax' => $or['subtotal_tax'],  'total_tax' => $or['total_tax'],
-              'weight' =>  $or['weight'], 'ref' => $or['ref'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]]];
-
-              // for amb gift or fem
-              if($or['total_price'] == 0){
-                $key_line_item = count($products['line_items']) - 1;
-                $products['line_items'][$key_line_item]['real_price'] = $or['price'];
-              }
-
-              // for fem gift
-              if(($or['total_price'] - ($or['cost'] * $or['quantity']) > 0.10) && in_array(100, explode(',', $or['discount_amount'])) && $or['total_price'] != 0.0){
-                $key_line_item = count($products['line_items']) - 1;
-                $products['line_items'][$key_line_item]['quantity'] = $products['line_items'][$key_line_item]['quantity'] > 1 ? $products['line_items'][$key_line_item]['quantity'] - 1 : 1;
-                $products['line_items'][$key_line_item]['subtotal_tax'] = $products['line_items'][$key_line_item]['total_tax'] * $products['line_items'][$key_line_item]['quantity'];
-                $products['line_items'][] = ['name' => $or['name'], 'product_id' => $or['product_woocommerce_id'], 'variation_id' => $or['variation'] == 1 ? $or['product_woocommerce_id'] : 0, 
-                  'quantity' => 1, 'subtotal' => 0.0, 'total' => 0.0,  'subtotal_tax' => 0.0,  'total_tax' => 0.0,
-                  'weight' =>  $or['weight'], 'meta_data' => [['key' => 'barcode', "value" => $or['barcode']]], 'real_price' => $or['price']];
-              }
+                }
+            }
           }
+         
 
           foreach($or as $key2 => $or2){
             if (str_contains($key2, 'billing_customer')) {
@@ -108,8 +113,12 @@ class WoocommerceService
         }
 
         $order_new_array =  $order[0];
-        $order_new_array['total_product'] = $total_product;
-        $order_new_array['line_items'] = $products['line_items'];
+
+        if($withProducts){
+          $order_new_array['total_product'] = $total_product;
+          $order_new_array['line_items'] = $products['line_items'];
+        }
+        
         $order_new_array['billing'] = $billing;
         $order_new_array['shipping'] = $shipping;
         $order_new_array['from_dolibarr'] = false;
@@ -129,7 +138,7 @@ class WoocommerceService
         return $orders;
   }
 
-  public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null){
+  public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null, $withProducts = true){
 
     $shipping_method_label = [
       'chronotoshopdirect' => 'Chronopost - Livraison en relais Pickup',
@@ -213,10 +222,31 @@ class WoocommerceService
       "phone" => $orderDolibarr[0]['phone'],
     ]; 
 
-    foreach($orderDolibarr as $order){
-      $total_product = $total_product + intval($order['quantity']);
-      if($product_to_add_label){
-        if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {
+    if($withProducts){
+      foreach($orderDolibarr as $order){
+        $total_product = $total_product + intval($order['quantity']);
+        if($product_to_add_label){
+          if(in_array($order['product_woocommerce_id'], $product_to_add_label)) {
+            $transformOrder['line_items'][]= [
+              'id' => $order['line_items_id_dolibarr'],
+              'name' => $order['productName'],
+              'product_id' => $order['product_woocommerce_id'],
+              'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
+              'quantity' => $order['quantity'],
+              'subtotal' => $order['priceDolibarr'],
+              'price' => $order['priceDolibarr'],
+              'total' => $order['total_ht'],
+              'subtotal_tax' => $order['total_tva'],
+              'total_tax' => $order['total_tva'],
+              'weight' => $order['weight'],
+              'ref' => $order['ref'],
+              'product_dolibarr_id' => $order['product_dolibarr_id'],
+              'meta_data' => [
+                ['key' => 'barcode', "value" => $order['barcode']]
+              ]
+            ];
+          }
+        } else {
           $transformOrder['line_items'][]= [
             'id' => $order['line_items_id_dolibarr'],
             'name' => $order['productName'],
@@ -236,29 +266,11 @@ class WoocommerceService
             ]
           ];
         }
-      } else {
-        $transformOrder['line_items'][]= [
-          'id' => $order['line_items_id_dolibarr'],
-          'name' => $order['productName'],
-          'product_id' => $order['product_woocommerce_id'],
-          'variation_id' => $order['variation'] == 1 ? $order['product_woocommerce_id'] : 0,
-          'quantity' => $order['quantity'],
-          'subtotal' => $order['priceDolibarr'],
-          'price' => $order['priceDolibarr'],
-          'total' => $order['total_ht'],
-          'subtotal_tax' => $order['total_tva'],
-          'total_tax' => $order['total_tva'],
-          'weight' => $order['weight'],
-          'ref' => $order['ref'],
-          'product_dolibarr_id' => $order['product_dolibarr_id'],
-          'meta_data' => [
-            ['key' => 'barcode', "value" => $order['barcode']]
-          ]
-        ];
+        $transformOrder['total_product'] = $total_product;
+        $transformOrder['total_products'] = $total_product;
       }
-
-      $transformOrder['total_product'] = $total_product;
     }
+    
 
     $transformOrder['shipping_method_name'] = $this->getShippingMethod($transformOrder['shipping_method']);
     $newArray[] = $transformOrder;

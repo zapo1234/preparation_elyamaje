@@ -652,7 +652,7 @@ class Transfertext
                                        }else{
                                              $index_int="";
                                              $total_shipping = $donnees['shipping_amount']*1.2;
-                                             $montant_fidelite = $donnees['total_order']-$total_shipping;
+                                             $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                                              
                                        }
 
@@ -726,7 +726,7 @@ class Transfertext
                                          $data_options_kdo =[];
                                          $account="";
                                          $this->setAccountpay($account);
-                                          echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble être déjà facturée, signalez au service informatique !']);
+                                          echo json_encode(['success' => false, 'message'=> '  Attention la commande semble être déjà facturée, signalez au service informatique !']);
                                           exit;
                                     }
                                     // recupérer les id_commande deja pris

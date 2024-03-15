@@ -7,6 +7,8 @@ interface OrderDolibarrInterface
 {
     public function getAllOrders();
 
+    public function getAllOrdersWithoutProducts();
+
     public function getOrdersDolibarrById($order_id);
 
     public function updateOneOrderAttributionDolibarr($order_id, $user_id);

@@ -356,6 +356,8 @@ Route::get("/giftCardOrders/{token}", [Controller::class, "giftCardOrders"]);
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
 Route::get("/bordereauChrono", [Controller::class, "bordereauChrono"])->name('bordereauChrono');
 
+// Get orders WordPress
+Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders');
 
 // Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
 

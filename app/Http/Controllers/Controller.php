@@ -179,6 +179,7 @@ class Controller extends BaseController
         $reassort = $this->reassort->getReassortByUser(Auth()->user()->id);
 
         $orders = $this->orderController->getOrder();
+
         $order_process = [];
         $orders_waiting_to_validate = [];
         $orders_validate = [];
@@ -2507,8 +2508,6 @@ class Controller extends BaseController
 
     public function giftCardOrders($token){
 
-        
-
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
             $status = "completed";
             $after = date('Y-m-d H:i:s', strtotime('-1 day'));
@@ -2548,7 +2547,7 @@ class Controller extends BaseController
                 $item_gift_card = 0;
                 foreach($order['line_items'] as $or){
                     if(str_contains($or['name'], 'Carte Cadeau')){
-                    $item_gift_card = $item_gift_card + 1;
+                        $item_gift_card = $item_gift_card + 1;
                     }
                 }
 

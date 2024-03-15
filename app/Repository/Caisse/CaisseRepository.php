@@ -39,7 +39,7 @@ class CaisseRepository implements CaisseInterface
          // ->whereNotIn('orders_doli.statut', ['canceled', 'pending'])
          // ->orWhereNull('orders_doli.statut') 
          ->orderBy('caisse.name', 'ASC')
-         // ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
+         ->where('orders_doli.ref_order', 'LIKE', '%BP%')
          // ->orWhereNull('orders_doli.date')
          ->get();
       } catch(Exception $e){

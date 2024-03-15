@@ -4,6 +4,14 @@ $('body').on('click', '.show_order_history', function () {
     $(".order_" + id).modal('show')
 })
 
+$(".select2_custom_history").on('change', function(){
+    if($(this).val() != ""){
+        $(".courses-container").addClass('d-none')
+        $(".order_"+$(this).val()).removeClass('d-none')
+    } else {
+        $(".courses-container").removeClass('d-none')
+    }
+})
 
 $('body').on('click', '.show_order_history_code', function () {
     var id = $(this).attr('data-order')

@@ -145,7 +145,7 @@
 										@endforeach
 								</select>
 								<input value="{{ $parameter['created_at'] ?? '' }}" name="created_at" class="custom_input" style="padding: 4px;" type="date">
-								<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="Numéro de commande" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
+								<input value="{{ $parameter['order_woocommerce_id'] ?? '' }}" placeholder="N° commande ou colis" name="order_woocommerce_id" class="custom_input" style="padding: 4px;" type="text">
 								<button style="margin-left:10px" class="research_label_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							

@@ -98,7 +98,7 @@ $(document).ready(function() {
         "initComplete": function(settings, json) {
             $(".loading").hide()
             $("#example").removeClass('d-none')
-            $("#example_filter").parent().remove()
+            // $("#example_filter").parent().remove()
             // $("#example_length select").css('margin-right', '10px')
             $(".order_research").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
@@ -199,7 +199,7 @@ $(".generate_label_button").on('click', function(){
                 $(".generate_label_modal").modal('show')
             } else {
                 $(".alert").remove()
-                $(".show_messages").prepend(`
+                $(".wrapper").append(`
                     <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                         <div class=" text-white">`+JSON.parse(data).message+`</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -259,7 +259,7 @@ $('body').on('click', '.print_zpl_file', function(e) {
                         },
                         error : function(xhr){
                             $(".alert").remove()
-                            $(".show_messages").prepend(`
+                            $(".wrapper").append(`
                                 <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                                     <div class=" text-white">Aucune imprimante n'a été trouvée</div>
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
