@@ -235,11 +235,11 @@
 								<div class="modal fade modal_radius" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
-											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
-												<i style="z-index:10;cursor:pointer;font-size:24px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+											<div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
+												<i style="color: #c0c5cb; z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
 											</div>	
 											<div class="modal-body">
-												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
+												<h2 class="mt-2 text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
 												<div class="w-100 d-flex justify-content-center">
 													
 													<div class="d-flex justify-content-center w-75">
