@@ -9149,3 +9149,9 @@ select option[disabled] {
     }
 }
 
+.select2_custom_history{
+	height: 31px;
+	border: 1px solid #ced4da;
+	border-radius: 5px;
+	padding: 0px 5px 0px 5px;
+}

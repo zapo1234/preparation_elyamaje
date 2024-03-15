@@ -7,13 +7,27 @@
 		@section("wrapper")
 			<div class="page-wrapper page-preparateur-order">
 				<div class="page-content">
-					<div class="page-breadcrumb d-sm-flex align-items-center mb-2">
+
+					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
 						<div class="breadcrumb-title pe-3">Historique des commandes</div>
 						<input id="order_selected" type="hidden" value="">
+
+
+						<div  class="ms-auto ms-auto-responsive d-flex">
+							<select name="preparateur" class="select2_custom_history input_form_type">
+								<option value="">Préparateur</option>
+								@if(count($preparateur) > 0)
+									@foreach($preparateur as $prep)
+										<option value="{{ trim($prep) }}">{{$prep}}</option>
+									@endforeach
+								@endif	
+							</select>
+						</div>
 					</div>
+					
 
 					<div class="switcher-wrapper">
-					<div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
+						<div class="switcher-btn"> <i class="bx bx-help-circle"></i></div>
 						<div class="switcher-body">
 							<div class="d-flex align-items-center">
 								<h5 class="mb-0 text-uppercase">Informations</h5>
@@ -29,7 +43,7 @@
 
 					@if(count($history) > 0)
 						@foreach($history as $histo)
-							<div class="courses-container mb-4">
+							<div class="courses-container mb-4 order_{{ trim($histo['preparateur']) }}">
 								<div class="course">
 									<div class="course-preview order_history">
 										<h6>Commande</h6>
