@@ -855,7 +855,7 @@ function show(id){
                                             ${order[0].discount_amount > 0 ? `<span class="text-success">Réduction: <strong>-`+order[0].discount+`€ (-`+order[0].discount_amount+`%)</strong></span>` : ``}
                                         
                                             ${order[0].shipping_amount ? `<span class="montant_total_order">Expédition:<strong>`+order[0].shipping_amount+`€</strong></span>` : `<span class="montant_total_order">Expédition:<strong>0€</strong></span>`}
-                                            <span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
+                                            <span class="montant_total_order">TVA: <strong class="total_tax_order">`+parseFloat(total_tax).toFixed(2)+`€</strong></span>
 
                                             ${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>-`+gift_card+`€</strong></span>` : ``}
 
