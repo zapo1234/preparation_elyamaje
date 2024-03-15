@@ -134,27 +134,27 @@ class Order extends BaseController
         return $orders_user;
       } else {
 
-        // Récupère les commandes en base de données 
+        // Gets orders from local orders (Wocoommerce)
         $orders = $this->order->getAllOrdersByUsersNotFinished()->toArray(); 
 
-        // Récupère également les commandes créées depuis dolibarr vers préparation
+        // Gets orders from orders_doli (dolibarr and other)
         $orderDolibarr = $this->orderDolibarr->getAllOrdersWithoutProducts();
+        
+        if(count($orderDolibarr) > 0){ 
+          foreach($orderDolibarr as $ord){
+            $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
+            $orders[] = $orderDolibarr[0];
+          }
+        } 
+        
+        if(count($orders) > 0){
 
-        if(count($orders) > 0 && count($orderDolibarr)){
-          // Liste des distributeurs
+          // List of distributors
           $distributors = $this->distributor->getDistributors();
           $distributors_list = [];
           foreach($distributors as $dis){
             $distributors_list[] = $dis->customer_id;
           }
-
-          if(count($orderDolibarr) > 0){ 
-            foreach($orderDolibarr as $ord){
-              $orderDolibarr = $this->woocommerce->transformArrayOrderDolibarr($ord, $product_to_add_label = null, $withProducts = false);
-              $orders[] = $orderDolibarr[0];
-            }
-          } 
-
 
           foreach($orders as $key => $order){
               if(!isset($order['from_dolibarr'])){
@@ -172,7 +172,7 @@ class Order extends BaseController
                 $orders[$key]['is_distributor'] = false;
               }
 
-              // Pour les commandes depuis dolibarr
+              // Check if is dolibarr order
               if(isset($order['from_dolibarr'])){
                 $orders[$key]['user_id'] = $orders[$key]['user_id'];
                 $orders[$key]['name'] = $orders[$key]['user_id'] ? "" : "Non attribuée";
@@ -198,7 +198,7 @@ class Order extends BaseController
     }
 
     public function getAllOrders(){
-      // Préparateur
+      // Preparator
       $users =  $this->user->getUsersAndRoles();
       $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
       $products_pick_dolibarr =  $this->orderDolibarr->getAllProductsPickedDolibarr();
@@ -224,17 +224,17 @@ class Order extends BaseController
       $orders_id = [];
       $list_preparateur = [];
 
-      // Liste des commandes déjà réparties entres les utilisateurs
+      // List of orders already assigned
       $orders_user = $this->order->getAllOrdersByUsersNotFinished()->toArray();
       $orderDolibarr = $this->orderDolibarr->getAllOrders();
 
-      // If not orders
+      // If not orders return message
       if(count($orders_user) == 0 && count($orderDolibarr) == 0){
         echo json_encode(['success' => false, 'message' => 'Il n\'y a pas de commande à attribuer !']);
         return;
       }
 
-      // Liste des utilisateurs avec le rôle préparateur
+      // List of preparator users (role id 2)
       $users =  $this->user->getUsersByRole([2]);
 
       foreach($users as $user){
@@ -267,13 +267,13 @@ class Order extends BaseController
         }
       }
 
-      // Trie du plus grand nombre de produit au plus petit
+      // sort array bys total products desc
       usort($orders_user, function($a, $b) {
         return $b['total_products'] - $a['total_products'];
       });
 
 
-      // Attribuez les commandes en fonction du nombre de produits qu'elles contiennent
+      // Assign all orders by total products
       foreach ($orders_user as $order) {
 
         // If not alreday assigned
@@ -314,7 +314,7 @@ class Order extends BaseController
       }
     }
 
-    // Désattribue toutes les commandes
+    // Unassign all orders
     public function unassignOrders(){
       if($this->orderDolibarr->unassignOrdersDolibarr()){
         $this->order->unassignOrders();
@@ -358,7 +358,7 @@ class Order extends BaseController
 
         if($check_if_order_done && $partial == "1"){
           
-          // Récupère les chefs d'équipes
+          // List of all leader team (role id 4)
           $leader = $this->user->getUsersByRole([4]);
           $from_user = Auth()->user()->id;
           foreach($leader as $lead){
@@ -548,7 +548,7 @@ class Order extends BaseController
         }
         $number_order_attributed = $this->order->getOrdersByUsers();
 
-        // Update status woocommerce selon le status, en cours, terminée ou commande nouveau distrib
+        // status to not update in woocomemrce, only local
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
@@ -614,11 +614,11 @@ class Order extends BaseController
       $order = $this->order->getOrderById($order_id);
 
       if($order){
-        // Check si commande distributeur, si oui rebipper les produits
+        // Check distributor order
         $is_distributor = false; //$this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
         echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => $is_distributor, 'status' =>  __('status.'.$order[0]['status'])]);
       } else {
-        // Check si commande dolibarr
+        // Check if dolibarr order
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
         if(count($order) > 0){
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
@@ -918,8 +918,15 @@ class Order extends BaseController
       $history = count($history_dolibarr) > 0 ? array_merge($history, $history_dolibarr) : $history;
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
 
+      $preparateur = [];
+      foreach($history as $histo){
+        $preparateur[] = $histo['preparateur'];
+      }
+
+      $preparateur = array_unique($preparateur);
+
       // Renvoie la vue historique du préparateurs mais avec toutes les commandes de chaque préparateurs
-      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false]);
+      return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false, 'preparateur' => $preparateur]);
     }
 
     public function deleteOrderProducts(Request $request){
