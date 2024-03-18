@@ -713,6 +713,8 @@ class TransferOrder
                          }
                         */
                         
+                        dump($data_lines);
+                        dd($data_tiers);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
