@@ -1123,7 +1123,7 @@ class TransferOrder
                        // $mode reglement de la facture ....
                         $newCommandepaye = [
                         "paye"	=> 1,
-                       "statut"	=> 2,
+                        "statut"	=> 2,
                         "mode_reglement_id"=>$mode_reglement_id,
                         "idwarehouse"=>6,
                          "notrigger"=>0,
@@ -1178,11 +1178,11 @@ class TransferOrder
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
                        $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
-                       if(!isset($response['ref'])){
-                            $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
-                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
-                          exit;
-                        }  // recupérer le prefixe de la facture ces deux premiere lettre.
+                       //if(!isset($response['ref'])){
+                      //      $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                      //     echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
+                      //    exit;
+                      //  }  // recupérer le prefixe de la facture ces deux premiere lettre.
                     
                         if(isset($response['error']['message'])){
                           $message = $response['error']['message'];
