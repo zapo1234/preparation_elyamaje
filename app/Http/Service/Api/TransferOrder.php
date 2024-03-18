@@ -715,18 +715,11 @@ class TransferOrder
                         */
 
                         foreach($data_lines as  $val){
-                            $lines[]= $val['lines'][0];
-                            $lines[] = $val['lines'][1];
-                            $lines[] = $val['lines'][2];
-                            $lines[] = $val['lines'][3];
-                            $lines[] = $val['lines'][4];
-                            $lines[] = $val['lines'][5];
-                            $lines[] = $val['lines'][6];
-                            $lines[] = $val['lines'][7];
-                            $lines[] = $val['lines'][8];
-                            $lines[] = $val['lines'][9];
-                            $lines[] = $val['lines'][10];
 
+                          for($i=0; $i<150;$i++){
+                            $lines[]= $val['lines'][$i];
+                            
+                           }
                             $data_linec[] =[
                               'socid'=>$val['socid'],
                               'ref_client'=>'',
@@ -741,7 +734,8 @@ class TransferOrder
 
                             ];
                         }
-
+                       
+                        dd($data_linec);
                   
                        // Create le client via Api.....
                            foreach($data_tiers as $data) {
