@@ -19,6 +19,42 @@
     <div class="page-wrapper">
         <div class="page-content">
 
+            {{-- Modal --}}
+            <div class="modal fade" id="exampleDarkModal" tabindex="-1" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-white">Acualisation des stocks d'alertes et désirés</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form method="POST" action="{{route('updateStockAlertAndStockDesire')}}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="modal-body text-white" id="formContainerStockMin">
+                                <p>Êtes vous sur de vouloir mettre les stocks d'alerte et désiré des produits</p>
+                                {{-- <input class="form-control-sm" id="file_stock_min" type="file" name="file_stock_min"> --}}
+                                <div class="d-flex align-items-center mb-3">
+                                    <input class="form-control-sm me-2" id="file_stock_min" type="file" name="file_stock_min">
+                                    <select class="form-select form-select-sm" name="id_entrepot_select">
+
+                                        <option value="">Choisiser l'entrepôt</option>
+                                        @foreach (json_decode($liste_entrepot) as $key => $value)
+                                            <option value="{{$value->id_entrepot}}">{{$value->name_entrepot}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
+                                <button type="button" class="btn btn-dark" type="submit" onclick="this.disabled=true;this.form.submit();">Valider</button>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
             {{-- Alert d erreur --}}
             @include('layouts.transfert.alertSuccesError')
 
@@ -140,7 +176,20 @@
 
             var button = $('<a id="btn_actualiser" href="#" style="width:90px;margin-left: 5%;;text-align: center;color: #fff !important;" type="button" class="btn btn-primary btn-sm">Actualiser</a>').appendTo(conntainer);
 
-            
+            var button_act_stock_min = 
+            $(`<button 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#exampleDarkModal"
+                    id="btn_update_stock_min" 
+                    href="#" 
+                    style="z-index: 1;width:201px;margin-left: 45%;;text-align: center;color: #fff !important;" 
+                    type="button" 
+                    class="btn btn-primary btn-sm">
+                    Actualiser les stocks min
+                </button>`).appendTo(conntainer);
+
+            // <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleDarkModal">Dark Modal</button>
+
             var select = $('<select class="form-select form-select-sm"" style="margin-left: 5%;"> <option value="">Selectionner un entrepôt</option> </select>')
             .insertAfter($('#example4_wrapper').find('.dataTables_length').find('label'))
             .on('change', function() {
@@ -192,8 +241,6 @@
                 console.log(href);
                 window.location.href = href;
             });
-
-
 
         }
 

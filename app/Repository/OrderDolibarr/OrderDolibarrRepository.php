@@ -42,6 +42,23 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       return $array_order;
    }
 
+   public function getAllOrdersWithoutProducts(){
+      $array_order = [];
+      $orders = $this->model::select('orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
+      'users.name as preparateur')
+         ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         ->whereNotIn('orders_doli.statut', ['pending', 'finished', 'canceled'])
+         ->get();
+
+      $orders = json_decode(json_encode($orders), true);
+
+      foreach($orders as $order){
+         $array_order[$order['id']][] =  $order;
+      }
+
+      return $array_order;
+   }
+
 
    // Pour l'emballage d'une commande
    public function getOrdersDolibarrById($order_id){
@@ -299,12 +316,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrdersAndLabelByFilter($filters){
-         $query = $this->model::select('orders_doli.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+         $query = $this->model::select('orders_doli.*', /* 'label_product_order.*',*/ 'labels.id as label_id', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
          'labels.cn23', 'labels.download_cn23', 'labels.origin')
-         ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
-         ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id');
+         // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
+         ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order');
 
-        
          $haveFilter = false;
          foreach($filters as $key => $filter){
 
@@ -323,13 +339,17 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                   $query->where("labels.".$key."","LIKE",  "%".$filter."%");
                } else if($key == "origin"){
                   $query->where("labels.".$key , $filter);
-               } else {
-                  $query->where("orders_doli.".$key."", $filter);
+               } else if($key == "ref_order"){
+                  if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO')){
+                     $query->where("labels.tracking_number", $filter);
+                  } else {
+                     $query->where("orders_doli.".$key."", $filter);
+                  }
+                 
                }
             }
          }
    
-
          if(!$haveFilter){
             $date = date('Y-m-d');
             $query->where("labels.created_at","LIKE",  "%".$date."%");

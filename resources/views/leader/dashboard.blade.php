@@ -4,7 +4,6 @@
 			<link href="{{asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
 			<link href="{{('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" />
 			<link href="assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet" />
-			<link href="assets/css/pace.min.css" rel="stylesheet" />
 		@endsection 
 
 		@section("wrapper")
@@ -13,7 +12,14 @@
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-2 justify-content-between">
 						<div class="d-flex flex-wrap justify-content-center">
 							<div class="breadcrumb-title pe-3">Commandes</div>
-							<div class="pe-3 number_order_pending"></div>
+							<div class="pe-3 number_order_pending">
+								<div class="spinner-border text-success spinner-border-sm" role="status"> 
+									<span class="visually-hidden">Loading...</span>
+                                </div>
+							</div>
+							<button class="sync_orders">
+								<i class="fadeIn animated bx bx-sync"></i>
+							</button>
 						</div>
 						@csrf
 						<button style="height:35px" disabled type="button" class="allocation_of_orders btn btn-dark px-5 p-0">Gérer les commandes</button>
@@ -229,20 +235,24 @@
 								<div class="modal fade modal_radius" id="allocationOrders" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
-											<div style="padding: 7px; position: absolute;" class="d-flex w-100 justify-content-end">
-												<i style="z-index:10;cursor:pointer;font-size:24px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+											<div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
+												<i style="color: #c0c5cb; z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
 											</div>	
 											<div class="modal-body">
-												<h2 class="text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
+												<h2 class="mt-2 text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>
 												<div class="w-100 d-flex justify-content-center">
-													<div class="d-none spinner-border loading_allocation" role="status"> 
-														<span class="visually-hidden">Loading...</span>
+													
+													<div class="d-flex justify-content-center w-75">
+														<div class="d-none spinner-border loading_allocation" role="status"> 
+															<span class="visually-hidden">Loading...</span>
+														</div>
+														<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
+														<i style="font-size:50px" class="d-none text-danger fadeIn animated bx bx-error-circle"></i>
+														
+														<button type="button" class="allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
+														<button style="margin-left: 10px" type="button" class="unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
 													</div>
-													<!-- <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button> -->
-													<button style="margin-left:15px" type="button" class="mt-3 allocationOrdersConfirm btn btn-dark px-5 ">Attribuer</button>
-													<button style="margin-left:15px" type="button" class="mt-3 unassignOrdersConfirm btn btn-dark px-5 ">Désattribuer</button>
 
-													<i style="font-size:50px" class="d-none text-success lni lni-checkmark-circle"></i>
 												</div>
 											</div>
 										</div>
@@ -251,7 +261,7 @@
 
 
 								<!-- Modal confirmation supression produit commande Woocommerce -->
-								<div class="modal fade modal_backfrop_fixe" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal fade modal_backfrop_fixe modal_radius" id="deleteProductOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div class="modal-body">
@@ -286,6 +296,7 @@
 												<input type="hidden" id="order_id_dolibarr" value="">
 												<input type="hidden" id="product_dolibarr_id" value="">
 												<input type="hidden" id="product_order_id_dolibarr"value="">
+												<input type="hidden" id="ref_order"value="">
 												<div class="w-100">
 													<label>Quantité :</label>
 													<input class="custom_input w-100 mb-3" type="number" id="quantity_order_dolibarr"value="1">
@@ -340,11 +351,9 @@
 
 	
 		@section("script")
-			<script src="assets/js/pace.min.js"></script>
 			<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 			<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 			<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 			<script src="assets/js/orders.js"></script>
-		
 		@endsection
 

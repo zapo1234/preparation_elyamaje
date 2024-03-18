@@ -1,31 +1,82 @@
 $(document).ready(function() {
-    $(".list_product_to_add").select2({width: "350px", dropdownParent: $("#addProductOrderModal")})
-    // Sélection de la div
-    const paceProgress = document.querySelector('.pace-progress');
 
-    // Configuration de l'observer
-    const observerConfig = {
-        attributes: true,
-        attributeFilter: ['data-progress']
-    };
+    $("#get_sync_orders").on('click', function(){
+        if(!$("#get_sync_orders").hasClass('rotate')){
+            $("#get_sync_orders").addClass('rotate')
 
-    // Fonction de callback de l'observer
-    const observerCallback = function(mutationsList) {
-        for (let mutation of mutationsList) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'data-progress') {
-                $(".percent").remove()
-
-                if(mutation.target.getAttribute('data-progress') != 99){
-                    $(".number_order_pending").append('<span class="percent">'+mutation.target.getAttribute('data-progress')+' %</span>')
+            $.ajax({
+                url: "getOrders/BcVTcO9aqWdtP0ZVvujOJXQxjGT9wtRGG3iGZt8ZvwsZ58kMeJAM9TJlUumqb23C",
+                method: 'GET',
+            }).done(function(data) {
+                $("#get_sync_orders").removeClass('rotate');
+    
+                if(JSON.parse(data).success){
+                    $(".wrapper").append(`
+                        <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                            <div class=" text-white">Les commandes ont bien été récupérées</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
+    
+                    var table = $('#example').DataTable();
+                    var order_progress = 0
+                    var attribution = 0
+    
+                    // Pour recharger les données du DataTable en utilisant AJAX
+                    table.ajax.reload(function(data){
+                        data.orders.map((element) => {
+                            if (element.user_id != null && element.user_id != 0) {
+                                attribution = attribution + 1;
+                            }
+                            if (element.status == "processing" || element.status == "waiting_validate" || element.status == "waiting_to_validate" || element.status == "order-new-distrib" || element.status == "en-attente-de-pai") {
+                                order_progress = order_progress + 1;
+                            }
+                        });
+        
+        
+                        $(".number_order_pending").children().remove()
+                        $(".number_order_pending").append('<span>'+data.orders.length+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
+                    });
+                 
+                } else {
+                    $(".wrapper").append(`
+                        <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                            <div class=" text-white">`+JSON.parse(data).message+`</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `)
                 }
-            }
+            });
         }
-    };
+    })
 
-    // Création de l'observer
-    const observer = new MutationObserver(observerCallback);
-    // Démarrage de l'observer
-    observer.observe(paceProgress, observerConfig);
+    $(".list_product_to_add").select2({width: "350px", dropdownParent: $("#addProductOrderModal")})
+    // // Sélection de la div
+    // const paceProgress = document.querySelector('.pace-progress');
+
+    // // Configuration de l'observer
+    // const observerConfig = {
+    //     attributes: true,
+    //     attributeFilter: ['data-progress']
+    // };
+
+    // // Fonction de callback de l'observer
+    // const observerCallback = function(mutationsList) {
+    //     for (let mutation of mutationsList) {
+    //         if (mutation.type === 'attributes' && mutation.attributeName === 'data-progress') {
+    //             $(".percent").remove()
+
+    //             if(mutation.target.getAttribute('data-progress') != 99){
+    //                 $(".number_order_pending").append('<span class="percent">'+mutation.target.getAttribute('data-progress')+' %</span>')
+    //             }
+    //         }
+    //     }
+    // };
+
+    // // Création de l'observer
+    // const observer = new MutationObserver(observerCallback);
+    // // Démarrage de l'observer
+    // observer.observe(paceProgress, observerConfig);
 
 
     const options = {
@@ -86,16 +137,16 @@ $(document).ready(function() {
                         })
                     }
                     
-                    if(order.line_items.length == 1){
-                        Object.entries(order.line_items).forEach(([key, value]) => {
-                            if(value.name){
-                                if(value.name.includes("Carte Cadeau")){
-                                    take_order = false;
-                                }
-                            }
+                    // if(order.line_items.length == 1){
+                    //     Object.entries(order.line_items).forEach(([key, value]) => {
+                    //         if(value.name){
+                    //             if(value.name.includes("Carte Cadeau")){
+                    //                 take_order = false;
+                    //             }
+                    //         }
                            
-                        })
-                    } 
+                    //     })
+                    // } 
 
                     if(take_order){
                         return {
@@ -111,7 +162,7 @@ $(document).ready(function() {
                             status_text: order.status_text ?? 'En cours',
                             status_list: status_list,
                             date_created: order.date_created,
-                            line_items: order.line_items,
+                            line_items: [],
                             user_id: order.user_id,
                             coupons: coupons,
                             discount_total: order.discount_total,
@@ -218,64 +269,13 @@ $(document).ready(function() {
                         } 
                     }) 
                     return `
-                        <div class="${row.from_dolibarr ? 'order_dolibarr_'+row.orderDolibarId+'' : ''} modal_order_admin modal_order modal fade" id="order_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-body detail_product_order">
-                                        <div class="detail_product_order_head d-flex flex-column">
-                                            <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
-                                                <span class="column1 name_column">Article</span>
-                                                <span class="column2 name_column">Coût</span>
-                                                <span class="column3 name_column">Pick / Qté</span>
-                                                <span class="column4 name_column">Total</span>
-                                                <span class="column5 name_column">Action</span>
-                                            </div>	
+                       
 
-                                            <div class="body_detail_product_order">
-                                                ${row.line_items.map((element) => `
-                                                    <div class="${element.product_id}  ${element.variation_id} ${row.id}_${element.id} ${id[element.product_id] ? (id[element.product_id] == element.quantity ? 'pick' : '') : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-                                                        <div class="column11 d-flex align-items-center detail_product_name_order">
-                                                            ${element.price == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`}
-                                                        </div>
-                                                        ${!row.from_dolibarr ? '<span class="column22">'+parseFloat(element.subtotal / element.quantity).toFixed(2)+ '</span>' : '<span class="column22">'+parseFloat(element.subtotal).toFixed(2)+ '</span>' }
-                                                        
-                                                        <span class="column33 quantity">${id[element.product_id] ? id[element.product_id] : (id[element.variation_id] ? id[element.variation_id] : 0)} / ${element.quantity}</span>
-                                                        <span class="column44">`+parseFloat(element.price * element.quantity).toFixed(2)+`</span>
-                                                        ${!row.from_dolibarr ? '<span class="column55"><i onclick="deleteProduct('+row.id+','+element.id+','+element.variation_id+','+element.product_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>' : 
-                                                        '<span class="column55"><i onclick="deleteProductDolibarr('+row.orderDolibarId+','+element.product_id+','+element.product_dolibarr_id+','+element.quantity+')" class="edit_order bx bx-trash"></i></span>'}
-                                                    </div>`
-                                                ).join('')}
-                                            </div>
-                                            <div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
-                                                <div class="d-flex flex-column justify-content-between">
-                                                    <div class="d-flex flex-column align-items-center justify-content-end">
-                                                        ${row.coupons ? `<span class="order_customer_coupon mb-2 badge bg-success">`+row.coupons+`</span>` : ``}
-                                                    </div>
-                                                    ${!row.from_dolibarr ? '<button type="button" data-order='+row.id+' class="add_product_order btn btn-dark px-5" >Ajouter un produit</button>' : ''}
-                                                </div>
-                                                <div class="d-flex flex-column list_amount">
-                                                    <span class="montant_total_order">Sous-total des articles:<strong class="total_ht_order">`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
-                                                    ${row.coupons && row.coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+row.coupons+` (-`+row.coupons_amount+`€)</strong></span>` : ``}
-                                                    <span class="montant_total_order">Expédition:<strong> `+row.shipping_amount+`€</strong></span>
-                                                    <span class="montant_total_order">TVA: <strong class="total_tax_order">`+total_tax+`€</strong></span>
-                                                    ${row.gift_card.length > 0 ? `<span class="text-success">PW Gift Card: <strong>`+row.gift_card[0].number+` (-`+row.gift_card[0].amount+`€)</strong></span>` : ``}
-                                                    ${row.discount_amount > 0 ? `<span class="text-success">Réduction: <strong>(-`+row.discount_amount+`%)</strong></span>` : ``}
+                        <button onclick="show('`+row.id+`')" class="detail_products">
+                            <i class="show_detail bx bx-cube"></i>
+                        </button>
 
-                                                    <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+row.total+`€</strong></span>
-                                                    <div class="d-flex justify-content-end">
-                                                        <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <i onclick="show('`+row.id+`')" class="show_detail bx bx-cube"></i>
-
-                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade modal_radius" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                 <div class="modal-body">
@@ -508,12 +508,15 @@ $(document).ready(function() {
                 data.status == "processing" || data.status == "waiting_validate" || data.status == "waiting_to_validate" || data.status == "order-new-distrib" || data.status == "en-attente-de-pai" ? order_progress = order_progress + 1 : order_progress = order_progress 
             } );
             
+            $(".number_order_pending").children('.spinner-border').remove()
             $(".number_order_pending").append('<span>'+info.recordsTotal+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
             $(".allocation_of_orders").attr('disabled', false)
             $(".dataTables_paginate").parent().removeClass("col-md-7")
         },
 
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+
+            var info = $('#example').DataTable().page.info();
             var selectElements = nRow.getElementsByClassName('order_attribution');
             for (var i = 0; i < selectElements.length; i++) {
                 var select = selectElements[i];
@@ -604,12 +607,12 @@ $(".allocationOrdersConfirm").on("click", function(){
             $(".loading_allocation").addClass("d-none")
             $(".lni-checkmark-circle").removeClass('d-none')
             $(".allocationOrdersTitle").text("Commandes réparties avec succès !")
-            setTimeout(function(){ location.reload(); }, 2500);
+            setTimeout(function(){ location.reload(); }, 800);
         } else {
-            alert(JSON.parse(data).message ?? 'Erreur !')
-            $("#allocationOrders button").removeClass('d-none')
             $(".loading_allocation").addClass("d-none")
-            $("#allocationOrders").modal('hide')
+            $(".bx-error-circle").removeClass('d-none')
+            $(".allocationOrdersTitle").text(JSON.parse(data).message ?? 'Erreur !')
+            setTimeout(function(){ location.reload(); }, 1500);
         }
     });
 })
@@ -630,10 +633,10 @@ $(".unassignOrdersConfirm").on("click", function(){
             $(".allocationOrdersTitle").text("Commandes désattribuées avec succès !")
             setTimeout(function(){ location.reload(); }, 1000);
         } else {
-            alert(JSON.parse(data).message ?? 'Erreur !')
-            $("#allocationOrders button").removeClass('d-none')
             $(".loading_allocation").addClass("d-none")
-            $("#allocationOrders").modal('hide')
+            $(".bx-error-circle").removeClass('d-none')
+            $(".allocationOrdersTitle").text(JSON.parse(data).message ?? 'Erreur !')
+            setTimeout(function(){ location.reload(); }, 1500);
         }
     });
 })
@@ -781,12 +784,106 @@ function addProductOrderConfirm(){
 
 // Show detail product order
 function show(id){
-    $('#order_'+id).modal({
-        backdrop: 'static',
-        keyboard: false
-    })
 
-    $("#order_"+id).appendTo("body").modal('show')
+    $("#example").css('opacity', '0.3')
+    $(".loading_show_detail_order ").removeClass('d-none')
+    $(".detail_products").attr('disabled', true)
+
+    $.ajax({
+        url: "getDetailsOrder",
+        method: 'GET',
+        data: {order_id: id}
+    }).done(function(data) {
+        $("#example").css('opacity', '1')
+        $(".loading_show_detail_order ").addClass('d-none')
+        $(".detail_products").attr('disabled', false)
+
+        if(JSON.parse(data).success){
+        
+            var order = JSON.parse(data).order
+            if(order.length > 0){
+                // Dolibarr et Woocommerce
+                if(!order[0].transfers){
+                    var total = parseFloat(order[0].total_order)
+                    var discount_total = !order[0].from_dolibarr ? parseFloat(order[0].discount) : 0
+                    var gift_card = !order[0].from_dolibarr ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount): 0) : 0
+                    var total_tax = !order[0].from_dolibarr ? parseFloat(order[0].total_tax_order) : parseFloat(order[0].total_tax)
+                    var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? parseFloat(order[0].shipping_amount) : 0)
+                }
+
+               
+
+                $(".modal_order_admin").remove()
+                $('body').append(`<div class="modal_order_admin modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body detail_product_order">
+                                <div class="detail_product_order_head d-flex flex-column">
+                                    <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
+                                        <span class="column1 name_column">Article</span>
+                                        <span class="column2 name_column">Coût</span>
+                                        <span class="column3 name_column">Pick / Qté</span>
+                                        <span class="column4 name_column">Total</span>
+                                        <span class="column5 name_column">Action</span>
+                                    </div>	
+
+                                    <div class="body_detail_product_order">
+                                        ${order.map((element) =>
+                                            `
+                                            <div class="${element.product_woocommerce_id} ${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                                <div class="column11 d-flex align-items-center detail_product_name_order">
+                                                    ${element.name != null ? (parseFloat(element.cost).toFixed(2) == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`) : '<span class="text-danger"> (Produit manquant) Identifiant : '+element.product_woocommerce_id+'</span>'}
+                                                </div>
+                                                <span class="column22">${parseFloat(element.cost).toFixed(2)}</span>
+                                                <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
+                                                <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}</span>
+                                                ${!order[0].from_dolibarr ? '<span class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
+                                                '<span class="column55"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
+                                                
+                                            </div>`
+                                    ).join('')}
+                                    </div>
+                                    <div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <div class="d-flex flex-column align-items-center justify-content-end">
+                                                ${order[0].coupons ? `<span class="order_customer_coupon mb-2 badge bg-success">`+order[0].coupons+`</span>` : ``}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column list_amount">
+                                            <span class="montant_total_order">Sous-total des articles:<strong class="total_ht_order">`+parseFloat(sub_total).toFixed(2)+`€</strong></span> 
+                                            ${order[0].coupons && order[0].coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+order[0].coupons+` (-`+order[0].coupons_amount+`€)</strong></span>` : ``}
+                                            ${order[0].discount_amount > 0 ? `<span class="text-success">Réduction: <strong>-`+order[0].discount+`€ (-`+order[0].discount_amount+`%)</strong></span>` : ``}
+                                        
+                                            ${order[0].shipping_amount ? `<span class="montant_total_order">Expédition:<strong>`+order[0].shipping_amount+`€</strong></span>` : `<span class="montant_total_order">Expédition:<strong>0€</strong></span>`}
+                                            <span class="montant_total_order">TVA: <strong class="total_tax_order">`+parseFloat(total_tax).toFixed(2)+`€</strong></span>
+
+                                            ${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>-`+gift_card+`€</strong></span>` : ``}
+
+                                            <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+total+`€</strong></span>
+                                            <div class="d-flex justify-content-end">
+                                                <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`)
+                $('#order_'+id).modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+
+                $("#order_"+id).appendTo("body").modal('show')
+            } else {
+                $(".detail_products").attr('disabled', false)
+                alert('Aucune information pour cette commande !')
+            }
+        } else {
+            alert('Aucune information pour cette commande !')
+        }
+    })	
 }
 
 // Show detail billing and shipping order
@@ -806,9 +903,9 @@ function showCustomerOrderDetail(id){
 }
 
 // Delete product's order Woocommerce
-function deleteProduct(order_id, line_item_id, variation_id, product_id, quantity){
-    var id = variation_id != 0 ? variation_id : product_id
-    var name = $("."+order_id+"_"+line_item_id).children('.detail_product_name_order').children('span').text()
+function deleteProduct(order_id, line_item_id, product_id, quantity){
+    var id = product_id
+    var name = $("#order_"+order_id).find("."+product_id).find('.detail_product_name_order').children('span').text()
 
     $("#order_id").val(order_id)
     $("#line_item_id").val(line_item_id)
@@ -834,7 +931,7 @@ function deleteProductOrderConfirm(increase){
         data: {_token: $('input[name=_token]').val(), order_id: order_id, line_item_id: line_item_id, increase: increase, quantity: quantity, product_id: product_id}
     }).done(function(data) {
         if(JSON.parse(data).success){
-          
+
             // Update total modal detail order
             $("#order_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
             $("#order_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
@@ -858,11 +955,12 @@ function deleteProductOrderConfirm(increase){
 
 
 // Delete product's order dolibarr
-function deleteProductDolibarr(order_id, product_id, product_dolibarr_id, quantity){
-    var name = $("#order_"+order_id+" ."+product_id).children('.detail_product_name_order').children('span').text()
+function deleteProductDolibarr(order_id, ref_order, product_dolibarr_id, quantity){
+    var name = $("#order_"+ref_order).find('.'+product_dolibarr_id).find('.detail_product_name_order').children('span').text()
+
     $("#order_id_dolibarr").val(order_id)
+    $("#ref_order").val(ref_order)
     $("#product_dolibarr_id").val(product_dolibarr_id)
-    $("#product_order_id_dolibarr").val(product_id)
     $(".product_dolibarr_name_to_delete").text(name)
     $("#quantity_order_dolibarr").attr('max', quantity)
     $("#deleteProductOrderDolibarrModal").appendTo("body").modal('show')
@@ -875,7 +973,7 @@ function deleteProductOrderDolibarrConfirm(){
     $(".delete_modal").addClass('d-none')
     var order_id = $("#order_id_dolibarr").val()
     var product_dolibarr_id = $("#product_dolibarr_id").val()
-    var product_id = $("#product_order_id_dolibarr").val()
+    var ref_order = $("#ref_order").val()
     var quantity_to_delete = $("#quantity_order_dolibarr").val()
     var quantity =  $("#quantity_order_dolibarr").attr('max')
 
@@ -887,11 +985,11 @@ function deleteProductOrderDolibarrConfirm(){
         if(JSON.parse(data).success){
 
             if(quantity_to_delete >= quantity){
-                $(".order_dolibarr_"+order_id+" ."+product_id).fadeOut()
-                $(".order_dolibarr_"+order_id+" ."+product_id).remove()
+                $("#order_"+ref_order).find('.'+product_dolibarr_id).fadeOut()
+                $("#order_"+ref_order).find('.'+product_dolibarr_id).remove()
             } else {
                 var new_quantity = parseInt(quantity) - parseInt(quantity_to_delete)
-                $(".order_dolibarr_"+order_id+" ."+product_id).find('.quantity').text('0 / '+new_quantity)
+                $("#order_"+ref_order).find('.'+product_dolibarr_id).find('.quantity').text('0 / '+new_quantity)
             }
            
             $(".loading_delete").addClass('d-none')
@@ -907,15 +1005,18 @@ function deleteProductOrderDolibarrConfirm(){
 function changeStatusOrder(order_id, user_id, from_dolibarr){
     
     var status = $("#selectStatus_"+order_id).val()
-    
+  
     $.ajax({
         url: "updateOrderStatus",
         method: 'POST',
         data: {_token: $('input[name=_token]').val(), order_id: order_id, status: status, user_id: user_id, from_dolibarr: from_dolibarr}
     }).done(function(data) {
         if(JSON.parse(data).success){
-            $("#selectStatus_"+order_id).removeClass('empty_select')
+            $("#selectStatus_"+order_id).removeClass()
+            $("#selectStatus_"+order_id).addClass("select_status")
+            $("#selectStatus_"+order_id).addClass("select_user")
             $("#selectStatus_"+order_id).addClass('no_empty_select')
+            $("#selectStatus_"+order_id).addClass(status)
         } else {
             alert('Erreur !')
         }

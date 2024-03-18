@@ -44,8 +44,7 @@ class CreateOrdersTable extends Migration
             $table->datetime('date');
             $table->float('total_tax_order');
             $table->float('total_order');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('user_id');
             $table->string('status');
             $table->timestamps();
         });

@@ -726,7 +726,7 @@ class Transfertext
                                          $data_options_kdo =[];
                                          $account="";
                                          $this->setAccountpay($account);
-                                          echo json_encode(['success' => false, 'message'=> '  Attention la la commande semble être déjà facturée, signalez au service informatique !']);
+                                          echo json_encode(['success' => false, 'message'=> '  Attention la commande semble être déjà facturée, signalez au service informatique !']);
                                           exit;
                                     }
                                     // recupérer les id_commande deja pris

@@ -300,7 +300,7 @@ function validWrapOrder(label, redirection = false, error = false){
     var from_dolibarr = $("#validWrapper").attr('from_dolibarr')
     var transfers = $("#validWrapper").attr('transfers')
     // Affiche les infos pour générer l'étiquette
-    
+
     if(label){
         $.ajax({
             url: "getProductOrderLabel",
@@ -374,7 +374,7 @@ function validWrapOrder(label, redirection = false, error = false){
                 $(".generate_label_modal").modal('show')
             } else {
                 $(".alert").remove()
-                $(".show_messages").prepend(`
+                $(".wrapper").append(`
                     <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                         <div class=" text-white">`+JSON.parse(data).message+`</div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -441,7 +441,7 @@ function validWrapOrder(label, redirection = false, error = false){
                 if(JSON.parse(data).success){
                     
                     if(error){
-                        $(".show_messages").prepend(`
+                        $(".wrapper").append(`
                             <div class="success_message alert alert-warning border-0 bg-warning alert-dismissible fade show">
                                 <div class="text-center text-white">
                                     <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
@@ -451,7 +451,7 @@ function validWrapOrder(label, redirection = false, error = false){
                             </div>
                         `)
                     } else {
-                        $(".show_messages").prepend(`
+                        $(".wrapper").append(`
                         <div class="success_message alert alert-success border-0 bg-success alert-dismissible fade show">
                             <div class="text-center text-white">`+JSON.parse(data).message+`</div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -478,7 +478,7 @@ function validWrapOrder(label, redirection = false, error = false){
                     
                 } else {
                     // var message = error ? JSON.parse(data).message+' - '+error : JSON.parse(data).message
-                    $(".show_messages").prepend(`
+                    $(".wrapper").append(`
                         <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
                             <div class="text-center text-white">
                                 <span class="response_detail_type">Facturation </span>: `+JSON.parse(data).message+`
@@ -501,7 +501,6 @@ function validWrapOrder(label, redirection = false, error = false){
             }
         })
     }
-
 }
 
 $(".valid_generate_label").on('click', function(){

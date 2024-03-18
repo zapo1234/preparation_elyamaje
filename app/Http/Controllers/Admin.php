@@ -1174,6 +1174,7 @@ class Admin extends BaseController
 
     public function cashier(Request $request){
         $date = $request->get('date') ?? date('Y-m-d');
+        $dateRange = date("Y-m-d", strtotime($date . " +1 day")); // Ajoute un jour à la date actuelle
 
         // List orders for each caisse
         $detailsCaisse = $this->caisse->getAllDetailsUniqueId($date);
@@ -1235,10 +1236,10 @@ class Admin extends BaseController
             }
 
             // Check if date is same than choice date
-            if($detail->date >= $date && ($detail->statut != "canceled" && $detail->statut != "pending")){
+            if($detail->date >= $date && $detail->date < $dateRange && ($detail->statut != "canceled" && $detail->statut != "pending")){
                 // Mise à jour des totaux card et cash pour cette commande
-                $caisse[$detail->caisseId]['total_card'] += $detail->amountCard;
-                $caisse[$detail->caisseId]['total_cash'] += $detail->total_order_ttc - $detail->amountCard;
+                $caisse[$detail->caisseId]['total_card'] += $detail->amountCard != null ? $detail->amountCard : 0;
+                $caisse[$detail->caisseId]['total_cash'] += $detail->amountCard != null ? $detail->total_order_ttc - $detail->amountCard : $detail->total_order_ttc;
 
                 if($detail->ref_order){
                     $caisse[$detail->caisseId]['details_orders'][] = $detail;
