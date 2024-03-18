@@ -1307,7 +1307,8 @@ class Order extends BaseController
 
       if(isset($trackingLabelColissimo["parcel"]["step"])){
         foreach($trackingLabelColissimo["parcel"]["step"] as $key => $tracking){
-          if($tracking['status'] == "STEP_STATUS_ACTIVE" || str_contains($tracking['labelShort'],"Vous pouvez retirer votre colis")){
+          if($tracking['status'] == "STEP_STATUS_ACTIVE" || str_contains($tracking['labelShort'], "Vous pouvez retirer votre colis") 
+          || str_contains($tracking['labelShort'], "Votre colis est disponible dans votre point de retrait")){
             $stepColissimo = $key;
           }
         }
