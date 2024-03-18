@@ -735,9 +735,6 @@ class TransferOrder
 
                             ];
                         }
-
-                      
-                       dd($data_linec);
                       
                   
                         if(count($data_tiers)!=0){
