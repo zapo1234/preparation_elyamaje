@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            dd($orders);
+            
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -735,6 +735,8 @@ class TransferOrder
 
                             ];
                         }
+
+                        dd($data_linec);
 
                       
                   
