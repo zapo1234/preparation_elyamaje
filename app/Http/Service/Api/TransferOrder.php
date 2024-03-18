@@ -717,7 +717,7 @@ class TransferOrder
                         dump($data_tiers);
 
                         foreach($data_lines as  $val){
-                            $data_lines[] =[
+                            $data_linec[] =[
                               'socid'=>$val['socid'],
                               'ref_client'=>'',
                               'date'=>$val['date'],
@@ -732,7 +732,7 @@ class TransferOrder
                             ];
                         }
 
-                        dd($data_lines);
+                        dd($data_linec);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
