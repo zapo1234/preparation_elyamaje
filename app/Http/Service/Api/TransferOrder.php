@@ -1164,6 +1164,7 @@ class TransferOrder
                  "accountid"=> $account_id, // id du compte bancaire.
                  ];
 
+                 dd($valid);
                 // valider les facture dans dolibar....
                // dd($newCommandeValider);
                 if($valid==1){
