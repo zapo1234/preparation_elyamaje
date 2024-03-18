@@ -734,6 +734,8 @@ class TransferOrder
 
                             ];
                         }
+
+                        dd($data_linec);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
