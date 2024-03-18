@@ -592,20 +592,16 @@ class TransferOrder
                       
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
-                                    $chaine_ext ="BPP";
+                                    $chaine_ext ="CO";
                                     $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                     if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                          $index_int=1;
                                          $montant_fidelite = 0.000;
                                     }else{
-                                          if($donnees['gift_card_amount']==""){
-                                              $amount_gift = 0;
-                                          }else{
-                                            $amount_gift =$donnees['gift_card_amount'];
-                                          }
-                                          $index_int="";
+                                          
+                                           $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
-                                          $montant_fidelite = $donnees['total_order']-$total_shipping+$amount_gift;
+                                          $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                                           
                                     }
 
