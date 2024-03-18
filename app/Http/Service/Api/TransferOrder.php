@@ -761,7 +761,7 @@ class TransferOrder
                      }
 
                       // construire les données du clients a attacher a la facture.
-
+                           dd($array_data_gift_card);
                            // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
                               $data_gift_card =[];
