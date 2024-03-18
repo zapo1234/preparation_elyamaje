@@ -181,7 +181,8 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-             $fk_commande="";
+            dd($orders);
+            $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
              $emballeur="";
@@ -597,6 +598,11 @@ class TransferOrder
                                          $index_int=1;
                                          $montant_fidelite = 0.000;
                                     }else{
+                                          if(isset($donnees['gift_card_amount'])){
+                                              $amount_gift = $donnees['gift_card_amount'];
+                                          }else{
+                                            $amount_gift =0;
+                                          }
                                           $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
                                           $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
