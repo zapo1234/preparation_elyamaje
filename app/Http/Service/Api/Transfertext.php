@@ -556,7 +556,7 @@ class Transfertext
                                                    "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
-                                                   "real_price"=> $values['real_price'],
+                                                   "real_price"=> 0,
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
                                                      ];
@@ -644,7 +644,7 @@ class Transfertext
                                       // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       // veifier si la commande a facturé vient d'une beauty proof BPP
                                       
-                                       $chaine_ext ="BPP";
+                                       $chaine_ext ="CO";
                                        $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                        if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                             $index_int=1;

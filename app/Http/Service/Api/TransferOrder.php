@@ -181,8 +181,8 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-             
-             $fk_commande="";
+            
+            $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
              $emballeur="";
@@ -506,7 +506,7 @@ class TransferOrder
                                                    "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
-                                                   "real_price"=> 0,
+                                                   "real_price"=> 0.00,
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
                                                      ];
@@ -589,15 +589,16 @@ class TransferOrder
                                     $result_data_product = array_merge($array_line_product,$data_product);
                                   // verifier si la commande n'est pas encore traité..
                                   $id_true ="";
+                      
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
-                                    $chaine_ext ="BPP";
+                                    $chaine_ext ="CO";
                                     $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                     if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                          $index_int=1;
                                          $montant_fidelite = 0.000;
                                     }else{
-                                          $index_int="";
+                                           $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
                                           $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                                           
@@ -712,9 +713,37 @@ class TransferOrder
                            }
                          }
                         */
-                        
-                        
-                          // Create le client via Api.....
+
+                        foreach($data_lines as  $val){
+                            $lines[]= $val['lines'][0];
+                            $lines[] = $val['lines'][1];
+                            $lines[] = $val['lines'][2];
+                            $lines[] = $val['lines'][3];
+                            $lines[] = $val['lines'][4];
+                            $lines[] = $val['lines'][5];
+                            $lines[] = $val['lines'][6];
+                            $lines[] = $val['lines'][7];
+                            $lines[] = $val['lines'][8];
+                            $lines[] = $val['lines'][9];
+                            $lines[] = $val['lines'][10];
+
+                            $data_linec[] =[
+                              'socid'=>$val['socid'],
+                              'ref_client'=>'',
+                              'date'=>$val['date'],
+                               'total_ht'=>$val['total_ht'],
+                               'total_ttc'=>$val['total_ttc'],
+                               'paye' =>1,
+                               'lines' => $lines,
+                                'array_options'=>$val['array_options'],
+                               'linkedObjectsIds'=>$val['linkedObjectsIds']
+                               
+
+                            ];
+                        }
+
+                  
+                       // Create le client via Api.....
                            foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
                              $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -758,7 +787,7 @@ class TransferOrder
                      }
 
                       // construire les données du clients a attacher a la facture.
-
+                          
                            // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
                               $data_gift_card =[];
@@ -881,9 +910,10 @@ class TransferOrder
                            }
                     
                            $retour_create_facture="";// gerer le retour de la création api.
-                           foreach($data_lines as $donnes){
-                            // insérer les details des données de la facture dans dolibarr
-                             $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                           foreach($data_linec as $donnes){
+                              // insérer les details des données de la facture dans dolibarr
+                              $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                             
                            }
                             // traiter la réponse de l'api
                              $response = json_decode($retour_create, true);
@@ -1123,7 +1153,7 @@ class TransferOrder
                        // $mode reglement de la facture ....
                         $newCommandepaye = [
                         "paye"	=> 1,
-                       "statut"	=> 2,
+                        "statut"	=> 2,
                         "mode_reglement_id"=>$mode_reglement_id,
                         "idwarehouse"=>6,
                          "notrigger"=>0,
@@ -1164,7 +1194,9 @@ class TransferOrder
                  "accountid"=> $account_id, // id du compte bancaire.
                  ];
 
+            
                 // valider les facture dans dolibar....
+               // dd($newCommandeValider);
                 if($valid==1){
                    // valider la facture en impayée.
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
@@ -1172,17 +1204,16 @@ class TransferOrder
                else{
                       // valider et mettre en payée la facture.
                       // traiter les retour de réponse api
-                       $validate_facture =""; // retour de traitement de l'api.
                        $validate_facture =  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                        // traiter la réponse de l'api
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
                        $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
                        if(!isset($response['ref'])){
-                            $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
-                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
+                           $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
+                          echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
                           exit;
-                        }  // recupérer le prefixe de la facture ces deux premiere lettre.
+                       }  // recupérer le prefixe de la facture ces deux premiere lettre.
                     
                         if(isset($response['error']['message'])){
                           $message = $response['error']['message'];
