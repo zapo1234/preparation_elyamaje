@@ -17,7 +17,7 @@
 									<span class="visually-hidden">Loading...</span>
                                 </div>
 							</div>
-							<button class="sync_orders">
+							<button id="get_sync_orders" class="sync_orders">
 								<i class="fadeIn animated bx bx-sync"></i>
 							</button>
 						</div>
