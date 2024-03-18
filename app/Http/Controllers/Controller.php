@@ -1083,7 +1083,7 @@ class Controller extends BaseController
     function deplacerFichier($nomFichier) {
 
 
-        if (strpos($nomFichier, "reassorts")) {
+        if (strpos($nomFichier, "reassort")) {
             // Chemin du répertoire "notraite"
             $cheminSource = storage_path('app/public/reassorts/notraite');
             // Chemin du répertoire "traite"
@@ -1097,7 +1097,7 @@ class Controller extends BaseController
             return redirect()->back()->with("error",  "Le fichier ".$nomFichier." n'existe pas dans les alerte non traité");
         }
      
-    
+
         // Vérifier si le fichier existe dans le répertoire source
         if (file_exists($cheminSource . '/' . $nomFichier)) {
             // Déplacer le fichier vers le répertoire de destination
