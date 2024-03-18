@@ -403,7 +403,8 @@ class TransferOrder
                                     $a11= substr($a1,-2);
                                     $a2 = $dat[1];
                                  
-                                   $socid = $id_cl;
+                                   //$socid = $id_cl;
+                                   $socid="news";
                                    $woo = $donnees['billing']['company'];
                                    
                                      $type_id="";
@@ -735,12 +736,25 @@ class TransferOrder
                             ];
                         }
                   
-                       // Create le client via Api.....
-                           foreach($data_tiers as $data) {
+                        if(count($data_tiers)!=0){
+                          foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
-                             $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
-                             
-                          }
+                          $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                             if($retour_create_tiers==""){
+                                $message ="Problème sur la création du client";
+                                $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
+                                echo json_encode(['success' => false, 'message'=> $message]);
+                                exit;
+                           }
+                        }
+                       }
+
+                        // recrire la data_lines.
+                        if($data_lines[0]['socid']=="news"){
+                          $data_lines[0]['socid']=$retour_create_tiers;
+                        }else{
+                           $data_lines= $data_lines;
+                        }
 
                           // traiter les commande achété avec des bon d'achat ici.
                   
