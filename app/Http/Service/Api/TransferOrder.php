@@ -715,14 +715,25 @@ class TransferOrder
                         */
 
                         dump($data_tiers);
-                        dd($data_lines);
+                        dump($data_lines);
 
                         foreach($data_lines as  $val){
-                            $data_lines =[
-                              
+                            $data_lines[] =[
+                              'socid'=>$val['socid'],
+                              'ref_client'=>'',
+                              'date'=>$val['date'],
+                               'total_ht'=>$val['total_ht'],
+                               'total_ttc'=>$val['total_ttc'],
+                               'paye' =>1,
+                               'lines' => $val['lines'][0],
+                                'array_options'=>$val['array_options'],
+                               'linkedObjectsIds'=>$val['linkedObjectsIds']
+                               
 
                             ];
                         }
+
+                        dd($data_lines);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
