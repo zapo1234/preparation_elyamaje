@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            dd($orders);
+            
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -589,7 +589,7 @@ class TransferOrder
                                     $result_data_product = array_merge($array_line_product,$data_product);
                                   // verifier si la commande n'est pas encore traité..
                                   $id_true ="";
-                                  dd('zapo');
+                      
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                     $chaine_ext ="BPP";
@@ -598,10 +598,10 @@ class TransferOrder
                                          $index_int=1;
                                          $montant_fidelite = 0.000;
                                     }else{
-                                          if(isset($donnees['gift_card_amount'])){
-                                              $amount_gift = $donnees['gift_card_amount'];
+                                          if($donnees['gift_card_amount']==""){
+                                              $amount_gift = 0;
                                           }else{
-                                            $amount_gift =0;
+                                            $amount_gift =$donnees['gift_card_amount'];
                                           }
                                           $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
