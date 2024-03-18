@@ -885,6 +885,7 @@ class TransferOrder
                     
                            $retour_create_facture="";// gerer le retour de la création api.
                            foreach($data_lines as $donnes){
+                            dd(json_encode($donnes));
                             // insérer les details des données de la facture dans dolibarr
                              $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              dd($retour_create);
