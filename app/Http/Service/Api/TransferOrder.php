@@ -714,8 +714,6 @@ class TransferOrder
                          }
                         */
 
-                        dump($data_tiers);
-
                         foreach($data_lines as  $val){
                             $lines[]= $val['lines'][0];
                             $data_linec[] =[
@@ -732,8 +730,6 @@ class TransferOrder
 
                             ];
                         }
-
-                        dd($data_linec);
                         
                           // Create le client via Api.....
                            foreach($data_tiers as $data) {
