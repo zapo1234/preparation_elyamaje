@@ -9176,3 +9176,7 @@ select option[disabled] {
 	border-radius: 5px;
 	padding: 0px 5px 0px 5px;
 }
+
+.card{
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+}
