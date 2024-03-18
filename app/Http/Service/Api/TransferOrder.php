@@ -1205,8 +1205,6 @@ class TransferOrder
                       // valider et mettre en payée la facture.
                       // traiter les retour de réponse api
                        $validate_facture =  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
-
-                       dd($validate_facture);
                        // traiter la réponse de l'api
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
