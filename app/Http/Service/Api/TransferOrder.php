@@ -1165,6 +1165,7 @@ class TransferOrder
                  ];
 
                 // valider les facture dans dolibar....
+                dd($newCommandeValider);
                 if($valid==1){
                    // valider la facture en impayée.
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
