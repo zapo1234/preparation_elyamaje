@@ -556,7 +556,7 @@ class Transfertext
                                                    "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
-                                                   "real_price"=> $values['real_price'],
+                                                   "real_price"=> 0,
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
                                                      ];
