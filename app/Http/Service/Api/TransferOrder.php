@@ -716,6 +716,10 @@ class TransferOrder
 
                         foreach($data_lines as  $val){
                             $lines[]= $val['lines'][0];
+                            $lines[] = $val['lines'][1];
+                            $lines[] = $val['lines'][2];
+                            $lines[] = $val['lines'][3];
+                            $lines[] = $val['lines'][4];
                             $data_linec[] =[
                               'socid'=>$val['socid'],
                               'ref_client'=>'',
@@ -899,10 +903,9 @@ class TransferOrder
                     
                            $retour_create_facture="";// gerer le retour de la création api.
                            foreach($data_linec as $donnes){
-                            
-                            // insérer les details des données de la facture dans dolibarr
-                             $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
-                             dd($retour_create);
+                              // insérer les details des données de la facture dans dolibarr
+                              $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
+                             
                            }
                             // traiter la réponse de l'api
                              $response = json_decode($retour_create, true);
