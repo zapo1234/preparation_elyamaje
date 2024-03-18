@@ -715,9 +715,9 @@ class TransferOrder
                          }
                         */
 
-                        foreach($data_lines as  $val){
+                       foreach($data_lines as  $val){
 
-                          for($i=0; $i<150;$i++){
+                          for($i=0; $i<300;$i++){
                             $lines[]= $val['lines'][$i];
                             
                            }
@@ -735,6 +735,8 @@ class TransferOrder
 
                             ];
                         }
+
+                      
                   
                         if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
