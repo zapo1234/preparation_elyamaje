@@ -505,7 +505,7 @@ class TransferOrder
                                                    "product_id"=>$fk_product,
                                                    "label" =>$values['name'],
                                                    "quantity" => $values['quantity'],
-                                                   "real_price"=> 0,
+                                                   "real_price"=> 0.00,
                                                    "created_at" => date('Y-m-d h:i:s'),
                                                    "updated_at" => date('Y-m-d H:is')
                                                      ];
