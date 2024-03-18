@@ -588,6 +588,7 @@ class TransferOrder
                                     $result_data_product = array_merge($array_line_product,$data_product);
                                   // verifier si la commande n'est pas encore traité..
                                   $id_true ="";
+                                  dd('zapo');
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                     $chaine_ext ="BPP";
