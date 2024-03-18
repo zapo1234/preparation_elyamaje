@@ -717,7 +717,7 @@ class TransferOrder
 
                        foreach($data_lines as  $val){
 
-                          for($i=0; $i<305;$i++){
+                          for($i=304; $i<335;$i++){
                             $lines[]= $val['lines'][$i];
                             
                            }
@@ -737,7 +737,7 @@ class TransferOrder
                         }
 
                       
-
+                       dd($data_linec);
                       
                   
                         if(count($data_tiers)!=0){
