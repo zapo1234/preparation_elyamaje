@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+            dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -717,7 +717,7 @@ class TransferOrder
 
                        foreach($data_lines as  $val){
 
-                          for($i=0; $i<300;$i++){
+                          for($i=0; $i<380;$i++){
                             $lines[]= $val['lines'][$i];
                             
                            }
