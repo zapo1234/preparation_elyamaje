@@ -715,7 +715,6 @@ class TransferOrder
                         */
 
                         dump($data_tiers);
-                        dump($data_lines);
 
                         foreach($data_lines as  $val){
                             $data_lines[] =[
