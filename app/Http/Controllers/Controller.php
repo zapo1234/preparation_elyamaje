@@ -336,7 +336,7 @@ class Controller extends BaseController
              
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
-            // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+        // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
 
         $apiUrl = env('KEY_API_URL');
         // $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
@@ -828,7 +828,7 @@ class Controller extends BaseController
         $name_entrepot = (isset($liste_entrepot[$entrepot_destination])) ? $liste_entrepot[$entrepot_destination]['name_entrepot'] : "inconnu";
 
         // on récupère les infos de stock alerte et de stock souhaité (llxyq_product_warehouse_properties)  
-        $infos_stock_min = $pdoDolibarr->getStockAlerteMin(1); // remettre la variable après
+        $infos_stock_min = $pdoDolibarr->getStockAlerteMin($entrepot_destination); // remettre la variable après
 
         // On récupère tout lesproduits 
         $all_products = $pdoDolibarr->getAllProduct(); 
@@ -1083,7 +1083,7 @@ class Controller extends BaseController
     function deplacerFichier($nomFichier) {
 
 
-        if (strpos($nomFichier, "reassorts")) {
+        if (strpos($nomFichier, "reassort")) {
             // Chemin du répertoire "notraite"
             $cheminSource = storage_path('app/public/reassorts/notraite');
             // Chemin du répertoire "traite"
@@ -1097,7 +1097,7 @@ class Controller extends BaseController
             return redirect()->back()->with("error",  "Le fichier ".$nomFichier." n'existe pas dans les alerte non traité");
         }
      
-    
+
         // Vérifier si le fichier existe dans le répertoire source
         if (file_exists($cheminSource . '/' . $nomFichier)) {
             // Déplacer le fichier vers le répertoire de destination
@@ -1142,7 +1142,8 @@ class Controller extends BaseController
 
        
 
-     
+        $entrepot_source = $request->post('entrepot_source');
+        $entrepot_destination = $request->post('entrepot_destination');
 
         if ($by_file) {
             $file = $request->file('file_reassort');
@@ -1161,7 +1162,7 @@ class Controller extends BaseController
             // on récupère la liste des produit et leurs stock d'alerte 
 
             $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
-            $infos_stock_min = $pdoDolibarr->getStockAlerteMin(1);
+            $infos_stock_min = $pdoDolibarr->getStockAlerteMin($entrepot_destination);
 
             $fileNameR = $file->getClientOriginalName();
 
@@ -1181,8 +1182,8 @@ class Controller extends BaseController
         $start_date_origin = $start_date;
         $end_date_origin = $end_date;
    
-        $entrepot_source = $request->post('entrepot_source');
-        $entrepot_destination = $request->post('entrepot_destination');
+        
+        
         $first_transfert = $request->post('first_transfert');
         $ignore_bp = $request->post('ignore_bp');
 
@@ -2633,8 +2634,8 @@ class Controller extends BaseController
 
 
                 // on récupère la liste des produit et leurs stock d'alerte 
-                // $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
-                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),"mamo9937_doli54","mamo9937_dolib54","]14]1pSxvS");
+                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+                // $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),"mamo9937_doli54","mamo9937_dolib54","]14]1pSxvS");
 
                 // $id_entrepot_select = 1;
                 $response = $pdoDolibarr->updateStockByIdProductAndEntrepot($id_entrepot_select, $csvDataArray);
