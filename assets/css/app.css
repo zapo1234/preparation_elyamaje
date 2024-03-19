@@ -8338,11 +8338,16 @@ select option[disabled] {
 	align-items: center;
 	text-decoration: none;
   }
+
   .sidebar .nav-links li a .link_name{
-	font-size: 1.2em;
+	font-size: 1em;
 	font-weight: 400;
 	color: #000000;
 	transition: all 0.3s ease;
+  }
+
+  .close .nav-links li a .link_name{
+	transition: all 0s ease !important;
   }
 
   .sidebar .nav-links li:hover .link_name{
@@ -8353,7 +8358,7 @@ select option[disabled] {
 	pointer-events: none;
   }
   .sidebar .nav-links li .sub-menu{
-	padding: 6px 6px 14px 55px;
+	padding: 6px 6px 14px 60px;
 	/* margin-top: 0px; */
 	background: white;
 	display: none;
