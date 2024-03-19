@@ -45,6 +45,16 @@ html, body, .wrapper{
 	animation: slideLeft 0.6s linear;
 }
 
+.authentication-lock-screen .alert{
+	position: relative;
+	z-index: 10;
+    bottom: 0px;
+    right: 0px;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+}
+
 .alert div{
 	word-break: break-word;
 	margin-left: 25px;
@@ -126,7 +136,7 @@ body {
 
 	color: #525f7f;
 	
-    background-color: #f8f9fe;
+    background-color: #FEF5F6;
 	
 	letter-spacing: 0.5px;
 
@@ -7874,6 +7884,10 @@ button[disabled]{
     max-height: 27vh !important;
 }
 
+.role_list .badge{
+	font-weight: 100 !important;
+}
+
 .colissimo_form, .billing_form{
 	max-width: 600px;
 }
@@ -9161,4 +9175,12 @@ select option[disabled] {
 	border: 1px solid #ced4da;
 	border-radius: 5px;
 	padding: 0px 5px 0px 5px;
-} 
+}
+
+.card{
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+}
+
+.authentication-lock-screen .card{
+	box-shadow: none !important;
+}
