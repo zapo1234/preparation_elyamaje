@@ -715,6 +715,8 @@ class TransferOrder
                          }
                         */
 
+                        dd(json_encode($data_lines));
+
                        foreach($data_lines as  $val){
 
                           for($i=304; $i<335;$i++){
