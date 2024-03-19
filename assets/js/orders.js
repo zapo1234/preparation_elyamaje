@@ -731,6 +731,17 @@ $('body').on('click', '.add_product_order', function() {
     $("#addProductOrderModal").appendTo("body").modal('show')
 })
 
+function add_product(order_id){
+    if(order_id){
+        $("#addProductOrderModal #order_id_add_product").val(order_id)
+        $('#addProductOrderModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+        $("#addProductOrderModal").appendTo("body").modal('show');
+    }
+}
+
 function addProductOrderConfirm(){
     $(".loading_add").removeClass('d-none')
     $(".add_modal").addClass('d-none')
@@ -830,7 +841,7 @@ function show(id){
                                     <div class="body_detail_product_order">
                                         ${order.map((element) =>
                                             `
-                                            <div class="${element.product_woocommerce_id} ${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                            <div class="${element.product_woocommerce_id}_${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
                                                 <div class="column11 d-flex align-items-center detail_product_name_order">
                                                     ${element.name != null ? (parseFloat(element.cost).toFixed(2) == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`) : '<span class="text-danger"> (Produit manquant) Identifiant : '+element.product_woocommerce_id+'</span>'}
                                                 </div>
@@ -843,7 +854,7 @@ function show(id){
                                             </div>`
                                     ).join('')}
                                     </div>
-                                    <div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order"> 
+                                    <div class="align-items-end mt-2 d-flex justify-content-between footer_detail_order flex-column"> 
                                         <div class="d-flex flex-column justify-content-between">
                                             <div class="d-flex flex-column align-items-center justify-content-end">
                                                 ${order[0].coupons ? `<span class="order_customer_coupon mb-2 badge bg-success">`+order[0].coupons+`</span>` : ``}
@@ -860,9 +871,11 @@ function show(id){
                                             ${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>-`+gift_card+`€</strong></span>` : ``}
 
                                             <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+total+`€</strong></span>
-                                            <div class="d-flex justify-content-end">
-                                                <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
-                                            </div>
+                                           
+                                        </div>
+                                        <div class="d-flex justify-content-between w-100">
+                                            <button onclick="add_product('`+order[0].order_woocommerce_id+`')" style="width:-min-content" type="button" class="btn btn-dark px-5">Ajouter un produit</button>
+                                            <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
                                         </div>
                                     </div>
                                 </div>
@@ -942,8 +955,8 @@ function deleteProductOrderConfirm(increase){
             $("#order_total_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
             $("#order_total_"+order_id+" .total_ttc_order").text(JSON.parse(data).order.total)
 
-            $('.'+order_id+'_'+line_item_id).fadeOut()
-            $('.'+order_id+'_'+line_item_id).remove()
+            $('.'+product_id+'_'+line_item_id).fadeOut()
+            $('.'+product_id+'_'+line_item_id).remove()
             $(".loading_delete").addClass('d-none')
         } else {
             alert('Erreur !')

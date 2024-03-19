@@ -39,7 +39,7 @@
 						<div class="billing_form w-75 card radius-10">
 							<div class="header_title hide_mobile d-flex align-items-center">
 								<div class="w-100 d-flex justify-content-between">
-									<h5>Commande  <span class="text-danger">(WooCommerce seulement)</span></h5>
+									<h5>Commande</h5>
 								</div>
 							</div>
 							<div class="card-body p-5">
