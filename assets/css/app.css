@@ -377,7 +377,7 @@ a {
 		margin-left: 85px;
 	}
 	.page-footer{
-		margin-left: 85px;
+		margin-left: 78px;
 	}
 
 	.detail_order_to_wrap {
@@ -3481,7 +3481,7 @@ a {
 }
 
 .bg-dark{
-	background-color: #333333 !important;
+	background-color: #000 !important;
 }
 
 
@@ -4379,7 +4379,7 @@ textarea::placeholder {
 	color: #fff;
 
 
-	background: #f62718;
+	background: #fb594d;
 
 }
 
@@ -5170,7 +5170,7 @@ textarea::placeholder {
 	border: none;
 	background-color: transparent;
 	transition: 0.3s;
-	color: #333333 !important;
+	color: #000 !important;
 }
 
 .download_label_button i,
@@ -6139,8 +6139,15 @@ textarea::placeholder {
 	font-weight: bold;
 }
 
+.card{
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+}
+
 @media screen and (max-width: 950px) {
 
+	.card{
+		box-shadow: none !important;
+	}
 	.caisse_page_details{
 		margin-left: 15px;
 	}
@@ -6179,7 +6186,7 @@ textarea::placeholder {
 	.generate_label_button{
 		border-radius: 5px !important;
 		padding: 8px 11px 8px 8px !important;
-		border: 1px solid #333333 !important;
+		border: 1px solid #000 !important;
 	}
 
 	.col-md-7:has(.dataTables_paginate){
@@ -6304,7 +6311,7 @@ textarea::placeholder {
 	.table_mobile_responsive tr{
 		display: flex !important;
 		flex-direction: column !important;
-		border-left: 6px solid #333333 !important;
+		border-left: 6px solid #000 !important;
 		border-radius: 10px !important;
 		padding: 0px !important;
 	}
@@ -6418,8 +6425,8 @@ button:focus{
 }
 
 .btn-primary{
-    background-color: #333333 !important;
-    border-color: #333333 !important;
+    background-color: #000 !important;
+    border-color: #000 !important;
 }
 
 a{
@@ -6588,7 +6595,7 @@ a{
 }
 
 .course-preview {
-	background-color: #333333;
+	background-color: #000;
 	color: #fff !important;
 	padding: 30px;
 	max-width: 250px;
@@ -6620,7 +6627,7 @@ a{
 }
 
 .course .btn {
-	background-color: #333333;
+	background-color: #000;
 	border: 0;
 	border-radius: 50px;
 	/* box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2); */
@@ -6775,19 +6782,19 @@ a{
 .admin_orders_list .show_detail_customer{
 	font-size: 25px !important;
 	cursor: pointer;
-	color: #333333;
+	color: #000;
 }
 
 .show_tracking_status{
 	font-size: 20px !important;
 	cursor: pointer;
-	color: #333333;
+	color: #000;
 }
 
 .dashboard_label .show_detail_customer{
 	font-size: 20px !important;
 	cursor: pointer;
-	color: #333333;
+	color: #000;
 }
 
 .show_detail_button{
@@ -6796,7 +6803,7 @@ a{
 }
 
 .show_detail_button i{
-	color: #333333;
+	color: #000;
 }
 
 .detail_products{
@@ -7523,8 +7530,8 @@ textarea:focus{
 }
 
 .chart_average_bp .highcharts-color-1{
-	fill: #333333 !important;
-	stroke: #333333 !important;
+	fill: #000 !important;
+	stroke: #000 !important;
 }
 
 .chart_average .highcharts-color-0{
@@ -8197,9 +8204,10 @@ select option[disabled] {
 	left: 0;
 	height: 100%;
 	width: 260px;
-	background: #333333;
+	background: white;
 	z-index: 100;
 	transition: all 0.4s ease;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
   }
   .sidebar.close{
 	width: 78px;
@@ -8248,7 +8256,17 @@ select option[disabled] {
 	transition: all 0.4s ease;
   }
   .sidebar .nav-links li:hover{
-	background: black;
+	background: #FFE6F5;
+	border-radius: 10px;
+  }
+
+  .sidebar .nav-links li:hover i,
+  .sidebar .nav-links li:hover .link_text {
+	color: #FF6472 !important;
+  }
+
+  .sidebar .nav-links .sub-menu li{
+	width: 100%;
   }
 
   .sidebar .nav-links .sub-menu li:hover{
@@ -8262,12 +8280,39 @@ select option[disabled] {
   .sidebar.close .nav-links li .icon-link{
 	display: block
   }
+
+  .sidebar.close li{
+	width: 65px;
+  }
+
+  .sidebar .div_icon:not(:first-child){
+	margin-top: 5px;
+  }
+
+  .sidebar .div_icon li{
+	margin-left: 6px;
+	margin-right: 6px;
+  }
+
+  .sidebar.close .div_icon li{
+	margin: 0px;
+  }
+
+  .sidebar.close .nav-links .div_icon{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 0px;
+  }
+
+  
+
   .sidebar .nav-links li i{
 	height: 50px;
 	min-width: 65px;
 	text-align: center;
 	line-height: 50px;
-	color: #fff;
+	color: #000000;
 	font-size: 20px;
 	cursor: pointer;
 	transition: all 0.3s ease;
@@ -8279,6 +8324,7 @@ select option[disabled] {
 	text-align: center;
 	line-height: 50px;
 	font-size: 16px;
+	transition: all 0.3s ease;
   }
 
   .sidebar .nav-links li.showMenu i.arrow{
@@ -8295,41 +8341,46 @@ select option[disabled] {
   .sidebar .nav-links li a .link_name{
 	font-size: 1.2em;
 	font-weight: 400;
-	color: #fff;
-	transition: all 0.4s ease;
+	color: #000000;
+	transition: all 0.3s ease;
+  }
+
+  .sidebar .nav-links li:hover .link_name{
+	font-weight: bold;
   }
   .sidebar.close .nav-links li a .link_name{
 	opacity: 0;
 	pointer-events: none;
   }
   .sidebar .nav-links li .sub-menu{
-	padding: 6px 6px 14px 80px;
+	padding: 6px 6px 14px 55px;
 	/* margin-top: 0px; */
-	background: #333333;
+	background: white;
 	display: none;
   }
   .sidebar .nav-links li.showMenu .sub-menu{
 	display: block;
   }
+  
   .sidebar .nav-links li .sub-menu a{
-	color: #fff;
 	font-size: 15px;
 	padding: 5px 0;
 	white-space: nowrap;
 	opacity: 0.6;
 	transition: all 0.3s ease;
-	color: white !important;
+	color: #000000 !important;
   }
   .sidebar .nav-links li .sub-menu a:hover{
 	opacity: 1;
   }
+
   .sidebar.close .nav-links li .sub-menu{
 	position: absolute;
 	left: 100%;
 	top: -10px;
 	margin-top: 0;
 	padding: 10px 20px;
-	border-radius: 0 6px 6px 0;
+	border-radius: 8px;
 	opacity: 0;
 	display: block;
 	pointer-events: none;
@@ -8340,6 +8391,8 @@ select option[disabled] {
 	opacity: 1;
 	pointer-events: auto;
 	transition: all 0.2s linear;
+	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
   }
 
   .sidebar .nav-links li .sub-menu .link_name{
@@ -8349,7 +8402,7 @@ select option[disabled] {
 	font-size: 18px;
 	opacity: 1;
 	display: block;
-	color: white !important;
+	color: black !important;
   }
   .sidebar .nav-links li .sub-menu.blank{
 	opacity: 1;
@@ -8379,9 +8432,9 @@ select option[disabled] {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: #333333;
+	background: white;
 	padding: 12px 0;
-	transition: all 0.5s ease;
+	transition: all 0.4s ease;
   }
   .sidebar.close .profile-details{
 	background: none;
@@ -8399,7 +8452,7 @@ select option[disabled] {
 	object-fit: cover;
 	border-radius: 50%;
 	margin: 0 14px 0 12px;
-	border: 2px solid white;
+	border: 2px solid black;
 	transition: all 0.5s ease;
   }
   .sidebar.close .profile-details img{
@@ -8407,7 +8460,7 @@ select option[disabled] {
   }
   .sidebar .profile-details .profile_name,
   .sidebar .profile-details .job{
-	color: #fff;
+	color: black;
 	font-size: 18px;
 	font-weight: 500;
 	white-space: normal;
@@ -8432,6 +8485,7 @@ select option[disabled] {
 	left: 78px;
 	width: calc(100% - 78px);
   }
+  
   .home-section .home-content{
 	height: 60px;
 	display: flex;
@@ -8457,6 +8511,22 @@ select option[disabled] {
 	.sidebar.close .nav-links li .sub-menu{
 	  display: none;
 	}
+
+	.sidebar{
+		width: 100%;
+	}
+
+	.home-section .home-content{
+		z-index: 999;
+	}
+
+	.home-section{
+		left: calc(100% - 76px) !important;
+	}
+
+	.sidebar .profile-details{
+		width: 100%;
+	}
   }
   
   
@@ -8467,6 +8537,10 @@ select option[disabled] {
 		z-index: 100;
 
 	}	
+
+	.sidebar.close li{
+		width: auto;
+	}
 
 	.sidebar.close .profile-details{
 		left: -78px;
@@ -8494,8 +8568,8 @@ select option[disabled] {
 }
 
 .btn-dark{
-	background-color: #333333;
-	border-color: #333333;
+	background-color: #000;
+	border-color: #000;
 }
 
 .sidebar.close .orders_customer span, 
@@ -8509,7 +8583,7 @@ select option[disabled] {
 }
 
 .header_title{
-	background-color: #333333;
+	background-color: #000;
 	display: flex;
 	align-items: center;
 	color: white;
@@ -8548,7 +8622,7 @@ select option[disabled] {
 }
   
 .product_location i{
-	color: #333333;
+	color: #000;
 }
 
 .error_stock{
@@ -8583,7 +8657,7 @@ select option[disabled] {
     top: -25px;
     left: -21px;
     content: '';
-    background: #cb5f5f;
+    background: black;
     height: 28px;
     width: 28px;
     transform: rotate(45deg);
@@ -8595,7 +8669,7 @@ select option[disabled] {
     left: -9px;
     padding: 0.5rem;
     width: 8rem;
-    background: #c55858;
+    background: #000;
     color: white;
     text-align: center;
     font-family: 'Roboto', sans-serif;
@@ -8636,13 +8710,13 @@ select option[disabled] {
 	padding: 15px;
 	width: 40px;
 	height: 40px;
-	border: 1px solid #333333;
+	border: 1px solid #000;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
 	transition: 0.3s;
-	background-color: #333333;
+	background-color: #000;
 	position: relative;
 }
 
@@ -9020,7 +9094,8 @@ select option[disabled] {
 	}
 }
 
-.nav-links li:hover i{
+.nav-links li:hover i,
+.nav-links li:hover .link_text {
 	animation: shakeCustom 0.3s linear; 
 }
 
@@ -9028,17 +9103,17 @@ select option[disabled] {
 	border-radius: 10px;
 }
 .table_details_tracking tr{
-	border: 1px solid #333333;
+	border: 1px solid #000;
 }
 
 .table_details_tracking td{
-	border: 1px solid #333333;
+	border: 1px solid #000;
 	padding: 10px;
 }
 
 .table_details_tracking th{
 	padding: 10px;
-	background-color: #333333;
+	background-color: #000;
 	color: white;
 }
 
@@ -9061,7 +9136,7 @@ select option[disabled] {
 	float: left;
 	width: 20%;
 	text-align: center;
-	color: #333333;
+	color: #000;
 	font-weight: bold;
 	font-size: 13px;
 }
@@ -9084,8 +9159,8 @@ select option[disabled] {
 	content: counter(wizard);
 	display: block;
 	color: white !important;
-	background-color: #333333;
-	border: 2px solid #333333;
+	background-color: #000;
+	border: 2px solid #000;
 	text-align: center;
 	width: 3em;
 	height: 3em;
@@ -9108,7 +9183,7 @@ select option[disabled] {
 	 content: "";
 	 display: block;
 	 width: 100%;
-	 background-color: #333333;
+	 background-color: #000;
 	 height: 2px;
 	 position: absolute;
 	 left: -50%;
@@ -9177,10 +9252,23 @@ select option[disabled] {
 	padding: 0px 5px 0px 5px;
 }
 
-.card{
-	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
-}
-
 .authentication-lock-screen .card{
 	box-shadow: none !important;
+}
+
+.table th{
+	background-color: #000 !important;
+}
+
+.mm-active li{
+	background-color: #FFE6F5;
+	border-radius: 8px;
+}
+
+.mm-active .sub-menu li{
+	background-color: white;
+}
+
+.mm-active li i{
+	color: #FF6472 !important;
 }

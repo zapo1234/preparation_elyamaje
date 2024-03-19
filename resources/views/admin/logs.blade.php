@@ -11,7 +11,7 @@
 			<div class="page-wrapper">
 				<div class="page-content">
 					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
-						<div class="breadcrumb-title pe-3">Journaux d'erreurs</div>
+						<div class="breadcrumb-title pe-3">Journal</div>
 					</div>
 
 

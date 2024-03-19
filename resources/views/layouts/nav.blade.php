@@ -4,24 +4,24 @@
       <!-- <span class="logo_name">CodingLab</span> -->
         <div class="div_short_icon">
 
-            <img src="{{(asset('assets/images/short_logo_blanc.png'))}}" class="logo-short" alt="logo icon">
+            <img src="{{(asset('assets/images/short_logo_noir.png'))}}" class="logo-short" alt="logo icon">
         </div>
-        <img src="{{ asset('assets/images/elyamaje_logo_long_blanc.png') }}" class="logo_name logo-icon" alt="logo icon">
+        <img src="{{ asset('assets/images/elyamaje_logo_long_noir.png') }}" class="logo_name logo-icon" alt="logo icon">
     </div>
-    <ul class="nav-links">
+    <ul class="nav-links metismenu" id="menu">
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('dashboard') }}">
                         <i class='bx bx-grid-alt' ></i>
-                        <span class="link_name">Dashboard</span>
+                        <span class="link_name">Tableau de bord</span>
                     </a>
                     <ul class="sub-menu blank">
-                        <li><a class="link_name" href="{{ url('dashboard') }}">Dashboard</a></li>
+                        <li><a class="link_name" href="{{ url('dashboard') }}">Tableau de bord</a></li>
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -37,7 +37,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -53,7 +53,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('getVieuxSplay') }}">
                         <i class='bx bx-transfer'></i>
@@ -76,20 +76,20 @@
 
 
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('indexAdmin') }}">
                         <i class='bx bx-grid-alt'></i>
-                        <span class="link_name">Dashboard</span>
+                        <span class="link_name">Tableau de bord</span>
                     </a>
                     <ul class="sub-menu blank">
-                        <li><a class="link_name" href="{{ url('indexAdmin') }}">Dashboard</a></li>
+                        <li><a class="link_name" href="{{ url('indexAdmin') }}">Tableau de bord</a></li>
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
-                    <a href="{{ url('analytics') }}">
+                    <a href="{{ url('analytics') }}" id="tableau_de_bord_link">
                         <i class='bx bx-line-chart-down'></i>
                         <span class="link_name">Analytics</span>
                     </a>
@@ -98,7 +98,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                         <a href="#">
@@ -114,7 +114,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -130,7 +130,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('orderfacturer') }}">
                         <i class='bx bx-cloud-download'></i>
@@ -141,7 +141,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('refreshtiers') }}">
                         <i class='bx bx-import'></i>
@@ -152,7 +152,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -176,7 +176,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('getVieuxSplay') }}">
                         <i class='bx bx-transfer'></i>
@@ -205,22 +205,22 @@
                 
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('errorLogs') }}">
                         <i class='bx bx-news'></i>
-                        <span class="link_name">Journaux d'erreurs</span>
+                        <span class="link_name">Journal</span>
                     </a>
                     <ul class="sub-menu blank">
-                        <li><a class="link_name" href="{{ url('errorLogs') }}">Journaux d'erreurs</a></li>
+                        <li><a class="link_name" href="{{ url('errorLogs') }}">Journal</a></li>
                     </ul>
                 </li> 
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
-                        <span class="link_text font-bold text-light">BP</span>
+                        <span class="link_text font-bold text-dark">BP</span>
                         <span class="link_name">Beauty Prof's</span>
                     </a>
                     <i class='bx bxs-chevron-down arrow' ></i>
@@ -238,7 +238,7 @@
             </div>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -258,7 +258,7 @@
             </div>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0)
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('wrapOrder') }}">
                         <i class='bx bx-box'></i>
@@ -274,7 +274,7 @@
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0 || 
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0 ||
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)) > 0)
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -294,7 +294,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -313,7 +313,7 @@
 
         <!-- Espace Sav -->
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
@@ -329,7 +329,7 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <a href="{{ url('sav') }}">
                         <i class='bx bx-support'></i>
@@ -340,11 +340,11 @@
                     </ul>
                 </li>
             </div>
-            <div>
+            <div class="div_icon">
                 <li>
                     <div class="icon-link">
                     <a href="#">
-                        <span class="link_text font-bold text-light">BP</span>
+                        <span class="link_text font-bold text-dark">BP</span>
                         <span class="link_name">Beauty Prof's</span>
                     </a>
                     <i class='bx bxs-chevron-down arrow' ></i>
@@ -415,7 +415,7 @@
             jQuery(".page-footer").css('margin-left', '260px')
         } else if(jQuery('.sidebar').hasClass('close') && document.body.clientWidth > 1025){
             jQuery(".page-wrapper").css('margin-left', '85px')
-            jQuery(".page-footer").css('margin-left', '85px')
+            jQuery(".page-footer").css('margin-left', '78px')
         } else {
             jQuery(".page-wrapper").css('margin-left', '0px')
             jQuery(".page-footer").css('margin-left', '0px')
@@ -423,4 +423,3 @@
     }
 
   </script>
-

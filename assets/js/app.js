@@ -1,4 +1,3 @@
-
 // Create close tab mobile
 function filter_mobile(){
     if($(".page-wrapper").find('.dashboard_leader').length == 0 && $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 1 || $("#example_length .select2_custom").length > 1)){
@@ -146,12 +145,18 @@ $(function () {
 	});
 	// === sidebar menu activation js
 	$(function () {
-		for (var i = window.location, o = $(".metismenu li a").filter(function () {
-			return this.href == i;
-		}).addClass("").parent().addClass("mm-active");;) {
-			if (!o.is("li")) break;
-			o = o.parent("").addClass("mm-show").parent("").addClass("mm-active");
-		}
+		var currentLocation = window.location.href;
+		
+		$(".metismenu li a").each(function () {
+			console.log("dd")
+			var $this = $(this);
+			
+			if ($this.attr("href") === currentLocation) {
+				$this.addClass("mm-active").parents("ul.sub-menu").addClass("mm-show");
+				$this.closest(".div_icon").addClass("mm-active");
+				return false; // Sortir de la boucle each dès qu'un élément correspondant est trouvé
+			}
+		});
 	});
 	// metismenu
 	$(function () {
