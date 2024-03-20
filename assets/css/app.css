@@ -6140,7 +6140,14 @@ textarea::placeholder {
 }
 
 .card{
-	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+	/* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important; */
+	box-shadow: none !important;
+	border: 1px solid #CFCFCF;
+	border-radius: 8px;
+}
+
+.card_title{
+	
 }
 
 @media screen and (max-width: 950px) {
@@ -8253,7 +8260,7 @@ select option[disabled] {
   .sidebar .nav-links li{
 	position: relative;
 	list-style: none;
-	transition: all 0.4s ease;
+	/* transition: all 0.4s ease; */
   }
   .sidebar .nav-links li:hover{
 	background: #FFE6F5;
@@ -8303,6 +8310,7 @@ select option[disabled] {
 	justify-content: center;
 	width: 100%;
 	padding: 0px;
+	cursor: pointer;
   }
 
   
@@ -8343,7 +8351,7 @@ select option[disabled] {
 	font-size: 1em;
 	font-weight: 400;
 	color: #000000;
-	transition: all 0.3s ease;
+	/* transition: all 0.3s ease; */
   }
 
   .close .nav-links li a .link_name{
@@ -8365,8 +8373,9 @@ select option[disabled] {
   }
   .sidebar .nav-links li.showMenu .sub-menu{
 	display: block;
+	background-color: white;
   }
-  
+
   .sidebar .nav-links li .sub-menu a{
 	font-size: 15px;
 	padding: 5px 0;
@@ -9264,6 +9273,10 @@ select option[disabled] {
 
 .table th{
 	background-color: #000 !important;
+}
+
+.div_icon.mm-active{
+	border-right: 2px solid #FF6472;
 }
 
 .mm-active li{
