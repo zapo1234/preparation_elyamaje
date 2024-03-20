@@ -12,10 +12,12 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('dashboard') }}">
-                        <i class='bx bx-grid-alt' ></i>
-                        <span class="link_name">Tableau de bord</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('dashboard') }}">
+                            <i class='bx bx-grid-alt' ></i>
+                            <span class="link_name">Tableau de bord</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('dashboard') }}">Tableau de bord</a></li>
                     </ul>
@@ -23,12 +25,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-history' ></i>
-                        <span class="link_name">Historiques</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-history' ></i>
+                            <span class="link_name">Historiques</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Historiques</a></li>
@@ -39,12 +41,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-cog'></i>
-                        <span class="link_name">Configuration</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-cog'></i>
+                            <span class="link_name">Configuration</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Configuration</a></li>
@@ -55,11 +57,13 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('getVieuxSplay') }}">
-                        <i class='bx bx-transfer'></i>
-                        <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_reassortEnAttente')) : 0}}</span>
-                        <span class="link_name">Transferts</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('getVieuxSplay') }}">
+                            <i class='bx bx-transfer'></i>
+                            <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_reassortEnAttente')) : 0}}</span>
+                            <span class="link_name">Transferts</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li>
                             <a class="link_name" href="{{ url('getVieuxSplay') }}">
@@ -78,10 +82,12 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  1)) > 0)
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('indexAdmin') }}">
-                        <i class='bx bx-grid-alt'></i>
-                        <span class="link_name">Tableau de bord</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('indexAdmin') }}">
+                            <i class='bx bx-grid-alt'></i>
+                            <span class="link_name">Tableau de bord</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('indexAdmin') }}">Tableau de bord</a></li>
                     </ul>
@@ -89,10 +95,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('analytics') }}" id="tableau_de_bord_link">
-                        <i class='bx bx-line-chart-down'></i>
-                        <span class="link_name">Analytics</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('analytics') }}" id="tableau_de_bord_link">
+                            <i class='bx bx-line-chart-down'></i>
+                            <span class="link_name">Analytics</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('analytics') }}">Analytics</a></li>
                     </ul>
@@ -100,7 +108,7 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
+                    <div class="top_menu icon-link">
                         <a href="#">
                             <i class='bx bx-credit-card-front'></i>
                             <span class="link_name">Facturation</span>
@@ -116,12 +124,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-history' ></i>
-                        <span class="link_name">Historiques</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-history' ></i>
+                            <span class="link_name">Historiques</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Historiques</a></li>
@@ -132,10 +140,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('orderfacturer') }}">
-                        <i class='bx bx-cloud-download'></i>
-                        <span class="link_name">Dolibarr</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('orderfacturer') }}">
+                            <i class='bx bx-cloud-download'></i>
+                            <span class="link_name">Dolibarr</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('orderfacturer') }}">Dolibarr</a></li>
                     </ul>
@@ -143,10 +153,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('refreshtiers') }}">
-                        <i class='bx bx-import'></i>
-                        <span class="link_name">Import clients</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('refreshtiers') }}">
+                            <i class='bx bx-import'></i>
+                            <span class="link_name">Import clients</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('refreshtiers') }}">Import clients</a></li>
                     </ul>
@@ -154,12 +166,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-cog'></i>
-                        <span class="link_name">Configuration</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow'></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-cog'></i>
+                            <span class="link_name">Configuration</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow'></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Configuration</a></li>
@@ -178,12 +190,13 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('getVieuxSplay') }}">
-                        <i class='bx bx-transfer'></i>
-                        <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_stockReassort') && session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_stockReassort') + session()->get('alerte_reassortEnAttente')) : 0}}</span>
-                        <span class="link_name">Transferts</span>
-                    </a>
-
+                    <div class="top_menu">
+                        <a href="{{ url('getVieuxSplay') }}">
+                            <i class='bx bx-transfer'></i>
+                            <span class="alert-count" style="left: 40px"  id="alerte_liste_total">{{(session()->has('alerte_stockReassort') && session()->has('alerte_reassortEnAttente'))? (session()->get('alerte_stockReassort') + session()->get('alerte_reassortEnAttente')) : 0}}</span>
+                            <span class="link_name">Transferts</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu beauty_prof_menu">
                         <li>
                             <a class="link_name" href="{{ url('getVieuxSplay') }}">
@@ -200,17 +213,17 @@
                                 <span class="alert-count" style="left: 130px" id="alerte_liste">{{session()->has('alerte_stockReassort')? session()->get('alerte_stockReassort') : 0}}</span>
                             </a>
                         </li>
-
                     </ul>
-                
                 </li>
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('errorLogs') }}">
-                        <i class='bx bx-news'></i>
-                        <span class="link_name">Journal</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('errorLogs') }}">
+                            <i class='bx bx-news'></i>
+                            <span class="link_name">Journal</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('errorLogs') }}">Journal</a></li>
                     </ul>
@@ -218,12 +231,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <span class="link_text font-bold text-dark">BP</span>
-                        <span class="link_name">Beauty Prof's</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <span class="link_text font-bold text-dark">BP</span>
+                            <span class="link_name">Beauty Prof's</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu beauty_prof_menu">
                         <li><a class="link_name" href="#">Beauty Prof's</a></li>
@@ -240,12 +253,12 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-box'></i>
-                        <span class="link_name">Préparation</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-box'></i>
+                            <span class="link_name">Préparation</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Préparation</a></li>
@@ -260,10 +273,12 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  3)) > 0)
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('wrapOrder') }}">
-                        <i class='bx bx-box'></i>
-                        <span class="link_name">Emballer</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('wrapOrder') }}">
+                            <i class='bx bx-box'></i>
+                            <span class="link_name">Emballer</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('wrapOrder') }}">Emballer</a></li>
                     </ul>
@@ -276,12 +291,12 @@
         count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)) > 0)
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='lni lni-delivery'></i>
-                        <span class="link_name">Expédition</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='lni lni-delivery'></i>
+                            <span class="link_name">Expédition</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Expédition</a></li>
@@ -296,12 +311,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='lni lni-mailchimp'></i>
-                        <span class="link_name">Commandes fournisseur</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='lni lni-mailchimp'></i>
+                            <span class="link_name">Commandes fournisseur</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Commandes fournisseur</a></li>
@@ -315,12 +330,12 @@
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  6)))
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <i class='bx bx-history' ></i>
-                        <span class="link_name">Historiques</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-history' ></i>
+                            <span class="link_name">Historiques</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Historiques</a></li>
@@ -331,10 +346,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <a href="{{ url('sav') }}">
-                        <i class='bx bx-support'></i>
-                        <span class="link_name">Sav</span>
-                    </a>
+                    <div class="top_menu">
+                        <a href="{{ url('sav') }}">
+                            <i class='bx bx-support'></i>
+                            <span class="link_name">Sav</span>
+                        </a>
+                    </div>
                     <ul class="sub-menu blank">
                         <li><a class="link_name" href="{{ url('sav') }}">Sav</a></li>
                     </ul>
@@ -342,12 +359,12 @@
             </div>
             <div class="div_icon">
                 <li>
-                    <div class="icon-link">
-                    <a href="#">
-                        <span class="link_text font-bold text-dark">BP</span>
-                        <span class="link_name">Beauty Prof's</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow' ></i>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <span class="link_text font-bold text-dark">BP</span>
+                            <span class="link_name">Beauty Prof's</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu beauty_prof_menu">
                         <li><a class="link_name" href="#">Beauty Prof's</a></li>
@@ -361,8 +378,6 @@
                 <li>
                     <div class="profile-details">
                         <div class="profile-content">
-                            
-
                             <img src="{{ Auth()->user()->picture ? 'storage/app/images/'.Auth()->user()->picture : asset('assets/images/avatars/default_avatar.png') }}" class="user-img" alt="user avatar">
                         </div>
                         <div class="name-job">
