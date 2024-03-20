@@ -8370,11 +8370,24 @@ select option[disabled] {
 	background: white;
 	display: none;
   }
+
   .sidebar .nav-links li.showMenu .sub-menu{
 	display: block;
+	position: relative;
+    top: 0px;
+    left: 0px;
 	background-color: white;
-	/* -webkit-animation: bar 0.1s linear; */
+	-webkit-animation: showMenuEffectBottom 0.2s linear;
   }
+
+  @keyframes showMenuEffectBottom {
+	0% {
+		top: -15px;
+	  }
+	  100% {
+		top: 0px;
+	  }
+}
 
   .sidebar .nav-links li .sub-menu a{
 	font-size: 15px;
@@ -8535,7 +8548,7 @@ select option[disabled] {
 	}
 
 	.home-section{
-		left: calc(100% - 76px) !important;
+		left: calc(100% - 75px) !important;
 	}
 
 	.sidebar .profile-details{
@@ -9115,7 +9128,7 @@ select option[disabled] {
 	}
 }
 
-.nav-links li .top_menu:hover i,
+.nav-links li .top_menu:hover a i,
 .nav-links li .top_menu:hover .link_text {
 	animation: shakeCustom 0.3s linear; 
 }
@@ -9300,4 +9313,8 @@ select option[disabled] {
 
 .mm-active li i{
 	color: #FF6472 !important;
+}
+
+.authentication-lock-screen .card{
+	border: 0px !important;
 }
