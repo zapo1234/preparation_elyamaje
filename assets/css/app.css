@@ -8545,6 +8545,7 @@ select option[disabled] {
 
 	.sidebar.close li{
 		width: auto;
+		display: none;
 	}
 
 	.sidebar.close .profile-details{
