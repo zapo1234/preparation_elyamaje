@@ -7635,10 +7635,11 @@ textarea:focus{
     padding: 1.8rem;
     margin-top: -2.5rem;
     border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 4px 2px -2px #FEF5F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* box-shadow: 0 4px 2px -2px #FEF5F6; */
+    border-bottom: 1px solid #CFCFCF;
 }
 
 .detail_order_to_wrap:has(.action_button) .qrcode_background{
