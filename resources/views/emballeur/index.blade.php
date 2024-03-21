@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="detail_order_to_wrap card mt-50 mb-50">
+        <div class="detail_order_to_wrap card mb-50 mt-3">
             <div class="col d-flex justify-content-between align-items-baseline">
                 <span class="text-muted" id="orderno"></span>
                 <span class="text-muted" id="prepared"></span>
