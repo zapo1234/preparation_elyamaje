@@ -597,11 +597,11 @@ class Controller extends BaseController
                 $datasIncompletes = array();
         
                 $tab_min = [
-                    1 => 1.8,  // lundi      à 22h  Alerte
-                    2 => 1.6,  // Mardi      à 22h  Alerte      
-                    3 => 1.4,  // Mercredi   à 22h  Alerte
-                    4 => 1.2,  // Jeudi      à 22h  Alerte
-                    5 => 2,  // Vendredi   à 22h  // on génère un reassort
+                    1 => 1.6,  // lundi      à 22h  Alerte
+                    2 => 1.4,  // Mardi      à 22h  Alerte      
+                    3 => 1.2,  // Mercredi   à 22h  Alerte
+                    4 => 1,  // Jeudi      à 22h  Alerte
+                    5 => 1.8,  // Vendredi   à 22h  // on génère un reassort
                     // 6 => 0.6,  // Samedi     à 22h
                     // 7 => 0.6,  // Dimanche   à 22h
                 ];
@@ -755,11 +755,14 @@ class Controller extends BaseController
             }else {
                 foreach ($datasAlerte as $key => $value) {
 
-                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]) + (2 - 1.2)*$value["desiredstock"];
-    
+                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]) + (1.8 - 0.7)*$value["desiredstock"];
+
+                    // le 0,7 vient du fait qu'on suppose que arrivé au vendredi a 18h on sera a 70% du stock min alors on fait le
+                    // calcule pour atteidre les 1.8*stock_desire qui couvriront la semaine d'après
+                    
                     $sheet->setCellValue('A' . $row, $value['fk_product']);
                     $sheet->setCellValue('B' . $row, $value['label']);
-                    $sheet->setCellValue('C' . $row, $qte);
+                    $sheet->setCellValue('C' . $row, ceil($qte));
                     $sheet->setCellValue('D' . $row, "");
                     
                     $row++;
