@@ -9096,7 +9096,7 @@ select option[disabled] {
 	.card{
 		box-shadow: none !important;
 		border: 1px solid #CFCFCF;
-		border-radius: 8px;
+		border-radius: 10px;
 	}
 
 	.orders_cashed{
