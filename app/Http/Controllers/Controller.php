@@ -597,11 +597,11 @@ class Controller extends BaseController
                 $datasIncompletes = array();
         
                 $tab_min = [
-                    1 => 1.6,  // lundi      à 22h  Alerte
-                    2 => 1.4,  // Mardi      à 22h  Alerte      
-                    3 => 1.2,  // Mercredi   à 22h  Alerte
-                    4 => 1,  // Jeudi      à 22h  Alerte
-                    5 => 1.8,  // Vendredi   à 22h  // on génère un reassort
+                    1 => 0.8,  // lundi      à 17h45h  Alerte
+                    2 => 0.65,  // Mardi     à 17h45h  Alerte      
+                    3 => 0.5,  // Mercredi   à 17h45h  Alerte
+                    4 => 0.3,  // Jeudi      à 17h45h  Alerte
+                    5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
                     // 6 => 0.6,  // Samedi     à 22h
                     // 7 => 0.6,  // Dimanche   à 22h
                 ];
@@ -755,7 +755,8 @@ class Controller extends BaseController
             }else {
                 foreach ($datasAlerte as $key => $value) {
 
-                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]) + (1.8 - 0.7)*$value["desiredstock"];
+                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]);
+                    // + (1.8 - 0.7)*$value["desiredstock"];
 
                     // le 0,7 vient du fait qu'on suppose que arrivé au vendredi a 18h on sera a 70% du stock min alors on fait le
                     // calcule pour atteidre les 1.8*stock_desire qui couvriront la semaine d'après
@@ -770,7 +771,7 @@ class Controller extends BaseController
                 
                 // Créez un Excel et sauvegardez le fichier
                 $writer = new Csv($spreadsheet);
-                $date = date("d-m-y", strtotime("+1 days")); 
+                $date = date("d-m-y", strtotime("+0 days")); 
                 $fileName = $date.'_alerte.csv'; // Nom du fichier              
     
                 $writer->save(storage_path('app/public/alertes/notraite/' . $fileName));
