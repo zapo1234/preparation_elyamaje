@@ -193,7 +193,7 @@ class TransferOrder
                     $id_commande="exist";
                     $linkedObjectsIds =  ["commande" => [""=>$val['fk_commande']]];
                     $emballeur = $val['emballeur'];
-                    $preparateur="";
+                    $preparateur=$val['preparateur'];
                     $coupons="";
                  }
 
@@ -714,29 +714,6 @@ class TransferOrder
                            }
                          }
                         */
-
-                        dd(json_encode($data_lines));
-
-                       foreach($data_lines as  $val){
-
-                          for($i=304; $i<335;$i++){
-                            $lines[]= $val['lines'][$i];
-                            
-                           }
-                            $data_linec[] =[
-                              'socid'=>$val['socid'],
-                              'ref_client'=>'',
-                              'date'=>$val['date'],
-                               'total_ht'=>$val['total_ht'],
-                               'total_ttc'=>$val['total_ttc'],
-                               'paye' =>1,
-                               'lines' => $lines,
-                                'array_options'=>$val['array_options'],
-                               'linkedObjectsIds'=>$val['linkedObjectsIds']
-                               
-
-                            ];
-                        }
                       
                   
                         if(count($data_tiers)!=0){
@@ -918,13 +895,14 @@ class TransferOrder
                                exit;
                            }
                     
-                           $retour_create_facture="";// gerer le retour de la création api.
-                           foreach($data_linec as $donnes){
+                           $retour_create="";// gerer le retour de la création api.
+                           foreach($data_lines as $donnes){
                               // insérer les details des données de la facture dans dolibarr
                               $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              
                            }
-                            // traiter la réponse de l'api
+
+                           // traiter la réponse de l'api
                              $response = json_decode($retour_create, true);
                             if(isset($response['error']['message'])){
                                $message = $response['error']['message'];
@@ -1102,7 +1080,6 @@ class TransferOrder
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
-                   $array_espece =  array('LIQ');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1114,8 +1091,8 @@ class TransferOrder
                    elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
-                       $account_id=6; // PROD
-                       $paimentid =6;// PROD
+                       $account_id=4; // PROD
+                       $paimentid =4;// PROD
                     }
 
                    elseif(in_array($account_name,$array_paimentss)){
@@ -1123,11 +1100,6 @@ class TransferOrder
                          $account_id=3; // PROD
                          $paimentid=3;// PROD
                    }
-                    elseif(in_array($account_name,$array_espece)){
-                         // acrocher un banque espèce Beauty proof.
-                         $account_id = 32;
-                         $paimentid =  32;
-                     }
                     else{
                           // CB
                           $account_id=4; // PROD
