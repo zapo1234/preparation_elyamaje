@@ -7360,7 +7360,7 @@ textarea:focus{
 
 .border-info-custom{
 	border-color: #fd3550 !important;
-	background-color: #f7f6ff !important;
+	/* background-color: #f7f6ff !important; */
 }
 
 .border-success-custom{
