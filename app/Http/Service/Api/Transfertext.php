@@ -644,7 +644,7 @@ class Transfertext
                                       // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
                                       // veifier si la commande a facturé vient d'une beauty proof BPP
                                       
-                                       $chaine_ext ="BPP";
+                                       $chaine_ext ="CO";
                                        $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                        if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                             $index_int=1;
