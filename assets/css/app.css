@@ -5222,8 +5222,35 @@ textarea::placeholder {
 
 }
 
+@media screen and (min-width: 1025px) {
+	.show_hide_nav{
+		display: block;
+		cursor: pointer;
+		border: 1px solid #CECECE;
+		border-radius: 50%;
+		padding: 5px;
+		height: 30px;
+		width: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: white;
+	}
+	.mobile_icon_menu{
+		display: none;
+	}
+}
 
 @media screen and (max-width: 1024px) {
+
+	.mobile_icon_menu{
+		display: block;
+		left: 78px !important;
+	}
+
+	.show_hide_nav{
+		display: none;
+	}
 
 	.detail_order_to_wrap {
 		margin: auto;
@@ -8243,12 +8270,11 @@ select option[disabled] {
 	font-size: 22px;
 	color: #fff;
 	font-weight: 600;
-	transition: 0.3s ease;
-	transition-delay: 0.1s;
-	margin-top: 10px;
+	transition: 0.4s ease;
+	transition-delay: 0.4s ease;
   }
   .sidebar.close .logo-details .logo_name{
-	transition-delay: 0s;
+	transition: 0s ease;
 	opacity: 0;
 	pointer-events: none;
   }
@@ -8505,23 +8531,27 @@ select option[disabled] {
 	position: relative;
 	background: #E4E9F7;
 	/* height: 100vh; */
-	left: 260px;
+	left: 244px;
 	width: calc(100% - 260px);
 	transition: all 0.4s ease;
+	z-index: 999;
   }
-  .sidebar.close ~ .home-section{
-	left: 78px;
+  .sidebar.close ~ .home-section:has(.show_hide_nav){
+	left: 63px;
 	width: calc(100% - 78px);
+	z-index: 999;
   }
-  
+
   .home-section .home-content{
 	height: 58px;
 	display: flex;
 	align-items: center;
 	position: fixed;
-	background-color: white;
+	/* background-color: white; */
 	z-index: 99;
   }
+
+
   .home-section .home-content .bx-menu,
   .home-section .home-content .text{
 	color: #11101d;
@@ -8563,8 +8593,15 @@ select option[disabled] {
 		left: 0px !important;
 		transition: 0.6s;
 		z-index: 100;
-
 	}	
+
+	.home-section{
+		left: 260px !important;
+	  }
+
+	.close .div_short_icon{
+		display: none !important;
+	}
 
 	.sidebar.close li{
 		width: auto;
@@ -8593,7 +8630,7 @@ select option[disabled] {
     height: 50px;
     min-width: 78px;
     text-align: center;
-    line-height: 50px;
+    line-height: 40px;
 }
 
 .btn-dark{
@@ -9348,3 +9385,4 @@ select option[disabled] {
 .btn{
 	border-radius: 10px !important;
 }
+

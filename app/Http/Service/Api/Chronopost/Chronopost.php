@@ -71,7 +71,7 @@ class Chronopost
                 "insuredValue"              => intval($order['total_order']) < 450 ? 0 : intval($order['total_order']) * 100,
                 "objectType"                => 'MAR',
                 "productCode"               => $productCode,  
-                "service"                   => '0', // Jour de livraison : 0 - Normal | 1 - Livraison lundi (FR) | 6 - Livraison samedi (FR) (string)
+                "service"                   => $order['shipping_method'] == "chronotoshopdirect" ? '6' : '0', // Jour de livraison : 0 - Normal | 1 - Livraison lundi (FR) | 6 - Livraison samedi (FR) (string)
                 'as'                        => $order['shipping_method'] == "chronotoshopdirect" ? "A15" : "",        
                 "shipDate"                  => date('c'),       
                 "shipHour"                  => date('G'),      
