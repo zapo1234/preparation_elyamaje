@@ -1091,8 +1091,8 @@ class TransferOrder
                    elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
                        //$mode_reglement_id = 4;
-                       $account_id=6; // PROD
-                       $paimentid =6;// PROD
+                       $account_id=4; // PROD
+                       $paimentid =4;// PROD
                     }
 
                    elseif(in_array($account_name,$array_paimentss)){
