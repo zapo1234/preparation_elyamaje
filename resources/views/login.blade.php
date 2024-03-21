@@ -34,7 +34,7 @@
                         <h2 class="text-dark">{{ date('H:i') }}</h2>
                         <h5 class="text-capitalize mb-5 text-dark">{{ $date }}</h5>
                         <div class="logo_login w-100 d-flex flex-column align-items-center justify-content-center">
-                            <img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29" alt="">
+                            <img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29"" alt="">
                         </div>
                         <form method="post" action="{{ route('login') }}" class="form_login_error">
                             @csrf 

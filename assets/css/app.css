@@ -134,7 +134,7 @@ body {
 
 	font-size: 14px;
 
-	color: #525f7f;
+	color: black;
 	
     background-color: #FEF5F6;
 	
@@ -146,6 +146,10 @@ body {
 	font-family: 'Poppins';
 
 
+}
+
+.breadcrumb-item.active{
+	color: black !important;
 }
 
 
@@ -6271,6 +6275,7 @@ textarea::placeholder {
 		font-size: 20px;
 		margin-top: 15px;
 		margin-bottom: 15px;
+		border-radius: 10px;
 	}
 
 	.team_board,
@@ -6847,7 +6852,7 @@ a{
 
 .select_user{
 	border-color: #aaa;
-	border-radius: 4px;
+	border-radius: 10px;
 	padding: 5px;
 	cursor: pointer;
 }
@@ -9344,4 +9349,9 @@ select option[disabled] {
 
 .border-grey{
 	border: 1px solid #CECECE;
+}
+
+.ms-auto button,
+.btn{
+	border-radius: 10px !important;
 }
