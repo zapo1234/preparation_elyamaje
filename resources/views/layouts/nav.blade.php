@@ -75,6 +75,21 @@
                     </ul>
                 </li>
             </div>
+            <div class="div_icon">
+                <li>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-user'></i>
+                            <span class="link_name">Commandes fournisseur</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                        <li><a class="link_name" href="#">Commandes fournisseur</a></li>
+                        <li><a href="{{ route('listeSupplierorders') }}">Listes des commande</a></li>
+                    </ul>
+                </li>
+            </div>
         @endif
 
 
@@ -142,7 +157,7 @@
                 <li>
                     <div class="top_menu">
                         <a href="{{ url('orderfacturer') }}">
-                            <i class='bx bx-cloud-download'></i>
+                        <span class="link_text font-bold text-dark">D</span>
                             <span class="link_name">Dolibarr</span>
                         </a>
                     </div>
@@ -249,6 +264,21 @@
                     </ul>
                 </li>
             </div>
+            <div class="div_icon">
+                <li>
+                    <div class="top_menu icon-link">
+                        <a href="#">
+                            <i class='bx bx-user'></i>
+                            <span class="link_name">Commandes fournisseur</span>
+                        </a>
+                        <i class='bx bxs-chevron-down arrow' ></i>
+                    </div>
+                    <ul class="sub-menu">
+                        <li><a class="link_name" href="#">Commandes fournisseur</a></li>
+                        <li><a href="{{ route('listeSupplierorders') }}">Listes des commande</a></li>
+                    </ul>
+                </li>
+            </div>
         @endif
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  2)) > 0)
             <div class="div_icon">
@@ -306,21 +336,6 @@
                                 <li><a href="{{ url('missingLabels') }}">Étiquettes Manquantes</a></li>
                             @endif
                         <li><a href="{{ url('bordereaux') }}">Borderaux</a></li>
-                    </ul>
-                </li>
-            </div>
-            <div class="div_icon">
-                <li>
-                    <div class="top_menu icon-link">
-                        <a href="#">
-                            <i class='lni lni-mailchimp'></i>
-                            <span class="link_name">Commandes fournisseur</span>
-                        </a>
-                        <i class='bx bxs-chevron-down arrow' ></i>
-                    </div>
-                    <ul class="sub-menu">
-                        <li><a class="link_name" href="#">Commandes fournisseur</a></li>
-                        <li><a href="{{ route('listeSupplierorders') }}">Listes des commande</a></li>
                     </ul>
                 </li>
             </div>
@@ -397,24 +412,42 @@
   </div>
   <section class="home-section close">
     <div class="home-content">
-      <i class='bx bx-menu' ></i>
+      <!-- <i class='bx bx-menu' ></i> -->
+      <div class="show_hide_nav">
+        <i class="text-dark icon_navbar font-20 fadeIn animated bx bx-chevron-right"></i>
+      </div>
+      <div class="mobile_icon_menu">
+        <i class="text-dark icon_navbar_mobile font-20 fadeIn animated bx bx-menu"></i>
+      </div>
     </div>
   </section>
   
   <script>
+
     let arrow = document.querySelectorAll(".arrow");
     for (var i = 0; i < arrow.length; i++) {
         arrow[i].addEventListener("click", (e)=>{
             let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
             arrowParent.classList.toggle("showMenu");
+
         });
     }
 
     let sidebar = document.querySelector(".sidebar");
     let sidebar_home = document.querySelector(".home-section");
-    let sidebarBtn = document.querySelector(".bx-menu");
+    let sidebarBtn = document.querySelector(".icon_navbar");
 
     sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("close");
+        sidebar_home.classList.toggle("close");
+        sidebarBtn.classList.toggle('bx-chevron-right')
+        sidebarBtn.classList.toggle('bx-chevron-left')
+        resize()
+    });
+
+    let sidebarBtnMobile = document.querySelector(".icon_navbar_mobile");
+
+    sidebarBtnMobile.addEventListener("click", ()=>{
         sidebar.classList.toggle("close");
         sidebar_home.classList.toggle("close");
         resize()
@@ -428,6 +461,7 @@
         if(!jQuery('.sidebar').hasClass('close') && document.body.clientWidth > 1025){
             jQuery(".page-wrapper").css('margin-left', '260px')
             jQuery(".page-footer").css('margin-left', '260px')
+
         } else if(jQuery('.sidebar').hasClass('close') && document.body.clientWidth > 1025){
             jQuery(".page-wrapper").css('margin-left', '85px')
             jQuery(".page-footer").css('margin-left', '78px')

@@ -180,11 +180,12 @@
 																<form class="d-flex" method="POST" action="{{ route('label.show') }}">
 																	@csrf
 																	<input name="label_id" type="hidden" value="{{ $label['label_id'] }}">  
-																	<button type="submit" class="download_label_button"><i class="bx bx-show-alt"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
+																	<button type="submit" class="download_label_button"><i class="font-20 bx bx-show-alt"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																</form>
 															</div>
 															<div>
-																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+																<i style="margin-left: 15px" onclick="showTrackingStatus('{{ $order[0]['order_woocommerce_id'] }}', '{{ $label['tracking_number'] }}', '{{ $label['origin'] }}')" class="font-20 show_tracking_status lni lni-map-marker"></i>
+																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="font-20 bx bx-trash"></i></button>
 															</div>
 														</div>
 													@endforeach
@@ -209,16 +210,16 @@
 																		<input name="order_id" type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}">
 																		<input name="label_format" type="hidden" value="{{ $label['label_format'] }}">
 
-																		<button type="submit" class="d-flex download_label_button print_pdf_file"><i class="bx bx-download"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
+																		<button type="submit" class="d-flex download_label_button print_pdf_file"><i class="bx bx-download"></i><span class="font-20 label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																	</form>
 																@elseif($label['label_format'] == "ZPL")
 																<div class="d-flex">
-																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="bx bx-printer"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
+																	<button data-label="{{ $label['label_id'] }}" type="submit" class="download_label_button print_zpl_file"><i class="font-20 bx bx-printer"></i><span class="label_tracking_responsive">{{ $label['tracking_number'] }}</span></button>
 																</div>
 																@endif
 															</div>
 															<div>
-																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="bx bx-trash"></i></button>
+																<button data-tracking="{{ $label['tracking_number'] }}" data-label="{{ $label['label_id'] }}" type="submit" class="delete_label download_label_button"><i class="font-20 bx bx-trash"></i></button>
 															</div>
 														</div>
 													@endforeach
@@ -259,8 +260,6 @@
 												@endif
 											</td>
 											<td data-label="Détails">
-
-												
 													<i onclick="showCustomerOrderDetail('{{ $order[0]['order_woocommerce_id'] }}')" class="show_detail_customer lni lni-delivery"></i>
 													<div class="modal fade modal_radius" id="order_detail_customer_{{ $order[0]['order_woocommerce_id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
 														<div class="modal-dialog modal-dialog-centered" role="document">
@@ -434,9 +433,6 @@
 															</div>
 														</div>
 													</div>
-													@if($order[0]['tracking_number'])
-														<i style="margin-left: 15px" onclick="showTrackingStatus('{{ $order[0]['order_woocommerce_id'] }}', '{{ $order[0]['tracking_number'] }}', '{{ $order[0]['origin'] }}')" class="show_tracking_status lni lni-map-marker"></i>
-													@endif
 											</td>
 										</tr>
 									@endforeach

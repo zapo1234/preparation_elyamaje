@@ -1129,7 +1129,7 @@ class Transfertext
                    if($index_amount_true[1]=="liqpaid"){
                     // ici y'a eu paiement uniquement en LIQ
                 
-                      $index_m ="LIQ";
+                      $index_m ="DONS";
                       $moyen_paid =  array_search($index_m,$moyen_card);
                       $moyen_paids = explode(',',$moyen_paid);
                       $mode_reglement_id = $moyen_paids[0];
@@ -1335,7 +1335,7 @@ class Transfertext
                               
                                  // Les cas ou y'a des paiment en partie espece et CB pour la BP.
                                   // reconstruire le montant de la facture 
-                                  $val_tax = $index_amount_true[1]*0.2;
+                                    $val_tax = $index_amount_true[1]*0.2;
                                     
               
                                    // Lier les factures dolibar  à un moyen de paiement et bank.

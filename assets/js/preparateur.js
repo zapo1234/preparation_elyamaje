@@ -16,7 +16,7 @@ $('body').on('click', '.show_order', function () {
     } 
 
     // Supprime la classe de rotation du bouton remove product
-    $(".remove_product i").removeClass('rotate')
+    $(".remove_product i").removeClass('rotateRight')
 
     // Stock l'id de la comande en cours de prépa pour la récupérer plus tard
     $("#order_in_progress").val(id)
@@ -649,7 +649,7 @@ function enter_manually_barcode(product_id, order_id){
 function remove_product(barcode, order_id){
 
     if($(".barcode_"+barcode).hasClass('pick')){
-        $(".remove_"+barcode+"_"+order_id+" i").addClass('rotate')
+        $(".remove_"+barcode+"_"+order_id+" i").addClass('rotateRight')
     }
     $(".barcode_"+barcode).removeClass('pick')
     $(".barcode_"+barcode).find('.quantity_pick_in').text("0")

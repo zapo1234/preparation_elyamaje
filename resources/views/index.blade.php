@@ -226,7 +226,7 @@
 									<div class="modal-dialog modal-dialog-centered" role="document">
 										<div class="modal-content">
 											<div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
-												<i style="color: #c0c5cb; z-index:10;cursor:pointer;font-size:20px;" data-bs-dismiss="modal" class="lni lni-close"></i>
+												<i style="color: black; z-index:10;cursor:pointer;" data-bs-dismiss="modal" class="font-20 bx bx-x"></i>
 											</div>	
 											<div class="modal-body">
 												<h2 class="mt-2 text-center allocationOrdersTitle">Que souhaitez-vous faire ?</h2>

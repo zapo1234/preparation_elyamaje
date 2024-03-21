@@ -134,7 +134,7 @@ body {
 
 	font-size: 14px;
 
-	color: #525f7f;
+	color: black;
 	
     background-color: #FEF5F6;
 	
@@ -146,6 +146,10 @@ body {
 	font-family: 'Poppins';
 
 
+}
+
+.breadcrumb-item.active{
+	color: black !important;
 }
 
 
@@ -3388,7 +3392,7 @@ a {
 	background-color: rgb(255 255 255 / 20%);
 
 
-	border: 1px solid rgb(255 255 255 / 45%);
+	border: 1px solid #CECECE;
 
 
 	color: #fff;
@@ -3396,6 +3400,9 @@ a {
 
 }
 
+.form-control{
+	border: 1px solid #CECECE !important;
+}
 
 .nav-search button[type='submit'] {
 
@@ -3785,7 +3792,7 @@ a {
 	height: 100vh;
 
 
-	padding: 0 1rem;
+	/* padding: 0 1rem; */
 
 
 }
@@ -3890,26 +3897,10 @@ a {
 }
 
 
-.bg-lock-screen {
-
-
-	background-image: url(../images/bg-themes/3.png);
-
-
-	background-size: cover;
-
-
-	background-position: center;
-
-
-	background-repeat: no-repeat;
-
-
-	background-attachment: fixed;
-
-
+.authentication{
+	display: flex;
+	justify-content: center;
 }
-
 
 .login-separater span {
 
@@ -5231,8 +5222,35 @@ textarea::placeholder {
 
 }
 
+@media screen and (min-width: 1025px) {
+	.show_hide_nav{
+		display: block;
+		cursor: pointer;
+		border: 1px solid #CECECE;
+		border-radius: 50%;
+		padding: 5px;
+		height: 30px;
+		width: 30px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: white;
+	}
+	.mobile_icon_menu{
+		display: none;
+	}
+}
 
 @media screen and (max-width: 1024px) {
+
+	.mobile_icon_menu{
+		display: block;
+		left: 78px !important;
+	}
+
+	.show_hide_nav{
+		display: none;
+	}
 
 	.detail_order_to_wrap {
 		margin: auto;
@@ -5601,7 +5619,7 @@ textarea::placeholder {
 		height: auto;
 
 
-		padding: 2.0rem 1rem;
+		/* padding: 2.0rem 1rem; */
 
 
 	}
@@ -6265,6 +6283,7 @@ textarea::placeholder {
 		font-size: 20px;
 		margin-top: 15px;
 		margin-bottom: 15px;
+		border-radius: 10px;
 	}
 
 	.team_board,
@@ -6841,7 +6860,7 @@ a{
 
 .select_user{
 	border-color: #aaa;
-	border-radius: 4px;
+	border-radius: 10px;
 	padding: 5px;
 	cursor: pointer;
 }
@@ -7286,6 +7305,8 @@ textarea:focus{
 	position: absolute;
 	z-index: 10;
 	right: 0px;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 .prepared-order,
@@ -7352,7 +7373,7 @@ textarea:focus{
 
 .border-info-custom{
 	border-color: #fd3550 !important;
-	background-color: #f7f6ff !important;
+	/* background-color: #f7f6ff !important; */
 }
 
 .border-success-custom{
@@ -8039,6 +8060,18 @@ select option[disabled] {
 	animation: rotateAnimation 0.3s linear;
 }
 
+.rotateRight{
+	animation: rotateAnimationRight 0.3s linear;
+}
+
+@keyframes rotateAnimationRight {
+	0% { transform: rotate(0deg); }
+	25% { transform: rotate(50deg); }
+	50% { transform: rotate(100deg); }
+	75% { transform: rotate(200deg); }
+	100% { transform: rotate(360deg); }
+}
+
 
 @keyframes rotateAnimation {
 	0% { transform: rotate(0deg); }
@@ -8193,16 +8226,10 @@ select option[disabled] {
 	margin-left: 5px;
 }
 
-/* .from_dolibarr_order_detail .edit_detail_order{
-	display: none;
-} */
-
 .editableContent{
 	border: 1px solid #999;
 	border-radius: 5px;
 }
-
-
 
 .sidebar{
 	position: fixed;
@@ -8213,9 +8240,9 @@ select option[disabled] {
 	background: white;
 	z-index: 100;
 	transition: all 0.4s ease;
-	/* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important; */
 	border-right: 1px solid #CFCFCF;
-  }
+}
+
   .sidebar.close{
 	width: 78px;
   }
@@ -8237,12 +8264,11 @@ select option[disabled] {
 	font-size: 22px;
 	color: #fff;
 	font-weight: 600;
-	transition: 0.3s ease;
-	transition-delay: 0.1s;
-	margin-top: 10px;
+	transition: 0.4s ease;
+	transition-delay: 0.4s ease;
   }
   .sidebar.close .logo-details .logo_name{
-	transition-delay: 0s;
+	transition: 0s ease;
 	opacity: 0;
 	pointer-events: none;
   }
@@ -8367,7 +8393,6 @@ select option[disabled] {
   }
   .sidebar .nav-links li .sub-menu{
 	padding: 6px 6px 14px 60px;
-	/* margin-top: 0px; */
 	background: white;
 	display: none;
   }
@@ -8378,25 +8403,20 @@ select option[disabled] {
     top: 0px;
     left: 0px;
 	background-color: white;
-	-webkit-animation: showMenuEffectBottom 0.2s linear;
   }
 
-  @keyframes showMenuEffectBottom {
-	0% {
-		top: -15px;
-	  }
-	  100% {
-		top: 0px;
-	  }
-}
 
   .sidebar .nav-links li .sub-menu a{
 	font-size: 15px;
 	padding: 5px 0;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 	opacity: 0.6;
 	transition: all 0.3s ease;
 	color: #000000 !important;
+  }
+
+  .sidebar.close .nav-links li .sub-menu a{
+	white-space: nowrap !important;
   }
   .sidebar .nav-links li .sub-menu a:hover{
 	opacity: 1;
@@ -8480,7 +8500,7 @@ select option[disabled] {
 	object-fit: cover;
 	border-radius: 50%;
 	margin: 0 14px 0 12px;
-	border: 2px solid black;
+	border: 1px solid #CFCFCF;
 	transition: all 0.5s ease;
   }
   .sidebar.close .profile-details img{
@@ -8505,23 +8525,27 @@ select option[disabled] {
 	position: relative;
 	background: #E4E9F7;
 	/* height: 100vh; */
-	left: 260px;
+	left: 244px;
 	width: calc(100% - 260px);
 	transition: all 0.4s ease;
+	z-index: 999;
   }
-  .sidebar.close ~ .home-section{
-	left: 78px;
+  .sidebar.close ~ .home-section:has(.show_hide_nav){
+	left: 63px;
 	width: calc(100% - 78px);
+	z-index: 999;
   }
-  
+
   .home-section .home-content{
 	height: 58px;
 	display: flex;
 	align-items: center;
 	position: fixed;
-	background-color: white;
+	/* background-color: white; */
 	z-index: 99;
   }
+
+
   .home-section .home-content .bx-menu,
   .home-section .home-content .text{
 	color: #11101d;
@@ -8563,8 +8587,15 @@ select option[disabled] {
 		left: 0px !important;
 		transition: 0.6s;
 		z-index: 100;
-
 	}	
+
+	.home-section{
+		left: 260px !important;
+	  }
+
+	.close .div_short_icon{
+		display: none !important;
+	}
 
 	.sidebar.close li{
 		width: auto;
@@ -8593,7 +8624,7 @@ select option[disabled] {
     height: 50px;
     min-width: 78px;
     text-align: center;
-    line-height: 50px;
+    line-height: 40px;
 }
 
 .btn-dark{
@@ -9089,7 +9120,7 @@ select option[disabled] {
 	.card{
 		box-shadow: none !important;
 		border: 1px solid #CFCFCF;
-		border-radius: 8px;
+		border-radius: 10px;
 	}
 
 	.orders_cashed{
@@ -9319,3 +9350,33 @@ select option[disabled] {
 .authentication-lock-screen .card{
 	border: 0px !important;
 }
+
+.text-dark{
+	color: #000 !important;
+}
+
+.logo_login{
+	margin-bottom: 25px;
+}
+
+.authentication-lock-screen form{
+	background-color: white;
+	border-radius: 10px;
+	border: 1px solid #CECECE;
+	padding: 35px;
+}
+
+.authentication-lock-screen form input,
+.authentication-lock-screen form button{
+	border-radius: 10px !important;
+}
+
+.border-grey{
+	border: 1px solid #CECECE;
+}
+
+.ms-auto button,
+.btn{
+	border-radius: 10px !important;
+}
+

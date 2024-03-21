@@ -58,8 +58,8 @@ $(function () {
 
 	"use strict";
 	/* perfect scrol bar */
-
-	// Clôture d ejournée
+	
+	// Clôture de journée
 	$(".close_day").on('click', function(){
 		$(".footer_1").removeClass('d-none')
 		$(".footer_2").addClass('d-none')
@@ -148,7 +148,6 @@ $(function () {
 		var currentLocation = window.location.href;
 		
 		$(".metismenu li a").each(function () {
-			console.log("dd")
 			var $this = $(this);
 			
 			if ($this.attr("href") === currentLocation) {
