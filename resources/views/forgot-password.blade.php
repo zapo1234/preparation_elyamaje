@@ -12,9 +12,6 @@
 
 	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
 	<link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
-	<!-- loader-->
-	<link href="assets/css/pace.min.css" rel="stylesheet" />
-	<script src="assets/js/pace.min.js"></script>
 	<!-- Bootstrap CSS -->
 	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 	<link href="assets/css/bootstrap-extended.css" rel="stylesheet">
@@ -31,14 +28,12 @@
 	<!-- wrapper -->
 	<div class="wrapper">
 		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
-
-        
                 <div class="card shadow-none bg-transparent">
                     <div class="card-body p-md-5 text-center">
-                        <div class="mt-3 w-100 d-flex flex-column align-items-center justify-content-center">
-                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
-                        </div>
                         <form method="post" action="{{ route('password.reset') }}">
+							<div class="logo_login mt-3 w-100 d-flex flex-column align-items-center justify-content-center">
+								<img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29" alt="">
+							</div>
                             @csrf 
                             <div class="mb-3 mt-3">
                                 <input required name="email" type="email" class="form-control" placeholder="Email">
@@ -63,7 +58,7 @@
 
 									<a href="{{ url('login') }}">
 										<div class="d-grid">
-											<button type="button" class="btn btn-white">
+											<button type="button" class="border-grey btn btn-white">
 												<i class='bx bx-arrow-back me-1'></i>	
 												Connexion
 											</button>

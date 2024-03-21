@@ -22,7 +22,7 @@
                                     <div class="card-title d-flex align-items-center">
                                         <div><i class="bx bxs-box me-1 font-22 text-dark"></i>
                                         </div>
-                                        <h5 class="mb-0 text-dark">Commandes</h5>
+                                        <h5 class="mb-0 text-dark">Tableau de bord</h5>
                                         <input type="hidden" value="" id="detail_order">
                                     </div>
                                     <hr>

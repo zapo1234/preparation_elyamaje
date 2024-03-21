@@ -11,9 +11,6 @@
 	<link href="{{asset('assets/plugins/simplebar/css/simplebar.css')}}" rel="stylesheet" />
 	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
 	<link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
-	<!-- loader-->
-	<link href="assets/css/pace.min.css" rel="stylesheet" />
-	<script src="assets/js/pace.min.js"></script>
 	<!-- Bootstrap CSS -->
 	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 	<link href="assets/css/bootstrap-extended.css" rel="stylesheet">
@@ -28,16 +25,16 @@
 </div>
 <div class="pace-activity"></div></div>
 	<!-- wrapper -->
-	<div class="wrapper">
-		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
+	<div class="wrapper authentication">
 
+		<div class="flex-row authentication-lock-screen d-flex align-items-center justify-content-center">
             @if(session('error'))
                 <div class="card shadow-none bg-transparent">
                     <div class="card-body p-md-5 text-center">
-                        <h2 class="text-white">{{ date('H:i') }}</h2>
-                        <h5 class="text-capitalize mb-5 text-white">{{ $date }}</h5>
-                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
-                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
+                        <h2 class="text-dark">{{ date('H:i') }}</h2>
+                        <h5 class="text-capitalize mb-5 text-dark">{{ $date }}</h5>
+                        <div class="logo_login w-100 d-flex flex-column align-items-center justify-content-center">
+                            <img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29"" alt="">
                         </div>
                         <form method="post" action="{{ route('login') }}" class="form_login_error">
                             @csrf 
@@ -63,7 +60,7 @@
                                 <button type="submit" class="btn btn-dark">Connexion</button>
                             </div>
                             <div class="forgot_password mt-3 d-flex justify-content-center">
-                                <a class="text-light" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
+                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
                             </div>
                         </form>
                     </div>
@@ -71,12 +68,13 @@
             @else 
                 <div class="card shadow-none bg-transparent">
                     <div class="card-body p-md-5 text-center">
-                        <h2 class="time text-white">{{ date('H:i') }}</h2>
-                        <h5 class="text-capitalize mb-5 text-white">{{ $date }}</h5>
-                        <div class="w-100 d-flex flex-column align-items-center justify-content-center">
-                            <img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
-                        </div>
+                        <h2 class="time text-dark">{{ date('H:i') }}</h2>
+                        <h5 class="text-capitalize mb-5 text-dark">{{ $date }}</h5>
+                       
                         <form method="post" action="{{ route('login') }}" class="">
+                            <div class="logo_login w-100 d-flex flex-column align-items-center justify-content-center">
+                                <img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29" alt="">
+                            </div>
                             @csrf 
                             <div class="mb-3 mt-3">
                                 <input required name="email" type="email" class="form-control" placeholder="Email">
@@ -92,16 +90,14 @@
                                 <button type="submit" class="btn btn-dark">Connexion</button>	
                             </div>
                             <div class="forgot_password mt-3 d-flex justify-content-center">
-                                <a class="text-light" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
+                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
                             </div>
                         </form>
                     </div>
                 </div>
             @endif
-           
 
-		
-		</div>
+		</div>    
 	</div>
 
 	<!--end wrapper-->
