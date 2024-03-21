@@ -3792,7 +3792,7 @@ a {
 	height: 100vh;
 
 
-	padding: 0 1rem;
+	/* padding: 0 1rem; */
 
 
 }
@@ -3892,25 +3892,6 @@ a {
 
 
 	background-attachment: fixed;
-
-
-}
-
-
-.bg-lock-screen {
-
-
-	/* background-image: url(../images/bg-themes/3.png);
-	background-size: cover;
-
-
-	background-position: center;
-
-
-	background-repeat: no-repeat;
-
-
-	background-attachment: fixed; */
 
 
 }
@@ -5611,7 +5592,7 @@ textarea::placeholder {
 		height: auto;
 
 
-		padding: 2.0rem 1rem;
+		/* padding: 2.0rem 1rem; */
 
 
 	}
