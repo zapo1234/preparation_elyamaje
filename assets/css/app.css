@@ -8226,16 +8226,10 @@ select option[disabled] {
 	margin-left: 5px;
 }
 
-/* .from_dolibarr_order_detail .edit_detail_order{
-	display: none;
-} */
-
 .editableContent{
 	border: 1px solid #999;
 	border-radius: 5px;
 }
-
-
 
 .sidebar{
 	position: fixed;
@@ -8246,9 +8240,9 @@ select option[disabled] {
 	background: white;
 	z-index: 100;
 	transition: all 0.4s ease;
-	/* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important; */
 	border-right: 1px solid #CFCFCF;
-  }
+}
+
   .sidebar.close{
 	width: 78px;
   }
