@@ -593,7 +593,7 @@ class TransferOrder
                       
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
-                                    $chaine_ext ="CO";
+                                    $chaine_ext ="BPP";
                                     $index_int="";// eviter que les commande de la BPP sois prise en compte.
                                     if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                          $index_int=1;
