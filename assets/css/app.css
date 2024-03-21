@@ -3388,7 +3388,7 @@ a {
 	background-color: rgb(255 255 255 / 20%);
 
 
-	border: 1px solid rgb(255 255 255 / 45%);
+	border: 1px solid #CECECE;
 
 
 	color: #fff;
@@ -3396,6 +3396,9 @@ a {
 
 }
 
+.form-control{
+	border: 1px solid #CECECE !important;
+}
 
 .nav-search button[type='submit'] {
 
@@ -3893,9 +3896,7 @@ a {
 .bg-lock-screen {
 
 
-	background-image: url(../images/bg-themes/3.png);
-
-
+	/* background-image: url(../images/bg-themes/3.png);
 	background-size: cover;
 
 
@@ -3905,11 +3906,16 @@ a {
 	background-repeat: no-repeat;
 
 
-	background-attachment: fixed;
+	background-attachment: fixed; */
 
 
 }
 
+
+.authentication{
+	display: flex;
+	justify-content: center;
+}
 
 .login-separater span {
 
@@ -7286,6 +7292,8 @@ textarea:focus{
 	position: absolute;
 	z-index: 10;
 	right: 0px;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
 }
 
 .prepared-order,
@@ -8367,7 +8375,6 @@ select option[disabled] {
   }
   .sidebar .nav-links li .sub-menu{
 	padding: 6px 6px 14px 60px;
-	/* margin-top: 0px; */
 	background: white;
 	display: none;
   }
@@ -8378,25 +8385,20 @@ select option[disabled] {
     top: 0px;
     left: 0px;
 	background-color: white;
-	-webkit-animation: showMenuEffectBottom 0.2s linear;
   }
 
-  @keyframes showMenuEffectBottom {
-	0% {
-		top: -15px;
-	  }
-	  100% {
-		top: 0px;
-	  }
-}
 
   .sidebar .nav-links li .sub-menu a{
 	font-size: 15px;
 	padding: 5px 0;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 	opacity: 0.6;
 	transition: all 0.3s ease;
 	color: #000000 !important;
+  }
+
+  .sidebar.close .nav-links li .sub-menu a{
+	white-space: nowrap !important;
   }
   .sidebar .nav-links li .sub-menu a:hover{
 	opacity: 1;
@@ -8480,7 +8482,7 @@ select option[disabled] {
 	object-fit: cover;
 	border-radius: 50%;
 	margin: 0 14px 0 12px;
-	border: 2px solid black;
+	border: 1px solid #CFCFCF;
 	transition: all 0.5s ease;
   }
   .sidebar.close .profile-details img{
@@ -9318,4 +9320,28 @@ select option[disabled] {
 
 .authentication-lock-screen .card{
 	border: 0px !important;
+}
+
+.text-dark{
+	color: #000 !important;
+}
+
+.logo_login{
+	margin-bottom: 25px;
+}
+
+.authentication-lock-screen form{
+	background-color: white;
+	border-radius: 10px;
+	border: 1px solid #CECECE;
+	padding: 35px;
+}
+
+.authentication-lock-screen form input,
+.authentication-lock-screen form button{
+	border-radius: 10px !important;
+}
+
+.border-grey{
+	border: 1px solid #CECECE;
 }

@@ -11,9 +11,6 @@
 	<link href="{{asset('assets/plugins/simplebar/css/simplebar.css')}}" rel="stylesheet" />
 	<link href="assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
 	<link href="assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
-	<!-- loader-->
-	<link href="assets/css/pace.min.css" rel="stylesheet" />
-	<script src="assets/js/pace.min.js"></script>
 	<!-- Bootstrap CSS -->
 	<link href="assets/css/bootstrap.min.css" rel="stylesheet">
 	<link href="assets/css/bootstrap-extended.css" rel="stylesheet">
@@ -32,11 +29,10 @@
 		<div class="flex-column authentication-lock-screen d-flex align-items-center justify-content-center">
 			<div class="card shadow-none bg-transparent">
 				<div class="card-body p-md-5 text-center">
-					
-					<div class="w-100 d-flex flex-column align-items-center justify-content-center">
-						<img src="assets/images/elyamaje_logo_blanc.png" width="120" alt="">
-					</div>
 					<form action="{{ route('auth.passwords.reset') }}" method="POST"> 
+						<div class="logo_login w-100 d-flex flex-column align-items-center justify-content-center">
+							<img src="assets/images/elyamaje_logo_long_noir.png" width="175" height="29" alt="">
+						</div>
 						@csrf 
 						<input  name="token"  type="hidden" value="{{ $token }}"/>
 						<div class="mb-3 mt-3">

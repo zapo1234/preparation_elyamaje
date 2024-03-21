@@ -148,7 +148,6 @@ $(function () {
 		var currentLocation = window.location.href;
 		
 		$(".metismenu li a").each(function () {
-			console.log("dd")
 			var $this = $(this);
 			
 			if ($this.attr("href") === currentLocation) {
