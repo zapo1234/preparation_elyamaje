@@ -124,13 +124,11 @@ class TiersRepository implements TiersInterface
                     'sortorder' => 'DESC',
                 );
 
-          // recuperer les données api dolibar copie projet tranfer x.
+             // recuperer les données api dolibar copie projet tranfer x.
               
-    
-             $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
+           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
              $lists = json_decode($listinvoice,true);
 
-             dd($lists);
 
             $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
