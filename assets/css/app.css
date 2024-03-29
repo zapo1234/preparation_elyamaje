@@ -8278,7 +8278,7 @@ select option[disabled] {
 	overflow: auto;
   }
   .sidebar.close .nav-links{
-	overflow: auto;
+	overflow: visible;
   }
   .sidebar .nav-links::-webkit-scrollbar{
 	display: none;
