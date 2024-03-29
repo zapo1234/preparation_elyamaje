@@ -97,7 +97,7 @@ class Label extends BaseController
 
             $ids = array_column($labels, "order_id");
             $clesRecherchees = array_keys($ids,  $order['order_woocommerce_id']);
-            
+
             if(!isset($array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']]) && $order['label_id']){
                 $array_order[$order['order_woocommerce_id']]['labels'][$order['label_id']] = [
                     'label_id' => $order['label_id'],

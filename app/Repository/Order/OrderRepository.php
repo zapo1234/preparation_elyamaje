@@ -847,7 +847,7 @@ class OrderRepository implements OrderInterface
 
       $date = date('Y-m-d');
       return $this->model::select('orders.*', /*'label_product_order.*'*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23',  'labels.origin')
+      'labels.cn23', 'labels.download_cn23',  'labels.origin', 'labels.id as label_id')
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       // ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id')
