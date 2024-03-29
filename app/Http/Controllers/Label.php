@@ -73,7 +73,6 @@ class Label extends BaseController
     }
 
     public function getlabels(Request $request){
-        dd("ddd");exit;
         if(count($request->all()) > 0){
             $filters = $request->all();
             $orders = $this->order->getAllOrdersAndLabelByFilter($filters)->toArray();

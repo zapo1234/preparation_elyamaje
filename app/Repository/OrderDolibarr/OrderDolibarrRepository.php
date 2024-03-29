@@ -402,7 +402,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      // ->limit(50)
+      ->limit(50)
       ->get();
 
 
