@@ -68,9 +68,9 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['middleware' => ['auth', 'role:1']], function () {
     Route::get("/indexAdmin", [Controller::class, "index"])->name('indexAdmin');
     // traiter les routes pour des tiers
-    Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('tiers.refreshtiers');
+    Route::get("/refreshtiers", [TiersController::class, "getiers"])->name('refreshtiers');
     // mise a jours des tiers via dolibar.
-    Route::post("/refreshtiers", [TiersController::class, "postiers"])->name('tiers.refreshtiers');
+    Route::post("/refreshtier", [TiersController::class, "postiers"])->name('refreshtiers');
     // orders facturé via dolibarr
     Route::get("/orderfacturer", [TiersController::class, "getorderfact"])->name('tiers.orderfacturer');
     //traitement ajax des commande facture 
