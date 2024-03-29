@@ -846,13 +846,14 @@ class OrderRepository implements OrderInterface
    public function getAllOrdersAndLabel(){
 
       $date = date('Y-m-d');
-      return $this->model::select('orders.*', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      return $this->model::select('orders.*', /*'label_product_order.*'*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23',  'labels.origin')
-      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
-      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
+      // ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(50)
+      ->limit(100)
       ->get();
    }
 
@@ -863,6 +864,7 @@ class OrderRepository implements OrderInterface
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders.order_woocommerce_id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders.order_woocommerce_id');
 
+     
       $haveFilter = false;
       foreach($filters as $key => $filter){
          if($filter){

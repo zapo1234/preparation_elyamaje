@@ -396,13 +396,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersAndLabel(){
       $date = date('Y-m-d');
-      $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', 'label_product_order.*', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23', 'labels.origin')
-      ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
-      ->Leftjoin('labels', 'labels.id', '=', 'label_product_order.label_id')
+      // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
+      ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(50)
+      ->limit(100)
       ->get();
 
 
