@@ -841,8 +841,6 @@ class Admin extends BaseController
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
 
-            dd($pdoDolibarr);
-
             $tab_categories = $pdoDolibarr->getCategoriesDolibarr();
            
             DB::beginTransaction();
