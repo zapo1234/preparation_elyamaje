@@ -60,7 +60,7 @@
                                 <button type="submit" class="btn btn-dark">Connexion</button>
                             </div>
                             <div class="forgot_password mt-3 d-flex justify-content-center">
-                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot  de passe oublié</a>
+                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
                             </div>
                         </form>
                     </div>
@@ -90,7 +90,7 @@
                                 <button type="submit" class="btn btn-dark">Connexion</button>	
                             </div>
                             <div class="forgot_password mt-3 d-flex justify-content-center">
-                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot  de passe oublié</a>
+                                <a class="text-dark" href="{{ url('authentication-forgot-password') }}">Mot de passe oublié ?</a>
                             </div>
                         </form>
                     </div>
