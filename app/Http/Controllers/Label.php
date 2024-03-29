@@ -398,11 +398,10 @@ class Label extends BaseController
 
         $from_validWraper = $request->post('from_validWraper') == "true" ? true : false;
         if(isset($product_order[0])){
-            // dd($product_order[0]);
-            if($product_order[0]['status'] != "finished" && !$from_validWraper){
-                echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
-                return;
-            }
+            // if($product_order[0]['status'] != "finished" && !$from_validWraper){
+            //     echo json_encode(['success' => false, 'message' => 'Veuillez valider la commande avant']);
+            //     return;
+            // }
 
             if($product_order[0]['shipping_method'] == null){
                 echo json_encode(['success' => false, 'message' => 'Aucune méthode d\'expédition n\'a été trouvée pour cette commande']);
@@ -411,6 +410,7 @@ class Label extends BaseController
         }
      
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
+
         $column = array_column($label_product_order, "product_id");
 
         foreach($product_order as $key => $product){
