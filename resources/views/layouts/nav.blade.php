@@ -8,6 +8,7 @@
         </div>
         <img src="{{ asset('assets/images/elyamaje_logo_long_noir.png') }}" class="logo_name logo-icon" alt="logo icon">
     </div>
+    
     <ul class="nav-links metismenu" id="menu">
         @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  4)) > 0)
             <div class="div_icon">
@@ -407,7 +408,7 @@
                     </div>
                 </li>
             </div>
-
+    </ul>
 
   </div>
   <section class="home-section close">

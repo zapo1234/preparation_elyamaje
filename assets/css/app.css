@@ -8277,9 +8277,11 @@ select option[disabled] {
 	padding: 30px 0 150px 0;
 	overflow: auto;
   }
-  .sidebar.close .nav-links{
+  .sidebar.close .nav-links {
 	overflow: visible;
   }
+  
+
   .sidebar .nav-links::-webkit-scrollbar{
 	display: none;
   }

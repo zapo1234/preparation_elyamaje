@@ -409,7 +409,7 @@ class Label extends BaseController
                 return;
             }
         }
-     
+        
         $label_product_order = $this->labelProductOrder->getLabelProductOrder($order_id)->toArray();
         $column = array_column($label_product_order, "product_id");
 
