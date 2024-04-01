@@ -665,7 +665,6 @@ class Admin extends BaseController
                 } else {
                     // Récupère directement sur Woocommerce si pas en local et l'attribue à l'admin qui à l'id 1
                     $order[1][0] = $this->api->getOrdersWoocommerceByOrderId($order_id);
-    
                     if(isset($order[1][0]['code'])){
                         return redirect()->route('admin.billing')->with('error', 'Commande inexistante en local et sur Woocommerce !');
                     } else {
@@ -836,9 +835,12 @@ class Admin extends BaseController
     }
 
     public function updatePrepaCategoriesDolibarr(){
+
+   
         
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
             $tab_categories = $pdoDolibarr->getCategoriesDolibarr();
            
             DB::beginTransaction();

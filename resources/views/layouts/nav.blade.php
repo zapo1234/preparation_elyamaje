@@ -213,7 +213,7 @@
                             <span class="link_name">Transferts</span>
                         </a>
                     </div>
-                    <ul class="sub-menu beauty_prof_menu">
+                    <ul class="sub-menu">
                         <li>
                             <a class="link_name" href="{{ url('getVieuxSplay') }}">
                                 Transferts

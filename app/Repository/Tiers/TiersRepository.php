@@ -118,17 +118,17 @@ class TiersRepository implements TiersInterface
                
                   $produitParam = array(
                     'apikey' => $apiKey,
-                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-3 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
+                    'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-30 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
                      'limit' => 0,
                     'sortfield' => 'rowid',
                     'sortorder' => 'DESC',
                 );
 
-          // recuperer les données api dolibar copie projet tranfer x.
+             // recuperer les données api dolibar copie projet tranfer x.
               
-    
-             $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
+           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
              $lists = json_decode($listinvoice,true);
+
 
             $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
