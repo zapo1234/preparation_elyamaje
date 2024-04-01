@@ -56,7 +56,7 @@
                                         <td id="" style="text-align: left !important;">{{$data["name_table"]}}</td>
                                         <td id="" style="text-align: left !important;">{{$data["last_update"]}}</td>
                                         <td id="" style="text-align: left !important;">
-                                            <a class="btn btn-sm btn-dark" id="id_btn_validate_48668" style="width: 100px !important;color: #fff !important;" href="{{$data["route"]}}">
+                                            <a class="btn btn-sm btn-dark" id="id_btn_validate_48668" style="color: #fff !important;" href="{{$data["route"]}}">
                                                 Mettre à jour
                                             </a>
                                             
@@ -98,13 +98,6 @@
 <script src="{{asset('assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.min.js')}}"></script>
 
 
-
-
-<script>
-
-    console.log("ddddddddddddddd");
-    
-</script>
 
 
 

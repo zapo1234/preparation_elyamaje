@@ -31,6 +31,8 @@ class OrderRepository implements OrderInterface
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
+
+            
                if(!isset($orderData['from_dolibarr'])){
 
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
@@ -45,12 +47,12 @@ class OrderRepository implements OrderInterface
                      foreach($orderData['coupon_lines'] as $coupon){
                         $coupons[] = $coupon['code'];
                         $discount[] = $coupon['discount'];
-                        $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+                        $amount[] = isset($coupon['nominal_amount']) ? $coupon['nominal_amount'] : 0;
                      }
                   }
+
       
                   // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
-
                   if(isset($orderData['meta_data'])){
                      $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
                      $pickUpLocationId = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpLocationId") ?? $this->getValueByKey($orderData['meta_data'], "_shipping_method_chronorelais", "chrono");
@@ -686,7 +688,7 @@ class OrderRepository implements OrderInterface
       //             foreach($insert_order_by_user['coupon_lines'] as $coupon){
       //                $coupons[] = $coupon['code'];
       //                $discount[] = $coupon['discount'];
-      //                $amount[] = isset($coupon['meta_data'][0]['value']['amount']) ? $coupon['meta_data'][0]['value']['amount'] : 0;
+      //                $amount[] = isset($coupon['nominal_amount']) ? $coupon['nominal_amount'] : 0;
       //             }
       //          }
 
