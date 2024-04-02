@@ -136,8 +136,8 @@
 															</div>
 														</div>
 													</div>
-													<div class="w-100 d-flex justify-content-between">
-														<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
+													<div class="w-100 d-flex justify-content-end">
+														<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Fermer</button>
 													</div>
 													
 												</div>
@@ -177,8 +177,8 @@
 														<span class="mt-1 mb-2 montant_total_order">#{{ $histo['details']['id'] }} </span>
 														<span class="mt-1 mb-2 montant_total_order responsive_montant_modal">Total: {{ $histo['details']['total'] }}€</span>
 													</div>
-													<div class="w-100 d-flex justify-content-between mb-3">
-														<button data-id="{{ $histo['details']['id'] }}" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
+													<div class="w-100 d-flex justify-content-end mb-3">
+														<button data-id="{{ $histo['details']['id'] }}" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Fermer</button>
 													</div>
 												</div>
 											</div>
