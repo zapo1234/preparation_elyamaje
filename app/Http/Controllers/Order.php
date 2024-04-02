@@ -957,16 +957,15 @@ class Order extends BaseController
       $quantity = $request->post('quantity');
       $product_dolibarr_id = $request->post('product_dolibarr_id');
 
-      echo json_encode(['success' => true]);
-      // if($quantity_to_delete >= $quantity){
-      //   // Suppression produit
-      //   $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
-      //   echo json_encode(['success' => $delete_product]);
-      // } else {
-      //   // Update produit
-      //   $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
-      //   echo json_encode(['success' => $update_product]);
-      // }
+      if($quantity_to_delete >= $quantity){
+        // Suppression produit
+        $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
+        echo json_encode(['success' => $delete_product]);
+      } else {
+        // Update produit
+        $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
+        echo json_encode(['success' => $update_product]);
+      }
     }
 
     public function addOrderProducts(Request $request){
