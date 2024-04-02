@@ -65,7 +65,7 @@
 							</div>
 							
 							<!-- MODAL -->
-							<div class="modal_order modal fade order_{{ $histo['details']['id'] }}" data-order="{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							<div class="modal_order_admin modal_detail_order modal_order modal fade order_{{ $histo['details']['id'] }}" data-order="{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal-body detail_product_order">
@@ -150,7 +150,7 @@
 
 
 							<!-- MODAL CODE QR -->
-							<div class="modal_order modal fade modal_success" data-order="{{ $histo['details']['id'] }}" id="code_{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+							<div class="modal_order_admin modal_detail_order modal_order modal fade" data-order="{{ $histo['details']['id'] }}" id="code_{{ $histo['details']['id'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal-body detail_product_order">
@@ -178,7 +178,7 @@
 														<span class="mt-1 mb-2 montant_total_order responsive_montant_modal">Total: {{ $histo['details']['total'] }}€</span>
 													</div>
 													<div class="w-100 d-flex justify-content-between mb-3">
-														<button data-id="{{ $histo['details']['id'] }}" type="button" class="close_modal btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
+														<button data-id="{{ $histo['details']['id'] }}" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal"><i class="d-none responsive-icon lni lni-arrow-left"></i><span class="responsive-text">Retour</button>
 													</div>
 												</div>
 											</div>
