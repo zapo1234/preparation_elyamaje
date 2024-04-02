@@ -875,7 +875,7 @@ function show(id){
                                         </div>
                                         <div class="d-flex justify-content-between w-100">
                                             <button onclick="add_product('`+order[0].order_woocommerce_id+`')" style="width:-min-content" type="button" class="btn btn-dark px-5">Ajouter un produit</button>
-                                            <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+                                            <button style="margin-left: 10px" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
                                         </div>
                                     </div>
                                 </div>
