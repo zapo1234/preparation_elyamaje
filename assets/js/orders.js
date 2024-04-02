@@ -785,7 +785,7 @@ function addProductOrderConfirm(){
 
             $("#addProductOrderModal").modal('hide')
         } else {
-            alert('Erreur !')
+            alert(JSON.parse(data).message ?? 'Erreur')
         }
         $(".loading_add").addClass('d-none')
         $(".add_modal").removeClass('d-none')
@@ -840,7 +840,7 @@ function show(id){
                                     <div class="body_detail_product_order">
                                         ${order.map((element) =>
                                             `
-                                            <div class="${element.product_woocommerce_id}_${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                            <div class="${element.product_woocommerce_id}_${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${order[0].from_dolibarr ? element.product_dolibarr_id : ''} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
                                                 <div class="column11 d-flex align-items-center detail_product_name_order">
                                                     ${element.name != null ? (parseFloat(element.cost).toFixed(2) == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`) : '<span class="text-danger"> (Produit manquant) Identifiant : '+element.product_woocommerce_id+'</span>'}
                                                 </div>
@@ -998,7 +998,6 @@ function deleteProductOrderDolibarrConfirm(){
         data: {_token: $('input[name=_token]').val(), order_id: order_id, quantity_to_delete: quantity_to_delete, quantity:quantity, product_dolibarr_id: product_dolibarr_id}
     }).done(function(data) {
         if(JSON.parse(data).success){
-
             if(quantity_to_delete >= quantity){
                 $("#order_"+ref_order).find('.'+product_dolibarr_id).fadeOut()
                 $("#order_"+ref_order).find('.'+product_dolibarr_id).remove()

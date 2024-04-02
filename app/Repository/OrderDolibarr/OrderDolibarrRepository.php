@@ -468,7 +468,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function  updateProductOrder($order_id, $product_id, $data){
       try{
          $update_products = DB::table('lines_commande_doli')->where('id_commande', $order_id)->where('id_product', $product_id)->update($data);
-         return true;
+         return $update_products;
       } catch(Exception $e){
          return false;
       }

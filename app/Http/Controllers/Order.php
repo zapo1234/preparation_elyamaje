@@ -957,15 +957,16 @@ class Order extends BaseController
       $quantity = $request->post('quantity');
       $product_dolibarr_id = $request->post('product_dolibarr_id');
 
-      if($quantity_to_delete >= $quantity){
-        // Suppression produit
-        $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
-        echo json_encode(['success' => $delete_product]);
-      } else {
-        // Update produit
-        $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
-        echo json_encode(['success' => $update_product]);
-      }
+      echo json_encode(['success' => true]);
+      // if($quantity_to_delete >= $quantity){
+      //   // Suppression produit
+      //   $delete_product = $this->orderDolibarr->deleteProductOrder($order_id, $product_dolibarr_id);
+      //   echo json_encode(['success' => $delete_product]);
+      // } else {
+      //   // Update produit
+      //   $update_product = $this->orderDolibarr->updateProductOrder($order_id, $product_dolibarr_id, ['qte' => intval($quantity) - intval($quantity_to_delete)]);
+      //   echo json_encode(['success' => $update_product]);
+      // }
     }
 
     public function addOrderProducts(Request $request){
@@ -977,15 +978,20 @@ class Order extends BaseController
         $quantity = 1;
       }
 
-      $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
-
-      if(is_array($product_order_woocommerce)){
-        $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
-        $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
-
-        echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
+      if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+        echo json_encode(['success' => false, 'message' => 'Impossible de rajouter des produits pour des commandes qui viennent de Dolibarr !']); 
       } else {
-        echo json_encode(['success' => false]); 
+        // Ajout Woocommerce
+        $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
+
+        if(is_array($product_order_woocommerce)){
+          $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
+          $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
+  
+          echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
+        } else {
+          echo json_encode(['success' => false]); 
+        }
       }
     }
 
