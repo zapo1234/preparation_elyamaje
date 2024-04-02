@@ -825,17 +825,16 @@ function show(id){
                
 
                 $(".modal_order_admin").remove()
-                $('body').append(`<div class="modal_order_admin modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                $('body').append(`<div class="modal_order_admin modal_dashboard modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-body detail_product_order">
                                 <div class="detail_product_order_head d-flex flex-column">
-                                    <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
+                                    <div class="p-1 mb-2 head_detail_product_order d-flex justify-content-between">
                                         <span class="column1 name_column">Article</span>
                                         <span class="column2 name_column">Coût</span>
                                         <span class="column3 name_column">Pick / Qté</span>
                                         <span class="column4 name_column">Total</span>
-                                        <span class="column5 name_column">Action</span>
                                     </div>	
 
                                     <div class="body_detail_product_order">
@@ -847,9 +846,12 @@ function show(id){
                                                 </div>
                                                 <span class="column22">${parseFloat(element.cost).toFixed(2)}</span>
                                                 <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
-                                                <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}</span>
-                                                ${!order[0].from_dolibarr ? '<span class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
-                                                '<span class="column55"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
+                                                <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}
+                                                
+                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
+                                                    '<span style="margin-left: 5px" class="column55_action"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
+                                                </span>
+                                               
                                                 
                                             </div>`
                                     ).join('')}

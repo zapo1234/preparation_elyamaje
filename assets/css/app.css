@@ -5876,6 +5876,10 @@ textarea::placeholder {
 	text-align: left;
 }
 
+.head_detail_product_order{
+	width: 98% !important;
+}
+
 .head_detail_product_order span{
 	font-size: 22px;
 	font-weight: bold;
@@ -6564,6 +6568,10 @@ a{
 	.col-sm-12:has(.table_mobile_responsive){
 		padding-left: 0px !important;
 		padding-right: 0px !important;
+	}
+
+	.modal_dashboard .head_detail_product_order{
+		width: 92% !important;
 	}
 
 	.dataTables_wrapper .row:last-child{
