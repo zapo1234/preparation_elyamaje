@@ -482,7 +482,7 @@
                             <table id="example2" class="table mb-0 dataTable">
                                 <thead>
                                     <tr>
-                                        <th title="L'entrepôt qui va être décrémenté">ID</th>
+                                        <th title="L'entrepôt qui va être décrémenté">IDff</th>
                                         <th title="L'entrepôt qui va être décrémenté">Code barre</th>
                                         <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
                                         <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th>
@@ -534,7 +534,11 @@
                                             @else
                                                 <td data-key="qte_act" data-value="{{$value["qte_act"]}}" id="{{$value["product_id"]}}_qte_act">{{$value["entrepot_a_alimenter"]}} ({{$value["qte_act"]}})</td>
                                             @endif
+
                                             <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">{{$value["qte_optimale"]}}</td>
+
+                                            {{-- <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">1</td> --}}
+
 
 
 
