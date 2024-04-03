@@ -1422,7 +1422,36 @@ class Order extends BaseController
     } else {
       echo json_encode(['success' => false, 'message' => 'Token invalide !']);
     }
-   
+  }
+
+  // Delete order woocommerce or dolibarr with all products
+  public function deleteOrder(Request $request){
+
+    try{
+      $input = $request->all();
+      $this->validate($request, [
+          'order_id' => 'required',
+      ]);
+
+      if(isset($input['from_history'])){
+        if(!$this->history->delete($input['order_id'])){
+          echo json_encode(['success' => false]);
+        }
+      }
+  
+      $from_dolibarr = $input['from_dolibarr'] ?? null;
+  
+      if($from_dolibarr == "false" || (!str_contains($input['order_id'], 'CO') && !str_contains($input['order_id'], 'BP'))){
+        // Delete from woocommerce
+        echo json_encode(['success' => $this->order->delete($input['order_id'])]);
+      } else {
+        // Delete from Dolibarr
+        echo json_encode(['success' => $this->orderDolibarr->delete($input['order_id'])]);
+      }
+    } catch(Exception $e){
+      echo json_encode(['success' => false]);
+    }
+  
   }
 
   // private function checkGiftCard($order){

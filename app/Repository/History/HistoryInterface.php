@@ -14,6 +14,8 @@ interface HistoryInterface
    public function getHistoryByIdUser($user_id);
    
    public function save($data);
+
+   public function delete($order_id);
 }
 
 

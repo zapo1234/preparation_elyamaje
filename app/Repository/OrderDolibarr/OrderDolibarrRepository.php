@@ -919,18 +919,40 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
        return $order_all;
      }
 
-     public function  getTiersBp(){
-     
+   public function  getTiersBp(){
+   
 
-     }
+   }
 
-     public function  getOrderBp(){
+   public function  getOrderBp(){
 
 
-     }
+   }
 
    public function getOrderByRef($ref_order){
       return $this->model::where('ref_order', $ref_order)->get();
+   }
+
+   public function delete($ref_order){
+      try {
+         $id_commande = $this->model::where('ref_order', $ref_order)->select('id')->first();
+         if($id_commande->id){
+            DB::beginTransaction();
+            $this->model::where('ref_order', $ref_order)->delete();
+            DB::table('lines_commande_doli')->where('id_commande', $id_commande->id)->delete();
+
+            // Validation et commit de la transaction
+            DB::commit();
+
+            return true;
+         }
+         
+         return false;
+      } catch (\Exception $e) {
+         // En cas d'erreur, rollback de la transaction
+         DB::rollback();
+         return false;
+     }
    }
 }
 

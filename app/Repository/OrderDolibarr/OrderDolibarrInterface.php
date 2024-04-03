@@ -64,6 +64,8 @@ interface OrderDolibarrInterface
     public function getOrderBp();
 
     public function getOrderByRef($ref_order);
+
+    public function delete($ref_order);
 }
 
 

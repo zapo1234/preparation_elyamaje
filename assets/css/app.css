@@ -9395,3 +9395,8 @@ select option[disabled] {
 	border-radius: 10px !important;
 }
 
+.action_dashboard{
+	display: flex;
+	justify-content: flex-end;
+	gap: 5px;
+}
