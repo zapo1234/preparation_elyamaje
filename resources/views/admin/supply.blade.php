@@ -482,7 +482,7 @@
                             <table id="example2" class="table mb-0 dataTable">
                                 <thead>
                                     <tr>
-                                        <th title="L'entrepôt qui va être décrémenté">IDff</th>
+                                        <th title="L'entrepôt qui va être décrémenté">ID</th>
                                         <th title="L'entrepôt qui va être décrémenté">Code barre</th>
                                         <th title="L'entrepôt qui va être décrémenté">Nom produit</th>
                                         <th title="L'entrepôt qui va être décrémenté">Prix d'achat unitaire</th>
@@ -1005,7 +1005,15 @@
 
     "drawCallback": function(settings) {
         $('#entrepot_source, #entrepot_destination').prop('disabled', true);
-    }
+    },
+
+    "columnDefs": [
+    {
+        "targets": [3], // cible la quatrième colonne
+        "visible": false, // la rend invisible
+        "searchable": false // la rend non recherchable
+    },
+    ]
 
     });
 
