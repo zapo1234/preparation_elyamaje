@@ -139,11 +139,11 @@
 								<div class="card card_table_mobile_responsive radius-10 w-100">
 									<div class="header_title hide_mobile d-flex align-items-center">
 										<div class="w-100 d-flex justify-content-between">
-											<h5 style="width:180px">Commande</h5>
+											<h5 style="width:160px">Commande</h5>
 											<h5>Attribution</h5>
-											<h5>Date</h5>
-											<h5>État</h5>
-											<h5>Total</h5>
+											<h5 style="width:100px">Date</h5>
+											<h5 style="width:100px">État</h5>
+											<h5 style="width:100px">Total</h5>
 											<h5>Détail</h5>
 										</div>
 									</div>

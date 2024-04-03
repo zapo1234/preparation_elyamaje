@@ -121,6 +121,12 @@
 																<i class="font-primary font-20 bx bx-user"></i>
 															</button>	
 														@endif
+
+														@if(strlen($histo['order_id']) != 10)
+															<button class="show_detail_button show_detail" onclick="deleteConfirm('{{ $histo['order_id'] }}')">
+																<i class="font-primary font-20 bx bx-trash"></i>
+															</button>	
+														@endif
 													</td>
 												</tr>
 											@endforeach

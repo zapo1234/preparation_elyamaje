@@ -120,9 +120,11 @@ class CommandeidsRepository implements CommandeidsInterface
    }
 
 
-    
-     public function deleteOrder($order_id){
+   public function deleteOrder($order_id){
       return $this->model::where('id_commande', $order_id)->delete();
-     }
+   }
     
+   public function insertProductOrder($data) {
+      return $this->model::insert($data);
+   }
 }

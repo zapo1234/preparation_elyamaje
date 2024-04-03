@@ -3,9 +3,11 @@ $("#history_by_date").on('click', function(){
 })
 
 $(document).ready(function() {
+
+    // Initialisez votre DataTable
     $('#example').DataTable({
         "ordering": false,
-        "initComplete": function( settings, json ) {
+        "initComplete": function(settings, json) {
             $(".order_research").appendTo('.dataTables_length')
             $(".dataTables_length").css('display', 'flex')
             $(".dataTables_length").addClass('select2_custom')
@@ -15,7 +17,8 @@ $(document).ready(function() {
             $(".loading").addClass('d-none')
             $('#example').removeClass('d-none');
         }
-    })
+    });
+
 
     $('body').on('change', '.select_status', function () {
 
@@ -372,4 +375,70 @@ $('body').on('click', '.valid_edit_detail_order', function() {
         }
     })
 })
+
+
+
+function deleteConfirm(id){
+    $("#deleteOrder").remove()
+    $('body').append(`
+        <div class="modal fade modal_radius" id="deleteOrder" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
+                        <i style="color: black; z-index:10;cursor:pointer;" data-bs-dismiss="modal" class="font-20 bx bx-x"></i>
+                    </div>	
+                    <div class="modal-body">
+                        <h2 class="mt-2 text-center">Voulez-vous supprimer la commande `+id+` ?</h2>
+                        <div class="w-100 d-flex justify-content-center">
+                            <div class="d-flex justify-content-center w-75">
+                                <button onclick="deleteOrder('`+id+`')" type="button" class="btn btn-dark px-5 ">Oui</button>
+                                <button data-bs-dismiss="modal" style="margin-left: 10px" type="button" class="btn btn-dark px-5 ">Non</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `)
+
+    $('#deleteOrder').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#deleteOrder").modal('show');
+}
+
+function deleteOrder(id){
+
+    $("#deleteOrder").find('button').attr('disabled', true)
+
+    $.ajax({
+        url: "deleteOrder",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: id, from_history: true}
+    }).done(function(data) {
+        $("#deleteOrder").find('button').attr('disabled', false)
+        $("#deleteOrder").modal('hide');
+
+        if(JSON.parse(data).success){
+            $(".wrapper").append(`
+                <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                    <div class=" text-white">La commande `+id+` a bien été supprimée</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `)
+
+            setTimeout(function(){
+                location.reload()
+            },500)
+        } else {
+            $(".wrapper").append(`
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                    <div class=" text-white">Oops, une erreur est survenue !</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `)
+        }
+    })
+}
     

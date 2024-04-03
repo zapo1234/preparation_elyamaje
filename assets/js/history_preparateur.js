@@ -58,13 +58,6 @@ $('body').on('click', '.show_order_history_code', function () {
     $("#code_" + id).modal('show')
 })
 
-$('body').on('click', '.close_modal', function () {
-    id = $(this).attr('data-id')
-    $("#code_" + id).hide()
-    $(".modal-backdrop").hide()
-})
-
-
 function accentsTidy(r){
     var r=r;
     // r = r.replace(new RegExp(/\s/g),"");
