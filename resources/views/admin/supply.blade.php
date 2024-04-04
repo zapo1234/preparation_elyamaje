@@ -1161,8 +1161,6 @@
             },                       
             success: function(response) {
 
-                console.log(tabProduitReassort1);
-
                 if (response.response == true) {
 
                     $(".alert-succes-calcul").show();

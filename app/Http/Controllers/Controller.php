@@ -2161,7 +2161,7 @@ class Controller extends BaseController
                             'type' => 1, 
                             'movementcode' => NULL, 
                             'movementlabel' => 'Transfere via preparation', 
-                            'price' => $lineR["price"], 
+                            'price' => isset($lineR["price"])? $lineR["price"]:0, 
                             'datem' => date('Y-m-d'), 
                             'dlc' => date('Y-m-d'), 
                             'dluo' => date('Y-m-d'), 
@@ -2182,7 +2182,7 @@ class Controller extends BaseController
                             'type' => 0, 
                             'movementcode' => NULL,
                             'movementlabel' => 'Transfere via preparation',
-                            'price' => $lineR["price"],
+                            'price' => isset($lineR["price"])? $lineR["price"]:0,
                             'datem' => date('Y-m-d'),
                             'dlc' => date('Y-m-d'),
                             'dluo' => date('Y-m-d'),
@@ -2200,12 +2200,14 @@ class Controller extends BaseController
                 }
 
                 if ($incrementation != $decrementation) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
                 }
 
                 try {
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
 
