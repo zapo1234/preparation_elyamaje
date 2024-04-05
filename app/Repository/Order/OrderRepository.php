@@ -1146,6 +1146,23 @@ class OrderRepository implements OrderInterface
       ->groupBy('orders.id')
       ->get();
    }
+
+   public function delete($order_id){
+      try {
+         DB::beginTransaction();
+         $this->model::where('order_woocommerce_id', $order_id)->delete();
+         DB::table('products_order')->where('order_id', $order_id)->delete();
+
+         // Validation et commit de la transaction
+         DB::commit();
+
+         return true;
+      } catch (\Exception $e) {
+         // En cas d'erreur, rollback de la transaction
+         DB::rollback();
+         return false;
+     }
+   }
 }
 
 

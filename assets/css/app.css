@@ -5245,7 +5245,12 @@ textarea::placeholder {
 
 	.mobile_icon_menu{
 		display: block;
+		position: absolute;
 		left: 78px !important;
+	}
+
+	.close .mobile_icon_menu{
+		left: 0px !important;
 	}
 
 	.show_hide_nav{
@@ -5869,6 +5874,10 @@ textarea::placeholder {
 
 .detail_product_name_order span{
 	text-align: left;
+}
+
+.head_detail_product_order{
+	width: 98% !important;
 }
 
 .head_detail_product_order span{
@@ -6559,6 +6568,10 @@ a{
 	.col-sm-12:has(.table_mobile_responsive){
 		padding-left: 0px !important;
 		padding-right: 0px !important;
+	}
+
+	.modal_dashboard .head_detail_product_order{
+		width: 92% !important;
 	}
 
 	.dataTables_wrapper .row:last-child{
@@ -9382,3 +9395,8 @@ select option[disabled] {
 	border-radius: 10px !important;
 }
 
+.action_dashboard{
+	display: flex;
+	justify-content: flex-end;
+	gap: 5px;
+}

@@ -1128,9 +1128,10 @@ class Controller extends BaseController
 
     function verifieFormatNameFichier($nomDuFichier) {
         // Expression régulière pour vérifier le format du nom de fichier
-        $pattern = '/^\d{2}-\d{2}-\d{2}_(reassort|alerte)\.csv$/';
+        $pattern = '/^\d{2}-\d{2}-\d{2}_alerte.*\.csv$/';
     
         // Vérifie si le nom du fichier correspond au format attendu
+
         if (preg_match($pattern, $nomDuFichier)) {
             return true;
         } else {
@@ -1929,15 +1930,25 @@ class Controller extends BaseController
 
             if (isset($vente_by_product[$kproduct])) {
 
+
+             
+              
+
                 // on compare les vente par semaine et la quantité dont on dispose dans l'entrepot
 
                 if ($by_file) {
+
+                    
                     
                     // dd($infos_stock_min);
 
                     // depuis un fichier reassort automatique
 
                     if ($by_reassort_auto == true) {
+
+                        $qte_act = $stock_in_war["stock"]?$stock_in_war["stock"]:0;
+                        $demande = ceil($vente_by_product[$kproduct]["qty"]);
+
                         array_push($products_reassort,[
                             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
                             "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
@@ -1945,17 +1956,42 @@ class Controller extends BaseController
                             "libelle" => $stock_in_war["libelle"],
                             "product_id" => $kproduct,
                             "barcode" => $stock_in_war["barcode"],
-                            "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                            "qte_act" => $qte_act,
                             "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
-                            "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+                            "demande" => $demande,
 
-                            "qte_optimale" => ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*2 : 0,
+                            "qte_optimale" => $qte_act + $demande , // ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*0.65 : 0,
     
                             "fk_cat" => $stock_in_war["fk_cat"],
                             "label_cat" => $stock_in_war["label_cat"],
                             "fk_parent" => $stock_in_war["fk_parent"],
     
                         ]);
+
+                        // if ($kproduct == 5262) {
+                        //     dump($infos_stock_min[$kproduct]);
+                        //     dump(
+                        //         [
+                        //             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
+                        //             "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                        //             "qte_en_stock_in_source" => $qte_en_stock_in_source,
+                        //             "libelle" => $stock_in_war["libelle"],
+                        //             "product_id" => $kproduct,
+                        //             "barcode" => $stock_in_war["barcode"],
+                        //             "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                        //             "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
+                        //             "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+        
+                        //             "qte_optimale" => ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*0.65 : 0,
+            
+                        //             "fk_cat" => $stock_in_war["fk_cat"],
+                        //             "label_cat" => $stock_in_war["label_cat"],
+                        //             "fk_parent" => $stock_in_war["fk_parent"],
+            
+                        //         ]
+                        //     );
+                        // }
+
                     }else {
                         array_push($products_reassort,[
                             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
@@ -2048,6 +2084,12 @@ class Controller extends BaseController
 
     //    dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
+        // foreach ($products_reassort as $key => $value) {
+        //     if ($value["product_id"] == 5262) {
+        //         dump($value);
+        //     }
+        // }
+
         return view('admin.supply',
             [
                 "listWarehouses" => $listWarehouses,
@@ -2119,7 +2161,7 @@ class Controller extends BaseController
                             'type' => 1, 
                             'movementcode' => NULL, 
                             'movementlabel' => 'Transfere via preparation', 
-                            'price' => $lineR["price"], 
+                            'price' => isset($lineR["price"])? $lineR["price"]:0, 
                             'datem' => date('Y-m-d'), 
                             'dlc' => date('Y-m-d'), 
                             'dluo' => date('Y-m-d'), 
@@ -2140,7 +2182,7 @@ class Controller extends BaseController
                             'type' => 0, 
                             'movementcode' => NULL,
                             'movementlabel' => 'Transfere via preparation',
-                            'price' => $lineR["price"],
+                            'price' => isset($lineR["price"])? $lineR["price"]:0,
                             'datem' => date('Y-m-d'),
                             'dlc' => date('Y-m-d'),
                             'dluo' => date('Y-m-d'),
@@ -2158,12 +2200,14 @@ class Controller extends BaseController
                 }
 
                 if ($incrementation != $decrementation) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
                 }
 
                 try {
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
 

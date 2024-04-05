@@ -977,15 +977,20 @@ class Order extends BaseController
         $quantity = 1;
       }
 
-      $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
-
-      if(is_array($product_order_woocommerce)){
-        $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
-        $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
-
-        echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
+      if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+        echo json_encode(['success' => false, 'message' => 'Impossible de rajouter des produits pour des commandes qui viennent de Dolibarr !']); 
       } else {
-        echo json_encode(['success' => false]); 
+        // Ajout Woocommerce
+        $product_order_woocommerce = $this->api->addProductOrderWoocommerce($order_id, $product , $quantity);
+
+        if(is_array($product_order_woocommerce)){
+          $update_order = $this->order->updateTotalOrder($order_id, $product_order_woocommerce);
+          $insert_product_order = $this->productOrder->insertProductOrder($product_order_woocommerce);
+  
+          echo json_encode(['success' => $insert_product_order, 'order' => $product_order_woocommerce]); 
+        } else {
+          echo json_encode(['success' => false]); 
+        }
       }
     }
 
@@ -1417,7 +1422,36 @@ class Order extends BaseController
     } else {
       echo json_encode(['success' => false, 'message' => 'Token invalide !']);
     }
-   
+  }
+
+  // Delete order woocommerce or dolibarr with all products
+  public function deleteOrder(Request $request){
+
+    try{
+      $input = $request->all();
+      $this->validate($request, [
+          'order_id' => 'required',
+      ]);
+
+      if(isset($input['from_history'])){
+        if(!$this->history->delete($input['order_id'])){
+          echo json_encode(['success' => false]);
+        }
+      }
+  
+      $from_dolibarr = $input['from_dolibarr'] ?? null;
+  
+      if($from_dolibarr == "false" || (!str_contains($input['order_id'], 'CO') && !str_contains($input['order_id'], 'BP'))){
+        // Delete from woocommerce
+        echo json_encode(['success' => $this->order->delete($input['order_id'])]);
+      } else {
+        // Delete from Dolibarr
+        echo json_encode(['success' => $this->orderDolibarr->delete($input['order_id'])]);
+      }
+    } catch(Exception $e){
+      echo json_encode(['success' => false]);
+    }
+  
   }
 
   // private function checkGiftCard($order){

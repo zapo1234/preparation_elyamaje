@@ -2,6 +2,7 @@
 
 namespace App\Repository\History;
 
+use Exception;
 use App\Models\History;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -97,6 +98,15 @@ class HistoryRepository implements HistoryInterface
 
    public function save($data){
       return $this->model::insert($data);
+   }
+
+   public function delete($order_id){
+      try{
+         $this->model::where('order_id', $order_id)->delete();
+         return true;
+      } catch(Exception $e){
+         return false;
+      }
    }
 }
 

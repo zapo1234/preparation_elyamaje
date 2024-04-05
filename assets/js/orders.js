@@ -229,9 +229,15 @@ $(document).ready(function() {
             },
             {data: null,
                 render: function(data, type, row) {
+                    const options = { day: 'numeric', month: 'short', year: 'numeric' };
                     const date = new Date(row.date_created);
-                    const dateEnFrancais = date.toLocaleString('fr-FR', options);
-                    return dateEnFrancais
+                    const formatter = new Intl.DateTimeFormat('fr-FR', options);
+                    const dateEnFrancais = formatter.format(date);
+                    return dateEnFrancais;
+
+                    // const date = new Date(row.date_created);
+                    // const dateEnFrancais = date.toLocaleString('fr-FR', options);
+                    // return dateEnFrancais
                 }
             },
             {data: null,
@@ -270,142 +276,146 @@ $(document).ready(function() {
                     }) 
                     return `
                        
+                        <div class="action_dashboard">
+                            <button onclick="show('`+row.id+`')" class="detail_products">
+                                <i class="show_detail bx bx-cube"></i>
+                            </button>
 
-                        <button onclick="show('`+row.id+`')" class="detail_products">
-                            <i class="show_detail bx bx-cube"></i>
-                        </button>
+                            <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade modal_radius" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="mt-2 d-flex flex-column w-100 customer_billing">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <span class="customer_detail_title badge bg-dark">Facturation</span>
+                                                ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                                            </div>
+                                            
 
-                        <div class="${row.from_dolibarr ? "from_dolibarr_order_detail" : ""} modal fade modal_radius" id="order_detail_customer_`+row.id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                <div class="modal-body">
-                                    <div class="mt-2 d-flex flex-column w-100 customer_billing">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <span class="customer_detail_title badge bg-dark">Facturation</span>
-                                            ${row.shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                                            ${row.billing.first_name ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_first_name">`+row.billing.first_name+`</span>
+                                                <i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.last_name ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_last_name">`+row.billing.last_name+`</span>
+                                                <i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.email ? `<div class="d-flex w-100 justify-content-between">
+                                                <div class="d-flex w-100">
+                                                    <i class="bx bx-envelope"></i>
+                                                    <span class="billing_customer_email">`+row.billing.email+`</span>
+                                                </div>
+                                                <i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+                                            
+                                            ${row.billing.phone ? `<div class="d-flex w-100 justify-content-between">
+                                                <div class="d-flex w-100">
+                                                    <i class="bx bx-phone"></i>
+                                                    <span class="billing_customer_phone">`+row.billing.phone+`</span>
+                                                </div>
+                                                <i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.company ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_comapny">`+row.billing.company+`</span>
+                                                <i data-edit="billing_customer_comapny" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_address_1">`+row.billing.address_1+`</span>
+                                                <i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_address_2">`+row.billing.address_2+`</span>
+                                                <i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.state ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_state">`+row.billing.state+`</span>
+                                                <i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.postcode ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_postcode">`+row.billing.postcode+`</span>
+                                                <i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.city ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_city">`+row.billing.city+`</span>
+                                                <i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
+
+                                            ${row.billing.country ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="billing_customer_country">`+row.billing.country+`</span>
+                                            </div>` : ``}
                                         </div>
-                                        
 
-                                        ${row.billing.first_name ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_first_name">`+row.billing.first_name+`</span>
-                                            <i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                        <div class="mt-3 d-flex flex-column w-100 customer_shipping">
+                                            <span class="customer_detail_title badge bg-dark">Expédition</span>
 
-                                        ${row.billing.last_name ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_last_name">`+row.billing.last_name+`</span>
-                                            <i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.first_name ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_first_name">`+row.shipping.first_name+`</span>
+                                                <i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.email ? `<div class="d-flex w-100 justify-content-between">
-                                            <div class="d-flex w-100">
-                                                <i class="bx bx-envelope"></i>
-                                                <span class="billing_customer_email">`+row.billing.email+`</span>
-                                            </div>
-                                            <i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-                                        
-                                        ${row.billing.phone ? `<div class="d-flex w-100 justify-content-between">
-                                            <div class="d-flex w-100">
-                                                <i class="bx bx-phone"></i>
-                                                <span class="billing_customer_phone">`+row.billing.phone+`</span>
-                                            </div>
-                                            <i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.last_name ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_last_name">`+row.shipping.last_name+`</span>
+                                                <i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.company ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_comapny">`+row.billing.company+`</span>
-                                            <i data-edit="billing_customer_comapny" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.company ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_company">`+row.shipping.company+`</span>
+                                                <i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.address_1 ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_address_1">`+row.billing.address_1+`</span>
-                                            <i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_address_1">`+row.shipping.address_1+`</span>
+                                                <i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.address_2 ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_address_2">`+row.billing.address_2+`</span>
-                                            <i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_address_2">`+row.shipping.address_2+`</span>
+                                                <i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.state ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_state">`+row.billing.state+`</span>
-                                            <i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.state ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_state">`+row.shipping.state+`</span>
+                                                <i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.postcode ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_postcode">`+row.billing.postcode+`</span>
-                                            <i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.postcode ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_postcode">`+row.shipping.postcode+`</span>
+                                                <i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.city ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_city">`+row.billing.city+`</span>
-                                            <i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
+                                            ${row.shipping.city ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_city">`+row.shipping.city+`</span>
+                                                <i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                            </div>` : ``}
 
-                                        ${row.billing.country ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="billing_customer_country">`+row.billing.country+`</span>
-                                        </div>` : ``}
+                                            ${row.shipping.country ? `<div class="d-flex w-100 justify-content-between">
+                                                <span class="shipping_customer_country">`+row.shipping.country+`</span>
+                                            </div>` : ``}
+                                        </div>
                                     </div>
+                                    <input type="hidden" value="${row.id}" id="order_detail_id">
+                                    <input type="hidden" value="${row.user_id}" id="order_attributed">
 
-                                    <div class="mt-3 d-flex flex-column w-100 customer_shipping">
-                                        <span class="customer_detail_title badge bg-dark">Expédition</span>
-
-                                        ${row.shipping.first_name ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_first_name">`+row.shipping.first_name+`</span>
-                                            <i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.last_name ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_last_name">`+row.shipping.last_name+`</span>
-                                            <i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.company ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_company">`+row.shipping.company+`</span>
-                                            <i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.address_1 ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_address_1">`+row.shipping.address_1+`</span>
-                                            <i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.address_2 ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_address_2">`+row.shipping.address_2+`</span>
-                                            <i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.state ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_state">`+row.shipping.state+`</span>
-                                            <i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.postcode ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_postcode">`+row.shipping.postcode+`</span>
-                                            <i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.city ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_city">`+row.shipping.city+`</span>
-                                            <i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
-                                        </div>` : ``}
-
-                                        ${row.shipping.country ? `<div class="d-flex w-100 justify-content-between">
-                                            <span class="shipping_customer_country">`+row.shipping.country+`</span>
-                                        </div>` : ``}
+                                    <div class="modal-footer d-flex w-100 justify-content-between">
+                                        <span>Commande #${row.id}</span>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
                                     </div>
-                                </div>
-                                <input type="hidden" value="${row.id}" id="order_detail_id">
-                                <input type="hidden" value="${row.user_id}" id="order_attributed">
-
-                                <div class="modal-footer d-flex w-100 justify-content-between">
-                                    <span>Commande #${row.id}</span>
-                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
-                                </div>
+                                    </div>
                                 </div>
                             </div>
+                            <i onclick="showCustomerOrderDetail('`+row.id+`')" class="show_detail_customer bx bx-user"></i>
+                            <button onclick="deleteConfirm('`+row.id+`',`+row.from_dolibarr+`)" class="detail_products">
+                                <i class="show_detail bx bx-trash"></i>
+                            </button>
                         </div>
-                        <i onclick="showCustomerOrderDetail('`+row.id+`')" class="show_detail_customer bx bx-user"></i>
                         `;
                 }
 
@@ -785,7 +795,7 @@ function addProductOrderConfirm(){
 
             $("#addProductOrderModal").modal('hide')
         } else {
-            alert('Erreur !')
+            alert(JSON.parse(data).message ?? 'Erreur')
         }
         $(".loading_add").addClass('d-none')
         $(".add_modal").removeClass('d-none')
@@ -825,31 +835,33 @@ function show(id){
                
 
                 $(".modal_order_admin").remove()
-                $('body').append(`<div class="modal_order_admin modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                $('body').append(`<div class="modal_order_admin modal_dashboard modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-body detail_product_order">
                                 <div class="detail_product_order_head d-flex flex-column">
-                                    <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
+                                    <div class="p-1 mb-2 head_detail_product_order d-flex justify-content-between">
                                         <span class="column1 name_column">Article</span>
                                         <span class="column2 name_column">Coût</span>
                                         <span class="column3 name_column">Pick / Qté</span>
                                         <span class="column4 name_column">Total</span>
-                                        <span class="column5 name_column">Action</span>
                                     </div>	
 
                                     <div class="body_detail_product_order">
                                         ${order.map((element) =>
                                             `
-                                            <div class="${element.product_woocommerce_id}_${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                            <div class="${element.product_woocommerce_id}_${order[0].from_dolibarr ? element.product_dolibarr_id : element.line_item_id} ${order[0].from_dolibarr ? element.product_dolibarr_id : ''} ${element.pick == element.quantity ? 'pick' : ''} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
                                                 <div class="column11 d-flex align-items-center detail_product_name_order">
                                                     ${element.name != null ? (parseFloat(element.cost).toFixed(2) == 0 ? `<span><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span>`+element.name+`</span>`) : '<span class="text-danger"> (Produit manquant) Identifiant : '+element.product_woocommerce_id+'</span>'}
                                                 </div>
                                                 <span class="column22">${parseFloat(element.cost).toFixed(2)}</span>
                                                 <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
-                                                <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}</span>
-                                                ${!order[0].from_dolibarr ? '<span class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
-                                                '<span class="column55"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
+                                                <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}
+                                                
+                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
+                                                    '<span style="margin-left: 5px" class="column55_action"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
+                                                </span>
+                                               
                                                 
                                             </div>`
                                     ).join('')}
@@ -875,7 +887,7 @@ function show(id){
                                         </div>
                                         <div class="d-flex justify-content-between w-100">
                                             <button onclick="add_product('`+order[0].order_woocommerce_id+`')" style="width:-min-content" type="button" class="btn btn-dark px-5">Ajouter un produit</button>
-                                            <button style="width:-min-content" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+                                            <button style="margin-left: 10px" type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
                                         </div>
                                     </div>
                                 </div>
@@ -897,6 +909,88 @@ function show(id){
             alert('Aucune information pour cette commande !')
         }
     })	
+}
+
+
+function deleteConfirm(id, from_dolibarr){
+    $("#deleteOrder").remove()
+    $('body').append(`
+        <div class="modal fade modal_radius" id="deleteOrder" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
+                        <i style="color: black; z-index:10;cursor:pointer;" data-bs-dismiss="modal" class="font-20 bx bx-x"></i>
+                    </div>	
+                    <div class="modal-body">
+                        <h2 class="mt-2 text-center">Voulez-vous supprimer la commande `+id+` ?</h2>
+                        <div class="w-100 d-flex justify-content-center">
+                            <div class="d-flex justify-content-center w-75">
+                                <button onclick="deleteOrder('`+id+`',`+from_dolibarr+`)" type="button" class="btn btn-dark px-5 ">Oui</button>
+                                <button data-bs-dismiss="modal" style="margin-left: 10px" type="button" class="btn btn-dark px-5 ">Non</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `)
+
+    $('#deleteOrder').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#deleteOrder").modal('show');
+}
+
+function deleteOrder(id, from_dolibarr){
+
+    $("#deleteOrder").find('button').attr('disabled', true)
+
+    $.ajax({
+        url: "deleteOrder",
+        method: 'POST',
+        data: {_token: $('input[name=_token]').val(), order_id: id,from_dolibarr: from_dolibarr}
+    }).done(function(data) {
+        $("#deleteOrder").find('button').attr('disabled', false)
+        $("#deleteOrder").modal('hide');
+
+        if(JSON.parse(data).success){
+            $(".wrapper").append(`
+                <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                    <div class=" text-white">La commande `+id+` a bien été supprimée</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `)
+
+            
+            var table = $('#example').DataTable();
+            var order_progress = 0
+            var attribution = 0
+
+            // Pour recharger les données du DataTable en utilisant AJAX
+            table.ajax.reload(function(data){
+                data.orders.map((element) => {
+                    if (element.user_id != null && element.user_id != 0) {
+                        attribution = attribution + 1;
+                    }
+                    if (element.status == "processing" || element.status == "waiting_validate" || element.status == "waiting_to_validate" || element.status == "order-new-distrib" || element.status == "en-attente-de-pai") {
+                        order_progress = order_progress + 1;
+                    }
+                });
+
+
+                $(".number_order_pending").children().remove()
+                $(".number_order_pending").append('<span>'+data.orders.length+' dont <span id="number_attribution">'+attribution+'</span> attribuée(s) - '+order_progress+' à préparer</span>')
+            });
+        } else {
+            $(".wrapper").append(`
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                    <div class=" text-white">Oops, une erreur est survenue !</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `)
+        }
+    });
 }
 
 // Show detail billing and shipping order
@@ -996,7 +1090,6 @@ function deleteProductOrderDolibarrConfirm(){
         data: {_token: $('input[name=_token]').val(), order_id: order_id, quantity_to_delete: quantity_to_delete, quantity:quantity, product_dolibarr_id: product_dolibarr_id}
     }).done(function(data) {
         if(JSON.parse(data).success){
-
             if(quantity_to_delete >= quantity){
                 $("#order_"+ref_order).find('.'+product_dolibarr_id).fadeOut()
                 $("#order_"+ref_order).find('.'+product_dolibarr_id).remove()

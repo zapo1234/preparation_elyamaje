@@ -534,7 +534,11 @@
                                             @else
                                                 <td data-key="qte_act" data-value="{{$value["qte_act"]}}" id="{{$value["product_id"]}}_qte_act">{{$value["entrepot_a_alimenter"]}} ({{$value["qte_act"]}})</td>
                                             @endif
+
                                             <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">{{$value["qte_optimale"]}}</td>
+
+                                            {{-- <td data-key="qte_optimale" data-value="{{$value["qte_optimale"]}}" id="{{$value["product_id"]}}_qte_optimale">1</td> --}}
+
 
 
 
@@ -1001,7 +1005,15 @@
 
     "drawCallback": function(settings) {
         $('#entrepot_source, #entrepot_destination').prop('disabled', true);
-    }
+    },
+
+    "columnDefs": [
+    {
+        "targets": [3], // cible la quatrième colonne
+        "visible": false, // la rend invisible
+        "searchable": false // la rend non recherchable
+    },
+    ]
 
     });
 
@@ -1148,8 +1160,6 @@
                 'X-CSRF-TOKEN': csrfToken
             },                       
             success: function(response) {
-
-                console.log(tabProduitReassort1);
 
                 if (response.response == true) {
 
