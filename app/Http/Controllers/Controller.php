@@ -325,6 +325,8 @@ class Controller extends BaseController
 
     function getVieuxSplay (){
 
+     
+
         // $donneesSession = session()->all();
         // dd($donneesSession);
 
@@ -345,6 +347,9 @@ class Controller extends BaseController
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
       //  $data_reassortaa = DB::table('hist_reassort')->groupBy('identifiant_reassort')->get()->toArray();
+
+
+      
 
         $hist_reassort = DB::table('hist_reassort')->get()->toArray();
 
@@ -378,15 +383,17 @@ class Controller extends BaseController
 
         $wh_id_name = array();
 
+        // dd($listWarehouses);
     
         foreach ($listWarehouses as $key => $value) {
            foreach ($value as $k => $val) {
+            
             if ($k == "id") {
-                $wh_id_name[$val] = $value["libelle"];
+                $wh_id_name[$val] = $value["label"];
+
             }
            }
         }
-    //    dump($wh_id_name);
 
         // dump($listWarehouses);
        //  dd($data_reassort);
@@ -501,7 +508,6 @@ class Controller extends BaseController
         // on libère de la mémoire
         unset($all_products);
 
-        // dd($users);
 
         return view('admin.supply',
             [
