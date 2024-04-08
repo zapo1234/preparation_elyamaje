@@ -159,15 +159,15 @@
                                                             @if ($listWarehouse["id"] == "6")
                                                                 @if (isset($entrepot_source))
                                                                     @if ($listWarehouse["id"] == $entrepot_source)
-                                                                        <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                                                        <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["label"]}}</option>
                                                                     @else
-                                                                        <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                                        <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["label"]}}</option>
                                                                     @endif 
                                                                 @else  
-                                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["label"]}}</option>
                                                                 @endif
                                                             @else  
-                                                                {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
+                                                                {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["label"]}}</option> --}}
                                                             @endif
                                                         @endforeach
                                                 </select>
@@ -186,15 +186,15 @@
                                                         @if ($listWarehouse["id"] == "1" || $listWarehouse["id"] == "11" || $listWarehouse["id"] == "15")
                                                             @if (isset($entrepot_destination))
                                                                 @if ($listWarehouse["id"] == $entrepot_destination)
-                                                                    <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["libelle"]}}</option>
+                                                                    <option value="{{$listWarehouse["id"]}}" selected>{{$listWarehouse["label"]}}</option>
                                                                 @else
-                                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                                    <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["label"]}}</option>
                                                                 @endif
                                                             @else  
-                                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["libelle"]}}</option>
+                                                                <option value="{{$listWarehouse["id"]}}">{{$listWarehouse["label"]}}</option>
                                                             @endif
                                                         @else  
-                                                            {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["libelle"]}}</option> --}}
+                                                            {{-- <option value="{{$listWarehouse["id"]}}" disabled>{{$listWarehouse["label"]}}</option> --}}
                                                         @endif
                                                         
                                                     @endforeach

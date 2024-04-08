@@ -22,6 +22,7 @@ class PdoDolibarr
         $this->dbname = $dbname;
         $this->user = $user;
         $this->password = $password;
+
         $this->pdo = new \PDO("mysql:host=$host;dbname=$dbname", $user, $password);
     }
 
