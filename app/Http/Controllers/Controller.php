@@ -389,7 +389,7 @@ class Controller extends BaseController
            foreach ($value as $k => $val) {
             
             if ($k == "id") {
-                $wh_id_name[$val] = $value["label"];
+                $wh_id_name[$val] = $value["label"]; //4444
 
             }
            }
