@@ -125,12 +125,23 @@ class TiersRepository implements TiersInterface
                 );
 
              // recuperer les données api dolibar copie projet tranfer x.
+
+              // recuperer le dernier id => socid du tiers dans dolibarr.
+              $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
+                "sortfield" => "t.rowid", 
+                "sortorder" => "DESC", 
+                "limit" => "250", 
+                 "mode" => "1",
+                 )
+                  ), true);
               
-           $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
-             $lists = json_decode($listinvoice,true);
+               //$listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", $produitParam);
+              // $lists = json_decode($listinvoice,true);
+
+              $lists = $clientSearch;
 
 
-            $data_ids = array('3087');
+             $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
              // recupérer les données essentiel
              $array_tiers = $this->getallsocid();
