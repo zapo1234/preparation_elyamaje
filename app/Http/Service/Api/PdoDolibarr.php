@@ -407,8 +407,8 @@ class PdoDolibarr
                 }
             }
 
-            dump($dataStock[4882]);
-            dd($dataStock[6241]);
+            // dump($dataStock[4882]);
+            // dd($dataStock[6241]);
 
             return $dataStock;
 
