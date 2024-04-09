@@ -366,6 +366,60 @@ class PdoDolibarr
         }
     }
 
+    function getAllStockProduct(){
+
+        try {
+
+            // dd($this->password);
+            // $this->host = $host;
+            // $this->dbname = $dbname;
+            // $this->user = $user;
+            // $this->password = $password;
+
+
+            $dataStock = array();
+
+            $sql = 'SELECT ps.*, e.ref AS warehouse
+            FROM llxyq_product_stock ps
+            INNER JOIN llxyq_entrepot e ON ps.fk_entrepot = e.rowid';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+            foreach ($res as $key => $value) {
+
+                $warehouse = utf8_encode($value["warehouse"]);
+
+                if (!isset($dataStock[$value["fk_product"]])) {
+                    $dataStock[$value["fk_product"]] []= [
+                        "warehouse" => $warehouse,
+                        "stock" => $value["reel"],
+                    ];
+                }else {
+
+                 array_push($dataStock[$value["fk_product"]],[
+                    "warehouse" => $warehouse,
+                    "stock" => $value["reel"],
+                 ]);
+                }
+            }
+
+            // dd($dataStock[4874]);
+
+            return $dataStock;
+
+        } catch (\Throwable $th) {
+
+            dd($th);
+
+        }
+
+        
+
+    }
+
 }
 
 

@@ -1563,6 +1563,40 @@ class Controller extends BaseController
 
         $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
         $all_products = json_decode($all_products,true); 
+
+
+
+
+
+
+
+        // avec la mise à jpurs il faut aller chercher les stocks des produits manuellement (warehouse_array_list)
+
+        // on récupère la liste des produit et leurs stock d'alerte 
+        $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+        // $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),"mamo9937_doli54","mamo9937_dolib54","]14]1pSxvS");
+
+      
+        // $id_entrepot_select = 1;
+        $allStocks = $pdoDolibarr->getAllStockProduct();
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
         $products_dolibarrs = array();
         array_push($products_dolibarrs,$all_products);
@@ -1571,6 +1605,21 @@ class Controller extends BaseController
 
         foreach ($products_dolibarrs as $elm => $element) {
             foreach ($element as $kkp => $product) {
+
+                // dump($allStocks);
+
+                // ajouter la clé warehouse_array_list pour chaque produit (info des stock de ce produit)
+                if (isset($allStocks[$product["id"]])) {
+
+                    // dd($allStocks[$product["id"]]);
+
+                    $products_dolibarrs[$elm][$kkp]["warehouse_array_list"][$product["id"]] = $allStocks[$product["id"]];
+
+                    // $product["warehouse_array_list"] = $allStocks[$product["id"]];
+
+                }else {
+                    $products_dolibarrs[$elm][$kkp]["warehouse_array_list"][$product["id"]] = [];
+                }
                 
                 $fk_product = $product["id"];
                 if ($fk_product) {
@@ -1607,8 +1656,11 @@ class Controller extends BaseController
         $products_dolibarrs_first_tr = array();
 
 
+
         foreach ($products_dolibarrs as $key => $value) {
             foreach ($value as $k => $val) {
+
+
 
                 $products_dolibarrs_first_tr[$val["id"]] = [
 
@@ -1853,9 +1905,10 @@ class Controller extends BaseController
             ]);
         }    
 
+
        foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
             foreach ($product_dolibarr as $k_p => $product) {
-                    
+
                 if ($product["warehouse_array_list"]) {
                 
                     foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
@@ -1882,6 +1935,8 @@ class Controller extends BaseController
                 }
             }
         }
+
+        // dd($products_dolibarrs[0][2]);
 
        
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
