@@ -859,12 +859,12 @@ class Controller extends BaseController
         }
 
         
-        dump($produitParam);
+        // dump($produitParam);
 
         $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
         $factures = json_decode($listinvoice,true); 
 
-        dd($factures);
+        // dd($factures);
 
             if (!isset($factures["error"])) {
             array_push($array_factures_total,$factures);
