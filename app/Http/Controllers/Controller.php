@@ -1308,7 +1308,7 @@ class Controller extends BaseController
                         "entrepot_source" => $entrepot_source,
                         "entrepot_destination" => $entrepot_destination,
                         "name_entrepot_a_alimenter" => "Tout les entrepots",
-                        "name_entrepot_a_destocker" => "Entrepôt Malpassé",
+                        "name_entrepot_a_destocker" => "Entrepot Malpasse",
                         "start_date_origin" => $start_date_origin,
                         "end_date_origin" => $end_date_origin,
                         "state" => true ,

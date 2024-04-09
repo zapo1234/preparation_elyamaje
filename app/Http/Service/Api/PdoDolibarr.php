@@ -370,7 +370,7 @@ class PdoDolibarr
 
         try {
 
-            // dd($this->password);
+            // dd($this->host);
             // $this->host = $host;
             // $this->dbname = $dbname;
             // $this->user = $user;
@@ -392,6 +392,7 @@ class PdoDolibarr
 
                 $warehouse = utf8_encode($value["warehouse"]);
 
+
                 if (!isset($dataStock[$value["fk_product"]])) {
                     $dataStock[$value["fk_product"]] []= [
                         "warehouse" => $warehouse,
@@ -406,7 +407,8 @@ class PdoDolibarr
                 }
             }
 
-            // dd($dataStock[4874]);
+            dump($dataStock[4882]);
+            dd($dataStock[6241]);
 
             return $dataStock;
 

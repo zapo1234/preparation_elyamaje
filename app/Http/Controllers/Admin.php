@@ -940,7 +940,7 @@ class Admin extends BaseController
                         //     dd($product["warehouse_array_list"][$product["id"]]);
                         // }
                         foreach ($product["warehouse_array_list"][$product["id"]] as $key => $value) {
-                            if ($value["warehouse"] == "Entrepôt Malpassé") {
+                            if ($value["warehouse"] == "Entrepot Malpasse") {
                                 if ($qte == 0) {
                                     $qte = $value["stock"];
                                 }
