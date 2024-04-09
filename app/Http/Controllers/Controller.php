@@ -338,10 +338,8 @@ class Controller extends BaseController
              
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
-        // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
 
         $apiUrl = env('KEY_API_URL');
-        // $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
 
 
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
@@ -860,9 +858,14 @@ class Controller extends BaseController
             $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d", strtotime("-1 days"))." 23:59:59'";
         }
 
+        
+        dump($produitParam);
 
         $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
         $factures = json_decode($listinvoice,true); 
+
+        dd($factures);
+
             if (!isset($factures["error"])) {
             array_push($array_factures_total,$factures);
         }
