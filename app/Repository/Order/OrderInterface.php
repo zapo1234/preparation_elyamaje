@@ -61,6 +61,8 @@ interface OrderInterface
    public function update($data, $order_id);
 
    public function delete($order_id);
+
+   public function insertOrderAndProducts($data_order, $data_product);
 }
 
 

@@ -835,7 +835,7 @@ class OrderRepository implements OrderInterface
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
-      'products.variation', 'products.ref', 'distributors.customer_id as is_distributor', 'users.name as preparateur')
+      'products.variation', 'products.ref', 'distributors.customer_id as is_distributor', 'users.name as preparateur', 'products_order.category', 'products_order.category_id')
       ->where('order_woocommerce_id', $order_id)
       ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
       ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
@@ -1152,6 +1152,24 @@ class OrderRepository implements OrderInterface
          DB::beginTransaction();
          $this->model::where('order_woocommerce_id', $order_id)->delete();
          DB::table('products_order')->where('order_id', $order_id)->delete();
+
+         // Validation et commit de la transaction
+         DB::commit();
+
+         return true;
+      } catch (\Exception $e) {
+         // En cas d'erreur, rollback de la transaction
+         DB::rollback();
+         return false;
+     }
+   }
+
+
+   public function insertOrderAndProducts($data_order, $data_product){
+      try {
+         DB::beginTransaction();
+         $this->model::insert($data_order);
+         DB::table('products_order')->insert($data_product);
 
          // Validation et commit de la transaction
          DB::commit();

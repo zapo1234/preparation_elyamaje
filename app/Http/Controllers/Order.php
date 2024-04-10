@@ -679,45 +679,45 @@ class Order extends BaseController
         // envoi des données pour créer des facture via api dolibar....
         try{
         
-               $this->factorder->TransferOrder($orders);
-               //$this->transfert->Transfertext($orders);
+          $this->factorder->TransferOrder($orders);
+          //$this->transfert->Transfertext($orders);
 
-            // Insert la commande dans histories
-            $data = [
-              'order_id' => $order_id,
-              'user_id' => Auth()->user()->id,
-              'status' => 'finished',
-              'poste' => Auth()->user()->poste,
-              'created_at' => date('Y-m-d H:i:s'),
-              'total_product' => isset($orders[0]['total_product']) ? $orders[0]['total_product'] : null
-            ];
+          // Insert la commande dans histories
+          $data = [
+            'order_id' => $order_id,
+            'user_id' => Auth()->user()->id,
+            'status' => 'finished',
+            'poste' => Auth()->user()->poste,
+            'created_at' => date('Y-m-d H:i:s'),
+            'total_product' => isset($orders[0]['total_product']) ? $orders[0]['total_product'] : null
+          ];
 
-            $this->history->save($data);
-           
-            if($from_dolibarr){
-              $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
-            } else {
+          $this->history->save($data);
+          
+          if($from_dolibarr){
+            $this->orderDolibarr->updateOneOrderStatus("finished", $order_id);
+          } else {
 
-              // Status différent selon type de commande
-              $status_finished = "lpc_ready_to_ship";
-              
-              if(isset($orders[0]['shipping_method'])){
-                if(str_contains($orders[0]['shipping_method'], 'chrono')){
-                  $status_finished = "chronopost-pret";
-                }
+            // Status différent selon type de commande
+            $status_finished = "lpc_ready_to_ship";
+            
+            if(isset($orders[0]['shipping_method'])){
+              if(str_contains($orders[0]['shipping_method'], 'chrono')){
+                $status_finished = "chronopost-pret";
               }
-
-              // Check if order distributor
-              if(isset($orders[0]['shipping_method_detail'])){
-                if(str_contains($orders[0]['shipping_method_detail'], 'Distributeur') && $orders[0]['is_distributor']){
-                  $status_finished = "commande-distribu";
-                }
-              }
-
-              // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
-              $this->order->updateOrdersById([$order_id], "finished");
-              $this->api->updateOrdersWoocommerce($status_finished, $order_id);
             }
+
+            // Check if order distributor
+            if(isset($orders[0]['shipping_method_detail'])){
+              if(str_contains($orders[0]['shipping_method_detail'], 'Distributeur') && $orders[0]['is_distributor']){
+                $status_finished = "commande-distribu";
+              }
+            }
+
+            // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
+            $this->order->updateOrdersById([$order_id], "finished");
+            $this->api->updateOrdersWoocommerce($status_finished, $order_id);
+          }
         } catch(Exception $e){
           $this->logError->insert(['order_id' => $order_id, 'message' => $e->getMessage()]);
           echo json_encode(['success' => false, 'message' => $e->getMessage()]);
@@ -1184,7 +1184,9 @@ class Order extends BaseController
 
     if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
-    } else if(strlen($order_id) == 10){
+
+      // dd($order);
+    } else if(strlen($order_id) == 10 && !str_contains($order_id, 'SAV')){
       $order = $this->reassort->getReassortById($order_id);
     } else {
       $order = $this->order->getOrderById($order_id);
@@ -1451,7 +1453,146 @@ class Order extends BaseController
     } catch(Exception $e){
       echo json_encode(['success' => false]);
     }
-  
+  }
+
+  public function returnOrder(Request $request){
+    
+    try{
+      $request->validate([
+        'order_id' => 'required',
+        'product_ids'  => 'required',
+        'quantity'  => 'required',
+        'total_without_tax'  => 'required',
+        'total_with_tax'  => 'required'
+      ]);
+
+      if(count($request->post('product_ids')) == 0){
+        return redirect()->back()->with('error',  "Veuillez sélectionner des produits à renvoyer !");
+      }
+
+      // Order details
+      $order = $this->order->getOrderByIdWithCustomer($request->post('order_id'));
+      $order = $this->woocommerce->transformArrayOrder($order);
+
+      $shipping_method_name = [
+        "lpc_sign" => "Colissimo avec signature",
+        "lpc_relay" => "Colissimo relais",
+        "lpc_expert" => "Colissimo Expert (4 à 6 jours ouvrés )",
+        "local_pickup" => "Retrait dans notre magasin à Marseille 13002",
+        "chronotoshopdirect" => "Chronopost - Livraison en relais Pickup",
+        "chronorelais" => "Livraison express en point relais",
+        "chrono13" => "Livraison express avant 13h",
+        "advanced_shipping" => "Retrait Distributeur Malpassé"
+      ];
+
+      $payment_method_name = [
+        "DONS" => "Don",
+        "stripe" => "Carte bancaire",
+        "payplug" => "Payer par carte bancaire",
+        "apple_pay" => "Payer avec Apple Pay",
+        "oney_x3_with_fees" => "Payer en 3x par carte bancaire avec Oney",
+        "oney_x4_with_fees" => "Payer en 4x par carte bancaire avec Oney",
+        "wc-scalapay-payin3" => "Scalapay - Pay in 3",
+        "wc-scalapay-payin4" => "Scalapay - Pay in 4",
+        "bacs" => "Virement bancaire",
+        "gift_card" => "Carte cadeau",
+        "american_express" => "Payer avec Amex",
+        "bancontact" => "Payer avec Bancontact"
+      ];
+
+      // Calculate tax order
+      $quantity = $request->post('quantity');
+      $product_ids = $request->post('product_ids');
+      $total_without_tax = $request->post('total_without_tax');
+      $total_with_tax = $request->post('total_with_tax');
+
+      $total_order_without_tax = 0;
+      $total_order_with_tax = 0;
+
+      foreach($request->post('product_ids') as $product_id){
+        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id] * $quantity[$product_id]));
+        $total_order_with_tax = $total_order_with_tax + (floatval($total_with_tax[$product_id] * $quantity[$product_id]));
+      }
+
+      $total_tax_order = $total_order_with_tax - $total_order_without_tax;
+
+      // Create new_order
+      $data_order = [
+        'order_woocommerce_id' => $request->post('order_id').'_SAV',
+        'coupons' => '',
+        'discount' => 0,
+        'discount_amount' => 0,
+        'customer_id' => $order[0]['customer_id'],
+        'billing_customer_first_name' => $request->post('billing_customer_first_name'),
+        'billing_customer_last_name' => $request->post('billing_customer_last_name'),
+        'billing_customer_company' => $request->post('billing_customer_company') ?? '',
+        'billing_customer_address_1' => $request->post('billing_customer_address_1'),
+        'billing_customer_address_2' => $request->post('billing_customer_address_2') ?? '',
+        'billing_customer_city' => $request->post('billing_customer_city'),
+        'billing_customer_state' => $request->post('billing_customer_state') ?? '',
+        'billing_customer_postcode' => $request->post('billing_customer_postcode'),
+        'billing_customer_country' => $request->post('billing_customer_country'),
+        'billing_customer_email' => $request->post('billing_customer_email'),
+        'billing_customer_phone' => $request->post('billing_customer_phone'),
+        'shipping_customer_first_name' => $request->post('shipping_customer_first_name'),
+        'shipping_customer_last_name' => $request->post('shipping_customer_last_name'),
+        'shipping_customer_company' => $request->post('shipping_customer_company') ?? '',
+        'shipping_customer_address_1' => $request->post('shipping_customer_address_1'),
+        'shipping_customer_address_2' => $request->post('shipping_customer_address_2') ?? '',
+        'shipping_customer_city' => $request->post('shipping_customer_city'),
+        'shipping_customer_state' => $request->post('shipping_customer_state') ?? '',
+        'shipping_customer_postcode' => $request->post('shipping_customer_postcode'),
+        'shipping_customer_country' => $request->post('shipping_customer_country'),
+        'shipping_customer_phone' => $request->post('shipping_customer_phone') ?? '',
+        'date' => date('Y-m-d H:i:s'), // Actual date
+        'total_tax_order' => $total_tax_order,
+        'total_order' => $total_order_with_tax,
+        'total_products' => count($product_ids),
+        'user_id' => 0,
+        'status' => 'processing',
+        'shipping_method' => $request->post('shipping_method') ?? "lpc_sign",
+        'product_code' => null,
+        'shipping_method_detail' => $request->post('shipping_method') ? $shipping_method_name[$request->post('shipping_method')] : "Colissimo avec signature",
+        'pick_up_location_id' => null,
+        'payment_method' => $request->post('payment_method'),
+        'payment_method_title' => $payment_method_name[$request->post('payment_method')],
+        'gift_card_amount' => 0,
+        'shipping_amount' => 0,
+      ];
+
+      // List of products to return
+      $data_product = [];
+      foreach($order[0]['line_items'] as $item){
+        if (in_array($item['product_id'], array_values($product_ids))) {
+          $total_product_with_tax = floatval($total_with_tax[$item['product_id']]) * intval($quantity[$item['product_id']]);
+          $total_product_without_tax = floatval($total_without_tax[$item['product_id']]) * intval($quantity[$item['product_id']]);
+          $total_tax = $total_product_with_tax - $total_product_without_tax;
+          $data_product[] = [
+            "order_id" => $request->post('order_id').'_SAV',
+            "product_woocommerce_id" => $item['product_id'],
+            "category" => $item['category'],
+            "category_id" => $item['category_id'],
+            "quantity" => intval($quantity[$item['product_id']]),
+            "cost" => floatval($total_without_tax[$item['product_id']]),
+            "subtotal_tax" => $total_tax,
+            "total_tax" => $total_tax,
+            "total_price" => floatval($total_without_tax[$item['product_id']]) * intval($quantity[$item['product_id']]),
+            "pick" => 0,
+            "line_item_id" => $request->post('order_id').''.time()
+          ];
+        }
+      }
+
+      $insert = $this->order->insertOrderAndProducts($data_order, $data_product);
+
+      if($insert){
+          return redirect()->back()->with('success', 'Commande '.$request->post('order_id').' relancée');
+      } else {
+        return redirect()->back()->with('error',  "Oops, une erreur est survenue !");
+      }
+    } catch(Exception $e){
+      return redirect()->back()->with('error',  "Oops, une erreur est survenue !");
+    }
   }
 
   // private function checkGiftCard($order){

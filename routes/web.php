@@ -220,6 +220,7 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/deleteOrderProductsDolibarr", [Order::class, "deleteOrderProductsDolibarr"])->name('deleteOrderProductsDolibarr');
     Route::post("/addOrderProducts", [Order::class, "addOrderProducts"])->name('addOrderProducts');
     Route::post("/closeDay", [Order::class, "closeDay"])->name('leader.closeDay');
+    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
    
     // CRUD Imprimantes
     Route::get("/printers", [Admin::class, "printers"])->name('printers');
@@ -232,21 +233,10 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     Route::post("/createReassort", [Controller::class, "createReassort"])->name('createReassort');
     Route::get('/alertStocks/{idEntrepot}/{Njour}', [Controller::class, 'alertStocks'])->name('alertStocks');
     Route::get('/listeAlerte', [Controller::class, 'listeAlerte'])->name('listeAlerte');
-    
     Route::get('/listeSupplierorders', [SupplierOrderController::class, 'listeSupplierorders'])->name('listeSupplierorders');
-
-
     Route::get('/deplacerFichier/{nomFichier}', [Controller::class, 'deplacerFichier'])->name('deplacerFichier');
     Route::post('/updateSessionByNotif', [Controller::class, 'updateSessionByNotif'])->name('updateSessionByNotif');
-
-    
     Route::post("/updateStockAlertAndStockDesire", [Controller::class, "updateStockAlertAndStockDesire"])->name('updateStockAlertAndStockDesire');
-
-
-    
-
-    
-
 
     // Missing Labels
     Route::get("/missingLabels", [Admin::class, "missingLabels"])->name('missingLabels');
@@ -267,8 +257,6 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     // Lyes
     Route::post('/initialQtyLot', [Admin::class, 'initialQtyLot'])->name('initialQtyLot');
     Route::post('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
-
-    
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -296,8 +284,12 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
     Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
-    Route::get("/leaderHistoryOrder", [Order::class, "leaderHistoryOrder"])->name('leader.historyOrder');
     Route::get("/ordersDetails", [Order::class, "ordersDetails"])->name('ordersDetails');
+    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
+    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
+
+    Route::post("/returnOrder", [Order::class, "returnOrder"])->name('returnOrder'); 
+
 });
 
 // ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
@@ -305,11 +297,6 @@ Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
     Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
 });
 
-// ADMIN - CHEF D'ÉQUIPE & SAV
-Route::group(['middleware' => ['auth', 'role:1,6']], function () {
-    Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
-    Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
-});
 
 // Vendeuse
 Route::group(['middleware' =>  ['auth', 'role:8']], function () {

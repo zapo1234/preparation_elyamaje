@@ -24,6 +24,13 @@
 					</div>
 
 
+						@if($errors->any())
+							<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+								@foreach ($errors->all() as $error)
+									<div class="text-white">{{ $error }}</div>
+								@endforeach
+							</div>
+						@endif
 						@if(session()->has('success'))
 							<div class="alert alert-success border-0 bg-success alert-dismissible fade show">
 								<div class="text-white">{{ session()->get('success') }}</div>
@@ -120,11 +127,23 @@
 															<button class="show_detail_button show_detail" onclick="show_detail_customer('{{ $histo['order_id'] }}')">
 																<i class="font-primary font-20 bx bx-user"></i>
 															</button>	
+														@else 
+															<button class="show_detail_button show_detail show_detail_disabled">
+																<i class="font-primary font-20 bx bx-user"></i>
+															</button>	
 														@endif
 
-														@if(strlen($histo['order_id']) != 10)
-															<button class="show_detail_button show_detail" onclick="deleteConfirm('{{ $histo['order_id'] }}')">
-																<i class="font-primary font-20 bx bx-trash"></i>
+														@if(Auth()->user()->hasRole(1) || Auth()->user()->hasRole(4))
+															@if(strlen($histo['order_id']) != 10)
+																<button class="show_detail_button show_detail" onclick="deleteConfirm('{{ $histo['order_id'] }}')">
+																	<i class="font-primary font-20 bx bx-trash"></i>
+																</button>	
+															@endif
+														@endif
+
+														@if(Auth()->user()->hasRole(1) || Auth()->user()->hasRole(6))
+															<button class="show_detail_button show_detail" onclick="returnOrder('{{ $histo['order_id'] }}')">
+																<i class="font-primary font-20 bx bx-refresh"></i>
 															</button>	
 														@endif
 													</td>
