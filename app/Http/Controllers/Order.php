@@ -1519,7 +1519,7 @@ class Order extends BaseController
       // List of products to return
       $data_product = [];
       $total_weight = 0;
-      foreach($order[0]['line_items'] as $item){
+      foreach($order[0]['line_items'] as $key => $item){
         if (in_array($item['product_id'], array_values($product_ids))) {
           $total_weight = floatval($total_weight + $item['weight']);
           $total_product_with_tax = floatval($total_with_tax[$item['product_id']]) * intval($quantity[$item['product_id']]);
@@ -1536,7 +1536,7 @@ class Order extends BaseController
             "total_tax" => $total_tax,
             "total_price" => floatval($total_without_tax[$item['product_id']]) * intval($quantity[$item['product_id']]),
             "pick" => 0,
-            "line_item_id" => $request->post('order_id').''.time()
+            "line_item_id" => $request->post('order_id').''.$key.''.time()
           ];
         }
       }
