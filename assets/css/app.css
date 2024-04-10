@@ -371,6 +371,11 @@ a {
 	margin-left: 250px !important;
 }
 
+.sidebar.close{
+	overflow-y: auto;
+	scrollbar-width: none
+}
+
 .wrapper.toggled .page-footer {
 	left: 70px;
 }
@@ -8444,6 +8449,7 @@ select option[disabled] {
   }
   
   .sidebar .profile-details{
+	z-index: 999;
 	position: fixed;
 	bottom: 0;
 	width: 258px;
