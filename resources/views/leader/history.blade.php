@@ -123,7 +123,7 @@
 														<button class="show_detail_button show_detail" onclick="show('{{ $histo['order_id'] }}')">
 															<i class="font-primary font-20 bx bx-cube"></i>
 														</button>	
-														@if(strlen($histo['order_id']) != 10)
+														@if(strlen($histo['order_id']) != 10 || str_contains($histo['order_id'], 'SAV'))
 															<button class="show_detail_button show_detail" onclick="show_detail_customer('{{ $histo['order_id'] }}')">
 																<i class="font-primary font-20 bx bx-user"></i>
 															</button>	
@@ -134,7 +134,7 @@
 														@endif
 
 														@if(Auth()->user()->hasRole(1) || Auth()->user()->hasRole(4))
-															@if(strlen($histo['order_id']) != 10)
+															@if(strlen($histo['order_id']) != 10 || str_contains($histo['order_id'], 'SAV'))
 																<button class="show_detail_button show_detail" onclick="deleteConfirm('{{ $histo['order_id'] }}')">
 																	<i class="font-primary font-20 bx bx-trash"></i>
 																</button>	
