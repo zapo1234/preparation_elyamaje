@@ -372,8 +372,8 @@ a {
 }
 
 .sidebar.close{
-	overflow-y: auto;
-	scrollbar-width: none
+	/* overflow-y: auto;
+	scrollbar-width: */
 }
 
 .wrapper.toggled .page-footer {
@@ -8449,7 +8449,6 @@ select option[disabled] {
   }
   
   .sidebar .profile-details{
-	z-index: 999;
 	position: fixed;
 	bottom: 0;
 	width: 258px;
