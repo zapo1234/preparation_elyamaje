@@ -628,7 +628,7 @@ class ReassortRepository implements ReassortInterface
             }
 
             // on récupère les quantité des produits dans dolibarr (on va se baser sur ça pour calculer les coffret)
-            $entrepot_cible = "Entrepôt Malpassé";
+            $entrepot_cible = "Entrepot Malpasse";
             $all_product =  $this->getProductDolibarByApi($ids_unitaire,$entrepot_cible);
             // mettre la valeur de 'product_id_doli' comme clée dans notre résultat
             $all_product = array_column($all_product, null, 'id_product');

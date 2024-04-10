@@ -325,6 +325,8 @@ class Controller extends BaseController
 
     function getVieuxSplay (){
 
+     
+
         // $donneesSession = session()->all();
         // dd($donneesSession);
 
@@ -336,15 +338,16 @@ class Controller extends BaseController
              
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
-        // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
 
         $apiUrl = env('KEY_API_URL');
-        // $apiUrl ="https://www.poserp.elyamaje.com/api/index.php/";
 
 
         $listWarehouses = $this->api->CallAPI("GET", $apiKey, $apiUrl."warehouses");
         $listWarehouses = json_decode($listWarehouses, true);
       //  $data_reassortaa = DB::table('hist_reassort')->groupBy('identifiant_reassort')->get()->toArray();
+
+
+      
 
         $hist_reassort = DB::table('hist_reassort')->get()->toArray();
 
@@ -378,15 +381,17 @@ class Controller extends BaseController
 
         $wh_id_name = array();
 
+        // dd($listWarehouses);
     
         foreach ($listWarehouses as $key => $value) {
            foreach ($value as $k => $val) {
+            
             if ($k == "id") {
-                $wh_id_name[$val] = $value["libelle"];
+                $wh_id_name[$val] = $value["label"]; //4444
+
             }
            }
         }
-    //    dump($wh_id_name);
 
         // dump($listWarehouses);
        //  dd($data_reassort);
@@ -501,7 +506,6 @@ class Controller extends BaseController
         // on libère de la mémoire
         unset($all_products);
 
-        // dd($users);
 
         return view('admin.supply',
             [
@@ -854,9 +858,14 @@ class Controller extends BaseController
             $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d", strtotime("-1 days"))." 23:59:59'";
         }
 
+        
+        // dump($produitParam);
 
         $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
         $factures = json_decode($listinvoice,true); 
+
+        // dd($factures);
+
             if (!isset($factures["error"])) {
             array_push($array_factures_total,$factures);
         }
@@ -1128,9 +1137,10 @@ class Controller extends BaseController
 
     function verifieFormatNameFichier($nomDuFichier) {
         // Expression régulière pour vérifier le format du nom de fichier
-        $pattern = '/^\d{2}-\d{2}-\d{2}_(reassort|alerte)\.csv$/';
+        $pattern = '/^\d{2}-\d{2}-\d{2}_alerte.*\.csv$/';
     
         // Vérifie si le nom du fichier correspond au format attendu
+
         if (preg_match($pattern, $nomDuFichier)) {
             return true;
         } else {
@@ -1301,7 +1311,7 @@ class Controller extends BaseController
                         "entrepot_source" => $entrepot_source,
                         "entrepot_destination" => $entrepot_destination,
                         "name_entrepot_a_alimenter" => "Tout les entrepots",
-                        "name_entrepot_a_destocker" => "Entrepôt Malpassé",
+                        "name_entrepot_a_destocker" => "Entrepot Malpasse",
                         "start_date_origin" => $start_date_origin,
                         "end_date_origin" => $end_date_origin,
                         "state" => true ,
@@ -1556,6 +1566,40 @@ class Controller extends BaseController
 
         $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
         $all_products = json_decode($all_products,true); 
+
+
+
+
+
+
+
+        // avec la mise à jpurs il faut aller chercher les stocks des produits manuellement (warehouse_array_list)
+
+        // on récupère la liste des produit et leurs stock d'alerte 
+        $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+        // $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),"mamo9937_doli54","mamo9937_dolib54","]14]1pSxvS");
+
+      
+        // $id_entrepot_select = 1;
+        $allStocks = $pdoDolibarr->getAllStockProduct();
+       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
         $products_dolibarrs = array();
         array_push($products_dolibarrs,$all_products);
@@ -1564,6 +1608,21 @@ class Controller extends BaseController
 
         foreach ($products_dolibarrs as $elm => $element) {
             foreach ($element as $kkp => $product) {
+
+                // dump($allStocks);
+
+                // ajouter la clé warehouse_array_list pour chaque produit (info des stock de ce produit)
+                if (isset($allStocks[$product["id"]])) {
+
+                    // dd($allStocks[$product["id"]]);
+
+                    $products_dolibarrs[$elm][$kkp]["warehouse_array_list"][$product["id"]] = $allStocks[$product["id"]];
+
+                    // $product["warehouse_array_list"] = $allStocks[$product["id"]];
+
+                }else {
+                    $products_dolibarrs[$elm][$kkp]["warehouse_array_list"][$product["id"]] = [];
+                }
                 
                 $fk_product = $product["id"];
                 if ($fk_product) {
@@ -1600,8 +1659,11 @@ class Controller extends BaseController
         $products_dolibarrs_first_tr = array();
 
 
+
         foreach ($products_dolibarrs as $key => $value) {
             foreach ($value as $k => $val) {
+
+
 
                 $products_dolibarrs_first_tr[$val["id"]] = [
 
@@ -1846,9 +1908,10 @@ class Controller extends BaseController
             ]);
         }    
 
+
        foreach ($products_dolibarrs as $key_pr_do => $product_dolibarr) {
             foreach ($product_dolibarr as $k_p => $product) {
-                    
+
                 if ($product["warehouse_array_list"]) {
                 
                     foreach ($product["warehouse_array_list"] as $k_whp => $war_h_liste) {
@@ -1875,6 +1938,8 @@ class Controller extends BaseController
                 }
             }
         }
+
+        // dd($products_dolibarrs[0][2]);
 
        
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
@@ -1929,15 +1994,25 @@ class Controller extends BaseController
 
             if (isset($vente_by_product[$kproduct])) {
 
+
+             
+              
+
                 // on compare les vente par semaine et la quantité dont on dispose dans l'entrepot
 
                 if ($by_file) {
+
+                    
                     
                     // dd($infos_stock_min);
 
                     // depuis un fichier reassort automatique
 
                     if ($by_reassort_auto == true) {
+
+                        $qte_act = $stock_in_war["stock"]?$stock_in_war["stock"]:0;
+                        $demande = ceil($vente_by_product[$kproduct]["qty"]);
+
                         array_push($products_reassort,[
                             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
                             "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
@@ -1945,17 +2020,42 @@ class Controller extends BaseController
                             "libelle" => $stock_in_war["libelle"],
                             "product_id" => $kproduct,
                             "barcode" => $stock_in_war["barcode"],
-                            "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                            "qte_act" => $qte_act,
                             "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
-                            "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+                            "demande" => $demande,
 
-                            "qte_optimale" => ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*2 : 0,
+                            "qte_optimale" => $qte_act + $demande , // ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*0.65 : 0,
     
                             "fk_cat" => $stock_in_war["fk_cat"],
                             "label_cat" => $stock_in_war["label_cat"],
                             "fk_parent" => $stock_in_war["fk_parent"],
     
                         ]);
+
+                        // if ($kproduct == 5262) {
+                        //     dump($infos_stock_min[$kproduct]);
+                        //     dump(
+                        //         [
+                        //             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
+                        //             "name_entrepot_a_destocker" => $name_entrepot_a_destocker,
+                        //             "qte_en_stock_in_source" => $qte_en_stock_in_source,
+                        //             "libelle" => $stock_in_war["libelle"],
+                        //             "product_id" => $kproduct,
+                        //             "barcode" => $stock_in_war["barcode"],
+                        //             "qte_act" => $stock_in_war["stock"]?$stock_in_war["stock"]:0,
+                        //             "price" => $stock_in_war["price"]?$stock_in_war["price"]:"0",
+                        //             "demande" => ceil($vente_by_product[$kproduct]["qty"]),
+        
+                        //             "qte_optimale" => ($infos_stock_min[$kproduct])? $infos_stock_min[$kproduct]["desiredstock"]*0.65 : 0,
+            
+                        //             "fk_cat" => $stock_in_war["fk_cat"],
+                        //             "label_cat" => $stock_in_war["label_cat"],
+                        //             "fk_parent" => $stock_in_war["fk_parent"],
+            
+                        //         ]
+                        //     );
+                        // }
+
                     }else {
                         array_push($products_reassort,[
                             "entrepot_a_alimenter" =>$name_entrepot_a_alimenter,
@@ -2048,6 +2148,12 @@ class Controller extends BaseController
 
     //    dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
+        // foreach ($products_reassort as $key => $value) {
+        //     if ($value["product_id"] == 5262) {
+        //         dump($value);
+        //     }
+        // }
+
         return view('admin.supply',
             [
                 "listWarehouses" => $listWarehouses,
@@ -2119,7 +2225,7 @@ class Controller extends BaseController
                             'type' => 1, 
                             'movementcode' => NULL, 
                             'movementlabel' => 'Transfere via preparation', 
-                            'price' => $lineR["price"], 
+                            'price' => isset($lineR["price"])? $lineR["price"]:0, 
                             'datem' => date('Y-m-d'), 
                             'dlc' => date('Y-m-d'), 
                             'dluo' => date('Y-m-d'), 
@@ -2140,7 +2246,7 @@ class Controller extends BaseController
                             'type' => 0, 
                             'movementcode' => NULL,
                             'movementlabel' => 'Transfere via preparation',
-                            'price' => $lineR["price"],
+                            'price' => isset($lineR["price"])? $lineR["price"]:0,
                             'datem' => date('Y-m-d'),
                             'dlc' => date('Y-m-d'),
                             'dluo' => date('Y-m-d'),
@@ -2158,12 +2264,14 @@ class Controller extends BaseController
                 }
 
                 if ($incrementation != $decrementation) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation];
                 }
 
                 try {
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
+
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
 
