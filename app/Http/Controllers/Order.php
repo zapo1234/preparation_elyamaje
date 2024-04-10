@@ -1516,54 +1516,12 @@ class Order extends BaseController
 
       $total_tax_order = $total_order_with_tax - $total_order_without_tax;
 
-      // Create new_order
-      $data_order = [
-        'order_woocommerce_id' => $request->post('order_id').'_SAV',
-        'coupons' => '',
-        'discount' => 0,
-        'discount_amount' => 0,
-        'customer_id' => $order[0]['customer_id'],
-        'billing_customer_first_name' => $request->post('billing_customer_first_name'),
-        'billing_customer_last_name' => $request->post('billing_customer_last_name'),
-        'billing_customer_company' => $request->post('billing_customer_company') ?? '',
-        'billing_customer_address_1' => $request->post('billing_customer_address_1'),
-        'billing_customer_address_2' => $request->post('billing_customer_address_2') ?? '',
-        'billing_customer_city' => $request->post('billing_customer_city'),
-        'billing_customer_state' => $request->post('billing_customer_state') ?? '',
-        'billing_customer_postcode' => $request->post('billing_customer_postcode'),
-        'billing_customer_country' => $request->post('billing_customer_country'),
-        'billing_customer_email' => $request->post('billing_customer_email'),
-        'billing_customer_phone' => $request->post('billing_customer_phone'),
-        'shipping_customer_first_name' => $request->post('shipping_customer_first_name'),
-        'shipping_customer_last_name' => $request->post('shipping_customer_last_name'),
-        'shipping_customer_company' => $request->post('shipping_customer_company') ?? '',
-        'shipping_customer_address_1' => $request->post('shipping_customer_address_1'),
-        'shipping_customer_address_2' => $request->post('shipping_customer_address_2') ?? '',
-        'shipping_customer_city' => $request->post('shipping_customer_city'),
-        'shipping_customer_state' => $request->post('shipping_customer_state') ?? '',
-        'shipping_customer_postcode' => $request->post('shipping_customer_postcode'),
-        'shipping_customer_country' => $request->post('shipping_customer_country'),
-        'shipping_customer_phone' => $request->post('shipping_customer_phone') ?? '',
-        'date' => date('Y-m-d H:i:s'), // Actual date
-        'total_tax_order' => $total_tax_order,
-        'total_order' => $total_order_with_tax,
-        'total_products' => count($product_ids),
-        'user_id' => 0,
-        'status' => 'processing',
-        'shipping_method' => $request->post('shipping_method') ?? "lpc_sign",
-        'product_code' => null,
-        'shipping_method_detail' => $request->post('shipping_method') ? $shipping_method_name[$request->post('shipping_method')] : "Colissimo avec signature",
-        'pick_up_location_id' => null,
-        'payment_method' => $request->post('payment_method'),
-        'payment_method_title' => $payment_method_name[$request->post('payment_method')],
-        'gift_card_amount' => 0,
-        'shipping_amount' => 0,
-      ];
-
       // List of products to return
       $data_product = [];
+      $total_weight = 0;
       foreach($order[0]['line_items'] as $item){
         if (in_array($item['product_id'], array_values($product_ids))) {
+          $total_weight = floatval($total_weight + $item['weight']);
           $total_product_with_tax = floatval($total_with_tax[$item['product_id']]) * intval($quantity[$item['product_id']]);
           $total_product_without_tax = floatval($total_without_tax[$item['product_id']]) * intval($quantity[$item['product_id']]);
           $total_tax = $total_product_with_tax - $total_product_without_tax;
@@ -1583,6 +1541,53 @@ class Order extends BaseController
         }
       }
 
+        $calculate_shipping_amount = $this->calculate_shipping_amount($request->post('shipping_method'), floatval($total_weight), floatval($total_order_with_tax));
+
+         // Create new_order
+         $data_order = [
+          'order_woocommerce_id' => $request->post('order_id').'_SAV',
+          'coupons' => '',
+          'discount' => 0,
+          'discount_amount' => 0,
+          'customer_id' => $order[0]['customer_id'],
+          'billing_customer_first_name' => $request->post('billing_customer_first_name'),
+          'billing_customer_last_name' => $request->post('billing_customer_last_name'),
+          'billing_customer_company' => $request->post('billing_customer_company') ?? '',
+          'billing_customer_address_1' => $request->post('billing_customer_address_1'),
+          'billing_customer_address_2' => $request->post('billing_customer_address_2') ?? '',
+          'billing_customer_city' => $request->post('billing_customer_city'),
+          'billing_customer_state' => $request->post('billing_customer_state') ?? '',
+          'billing_customer_postcode' => $request->post('billing_customer_postcode'),
+          'billing_customer_country' => $request->post('billing_customer_country'),
+          'billing_customer_email' => $request->post('billing_customer_email'),
+          'billing_customer_phone' => $request->post('billing_customer_phone'),
+          'shipping_customer_first_name' => $request->post('shipping_customer_first_name'),
+          'shipping_customer_last_name' => $request->post('shipping_customer_last_name'),
+          'shipping_customer_company' => $request->post('shipping_customer_company') ?? '',
+          'shipping_customer_address_1' => $request->post('shipping_customer_address_1'),
+          'shipping_customer_address_2' => $request->post('shipping_customer_address_2') ?? '',
+          'shipping_customer_city' => $request->post('shipping_customer_city'),
+          'shipping_customer_state' => $request->post('shipping_customer_state') ?? '',
+          'shipping_customer_postcode' => $request->post('shipping_customer_postcode'),
+          'shipping_customer_country' => $request->post('shipping_customer_country'),
+          'shipping_customer_phone' => $request->post('shipping_customer_phone') ?? '',
+          'date' => date('Y-m-d H:i:s'), // Actual date
+          'total_tax_order' => $total_tax_order,
+          'total_order' => floatval($total_order_with_tax + $calculate_shipping_amount),
+          'total_products' => count($product_ids),
+          'user_id' => 0,
+          'status' => 'processing',
+          'shipping_method' => $request->post('shipping_method') ?? "lpc_sign",
+          'product_code' => null,
+          'shipping_method_detail' => $request->post('shipping_method') ? $shipping_method_name[$request->post('shipping_method')] : "Colissimo avec signature",
+          'pick_up_location_id' => null,
+          'payment_method' => $request->post('payment_method'),
+          'payment_method_title' => $payment_method_name[$request->post('payment_method')],
+          'gift_card_amount' => 0,
+          'shipping_amount' => $calculate_shipping_amount,
+        ];
+
+
       $insert = $this->order->insertOrderAndProducts($data_order, $data_product);
 
       if($insert){
@@ -1595,39 +1600,67 @@ class Order extends BaseController
     }
   }
 
-  // private function checkGiftCard($order){
+  private function calculate_shipping_amount($shipping_method, $total_weight, $total_order_with_tax){
 
-  //   $item_gift_card = 0;
-  //   foreach($order['line_items'] as $keyOrder => $or){
-  //     if(str_contains($or['name'], 'Carte Cadeau')){
-  //       $item_gift_card = $item_gift_card + 1;
-  //     }
-  //   }
+    if($shipping_method == "chrono13"){
+      if($total_weight > 0 && $total_weight < 1){
+        return 6;
+      }
+      if($total_weight > 1 && $total_weight < 2){
+        return 6;
+      }
+      return 4;
+    } else if($shipping_method == "lpc_sign"){
+      $shippingCost = 0;
+      
+      if ($total_weight >= 0 && $total_weight <= 6.999 && $total_order_with_tax >= 100) {
+          $shippingCost = 0; // Expédition gratuite pour les paniers de plus de 100€ et poids <= 6.999kg
+      } elseif ($total_weight >= 7 && $total_weight <= 100.000 && $total_order_with_tax >= 4200) {
+          $shippingCost = 0; // Expédition gratuite pour les paniers de plus de 4200€ et poids entre 7kg et 100kg
+      } elseif ($total_weight >= 0.00 && $total_weight <= 0.250) {
+          $shippingCost = 7; // Coût d'expédition pour les colis jusqu'à 0.25kg
+      } elseif ($total_weight > 0.250 && $total_weight <= 0.500) {
+          $shippingCost = 7.5; // Coût d'expédition pour les colis entre 0.25kg et 0.5kg
+      } elseif ($total_weight > 0.500 && $total_weight <= 0.750) {
+          $shippingCost = 8; // Coût d'expédition pour les colis entre 0.5kg et 0.75kg
+      }
+      return $shippingCost;
+    } else if($shipping_method == "lpc_expert"){
+        $shippingCost = 0;
+  
+        if ($total_weight >= 0 && $total_weight <= 15 && $total_order_with_tax >= 150 && $total_order_with_tax <= 2000) {
+          $shippingCost = 0; // Expédition gratuite pour certaines conditions de poids et de prix du panier
+        } elseif ($total_weight >= 0 && $total_weight <= 0.5 && $total_order_with_tax <= 1000) {
+            $shippingCost = 8.5; // Coût d'expédition pour les colis jusqu'à 0.5kg
+        } elseif ($total_weight > 0.5 && $total_weight <= 1 && $total_order_with_tax <= 1000) {
+            $shippingCost = 10; // Coût d'expédition pour les colis entre 0.5kg et 1kg
+        } elseif ($total_weight > 1 && $total_weight <= 2 && $total_order_with_tax <= 1000) {
+            $shippingCost = 13.6; // Coût d'expédition pour les colis entre 1kg et 2kg
+        } elseif ($total_weight > 2 && $total_weight <= 3 && $total_order_with_tax <= 1000) {
+            $shippingCost = 17.2; // Coût d'expédition pour les colis entre 2kg et 3kg
+        }
+      
+        return $shippingCost;
+    } else if($shipping_method == "lpc_relay"){
+        $shippingCost = 0;
 
-  //   if($item_gift_card == count($order['line_items'])){
+        if ($total_weight >= 0 && $total_weight <= 10 && $total_order_with_tax >= 100 && $total_order_with_tax <= 1000) {
+            $shippingCost = 0.0; // Expédition gratuite pour certains critères de poids et de prix du panier
+        } elseif ($total_weight >= 0 && $total_weight <= 0.25 && $total_order_with_tax <= 1000) {
+            $shippingCost = 5; // Coût d'expédition pour les colis jusqu'à 0.25kg
+        } elseif ($total_weight > 0.25 && $total_weight <= 0.50 && $total_order_with_tax <= 1000) {
+            $shippingCost = 5.5; // Coût d'expédition pour les colis entre 0.25kg et 0.5kg
+        } elseif ($total_weight > 0.50 && $total_weight <= 0.75 && $total_order_with_tax <= 1000) {
+            $shippingCost = 6; // Coût d'expédition pour les colis entre 0.5kg et 0.75kg
+        } elseif ($total_weight > 0.75 && $total_weight <= 1.00 && $total_order_with_tax <= 1000) {
+            $shippingCost = 6.5; // Coût d'expédition pour les colis entre 0.75kg et 1kg
+        }
 
-  //     // Facturer ici la commande contenant uniquement une ou des carte cadeaux
-  //     $order['coupons'] = '';
-  //     $order['preparateur'] = 'Aucun';
-  //     $order['emballeur'] = 'Aucun';
-  //     $order['order_woocommerce_id'] = $order['id'];
-  //     $order['order_id'] =  $order['id'];
-  //     $order['total_order'] =  $order['total'];
-  //     $order['total_tax_order'] =  $order['total_tax'];
-  //     $order['date'] =  $order['date_created'];
-  //     $order['gift_card_amount'] = 0;
-  //     $order['shipping_amount'] = 0;
-  //     $order['shipping_method_detail'] = "";
-  //     $order['discount_amount'] = 0;
-
-
-
-  //     // dd($order);
-
-  //     // On facture directement
-  //     $this->factorder->Transferorder([$order]);
-  //   }
-  // }
+        return $shippingCost;
+    } else {
+      return 0;
+    }
+  }
 }
 
 
