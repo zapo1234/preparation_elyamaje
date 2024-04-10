@@ -8899,6 +8899,10 @@ select option[disabled] {
     font-family: inherit;
     transition: 0.5s ease-in;
   }
+
+  .return_order_form_multy_step  .step_form{
+	transition: 0.9s ease-in !important;
+  }
   .container_multy_step .step_form input:not(.form-check-input) {
 	width: 100%;
 	padding: 10px 5px;
