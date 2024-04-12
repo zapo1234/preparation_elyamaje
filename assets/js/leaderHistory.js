@@ -599,6 +599,7 @@ function returnOrder(id){
                                     <i style="color: black; z-index:10;cursor:pointer;" data-bs-dismiss="modal" class="close_modal_return_order font-20 bx bx-x"></i>
                                 </div>
                                 <div class="modal-body">
+                                    <h5 class="text-center">Renvoie d'une commande</h5>
                                     <form class="h-100" method="POST" action="returnOrder">
                                     <input type="hidden" name="_token" value="`+$('input[name=_token]').val()+`">
                                     <input type="hidden" name="order_id" value="`+order[0].order_woocommerce_id+`">
