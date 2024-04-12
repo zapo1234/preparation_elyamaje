@@ -5247,7 +5247,8 @@ textarea::placeholder {
 	.mobile_icon_menu{
 		display: block;
 		position: absolute;
-		left: 78px !important;
+		background-color: white;
+		/* left: 78px !important; */
 	}
 
 	.close .mobile_icon_menu{
@@ -8532,6 +8533,11 @@ select option[disabled] {
   @media (max-width: 420px) {
 	.sidebar.close .nav-links li .sub-menu{
 	  display: none;
+	}
+
+	.mobile_icon_menu{
+		left: 78px !important;
+		background-color: white;
 	}
 
 	.sidebar{
