@@ -371,11 +371,6 @@ a {
 	margin-left: 250px !important;
 }
 
-.sidebar.close{
-	/* overflow-y: auto;
-	scrollbar-width: */
-}
-
 .wrapper.toggled .page-footer {
 	left: 70px;
 }
@@ -9510,6 +9505,4 @@ select option[disabled] {
 
 
 	}
-
-
 }
