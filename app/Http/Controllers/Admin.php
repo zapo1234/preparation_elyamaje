@@ -548,7 +548,6 @@ class Admin extends BaseController
             $data['port'] = $update_port;
         }
         
-        // Assure-toi de ne pas inclure la valeur null ici
         if ($update_user_id !== null) {
             $data['user_id'] = $update_user_id;
         }
