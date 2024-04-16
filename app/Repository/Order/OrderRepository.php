@@ -837,10 +837,10 @@ class OrderRepository implements OrderInterface
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
       'products.variation', 'products.ref', 'distributors.customer_id as is_distributor', 'users.name as preparateur', 'products_order.category', 'products_order.category_id')
       ->where('order_woocommerce_id', $order_id)
-      ->join('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
-      ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
-      ->join('users', 'orders.user_id', '=', 'users.id')
-      ->leftJoin('distributors', 'distributors.customer_id', '=', 'orders.customer_id')
+      ->Leftjoin('products_order', 'products_order.order_id', '=', 'orders.order_woocommerce_id')
+      ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+      ->Leftjoin('users', 'orders.user_id', '=', 'users.id')
+      ->Leftjoin('distributors', 'distributors.customer_id', '=', 'orders.customer_id')
       ->get()
       ->toArray();
    }
