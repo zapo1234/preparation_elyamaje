@@ -9512,3 +9512,9 @@ select option[disabled] {
 
 	}
 }
+
+
+.disabled_field{
+	background-color: #e9ecef;
+    opacity: 1;
+}

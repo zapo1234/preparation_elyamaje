@@ -98,7 +98,13 @@
 																		</div>
 																		<div class="col-md-12">
 																			<label for="update_address_ip" class="form-label">Adresse IP*</label>
-																			<input value="{{ $printer->address_ip }}" required name="update_address_ip" type="text" class="form-control" id="update_address_ip">
+
+																			@if(Auth()->user()->hasRole(1))
+																				<input value="{{ $printer->address_ip }}" required name="update_address_ip" type="text" class="form-control" id="update_address_ip">
+																			@else 
+																				<span class="disabled_field form-control">{{ $printer->address_ip }}</span>
+																			@endif
+																			
 																		</div>
 																		<div class="col-md-12">
 																			<label for="update_port" class="form-label">Port (9100 par défaut)</label>
