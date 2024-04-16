@@ -865,7 +865,7 @@ class  Construncstocks
       
                           if ($prod["warehouse_array_list"]) {
                               foreach ($prod["warehouse_array_list"][$prod["id"]] as $key => $value) {
-                                  if ($value["warehouse"] == "Entrepôt Malpassé") {
+                                  if ($value["warehouse"] == "Entrepot Malpasse") {
                                       if ($qte == 0) {
                                           $qte = $value["stock"];
                                       }

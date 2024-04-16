@@ -909,14 +909,12 @@ class Admin extends BaseController
             $products_dolibarrs_save = array();
 
             // $apiUrl = env('KEY_API_URL');
-            // $apiKey = env('KEY_API_DOLIBAR');
+            $apiKey = env('KEY_API_DOLIBAR');
 
-            // $apiKey = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd'
-            // $apiUrl = 'https://www.poserp.elyamaje.com/api/index.php/'
+        
 
 
             $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
-            $apiKey = "VA05eq187SAKUm4h4I4x8sofCQ7jsHQd";
 
 
             $produitParamProduct = array(
@@ -940,7 +938,7 @@ class Admin extends BaseController
                         //     dd($product["warehouse_array_list"][$product["id"]]);
                         // }
                         foreach ($product["warehouse_array_list"][$product["id"]] as $key => $value) {
-                            if ($value["warehouse"] == "Entrepôt Malpassé") {
+                            if ($value["warehouse"] == "Entrepot Malpasse") {
                                 if ($qte == 0) {
                                     $qte = $value["stock"];
                                 }

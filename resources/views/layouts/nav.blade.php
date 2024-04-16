@@ -355,7 +355,6 @@
                     </div>
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Historiques</a></li>
-                        <li><a href="{{ url('leaderHistoryOrder') }}">Préparées</a></li>
                         <li><a href="{{ url('leaderHistory') }}">Commandes</a></li>
                     </ul>
                 </li>
