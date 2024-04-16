@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            dump($orders);
+          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -223,8 +223,6 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
-                  
-                   dd($listproduct);
 
                   if(count($listproduct)==0){
                     $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'la facture n\'a pas été crée signalé au service informatique !']);
