@@ -195,7 +195,7 @@ class OrderRepository implements OrderInterface
    }
 
    // Without products
-   public function getAllOrdersNotFinished(){
+   public function getAllOrders(){
       return $this->model->select('orders.order_woocommerce_id')->get();
    }
 
