@@ -22,7 +22,7 @@ interface OrderInterface
 
    public function getAllOrdersByUsersNotFinished();
 
-   public function getAllOrders();
+   public function getAllOrdersNotFinished();
 
    public function getUsersWithOrder();
 

@@ -1368,7 +1368,7 @@ class Order extends BaseController
 
       // Check if already in database
       $ids = [];
-      $ordersAlreadyInDatabase = $this->order->getAllOrders()->toArray();
+      $ordersAlreadyInDatabase = $this->order->getAllOrdersNotFinished()->toArray();
       foreach ($ordersAlreadyInDatabase as $element) {
         if (isset($element['order_woocommerce_id'])) {
             $ids[] = $element['order_woocommerce_id'];
