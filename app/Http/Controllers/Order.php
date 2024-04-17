@@ -1334,7 +1334,6 @@ class Order extends BaseController
 
   public function getOrders($token)
   {
-   
     if($token == "BcVTcO9aqWdtP0ZVvujOJXQxjGT9wtRGG3iGZt8ZvwsZ58kMeJAM9TJlUumqb23C"){
       $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
       $per_page = 100;

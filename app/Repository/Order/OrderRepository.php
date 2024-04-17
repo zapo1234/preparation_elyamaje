@@ -196,7 +196,9 @@ class OrderRepository implements OrderInterface
 
    // Without products
    public function getAllOrdersNotFinished(){
-      return $this->model->select('orders.order_woocommerce_id')->get();
+      // Get - 2 months
+      $date = date('Y-m-d H:i:s', strtotime('-2 months'));
+      return $this->model->select('orders.order_woocommerce_id')->where('date', '>', $date)->get();
    }
 
    public function getUsersWithOrder(){
