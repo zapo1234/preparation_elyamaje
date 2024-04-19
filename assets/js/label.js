@@ -171,7 +171,6 @@ $(".generate_label_button").on('click', function(){
                         total_weight = parseFloat(total_weight) + (parseFloat(weight_product) * value.quantity);
                     }
 
-
                     innerHtml +=
                         `<div class="${value.quantity - value.total_quantity == 0 ? 'disabled_text' : '' } line_items_label d-flex w-100 align-items-center justify-content-between">
                             <span style="width: 50px">

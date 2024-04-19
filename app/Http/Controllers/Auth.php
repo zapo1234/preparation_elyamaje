@@ -109,7 +109,7 @@ class Auth extends BaseController
     }
 
     public function resetPassword(Request $request){
-     
+    
         // Check if email exist in database
         $email = $request->get('email');
         $user_email = $this->user->getUserByEmail($email);
@@ -117,19 +117,18 @@ class Auth extends BaseController
         if(count($user_email) == 0){
             return redirect()->route('authentication-forgot-password')->with('error','Aucun compte n\'est associé à cette adresse email');
         } else {
+            $token = Str::random(64);
+            $this->user->insertToken($email, $token);
 
-                $token = Str::random(64);
-                $this->user->insertToken($email, $token);
+            // Envoie de l'email
+            Mail::send('email.resetpassword', ['token' => $token, 'email' =>$email], function($message) use($email){
+                $message->to($email);
+                $message->from('no-reply@elyamaje.com');
+                $message->subject('Reinitialiser votre mot de passe !');
+            });
 
-                // Envoie de l'email
-                Mail::send('email.resetpassword', ['token' => $token, 'email' =>$email], function($message) use($email){
-                    $message->to($email);
-                    $message->from('no-reply@elyamaje.com');
-                    $message->subject('Reinitialiser votre mot de passe !');
-                });
-
-                return redirect()->back()->with('success','Un mail a été envoyé à cette adresse !');
-         }
+            return redirect()->back()->with('success','Un mail a été envoyé à cette adresse !');
+        }
     }
 
     public function resetLinkPage(Request $request){

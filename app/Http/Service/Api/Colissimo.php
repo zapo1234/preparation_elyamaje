@@ -49,7 +49,8 @@ class Colissimo
                             'orderNumber ' => $order_id,
                             'commercialName' => config('app.companyName') /*$order['shipping']['last_name'].' '.$order['shipping']['first_name']*/,
                             'returnTypeChoice' => 3, // Ne pas retourner
-                            'totalAmount' => $insuranceValue
+                            'transportationAmount' => floatval($order['shipping_amount'] * 100),
+                            'totalAmount' => floatval($order['shipping_amount'] * 100),
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis

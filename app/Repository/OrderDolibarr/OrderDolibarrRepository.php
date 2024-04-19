@@ -340,7 +340,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                } else if($key == "origin"){
                   $query->where("labels.".$key , $filter);
                } else if($key == "ref_order"){
-                  if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO')){
+                  if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO') && !str_contains($filter, 'SAV')){
                      $query->where("labels.tracking_number", $filter);
                   } else {
                      $query->where("orders_doli.".$key."", $filter);

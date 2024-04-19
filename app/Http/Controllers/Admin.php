@@ -529,18 +529,28 @@ class Admin extends BaseController
     }
 
     public function updatePrinter(Request $request){
+        $data = [];
         $update_name = $request->post('update_name');
         $update_address_ip  = $request->post('update_address_ip');
         $update_port  = $request->post('update_port') ?? 9100;
         $update_user_id = $request->post('update_user_id');
         $printer_id = $request->post('printer_id');
-
-        $data = [
-            'name' => $update_name,
-            'address_ip' => $update_address_ip,
-            'port' => $update_port,
-            'user_id' => $update_user_id
-        ];
+        
+        if ($update_name !== null) {
+            $data['name'] = $update_name;
+        }
+        
+        if ($update_address_ip !== null) {
+            $data['address_ip'] = $update_address_ip;
+        }
+        
+        if ($update_port !== null) {
+            $data['port'] = $update_port;
+        }
+        
+        if ($update_user_id !== null) {
+            $data['user_id'] = $update_user_id;
+        }
 
         try{
             $this->printer->updatePrinterAttributionByUser($update_user_id, null); 

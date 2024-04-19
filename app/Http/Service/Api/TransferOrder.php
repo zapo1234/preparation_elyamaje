@@ -181,7 +181,7 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-            
+          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -223,7 +223,6 @@ class TransferOrder
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
-
 
                   if(count($listproduct)==0){
                     $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'la facture n\'a pas été crée signalé au service informatique !']);
@@ -268,7 +267,7 @@ class TransferOrder
                         $data_phone[$val['socid']] = $val['phone'];
                      }
                      
-                      // recuperer id customer du client et créer un tableau associative.
+                      // recuperer id customer du client et créer un tableau associative veant de woocomerce.
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
@@ -368,7 +367,7 @@ class TransferOrder
                                 $socid = $fk_tiers_phone;
                              }
                             
-                             // construire le tableau
+                             // recupérer le socid à partir de id_customer de woocomerce.
                              if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
                                $socid = $fk_tier;
                                 // recupérer dans la bdd en fonction du socid 

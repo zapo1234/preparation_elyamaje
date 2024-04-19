@@ -4,7 +4,88 @@ $("#history_by_date").on('click', function(){
 
 $(document).ready(function() {
 
-    // Initialisez votre DataTable
+
+    //============== FORM RETURN ORDER SAV ==============
+    let currectActive = 1;
+
+    //============== Next Form===============
+    function nextOne() {
+        const form1 = $("#return_form1");
+        const form2 = $("#return_form2");
+       
+        form1.css('left', '-3000px');
+        form2.css('left', '0px');
+        //next slide
+        increamentNumber();
+        // update progress bar
+        update();
+       
+    }
+
+    //=============== Back One==================
+    function backOne() {
+        const form1 = $("#return_form1");
+        const form2 = $("#return_form2");
+
+        form1.css('left', '0px');
+        form2.css('left', '3000px');
+        // back slide
+        decreametNumber();
+        // update progress bar
+        update();
+    }
+
+    //============= Progress update====================
+    function update() {
+        const progressEl = $("#progress");
+        const circles = $(".circle");
+
+        circles.each(function(indx, circle) {
+            if (indx < currectActive) {
+                $(circle).addClass("active_progress");
+            } else {
+                $(circle).removeClass("active_progress");
+            }
+            // get all of active classes
+            const active_progress = $(".active_progress");
+            progressEl.css('width', ((active_progress.length - 1) / (circles.length - 1)) * 100 + "%");
+        });
+    }
+
+    //================== Increament Number===============
+    function increamentNumber() {
+        const circles = $(".circle");
+
+        // next progress number
+        currectActive++;
+        if (currectActive > circles.length) {
+            currectActive = circles.length;
+        }
+    }
+
+    //================ Decreament Number=================
+    function decreametNumber() {
+        currectActive--;
+        if (currectActive < 1) {
+            currectActive = 1;
+        }
+    }
+
+
+    $('body').on('click', '#next1', function () {
+        if($(".checkbox_label ").is(':checked')){
+            nextOne()
+        } else {
+            $(".checkbox_label ").css('border', '1px solid red')
+        }
+    })
+
+    $('body').on('click', '#back1', function () {
+        backOne()
+    })
+
+    //============== FORM RETURN ORDER SAV ==============
+
     $('#example').DataTable({
         "ordering": false,
         "initComplete": function(settings, json) {
@@ -182,130 +263,130 @@ function show_detail_customer(id){
                 $('body').append(`<div class="modal_detail_customer modal fade" id="order_detail_customer_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                        <div class="modal-body">
-                            <div class="mt-2 d-flex flex-column w-100 customer_billing">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <span class="customer_detail_title badge bg-dark">Facturation</span>
-                                    ${order[0].shipping_method_detail.includes("Livraison express") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                            <div class="modal-body">
+                                <div class="mt-2 d-flex flex-column w-100 customer_billing">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <span class="customer_detail_title badge bg-dark">Facturation</span>
+                                        ${order[0].shipping_method_detail.includes("Livraison express") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                                    </div>
+                                    
+
+                                    ${order[0].billing_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_first_name">`+order[0].billing_customer_first_name+`</span>
+                                        <i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_last_name">`+order[0].billing_customer_last_name+`</span>
+                                        <i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_email ? `<div class="d-flex w-100 justify-content-between">
+                                        <div class="d-flex w-100">
+                                            <i class="bx bx-envelope"></i>
+                                            <span class="billing_customer_email">`+order[0].billing_customer_email+`</span>
+                                        </div>
+                                        <i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+                                    
+                                    ${order[0].billing_customer_phone ? `<div class="d-flex w-100 justify-content-between">
+                                        <div class="d-flex w-100">
+                                            <i class="bx bx-phone"></i>
+                                            <span class="billing_customer_phone">`+order[0].billing_customer_phone+`</span>
+                                        </div>
+                                        <i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_comapny ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_comapny">`+order[0].billing_customer_comapny+`</span>
+                                        <i data-edit="billing_customer_comapny" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_address_1">`+order[0].billing_customer_address_1+`</span>
+                                        <i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_address_2">`+order[0].billing_customer_address_2+`</span>
+                                        <i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_state ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_state">`+order[0].billing_customer_state+`</span>
+                                        <i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_postcode">`+order[0].billing_customer_postcode+`</span>
+                                        <i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_city ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_city">`+order[0].billing_customer_city+`</span>
+                                        <i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
+
+                                    ${order[0].billing_customer_country ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="billing_customer_country">`+order[0].billing_customer_country+`</span>
+                                    </div>` : ``}
                                 </div>
-                                
 
-                                ${order[0].billing_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_first_name">`+order[0].billing_customer_first_name+`</span>
-                                    <i data-edit="billing_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                <div class="mt-3 d-flex flex-column w-100 customer_shipping">
+                                    <span class="customer_detail_title badge bg-dark">Expédition</span>
 
-                                ${order[0].billing_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_last_name">`+order[0].billing_customer_last_name+`</span>
-                                    <i data-edit="billing_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_first_name">`+order[0].shipping_customer_first_name+`</span>
+                                        <i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_email ? `<div class="d-flex w-100 justify-content-between">
-                                    <div class="d-flex w-100">
-                                        <i class="bx bx-envelope"></i>
-                                        <span class="billing_customer_email">`+order[0].billing_customer_email+`</span>
-                                    </div>
-                                    <i data-edit="billing_customer_email" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-                                
-                                ${order[0].billing_customer_phone ? `<div class="d-flex w-100 justify-content-between">
-                                    <div class="d-flex w-100">
-                                        <i class="bx bx-phone"></i>
-                                        <span class="billing_customer_phone">`+order[0].billing_customer_phone+`</span>
-                                    </div>
-                                    <i data-edit="billing_customer_phone" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_last_name">`+order[0].shipping_customer_last_name+`</span>
+                                        <i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_comapny ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_comapny">`+order[0].billing_customer_comapny+`</span>
-                                    <i data-edit="billing_customer_comapny" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_company ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_company">`+order[0].shipping_customer_company+`</span>
+                                        <i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_address_1">`+order[0].billing_customer_address_1+`</span>
-                                    <i data-edit="billing_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_address_1">`+order[0].shipping_customer_address_1+`</span>
+                                        <i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_address_2">`+order[0].billing_customer_address_2+`</span>
-                                    <i data-edit="billing_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_address_2">`+order[0].shipping_customer_address_2+`</span>
+                                        <i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_state ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_state">`+order[0].billing_customer_state+`</span>
-                                    <i data-edit="billing_customer_state" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_state ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_state">`+order[0].shipping_customer_state+`</span>
+                                        <i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_postcode">`+order[0].billing_customer_postcode+`</span>
-                                    <i data-edit="billing_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_postcode">`+order[0].shipping_customer_postcode+`</span>
+                                        <i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_city ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_city">`+order[0].billing_customer_city+`</span>
-                                    <i data-edit="billing_customer_city" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_city ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_city">`+order[0].shipping_customer_city+`</span>
+                                        <i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
+                                    </div>` : ``}
 
-                                ${order[0].billing_customer_country ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="billing_customer_country">`+order[0].billing_customer_country+`</span>
-                                </div>` : ``}
+                                    ${order[0].shipping_customer_country ? `<div class="d-flex w-100 justify-content-between">
+                                        <span class="shipping_customer_country">`+order[0].shipping_customer_country+`</span>
+                                    </div>` : ``}
+                                </div>
                             </div>
+                            <input type="hidden" value="${order[0].order_woocommerce_id}" id="order_detail_id">
+                            <input type="hidden" value="${order[0].user_id}" id="order_attributed">
 
-                            <div class="mt-3 d-flex flex-column w-100 customer_shipping">
-                                <span class="customer_detail_title badge bg-dark">Expédition</span>
-
-                                ${order[0].shipping_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_first_name">`+order[0].shipping_customer_first_name+`</span>
-                                    <i data-edit="shipping_customer_first_name" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_last_name">`+order[0].shipping_customer_last_name+`</span>
-                                    <i data-edit="shipping_customer_last_name" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_company ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_company">`+order[0].shipping_customer_company+`</span>
-                                    <i data-edit="shipping_customer_company" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_address_1">`+order[0].shipping_customer_address_1+`</span>
-                                    <i data-edit="shipping_customer_address_1" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_address_2">`+order[0].shipping_customer_address_2+`</span>
-                                    <i data-edit="shipping_customer_address_2" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_state ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_state">`+order[0].shipping_customer_state+`</span>
-                                    <i data-edit="shipping_customer_state" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_postcode">`+order[0].shipping_customer_postcode+`</span>
-                                    <i data-edit="shipping_customer_postcode" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_city ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_city">`+order[0].shipping_customer_city+`</span>
-                                    <i data-edit="shipping_customer_city" class="edit_detail_order bx bx-pencil"></i>
-                                </div>` : ``}
-
-                                ${order[0].shipping_customer_country ? `<div class="d-flex w-100 justify-content-between">
-                                    <span class="shipping_customer_country">`+order[0].shipping_customer_country+`</span>
-                                </div>` : ``}
+                            <div class="modal-footer d-flex w-100 justify-content-between">
+                                <span>Commande #${order[0].order_woocommerce_id}</span>
+                                <button type="button" class="close_show_order btn btn-primary" data-bs-dismiss="modal">Fermer</button>
                             </div>
-                        </div>
-                        <input type="hidden" value="${order[0].order_woocommerce_id}" id="order_detail_id">
-                        <input type="hidden" value="${order[0].user_id}" id="order_attributed">
-
-                        <div class="modal-footer d-flex w-100 justify-content-between">
-                            <span>Commande #${order[0].order_woocommerce_id}</span>
-                            <button type="button" class="close_show_order btn btn-primary" data-bs-dismiss="modal">Fermer</button>
-                        </div>
                         </div>
                     </div>
                 </div>`)
@@ -376,6 +457,21 @@ $('body').on('click', '.valid_edit_detail_order', function() {
     })
 })
 
+// Close modal return order
+$('body').on('click', '.close_modal_return_order', function() {
+    $("#example").css('opacity', '1')
+    $(".loading_show_detail_order ").addClass('d-none')
+    $(".show_detail").attr('disabled', false)
+})
+
+// Check or uncheck all products return order
+$('body').on('click', '.check_all_products', function() {
+    if($(this).prop('checked')){
+        $(".checkbox_label").prop('checked', true)
+    } else {
+        $(".checkbox_label").prop('checked', false)
+    }
+})
 
 
 function deleteConfirm(id){
@@ -441,4 +537,281 @@ function deleteOrder(id){
         }
     })
 }
-    
+
+function returnOrder(id){
+    $("#example").css('opacity', '0.3')
+    $(".loading_show_detail_order ").removeClass('d-none')
+    $(".show_detail").attr('disabled', true)
+
+    $.ajax({
+        url: "getDetailsOrder",
+        method: 'GET',
+        data: {order_id: id}
+    }).done(function(data) {
+        $("#example").css('opacity', '1')
+        $(".loading_show_detail_order ").addClass('d-none')
+
+        if(JSON.parse(data).success){
+        
+            var order = JSON.parse(data).order
+            if(order.length > 0){
+
+                var list_paiement = {
+                    "DONS" : "Don",
+                    "stripe" : "Stripe",
+                    "payplug" : "Payplug",
+                    "apple_pay" : "Apple Pay",
+                    "oney_x3_with_fees" : "Onex x3",
+                    "oney_x4_with_fees" : "Oney x4",
+                    "wc-scalapay-payin3" : "Scalapay x3",
+                    "wc-scalapay-payin4" : "Scalapay x4",
+                    "bacs" : "Virement bancaire",
+                    "gift_card" : "Carte cadeau",
+                    "bancontact" : "Payer avec Bancontact",
+                    "american_express" : "Payer avec Amex",
+                }
+
+                var shipping_method = {
+                    "lpc_sign" : "Colissimo avec signature",
+                    "lpc_relay" : "Colissimo relais",
+                    "lpc_expert" : "Colissimo Expert (4 à 6 jours ouvrés )",
+                    "local_pickup" : "Retrait dans notre magasin à Marseille 13002",
+                    "chronotoshopdirect" : "Chronopost - Livraison en relais Pickup",
+                    "chronorelais" : "Livraison express en point relais",
+                    "chrono13" : "Livraison express avant 13h",
+                    "advanced_shipping" : "Retrait Distributeur Malpassé",
+                }
+
+                var disabled_pickup_relay = true;
+
+                if(order[0].shipping_method.includes("relais") || order[0].shipping_method.includes("relay") || order[0].shipping_method.includes("toshop")){
+                    disabled_pickup_relay = false;
+                }
+                // Dolibarr et Woocommerce
+
+                $(".modal_order_admin").remove()
+
+                $('body').append(`
+                    <div class="modal_return_order modal_order_admin modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div style="padding: 10px; position: absolute;" class="d-flex w-100 justify-content-end">
+                                    <i style="color: black; z-index:10;cursor:pointer;" data-bs-dismiss="modal" class="close_modal_return_order font-20 bx bx-x"></i>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 class="text-center">Renvoie d'une commande</h5>
+                                    <form class="h-100" method="POST" action="returnOrder">
+                                    <input type="hidden" name="_token" value="`+$('input[name=_token]').val()+`">
+                                    <input type="hidden" name="order_id" value="`+order[0].order_woocommerce_id+`">
+
+                                        <div class="return_order_form_multy_step container_multy_step d-flex justify-content-center h-100">
+                                            <div class="step_form" id="return_form1">
+                                                <div class="detail_product_order_head d-flex flex-column">
+                                                    <div class="p-1 mb-2 head_detail_product_order d-flex w-100 justify-content-between">
+                                                        <span class="column1 name_column">
+                                                            <input checked class="check_all_products checkbox_label form-check-input" type="checkbox" aria-label="Checkbox for product order">	
+                                                            <span style="margin-left: 50px">Article</span>
+                                                        </span>
+                                                        <span class="column2 name_column">Coût</span>
+                                                        <span class="column3 name_column">Qté</span>
+                                                        <span class="column4 name_column">Total</span>
+                                                    </div>	
+                                                    <div class="body_detail_product_order">
+                                                            ${order.map((element) => `
+                                                                <div class="${element.product_id}  ${element.variation_id} ${order[0].id}_${element.id} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                                                    <div class="column11 d-flex align-items-center detail_product_name_order_to_return">
+                                                                        <span>
+                                                                            <input name="product_ids[]" checked class="checkbox_label form-check-input" type="checkbox" value="${element.product_woocommerce_id}" aria-label="Checkbox for product order">	
+                                                                        </span>
+                                                                        ${element.image ? `<image style="margin-right: 25px; margin-left: 25px" src="`+element.image+`" width="65px" height="65px">` : ``}
+                                                                        ${element.price == 0 ? `<span class="product_name_return_order"><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span class="product_name_return_order">`+element.name+`</span>`}
+                                                                    </div>
+                                                                    ${!order[0].transfers ? '<input class="input_product_return_order column22" type="text" name="total_without_tax['+element.product_woocommerce_id+']" value="'+parseFloat(element.cost).toFixed(2)+'">' 
+                                                                    : '<input class="input_product_return_order column22" type="text"  name="details['+element.product_woocommerce_id+']" value="'+parseFloat(element.price_ttc).toFixed(2)+'">'}
+                                                                    <span class="column33 quantity">
+                                                                        <input class="quantity_product_label" min="1" max="${element.quantity}" value="${element.quantity}" name="quantity[${element.product_woocommerce_id}]" type="number">
+                                                                    </span>
+                                                                    ${!order[0].transfers ? '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price * element.quantity).toFixed(2)+'">' 
+                                                                    : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
+                                                                </div>`
+                                                        ).join('')}
+                                                    </div>
+                                                </div>
+                                                <div class="btn_box">
+                                                    <button class="btn btn-dark px-5" id="next1" type="button">Suivant</button>
+                                                </div>
+                                            </div>
+                                            <div class="step_form" id="return_form2">
+                                                <h3 class="text-dark">Expédition</h3>
+                                                <div class="detail_return_order_shipping">
+                                                    <div class="mt-2 d-flex flex-column w-100 detail_customer_return_order customer_billing">
+
+                                                        <div class="mb-3 d-flex w-100 justify-content-between">
+                                                            <span style="height:22px" class="customer_detail_title badge bg-dark">Expédition et paiement</span>
+                                                        </div>
+
+                                                        <div class="mb-3 d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Méthode de paiement : </span>
+                                                            <select name="payment_method" style="width: 250px" class="custom_input">
+                                                                ${Object.keys(list_paiement).map((element) => 
+                                                                    order[0].payment_method == element ? `<option selected value="`+element+`">`+list_paiement[element]+`</option>` : `<option value="`+element+`">`+list_paiement[element]+`</option>`
+                                                                )}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-3 d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Méthode d'expédition : </span>
+                                                            <select name="shipping_method" style="width: 250px" class="custom_input">
+                                                                ${Object.keys(shipping_method).map((element) => 
+                                                                    order[0].shipping_method == element ? `<option ${disabled_pickup_relay && (element.includes("relais") || element.includes("relay") || element.includes("toshop")) ? "disabled" : ""} selected value="`+element+`">`+shipping_method[element]+`</option>` 
+                                                                    : `<option ${disabled_pickup_relay && (element.includes("relais") || element.includes("relay") || element.includes("toshop")) ? "disabled" : ""} value="`+element+`">`+shipping_method[element]+`</option>`
+                                                                )}
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <span class="customer_detail_title badge bg-dark">Facturation</span>
+                                                            ${order[0].shipping_method_detail.includes("Livraison express") ? '<div class="shipping_chrono_logo"></div>' : ''}
+                                                        </div>
+                                                        
+
+                                                        ${order[0].billing_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Nom : </span>
+                                                            <input name="billing_customer_last_name" value="`+order[0].billing_customer_last_name+`">
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Prénom : </span>
+                                                            <input name="billing_customer_first_name" value="`+order[0].billing_customer_first_name+`">
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_email ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Email : </span>
+                                                            <input name="billing_customer_email" value="`+order[0].billing_customer_email+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_phone ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Téléphone : </span>
+                                                            <input name="billing_customer_phone" value="`+order[0].billing_customer_phone+`"> 
+                                                        </div>` : ``}
+
+                                                        
+                                                        ${order[0].billing_customer_comapny ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Entreprise : </span>
+                                                            <input name="billing_customer_comapny" value="`+order[0].billing_customer_comapny+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Adresse : </span>
+                                                            <textarea name="billing_customer_address_1">`+order[0].billing_customer_address_1+`</textarea> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Complément d'adresse : </span>
+                                                            <textarea name="billing_customer_address_2">`+order[0].billing_customer_address_2+`</textarea> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_state ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">State : </span>
+                                                            <input name="billing_customer_state" value="`+order[0].billing_customer_state+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Code postal : </span>
+                                                            <input name="billing_customer_postcode" value="`+order[0].billing_customer_postcode+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_city ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Ville : </span>
+                                                            <input name="billing_customer_city" value="`+order[0].billing_customer_city+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].billing_customer_country ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Pays : </span>
+                                                            <input name="billing_customer_country" value="`+order[0].billing_customer_country+`"> 
+                                                        </div>` : ``}
+                                                    </div>
+
+                                                    <div class="mt-3 d-flex flex-column w-100 customer_shipping detail_customer_return_order">
+                                                        <span class="customer_detail_title badge bg-dark">Expédition</span>
+
+                                                        ${order[0].shipping_customer_last_name ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Nom : </span>
+                                                            <input name="shipping_customer_last_name" value="`+order[0].shipping_customer_last_name+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_first_name ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Prénom : </span>
+                                                            <input name="shipping_customer_first_name" value="`+order[0].shipping_customer_first_name+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_company ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Entreprise : </span>
+                                                            <input name="shipping_customer_company" value="`+order[0].shipping_customer_company+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_address_1 ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Adresse : </span>
+                                                            <input name="shipping_customer_address_1" value="`+order[0].shipping_customer_address_1+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_address_2 ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Complément d'adresse : </span>
+                                                            <input name="shipping_customer_address_2" value="`+order[0].shipping_customer_address_2+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_state ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">State : </span>
+                                                            <input name="shipping_customer_state" value="`+order[0].shipping_customer_state+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_postcode ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Code postal : </span>
+                                                            <input name="shipping_customer_postcode" value="`+order[0].shipping_customer_postcode+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_city ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Ville : </span>
+                                                            <input name="shipping_customer_city" value="`+order[0].shipping_customer_city+`"> 
+                                                        </div>` : ``}
+
+                                                        ${order[0].shipping_customer_country ? `<div class="d-flex w-100 justify-content-between">
+                                                            <span class="title_span ">Pays : </span>
+                                                            <input name="shipping_customer_country" value="`+order[0].shipping_customer_country+`"> 
+                                                        </div>` : ``}
+                                                    </div>
+                                                </div>
+                                                <div class="btn_box">
+                                                    <button class="btn btn-dark px-5" id="back1" type="button">Retour</button>
+                                                    <button class="btn btn-dark px-5" type="submit">Valider</button>
+                                                </div>
+                                            </div>
+                                            <div class="progress_container return_order_form">
+                                                <div class="progress" id="progress"></div>
+                                                <div class="circle active_progress">1</div>
+                                                <div class="circle">2</div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `)
+
+                $('#order_'+id).modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+
+                $("#order_"+id).appendTo("body").modal('show')
+            } else {
+                $(".show_detail").attr('disabled', false)
+                alert('Aucune information pour cette commande !')
+            }
+        } else {
+            $(".show_detail").attr('disabled', false)
+            alert('Aucune information pour cette commande !')
+        }
+    })	
+}

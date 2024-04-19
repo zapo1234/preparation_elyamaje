@@ -95,7 +95,7 @@
                                                             <div class="card-title d-flex align-items-center">
                                                                 <div><i class="bx bx-printer me-1 font-22 text-primary"></i>
                                                                 </div>
-                                                                <h5 class="mb-0 text-primary">Modifier une imprimante</h5>
+                                                                <h5 class="mb-0 text-primary">Modifier un terminal</h5>
                                                                 <input type="hidden" value="{{ $terminal->id }}" required name="terminal_id" id="terminal_id">
                                                             </div>
                                                             <hr>
