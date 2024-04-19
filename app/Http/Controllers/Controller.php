@@ -618,6 +618,7 @@ class Controller extends BaseController
 
                 $vente_by_product = $result["vente_by_product"];
 
+
             
                 foreach ($vente_by_product as $key => $value) {
                     if ($value["stock_actuel"] == 'inconnu' || $value["desiredstock"] == 'inconnu') {
@@ -804,24 +805,42 @@ class Controller extends BaseController
         $method = "GET";
         $apiKey = env('KEY_API_DOLIBAR'); 
         $apiUrl = env('KEY_API_URL');
+       
 
+        $chaine = "";
         
         if ($entrepot_destination== "15" || $entrepot_destination== "1") {
 
-            $filterHowTC = "t.ref LIKE '%TC1%'";
+            // $filterHowTC = "t.ref LIKE '%TC1%'";
+
+            $chaine = "TC1";
             $produitParam = array(
                 'apikey' => $apiKey,
-                'limit' => 10000,
+                'limit' => 1000,
+
+                'sortfield' => 't.datec',
+                'sortorder' => 'DESC',
+                
             );
         }
 
         if ($entrepot_destination== "6") {
 
-            $filterHowTC = "t.ref LIKE '%FA%'";
+            $chaine = "FA";
+
+            // $filterHowTC = "t.ref LIKE '%FA%'";
             $produitParam = array(
                 'apikey' => $apiKey,
-                'limit' => 10000,
+                'limit' => 1000,
+
+                'sortfield' => 't.datec',
+                'sortorder' => 'DESC',
+                
             );
+        }
+
+        if (!$chaine) {
+            dd("cet entrepôt n'est pas pris en charge");
         }
 
         // On récupère les produits et leurs stock dans l'entrepos selectionner 
@@ -846,31 +865,62 @@ class Controller extends BaseController
 
         // $mois = 1; // nombre de mois
         // $jours = $mois*28;
+        $Njour= $Njour + 1;
+        if ($Njour > 10) {
+            dd("interval trop grand");
+        }
+
         $interval = date("Y-m-d", strtotime("-$Njour days")); 
         $coef = 1;//(1.10)/($jours/7); // pour avoir une moyen sur 7 jours et on multipli par un coef de securité
 
         $array_factures_total = array();
 
+        // $intervalTimestamp = strtotime($interval . " 23:59:59"); // Date de début de l'intervalle en millisecondes
+        // $endDateTimestamp = strtotime(date("Y-m-d", strtotime("-1 days")) . " 23:59:59"); // Date de fin de l'intervalle en millisecondes
 
-        if (!$token) {
-            $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".date('Y-m-d')." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-        }else {
-            $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d", strtotime("-1 days"))." 23:59:59'";
-        }
+
+        // if (!$token) {
+
+        //     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".date('Y-m-d')." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
+        // }else {
+            // $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d", strtotime("-1 days"))." 23:59:59'";
+            // $produitParam['sqlfilters'] = "(t.datec:>=:$intervalTimestamp)";
+        // }
+
 
         
+        $produitParam["limit"] = $Njour * 500;
+
         // dump($produitParam);
 
         $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
         $factures = json_decode($listinvoice,true); 
 
-        // dd($factures);
+        $startDate = $interval." 23:59:59";
+        $endDate = date("Y-m-d")." 23:59:59";
+      
 
-            if (!isset($factures["error"])) {
-            array_push($array_factures_total,$factures);
+        foreach ($factures as $key => $value) {
+            if (!$token) {
+
+                $date_modification = date('Y-m-d H:i:s', $value["date_modification"]);
+
+                if (!(($date_modification >= $startDate) && ($date_modification <= $endDate) && (substr($value['ref'], 0, strlen($chaine)) == $chaine))) {
+                    unset($factures[$key]);
+                }
+
+            }else {
+
+                $date_modification = date('Y-m-d H:i:s', $value["date_modification"]);
+
+                if (!(($date_modification >= $startDate) && ($date_modification <= $endDate) && (substr($value['ref'], 0, strlen($chaine)) == $chaine))) {
+                    unset($factures[$key]);
+                }
+
+            }
         }
 
-        
+        array_push($array_factures_total,$factures);
 
         $vente_by_product = array();
         $vente_by_product_by_date = array();
@@ -884,6 +934,8 @@ class Controller extends BaseController
 
         foreach ($array_factures_total as $ktotal => $factures) {
             foreach ($factures as $key => $facture) {
+
+
                 $lines = $facture["lines"];
                 foreach ($lines as $kline => $line) {
 
@@ -947,6 +999,8 @@ class Controller extends BaseController
             }
         }
 
+   
+
         // ajouter les produits invendu en j-1 poir avoir leurs infos 
         foreach ($all_products as $id_product => $value) {
 
@@ -994,7 +1048,6 @@ class Controller extends BaseController
                 
             }
         }
-
 
         if ($token) {
             return
@@ -1153,7 +1206,7 @@ class Controller extends BaseController
 
 
         $by_file = $request->hasFile('file_reassort') && $request->file('file_reassort')->isValid();
-
+        $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
        
 
         $entrepot_source = $request->post('entrepot_source');
@@ -1175,7 +1228,7 @@ class Controller extends BaseController
 
             // on récupère la liste des produit et leurs stock d'alerte 
 
-            $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+            
             $infos_stock_min = $pdoDolibarr->getStockAlerteMin($entrepot_destination);
 
             $fileNameR = $file->getClientOriginalName();
@@ -1446,8 +1499,10 @@ class Controller extends BaseController
                         $produitParam['sqlfilters'] = "t.datec >= '".$start_date." 00:00:00' AND t.datec <= '".$end_date." 23:59:59'";
                     }
         
-                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-                    $factures = json_decode($listinvoice,true); 
+                    // $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    // $factures = json_decode($listinvoice,true); 
+
+                    $factures = $pdoDolibarr->getFk_factureByCondition($produitParam['sqlfilters']);
         
                     sleep(5);
         
@@ -1469,6 +1524,9 @@ class Controller extends BaseController
                     dd("selectionner les deux date");
                 }
             }else {
+
+                
+
                 $mois = 1; // nombre de mois
                 $jours = $mois*28;
                 $interval = date("Y-m-d", strtotime("-$jours days")); 
@@ -1482,16 +1540,22 @@ class Controller extends BaseController
                     $coef = $coef*(7/6.5);
 
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".$date_start_bp." 23:59:59'";
-                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-                    $factures = json_decode($listinvoice,true); 
+                    // $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    // $factures = json_decode($listinvoice,true); 
+
+                    $factures = $pdoDolibarr->getFk_factureByCondition($produitParam['sqlfilters']);
 
                     if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
                     }
 
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$date_end_bp." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-                    $factures = json_decode($listinvoice,true); 
+                    
+                    
+                    // $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
+                    // $factures = json_decode($listinvoice,true); 
+
+                    $factures = $pdoDolibarr->getFk_factureByCondition($produitParam['sqlfilters']);
 
                     if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
@@ -1500,8 +1564,12 @@ class Controller extends BaseController
                     
                    
                     $produitParam['sqlfilters'] = $filterHowTC . " AND t.datec >= '".$interval." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'";
-                    $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam);     
-                    $factures = json_decode($listinvoice,true); 
+
+                    $factures = $pdoDolibarr->getFk_factureByCondition($produitParam['sqlfilters']);
+
+                   // $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices",$produitParam); 
+                    // $factures = json_decode($listinvoice,true); 
+
                       if (!isset($factures["error"])) {
                         array_push($array_factures_total,$factures);
                     }
@@ -1524,6 +1592,7 @@ class Controller extends BaseController
             foreach ($factures as $kf => $fac) {
                 foreach ($fac["lines"] as $kl => $product) {
                     $fk_product = $product["fk_product"];
+
                     if ($fk_product) {
 
                         if (isset($all_categories[$fk_product])) {
@@ -1753,7 +1822,9 @@ class Controller extends BaseController
                     $lines = $facture["lines"];
                     foreach ($lines as $kline => $line) {
 
-                        $date = date("d/m/Y", $facture["date"]);
+
+                        $date = $facture["date"];//date("d/m/Y", $facture["date"]);
+
 
                         if ($line["fk_product"] !="") {
     
@@ -2406,6 +2477,11 @@ class Controller extends BaseController
             $token = request('tokenPrepa');
             $server_name = request('server_name');
 
+            // $id = request('id');
+            // $token = request('tokenPrepa');
+            // $server_name = request('server_name');
+
+
             if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
@@ -2433,6 +2509,8 @@ class Controller extends BaseController
                             $product_no_bc = $line["libelle"];
                         }
                     }
+
+                    // return $product_no_bc;
 
                     if ($product_no_bc == "") {
                         $detail_facture = [

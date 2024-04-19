@@ -906,13 +906,12 @@ class Admin extends BaseController
 
         try {
 
+       
+
             $products_dolibarrs_save = array();
 
             // $apiUrl = env('KEY_API_URL');
             $apiKey = env('KEY_API_DOLIBAR');
-
-        
-
 
             $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
 
@@ -926,11 +925,23 @@ class Admin extends BaseController
             $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
             $all_products = json_decode($all_products,true);
 
+
+            // foreach ($all_products as $key => $value) {
+            //     if ($value["id"] == 6597) {
+            //         dd($value);
+            //     }
+            // }
+
+            // dd("dddddddddddddd");
+
+
             if ($all_products) {
                 
                 foreach ($all_products as $key => $product) {
 
-                  if ($product["status"] == 1) {
+               
+
+                //   if ($product["status"] == 1) {
                     $qte = 0;
 
                     if ($product["warehouse_array_list"]) {
@@ -956,11 +967,19 @@ class Admin extends BaseController
                         "poids" => 0,
                         "warehouse_array_list" => $qte
                     ]);
-                  }
+                //   }
 
                    
 
                 }
+
+                // foreach ($products_dolibarrs_save as $key => $value) {
+                //     if ($value["product_id"] == 6597) {
+                //             dd($value);
+                //         }
+                //     }
+
+                // dd("products_dolibarrs_save");
     
                 DB::beginTransaction();
                 DB::table('products_dolibarr')->truncate();
