@@ -552,7 +552,7 @@ class Order extends BaseController
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
-          if(!in_array($status,  $ignore_status)){
+          if(!in_array($status,  $ignore_status) && !str_contains($order_id, 'SAV')){
             if($status == "finished"){
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);
             } else {
@@ -1516,7 +1516,7 @@ class Order extends BaseController
       }
 
       $total_tax_order = $total_order_with_tax - $total_order_without_tax;
-      
+
       // List of products to return
       $data_product = [];
       $total_weight = 0;

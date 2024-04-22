@@ -278,7 +278,7 @@ class Controller extends BaseController
             } else {
                 $transfers_progress[] = $rea;
             }
-        }
+        }   
   
         return view('preparateur.transfers.index_preparateur', 
         [
