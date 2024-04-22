@@ -44,7 +44,7 @@ class ReassortRepository implements ReassortInterface
         ->whereIn('id_reassort', [0, -1])
         ->where([
             ['user_id', $user_id],
-            ['type', 0]
+            ['type', 1]
         ])
         ->whereIn('hist_reassort.status', ['processing', 'waiting_to_validate', 'waiting_validate'])
         ->get();
