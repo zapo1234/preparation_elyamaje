@@ -482,6 +482,8 @@ class TransferOrder
 
 
                                 // recupére des lines pour des gift card
+                                  // recupére les line ou les code bar ne son pas conforme
+                                  $logEAN =[];
                                 foreach($donnees['line_items'] as $key => $values){
                                    // traiter le cas des cartes cadeaux..
 
@@ -562,6 +564,9 @@ class TransferOrder
                                         $list->name_product = $values['name'];
                                         $list->quantite = $values['quantity'];
                                         $list->save();
+
+                                        // je veux recupérer les ligne si les code bar sont pas conforme
+                                        $logEAN[$donnees['order_id']][] = $values['name'];
                                      }
                                  }
                                }
@@ -668,11 +673,13 @@ class TransferOrder
                                         $this->setFicfacture($donnees['order_id']);
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
-                                        $historique = new Commandeid();
-                                        $historique->id_commande = $donnees['order_id'];
-                                        $historique->date = $date;
-                                        // insert to
-                                        $historique->save();
+                                        if(count($logEAN)==0){
+                                           $historique = new Commandeid();
+                                           $historique->id_commande = $donnees['order_id'];
+                                           $historique->date = $date;
+                                          // insert to
+                                           $historique->save();
+                                         }
                                       
                                    }
                                     else{
@@ -713,6 +720,16 @@ class TransferOrder
                            }
                          }
                         */
+
+                       // bloquer la facture ici si les produit n'ont pas de code EAN.
+                       if(count($logEAN)!=0){
+                        foreach($logEAN as $kd=>$vac){
+                          $chaine = implode(',',$vac);
+                          $this->logError->insert(['order_id' => $kd, 'message' => 'ces produits suivant n\'ont pas de code EAN conforme dans dolibar '.$chaine.'']);
+                          echo json_encode(['success' => false, 'message'=> 'ces produits suivant n\'ont pas de code EAN conforme dans dolibar '.$chaine.'']);
+                          exit;
+                         }
+                       }
                       
                   
                         if(count($data_tiers)!=0){
