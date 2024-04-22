@@ -612,28 +612,31 @@ function returnOrder(id){
                                                             <input checked class="check_all_products checkbox_label form-check-input" type="checkbox" aria-label="Checkbox for product order">	
                                                             <span style="margin-left: 50px">Article</span>
                                                         </span>
-                                                        <span class="column2 name_column">Coût</span>
+                                                        <span class="column2 name_column">Prix</span>
                                                         <span class="column3 name_column">Qté</span>
-                                                        <span class="column4 name_column">Total</span>
+                                                        <span class="column4 name_column">Total HT</span>
+                                                        <span class="column5 name_column">Total TTC</span>
                                                     </div>	
                                                     <div class="body_detail_product_order">
-                                                            ${order.map((element) => `
-                                                                <div class="${element.product_id}  ${element.variation_id} ${order[0].id}_${element.id} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
-                                                                    <div class="column11 d-flex align-items-center detail_product_name_order_to_return">
-                                                                        <span>
-                                                                            <input name="product_ids[]" checked class="checkbox_label form-check-input" type="checkbox" value="${element.product_woocommerce_id}" aria-label="Checkbox for product order">	
-                                                                        </span>
-                                                                        ${element.image ? `<image style="margin-right: 25px; margin-left: 25px" src="`+element.image+`" width="65px" height="65px">` : ``}
-                                                                        ${element.price == 0 ? `<span class="product_name_return_order"><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span class="product_name_return_order">`+element.name+`</span>`}
-                                                                    </div>
-                                                                    ${!order[0].transfers ? '<input class="input_product_return_order column22" type="text" name="total_without_tax['+element.product_woocommerce_id+']" value="'+parseFloat(element.cost).toFixed(2)+'">' 
-                                                                    : '<input class="input_product_return_order column22" type="text"  name="details['+element.product_woocommerce_id+']" value="'+parseFloat(element.price_ttc).toFixed(2)+'">'}
-                                                                    <span class="column33 quantity">
-                                                                        <input class="quantity_product_label" min="1" max="${element.quantity}" value="${element.quantity}" name="quantity[${element.product_woocommerce_id}]" type="number">
+                                                        ${order.map((element) => `
+                                                            <div class="${element.product_id}  ${element.variation_id} ${order[0].id}_${element.id} ${id[element.variation_id] ? (id[element.variation_id] == element.quantity ? 'pick' : '') : ''} d-flex w-100 align-items-center justify-content-between detail_product_order_line">
+                                                                <div class="column11 d-flex align-items-center detail_product_name_order_to_return">
+                                                                    <span>
+                                                                        <input name="product_ids[]" checked class="checkbox_label form-check-input" type="checkbox" value="${element.product_woocommerce_id}" aria-label="Checkbox for product order">	
                                                                     </span>
-                                                                    ${!order[0].transfers ? '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price * element.quantity).toFixed(2)+'">' 
-                                                                    : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
-                                                                </div>`
+                                                                    ${element.image ? `<image style="margin-right: 25px; margin-left: 25px" src="`+element.image+`" width="65px" height="65px">` : ``}
+                                                                    ${element.price == 0 ? `<span class="product_name_return_order"><span class="text-success">(Cadeau)</span> `+element.name+`</span>` : `<span class="product_name_return_order">`+element.name+`</span>`}
+                                                                </div>
+                                                                ${!order[0].transfers ? '<input class="input_product_return_order column22" type="text" value="'+parseFloat(element.cost).toFixed(2)+'">' 
+                                                                : '<input class="input_product_return_order column22" type="text"  name="details['+element.product_woocommerce_id+']" value="'+parseFloat(element.price_ttc).toFixed(2)+'">'}
+                                                                <span class="column33 quantity">
+                                                                    <input class="quantity_product_label" min="1" max="${element.quantity}" value="${element.quantity}" name="quantity[${element.product_woocommerce_id}]" type="number">
+                                                                </span>
+                                                                ${!order[0].transfers ? '<input type="text" name="total_without_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.total_price).toFixed(2)+'">' 
+                                                                : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
+                                                                ${!order[0].transfers ? '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column55" value="'+parseFloat(element.total_price + element.total_tax).toFixed(2)+'">' 
+                                                                : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column55" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
+                                                            </div>`
                                                         ).join('')}
                                                     </div>
                                                 </div>
