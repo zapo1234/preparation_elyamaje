@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Tier;
 use App\Http\Service\Api\Api;
 use Illuminate\Support\Facades\DB;
+use App\Http\Service\Api\PdoDolibarr;
 
 class TiersRepository implements TiersInterface
 
@@ -16,6 +17,7 @@ class TiersRepository implements TiersInterface
    private $model;
 
    private $emails =[];
+
 
    public function __construct(Tier $model,Api $api){
 
@@ -207,6 +209,7 @@ class TiersRepository implements TiersInterface
 
       public function getinvoices($datet)
       {
+   
            $method = "GET";
            // key et url api
 
@@ -225,6 +228,13 @@ class TiersRepository implements TiersInterface
           // recuperer les données api dolibar copie projet tranfer x...
            $listinvoice = $this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", $produitParam);
            $lists = json_decode($listinvoice,true);
+
+          //  $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+
+          //  $lists = $pdoDolibarr->getFk_factureByCondition($produitParam['sqlfilters']);
+
+          //  dd($lists);
+
             
            return $lists;
      }

@@ -49,7 +49,8 @@ class Colissimo
                             'orderNumber ' => $order_id,
                             'commercialName' => config('app.companyName') /*$order['shipping']['last_name'].' '.$order['shipping']['first_name']*/,
                             'returnTypeChoice' => 3, // Ne pas retourner
-                            'totalAmount' => $insuranceValue
+                            'transportationAmount' => floatval($order['shipping_amount'] * 100),
+                            'totalAmount' => floatval($order['shipping_amount'] * 100),
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
@@ -328,20 +329,26 @@ class Colissimo
     }
 
     protected function getInsuranceValue($product_code, $order){
-        $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
-        if(in_array($product_code, $tranches_except)){
-            if($order['total_order'] * 100 > 100000){
-                return 100000;
+
+        if($order['total_order'] * 100 > 1500){
+            $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
+            if(in_array($product_code, $tranches_except)){
+                if($order['total_order'] * 100 > 100000){
+                    return 100000;
+                } else {
+                    return $order['total_order'] * 100;
+                }
             } else {
-                return $order['total_order'] * 100;
+                if($order['total_order'] * 100 > 500000){
+                    return 500000;
+                } else {
+                    return $order['total_order'] * 100;
+                }
             }
         } else {
-            if($order['total_order'] * 100 > 500000){
-                return 500000;
-            } else {
-                return $order['total_order'] * 100;
-            }
+            return 0;
         }
+       
     }
 
     protected function isMachinable($product_code){

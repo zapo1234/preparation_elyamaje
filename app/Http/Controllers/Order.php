@@ -1334,7 +1334,6 @@ class Order extends BaseController
 
   public function getOrders($token)
   {
-   
     if($token == "BcVTcO9aqWdtP0ZVvujOJXQxjGT9wtRGG3iGZt8ZvwsZ58kMeJAM9TJlUumqb23C"){
       $status = "processing,order-new-distrib,prepared-order"; // Commande en préparation
       $per_page = 100;
@@ -1505,13 +1504,15 @@ class Order extends BaseController
       $product_ids = $request->post('product_ids');
       $total_without_tax = $request->post('total_without_tax');
       $total_with_tax = $request->post('total_with_tax');
+      $total_products = 0;
 
       $total_order_without_tax = 0;
       $total_order_with_tax = 0;
 
       foreach($request->post('product_ids') as $product_id){
-        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id] * $quantity[$product_id]));
-        $total_order_with_tax = $total_order_with_tax + (floatval($total_with_tax[$product_id] * $quantity[$product_id]));
+        $total_products = $total_products + $quantity[$product_id];
+        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id]));
+        $total_order_with_tax = $total_order_with_tax + floatval($total_with_tax[$product_id]);
       }
 
       $total_tax_order = $total_order_with_tax - $total_order_without_tax;
@@ -1574,7 +1575,7 @@ class Order extends BaseController
           'date' => date('Y-m-d H:i:s'), // Actual date
           'total_tax_order' => $total_tax_order,
           'total_order' => floatval($total_order_with_tax + $calculate_shipping_amount),
-          'total_products' => count($product_ids),
+          'total_products' => $total_products,
           'user_id' => 0,
           'status' => 'processing',
           'shipping_method' => $request->post('shipping_method') ?? "lpc_sign",

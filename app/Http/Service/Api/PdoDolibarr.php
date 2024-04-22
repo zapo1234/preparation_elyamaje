@@ -422,6 +422,67 @@ class PdoDolibarr
 
     }
 
+    function getFk_factureByCondition($where){
+
+        $datasFinal = array();
+
+        $sql = 'SELECT tdet.*, t.*, p.*
+        FROM `llxyq_facturedet` `tdet` 
+        LEFT JOIN `llxyq_facture` `t` ON `tdet`.`fk_facture` = `t`.`rowid` 
+        LEFT JOIN `llxyq_product` `p` ON `tdet`.`fk_product` = `p`.`rowid`
+        WHERE '.$where;
+
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($res as $key => $value) {
+
+            if (!isset($datasFinal[$value["ref"]])) {
+
+                $datasFinal[$value["ref"]]["lines"] = [];
+
+                $datasFinal[$value["ref"]]["date"] = $value["date_valid"];
+
+                foreach ($value as $key => $v) {
+
+                    $datasFinal[$value["ref"]][$key] = $v;
+                }
+
+                
+                array_push($datasFinal[$value["ref"]]["lines"],[
+                    "fk_product"=>$value["fk_product"],
+                    "qty"=>$value["qty"],
+                    "desc"=>$value["description"],
+                    "libelle"=>$value["label"],
+                    "subprice"=>$value["subprice"],
+                    "total_ttc"=>$value["total_ttc"], 
+                ]);
+
+            }else {
+                array_push($datasFinal[$value["ref"]]["lines"],[
+                    "fk_product"=>$value["fk_product"],
+                    "qty"=>$value["qty"],
+                    "desc"=>$value["description"],
+                    "libelle"=>$value["label"],
+                    "subprice"=>$value["subprice"],
+                    "total_ttc"=>$value["total_ttc"], 
+                ]);
+            }
+        }
+
+
+
+        // foreach ($datasFinal as $key => $value) {
+        //     if ($key== "TC1-2403-39373") {
+        //         dump($value);
+        //     }
+        // }
+
+        return $datasFinal;
+    }
+
 }
 
 

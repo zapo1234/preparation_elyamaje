@@ -5834,10 +5834,6 @@ textarea::placeholder {
 	text-align: left;
 }
 
-.head_detail_product_order{
-	width: 98% !important;
-}
-
 .head_detail_product_order span{
 	font-size: 22px;
 	font-weight: bold;
@@ -9429,17 +9425,23 @@ select option[disabled] {
 	}
 }
 
+.return_order_form_multy_step  .quantity_product_label{
+	width: 50px !important;
+}
+
 @media screen and (max-width: 620px) {
 	.detail_product_order_line span,
 	.head_detail_product_order span{
 		font-size: 16px;
 	}
 
-	.input_product_return_order{
-		width: 50px !important;
+	.detail_product_order_head  .column4,
+	.detail_product_order_head  .column44{
+		display: none !important;
 	}
 
-	.return_order_form_multy_step  .quantity_product_label{
+
+	.input_product_return_order{
 		width: 50px !important;
 	}
 
@@ -9511,4 +9513,10 @@ select option[disabled] {
 
 
 	}
+}
+
+
+.disabled_field{
+	background-color: #e9ecef;
+    opacity: 1;
 }
