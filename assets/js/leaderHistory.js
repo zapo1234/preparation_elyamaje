@@ -632,10 +632,17 @@ function returnOrder(id){
                                                                 <span class="column33 quantity">
                                                                     <input class="quantity_product_label" min="1" max="${element.quantity}" value="${element.quantity}" name="quantity[${element.product_woocommerce_id}]" type="number">
                                                                 </span>
-                                                                ${!order[0].transfers ? '<input type="text" name="total_without_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.total_price).toFixed(2)+'">' 
+
+                                                                
+                                                                ${!order[0].transfers ? '<input type="hidden" name="total_without_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.cost).toFixed(2)+'">' 
                                                                 : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column44" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
-                                                                ${!order[0].transfers ? '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column55" value="'+parseFloat(element.total_price + element.total_tax).toFixed(2)+'">' 
+                                                                ${!order[0].transfers ? '<input type="hidden" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column55" value="'+parseFloat((element.total_tax / element.quantity) + element.cost).toFixed(2)+'">' 
                                                                 : '<input type="text" name="total_with_tax['+element.product_woocommerce_id+']" class="input_product_return_order column55" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
+
+                                                                ${!order[0].transfers ? '<input type="text" class="input_product_return_order column44" value="'+parseFloat(element.total_price).toFixed(2)+'">' 
+                                                                : '<input type="text" class="input_product_return_order column44" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
+                                                                ${!order[0].transfers ? '<input type="text" class="input_product_return_order column55" value="'+parseFloat(element.total_price + element.total_tax).toFixed(2)+'">' 
+                                                                : '<input type="text" class="input_product_return_order column55" value="'+parseFloat(element.price_ttc * element.quantity).toFixed(2)+'">'}
                                                             </div>`
                                                         ).join('')}
                                                     </div>

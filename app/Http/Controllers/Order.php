@@ -1511,12 +1511,12 @@ class Order extends BaseController
 
       foreach($request->post('product_ids') as $product_id){
         $total_products = $total_products + $quantity[$product_id];
-        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id]));
-        $total_order_with_tax = $total_order_with_tax + floatval($total_with_tax[$product_id]);
+        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id]) * $quantity[$product_id]);
+        $total_order_with_tax = $total_order_with_tax + (floatval($total_with_tax[$product_id] * $quantity[$product_id]));
       }
 
       $total_tax_order = $total_order_with_tax - $total_order_without_tax;
-
+      
       // List of products to return
       $data_product = [];
       $total_weight = 0;
