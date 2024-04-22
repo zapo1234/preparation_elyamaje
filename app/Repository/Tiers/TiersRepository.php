@@ -39,7 +39,7 @@ class TiersRepository implements TiersInterface
 
     
 
-       /**
+   /**
    * @return array
     */
     public function getEmails(): array
@@ -116,13 +116,15 @@ class TiersRepository implements TiersInterface
                  $apiUrl = env('KEY_API_URL');
 
                
-                  $produitParam = array(
+               /*    $produitParam = array(
                     'apikey' => $apiKey,
                     'sqlfilters' => "t.datec >= '".date("Y-m-d", strtotime("-30 days"))." 00:00:00' AND t.datec <= '".date("Y-m-d")." 23:59:59'",
                      'limit' => 0,
                     'sortfield' => 'rowid',
                     'sortorder' => 'DESC',
                 );
+
+            */
 
              // recuperer les données api dolibar copie projet tranfer x.
 

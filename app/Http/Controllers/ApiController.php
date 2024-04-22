@@ -6,6 +6,7 @@ use App\Helper\UserService;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
 use App\Repository\Label\LabelRepository;
+use App\Repository\Product\ProductRepository;
 use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\LogError\LogErrorRepository;
 
@@ -20,13 +21,15 @@ class ApiController extends Controller
       LabelRepository $label,  
       Colissimo $colissimo, 
       Chronopost $chronopost,
-      LogErrorRepository $logError
+      LogErrorRepository $logError,
+      ProductRepository $product
    )
    {
       $this->label = $label;
       $this->colissimo = $colissimo;
       $this->chronopost = $chronopost;
       $this->logError = $logError;
+      $this->product = $product;
    }
 
    public function login(Request $request){
@@ -80,6 +83,20 @@ class ApiController extends Controller
 
       }
      
+
+   }
+
+   public function productApi(Request $request){
+      try{
+          
+          // recupérer les produits
+          $result_data = $this->product->getProduct();
+          dd($result_data);
+
+      } catch (Exception $e){
+         
+           return('error');
+      }
 
    }
 }
