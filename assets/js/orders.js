@@ -857,8 +857,8 @@ function show(id){
                                                 <span class="column22">${parseFloat(element.cost).toFixed(2)}</span>
                                                 <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
                                                 <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}
-                                                
-                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
+
+                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct( \''+ order[0].order_woocommerce_id+ '\',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
                                                     '<span style="margin-left: 5px" class="column55_action"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
                                                 </span>
                                                
@@ -1011,15 +1011,23 @@ function showCustomerOrderDetail(id){
 
 // Delete product's order Woocommerce
 function deleteProduct(order_id, line_item_id, product_id, quantity){
-    var id = product_id
-    var name = $("#order_"+order_id).find("."+product_id).find('.detail_product_name_order').children('span').text()
 
-    $("#order_id").val(order_id)
-    $("#line_item_id").val(line_item_id)
-    $("#product_order_id").val(id)
-    $("#quantity_order").val(quantity)
-    $(".product_name_to_delete").text(name)
-    $("#deleteProductOrderModal").appendTo("body").modal('show')
+    if(order_id.includes('SAV')){
+        alert('Impossible de supprimer des produits d\'une commande SAV !')
+    } else {
+        var id = product_id
+
+        // For SAV ORDER
+        var name = $("#order_"+order_id).find("."+product_id).find('.detail_product_name_order').children('span').text()
+    
+        $("#order_id").val(order_id)
+        $("#line_item_id").val(line_item_id)
+        $("#product_order_id").val(id)
+        $("#quantity_order").val(quantity)
+        $(".product_name_to_delete").text(name)
+        $("#deleteProductOrderModal").appendTo("body").modal('show')
+    }
+   
 }
 
 // Delete product's confirm order woocommerce

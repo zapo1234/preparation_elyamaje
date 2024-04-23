@@ -552,7 +552,7 @@ class Order extends BaseController
         $ignore_status = ['waiting_to_validate', 'waiting_validate', 'partial_prepared_order', 'partial_prepared_order_validate', 'pending'];
 
         if($from_dolibarr == "false" || $from_dolibarr == "0"){
-          if(!in_array($status,  $ignore_status)){
+          if(!in_array($status,  $ignore_status) && !str_contains($order_id, 'SAV')){
             if($status == "finished"){
               $this->api->updateOrdersWoocommerce($status_finished, $order_id);
             } else {
@@ -1504,12 +1504,14 @@ class Order extends BaseController
       $product_ids = $request->post('product_ids');
       $total_without_tax = $request->post('total_without_tax');
       $total_with_tax = $request->post('total_with_tax');
+      $total_products = 0;
 
       $total_order_without_tax = 0;
       $total_order_with_tax = 0;
 
       foreach($request->post('product_ids') as $product_id){
-        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id] * $quantity[$product_id]));
+        $total_products = $total_products + $quantity[$product_id];
+        $total_order_without_tax = $total_order_without_tax + (floatval($total_without_tax[$product_id]) * $quantity[$product_id]);
         $total_order_with_tax = $total_order_with_tax + (floatval($total_with_tax[$product_id] * $quantity[$product_id]));
       }
 
@@ -1573,7 +1575,7 @@ class Order extends BaseController
           'date' => date('Y-m-d H:i:s'), // Actual date
           'total_tax_order' => $total_tax_order,
           'total_order' => floatval($total_order_with_tax + $calculate_shipping_amount),
-          'total_products' => count($product_ids),
+          'total_products' => $total_products,
           'user_id' => 0,
           'status' => 'processing',
           'shipping_method' => $request->post('shipping_method') ?? "lpc_sign",

@@ -34,6 +34,10 @@ Route::get("/getLabels", [ApiController::class, "getLabels"]);
 Route::post("/updateLabelsStatus", [ApiController::class, "updateLabelsStatus"]);
 
 
+// Route api pour retourner les produits dansla table prepa product
+Route::get('/products/appi-elearning', [ApiController::class, 'productApi']);
+
+
 
 
 

@@ -52,7 +52,11 @@ class ReassortRepository implements ReassortInterface
 
         $reassort = json_decode(json_encode($reassort), true);
 
-        foreach($reassort as $rea){
+        foreach($reassort as $key_rea => $rea){
+
+            $rea['qty'] = abs($rea['qty']);
+            $rea['pick'] = abs($rea['pick']);
+
             $list[$rea['identifiant_reassort']]['details'] = [
                 'id' => $rea['identifiant_reassort'],
                 'first_name' => "Transfert",
@@ -69,6 +73,7 @@ class ReassortRepository implements ReassortInterface
                 'shipping_method' => '',
                 'customer_note'   => ''
             ];
+
             $list[$rea['identifiant_reassort']]['items'][] = $rea;
         }
 
@@ -93,19 +98,19 @@ class ReassortRepository implements ReassortInterface
                     } else {
                         $product_double[$key1][] = [
                             'id' => $item['product_id'],
-                            'qty' => $item['qty'], 
+                            'qty' => abs($item['qty']), 
                             'key1' => $key1,
                             'key2' => $key2,
-                            'pick' => $item['pick']
+                            'pick' => abs($item['pick'])
                         ];
                     }
                 } else {
                     $product_double[$key1][] = [
                         'id' => $item['product_id'],
-                        'qty' => $item['qty'], 
+                        'qty' => abs($item['qty']), 
                         'key1' => $key1,
                         'key2' => $key2,
-                        'pick' => $item['pick']
+                        'pick' => abs($item['pick'])
                     ];
                 }
             }
@@ -129,7 +134,8 @@ class ReassortRepository implements ReassortInterface
             $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
             $transfer[$key]['transfers'] = true;
             $transfer[$key]['cost'] = $order['price'];
-            $transfer[$key]['quantity'] = $order['qty'];
+            $transfer[$key]['quantity'] = abs($order['qty']);
+            $transfer[$key]['pick'] = abs($order['pick']);
             $transfer[$key]['shipping_method_detail'] = "Transfert";
         }
         
