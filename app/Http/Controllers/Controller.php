@@ -2345,7 +2345,6 @@ class Controller extends BaseController
                 try {
 
 
-                    return $data_save;
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
 
