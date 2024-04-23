@@ -1142,7 +1142,7 @@
         $("#id_sub_validation_reassort").html(spinner);
 
 
-        console.log(tabProduitReassort1);
+        // console.log(tabProduitReassort1);
 
         $.ajax({
             url: urlCreateReassort,
@@ -1161,41 +1161,44 @@
             },                       
             success: function(response) {
 
-                if (response.response == true) {
+                console.log(response);
+                return;
 
-                    $(".alert-succes-calcul").show();
-                    setTimeout(() => {
-                        $(".alert-succes-calcul").hide();
-                        window.location.href = urlRedirection;
-                    }, 3000);   
+                // if (response.response == true) {
 
-                    $('#example2 tbody').empty();
+                //     $(".alert-succes-calcul").show();
+                //     setTimeout(() => {
+                //         $(".alert-succes-calcul").hide();
+                //         window.location.href = urlRedirection;
+                //     }, 3000);   
 
-                    $("#id_sub_validation_reassort").removeClass("disabled-link");
-                    $("#id_sub_validation_reassort").html("Valider le réassort");
-                    $("#id_spaner_transfere").remove();
+                //     $('#example2 tbody').empty();
 
-                }else{
-					$(".alert-danger-calcul").show();
-					setTimeout(() => {
-						$(".alert-danger-calcul").hide();
-                        window.location.href = urlRedirection;
-					}, 10000);
-                    console.log(response.error);
-                }
+                //     $("#id_sub_validation_reassort").removeClass("disabled-link");
+                //     $("#id_sub_validation_reassort").html("Valider le réassort");
+                //     $("#id_spaner_transfere").remove();
+
+                // }else{
+				// 	$(".alert-danger-calcul").show();
+				// 	setTimeout(() => {
+				// 		$(".alert-danger-calcul").hide();
+                //         window.location.href = urlRedirection;
+				// 	}, 10000);
+                //     console.log(response.error);
+                // }
 
             },
-            error: function(xhr, status, error) {
+            // error: function(xhr, status, error) {
                 
-                $(".alert-danger-calcul").show();
-					setTimeout(() => {
-						$(".alert-danger-calcul").hide();
-                        window.location.href = urlRedirection;
-					}, 3000);
+            //     $(".alert-danger-calcul").show();
+			// 		setTimeout(() => {
+			// 			$(".alert-danger-calcul").hide();
+            //             window.location.href = urlRedirection;
+			// 		}, 3000);
 					
-					console.error(error);
+			// 		console.error(error);
 
-            }
+            // }
         });
         
 

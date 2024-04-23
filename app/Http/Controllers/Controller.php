@@ -2253,10 +2253,11 @@ class Controller extends BaseController
     function postReassort(Request $request,$data = NULL){
 
         
-       
+        
 
 
         try {
+
 
             $methode = $request->isMethod('post');
 
@@ -2340,8 +2341,15 @@ class Controller extends BaseController
                 }
 
                 try {
-                    $resDB = DB::table('hist_reassort')->insert($data_save);
+
+
+                    return $data_save;
+                    // dd($data_save);
+                    // $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
+
+                    // dump("111111");
+                    // dd($th);
 
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
@@ -2354,6 +2362,8 @@ class Controller extends BaseController
            
 
         } catch (\Throwable $th) {
+            // dump("2222222");
+            // dd($th);
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
         } 
     }
