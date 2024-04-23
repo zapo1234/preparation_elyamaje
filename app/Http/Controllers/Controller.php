@@ -2289,7 +2289,7 @@ class Controller extends BaseController
 
                 foreach ($tabProduitReassort1 as $key => $lineR) {
 
-                    if ($lineR["qte_transfere"] != 0) {           
+                    if ($lineR["qte_transfere"] > 0) {           
                         $data1 = array(
                             'product_id' => $lineR["product_id"],
                             'warehouse_id' => $entrepot_source, 
@@ -2344,12 +2344,8 @@ class Controller extends BaseController
 
 
                     return $data_save;
-                    // dd($data_save);
-                    // $resDB = DB::table('hist_reassort')->insert($data_save);
+                    $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
-
-                    // dump("111111");
-                    // dd($th);
 
                     return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
                 }
@@ -2362,8 +2358,6 @@ class Controller extends BaseController
            
 
         } catch (\Throwable $th) {
-            // dump("2222222");
-            // dd($th);
             return ["response" => false,"decrementation" => $decrementation,"incrementation" => $incrementation, "error" => $th->getMessage()];
         } 
     }
