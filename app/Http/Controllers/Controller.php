@@ -485,6 +485,7 @@ class Controller extends BaseController
 
         foreach ($hist_reassort as $key => $reassort) {
 
+
             if ($reassort->qty > 0) {
                 
 
@@ -500,6 +501,7 @@ class Controller extends BaseController
             }
 
         }      
+
 
         $users = $this->users->getUsers()->toArray();  
 
