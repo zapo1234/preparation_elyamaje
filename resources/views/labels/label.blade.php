@@ -424,7 +424,7 @@
 																</div>
 
 																<input type="hidden" value="{{ $order[0]['order_woocommerce_id'] }}" id="order_detail_id">
-																<input type="hidden" value="{{ isset($order[0]['user_id']) ? $order[0]['user_id'] : '' }}" id="order_attributed">
+																<input type="hidden" value="{{ isset($order[0]['user_id']) }}" id="order_attributed">
 
 																<div class="modal-footer d-flex w-100 justify-content-between">
 																	<span>Commande #{{ $order[0]['order_woocommerce_id'] }}</span>
