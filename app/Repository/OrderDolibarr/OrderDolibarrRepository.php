@@ -398,7 +398,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersAndLabel(){
       
       $date = date('Y-m-d');
-      $results = $this->model::select('orders_doli.*', 'orders_doli.fk_commande', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      $results = $this->model::select('orders_doli.*', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order')
@@ -407,7 +407,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       ->limit(500)
       ->get();
 
-
+   
       foreach($results as $key => $result){
          $results[$key]['id'] = $result->ref_order;
          $results[$key]['order_woocommerce_id'] = $result->ref_order;
