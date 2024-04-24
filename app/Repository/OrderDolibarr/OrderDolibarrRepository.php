@@ -317,7 +317,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersAndLabelByFilter($filters){
          $query = $this->model::select('orders_doli.*', /* 'label_product_order.*',*/ 'labels.id as label_id', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-         'labels.cn23', 'labels.download_cn23', 'labels.origin')
+         'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
          // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
          ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order');
 
@@ -397,7 +397,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersAndLabel(){
       $date = date('Y-m-d');
       $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23', 'labels.origin')
+      'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
