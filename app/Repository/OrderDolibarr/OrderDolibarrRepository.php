@@ -321,6 +321,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
          ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order');
 
+         
          $haveFilter = false;
          foreach($filters as $key => $filter){
 
