@@ -485,6 +485,7 @@ class Controller extends BaseController
 
         foreach ($hist_reassort as $key => $reassort) {
 
+
             if ($reassort->qty > 0) {
                 
 
@@ -500,6 +501,7 @@ class Controller extends BaseController
             }
 
         }      
+
 
         $users = $this->users->getUsers()->toArray();  
 
@@ -2253,10 +2255,11 @@ class Controller extends BaseController
     function postReassort(Request $request,$data = NULL){
 
         
-       
+        
 
 
         try {
+
 
             $methode = $request->isMethod('post');
 
@@ -2288,7 +2291,7 @@ class Controller extends BaseController
 
                 foreach ($tabProduitReassort1 as $key => $lineR) {
 
-                    if ($lineR["qte_transfere"] != 0) {           
+                    if ($lineR["qte_transfere"] > 0) {           
                         $data1 = array(
                             'product_id' => $lineR["product_id"],
                             'warehouse_id' => $entrepot_source, 
@@ -2340,6 +2343,8 @@ class Controller extends BaseController
                 }
 
                 try {
+
+
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
 
