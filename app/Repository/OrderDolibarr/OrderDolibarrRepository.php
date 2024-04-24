@@ -398,33 +398,34 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    public function getAllOrdersAndLabel(){
       
       $date = date('Y-m-d');
-      $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      $results = $this->model::select('orders_doli.*', 'orders_doli.fk_commande', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(100)
+      ->limit(500)
       ->get();
 
 
       foreach($results as $key => $result){
-
          $results[$key]['id'] = $result->ref_order;
          $results[$key]['order_woocommerce_id'] = $result->ref_order;
          $results[$key]['status'] = $result->statut;
          $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
 
          // Billing
-         $results[$key]['billing_customer_first_name'] = $result->billing_name;
-         $results[$key]['billing_customer_last_name'] = $result->billing_pname;
-         $results[$key]['billing_customer_company'] = $result->billing_company;
-         $results[$key]['billing_customer_address_1'] = $result->billing_adresse;
+
+         $results[$key]['billing_customer_first_name'] = $result->billing_name ?? $result->name;
+
+         $results[$key]['billing_customer_last_name'] = $result->billing_pname ?? $result->pname;
+         $results[$key]['billing_customer_company'] = $result->billing_company ?? $result->company;
+         $results[$key]['billing_customer_address_1'] = $result->billing_adresse ?? $result->adresse;
          $results[$key]['billing_customer_address_2'] = "";
-         $results[$key]['billing_customer_city'] = $result->billing_city;
+         $results[$key]['billing_customer_city'] = $result->billing_city ?? $result->city;
          $results[$key]['billing_customer_state'] = "";
-         $results[$key]['billing_customer_postcode'] = $result->billing_code_postal;
-         $results[$key]['billing_customer_country'] = $result->billing_country;
+         $results[$key]['billing_customer_postcode'] = $result->billing_code_postal ?? $result->code_postal;
+         $results[$key]['billing_customer_country'] = $result->billing_country ?? $result->contry;
          $results[$key]['billing_customer_email'] = $result->email;
          $results[$key]['billing_customer_phone'] = $result->phone;
 

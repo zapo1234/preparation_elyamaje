@@ -91,6 +91,7 @@ class Label extends BaseController
         
         foreach($orders as $order){
 
+
             if(!isset($array_order[$order['order_woocommerce_id']])){
                 $array_order[$order['order_woocommerce_id']][] = $order;
             }
