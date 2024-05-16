@@ -825,14 +825,13 @@ function show(id){
             if(order.length > 0){
                 // Dolibarr et Woocommerce
                 if(!order[0].transfers){
+                    var shipping_amount = order[0].shipping_amount ? parseFloat(order[0].shipping_amount) : 0;
                     var total = parseFloat(order[0].total_order)
                     var discount_total = !order[0].from_dolibarr ? parseFloat(order[0].discount) : 0
                     var gift_card = !order[0].from_dolibarr ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount): 0) : 0
                     var total_tax = !order[0].from_dolibarr ? parseFloat(order[0].total_tax_order) : parseFloat(order[0].total_tax)
-                    var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? parseFloat(order[0].shipping_amount) : 0)
+                    var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? shipping_amount : 0)
                 }
-
-               
 
                 $(".modal_order_admin").remove()
                 $('body').append(`<div class="modal_order_admin modal_dashboard modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

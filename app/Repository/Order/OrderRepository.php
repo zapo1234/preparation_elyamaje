@@ -31,10 +31,7 @@ class OrderRepository implements OrderInterface
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
-
-            
                if(!isset($orderData['from_dolibarr'])){
-
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
                   $coupons = [];
                   $discount = [];
@@ -62,7 +59,7 @@ class OrderRepository implements OrderInterface
                      $pickUpLocationId = null;
                      $is_professional = false;
                   }
-                 
+                  
                   if(isset($orderData['cart_hash'])){
 
                      // Insert produits

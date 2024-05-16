@@ -9512,8 +9512,24 @@ select option[disabled] {
 	}
 }
 
-
 .disabled_field{
 	background-color: #e9ecef;
     opacity: 1;
+}
+
+.partial_transfert{
+	font-size: 18px;
+}
+
+.no_product{
+	background-color: #ed837b;
+}
+
+.no_product .text-muted{
+	color: black !important;
+}
+
+.no_product .out_of_stock{
+	color: red;
+	font-weight: bold;
 }

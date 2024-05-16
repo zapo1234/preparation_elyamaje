@@ -15,6 +15,7 @@ use App\Http\Service\PDF\CreatePdf;
 use App\Http\Service\Api\Transfertext;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
+use Illuminate\Support\Facades\Response;
 use App\Repository\Label\LabelRepository;
 use App\Repository\Order\OrderRepository;
 use App\Http\Service\Api\ColissimoTracking;
@@ -30,6 +31,7 @@ use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Distributor\DistributorRepository;
+use App\Repository\Reassort\ReassortMissingRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -64,6 +66,7 @@ class Order extends BaseController
     private $orderDolibarr;
     private $commandeids;
     private $colissimoTracking;
+    private $missing_reassort;
 
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
@@ -86,7 +89,8 @@ class Order extends BaseController
       ReassortRepository $reassort,
       OrderDolibarrRepository $orderDolibarr,
       CommandeidsRepository $commandeids,
-      ColissimoTracking $colissimoTracking
+      ColissimoTracking $colissimoTracking,
+      ReassortMissingRepository $missing_reassort
     ){
       $this->api = $api;
       $this->user = $user;
@@ -111,6 +115,7 @@ class Order extends BaseController
       $this->orderDolibarr = $orderDolibarr;
       $this->commandeids = $commandeids;
       $this->colissimoTracking = $colissimoTracking;
+      $this->missing_reassort = $missing_reassort;
     }
   
     public function orders($id = null, $distributeur = false){
@@ -341,12 +346,9 @@ class Order extends BaseController
             $check_if_order_done = true;
           }
         } else if($from_transfers){
-          if($barcode_array != null){
-            $check_if_order_done = $this->reassort->checkIfDoneTransfersDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
-          } else if($partial == "1" && $barcode_array == null){
-            $this->reassort->updateStatusTextReassort($order_id ,"waiting_to_validate");;
-            $check_if_order_done = true;
-          }
+          $check_if_order_done = $this->reassort->checkIfDoneTransfersDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
+          $partial = false;
+          $check_if_order_done = true;
         } else {
           if($barcode_array != null){
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
@@ -623,7 +625,9 @@ class Order extends BaseController
         if(count($order) > 0){
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {
-          $order = $this->reassort->getReassortById($order_id);
+          $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
+          
+          // dd($order);
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
@@ -1021,12 +1025,39 @@ class Order extends BaseController
 
     public function executerTransfere($identifiant_reassort){
 
+
       try {
+          $tabProduit = [];
+          $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-          if (!$tabProduitReassort) {
+          
+          if($tabProduitReassort){
+
+            // For type == 0
+            foreach($tabProduitReassort as $tab){
+              if($tab['type'] == 0){
+                if($tab['qty'] > $tab['missing']){
+                  $tab["qty"] = abs($tab['qty']) - $tab['missing'];
+                  $tabProduit[] = $tab;
+                  $productsToTransfer[$tab['product_id']] = $tab;
+                }
+              } 
+            }
+
+            // For type == 1
+            foreach($tabProduitReassort as $tab){
+              if($tab['type'] == 1){
+                  if(isset($productsToTransfer[$tab['product_id']])){
+                  $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
+                  $tabProduit[] = $tab;
+                  }
+              } 
+            }
+          }
+
+          if (count($tabProduit) == 0) {
               echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
               return;
-              // return ["response" => false, "error" => "Transfère introuvable".$identifiant_reassort];
           }
           
           $apiKey = env('KEY_API_DOLIBAR');   
@@ -1039,7 +1070,7 @@ class Order extends BaseController
           $i = 1;
           $ids="";
           $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
-          foreach ($tabProduitReassort as $key => $line) {
+          foreach ($tabProduit as $key => $line) {
               if ($line["qty"] != 0) {   
                   $total_product = $total_product + intval($line["qty"]);
                   $data = array(
@@ -1059,7 +1090,7 @@ class Order extends BaseController
 
                   if ($stockmovements) {
                       $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                      if (count($tabProduitReassort) != $i) {
+                      if (count($tabProduit) != $i) {
                           $ids .= $line['id'] . ",";
                       }else{
                           $ids .= $line['id'];
@@ -1364,7 +1395,7 @@ class Order extends BaseController
           $count = count($orders_other);
         }
       }  
-
+      
       // Check if already in database
       $ids = [];
       $ordersAlreadyInDatabase = $this->order->getAllOrdersNotFinished()->toArray();
@@ -1378,17 +1409,23 @@ class Order extends BaseController
       $listOrdersToCreate = [];
       foreach ($orders as $order) {
         $item_gift_card = 0;
+        $item_is_virtual = 0;
+
         $take_order = true;
   
-        // Check if order have not only gift card
+        // Check if order have not only gift card and not only virtual product
         foreach($order['line_items'] as $or){
           if(str_contains($or['name'], 'Carte Cadeau')){
               $item_gift_card = $item_gift_card + 1;
           }
+
+          if($or['is_virtual'] == "yes"){
+            $item_is_virtual = $item_is_virtual + 1;
+          }
         }
   
-        // Don't take order with only gift card
-        if($item_gift_card == count($order['line_items'])){
+        // Don't take order with only gift card or only virtual product
+        if($item_gift_card == count($order['line_items']) || $item_is_virtual == count($order['line_items'])){
           $take_order = false;
         }
   
@@ -1401,12 +1438,12 @@ class Order extends BaseController
             }
           } 
         } 
-  
+
         if(!in_array($order['id'], $ids) && $take_order){
           $listOrdersToCreate[0][] = $order;
         }
       }
-  
+
       // Liste des distributeurs
       $distributors = $this->distributor->getDistributors();
       $distributors_list = [];
@@ -1414,7 +1451,6 @@ class Order extends BaseController
         $distributors_list[] = $dis->customer_id;
       }
 
-      // dd($listOrdersToCreate);
       if(count($listOrdersToCreate) > 0){
         return $this->order->insertOrdersByUsers($listOrdersToCreate, $distributors_list);
       } else {
@@ -1660,6 +1696,21 @@ class Order extends BaseController
         return $shippingCost;
     } else {
       return 0;
+    }
+  }
+
+
+  public function missingProductReassort(Request $request){
+    $identifiant_reassort = $request->post('identifiant_reassort');
+    $fileContent = $this->missing_reassort->getById($identifiant_reassort);
+
+    if(isset($fileContent[0]->missing)){
+      $file = $fileContent[0]->missing;
+      $file = base64_encode($file);
+      // Retournez le contenu du fichier avec les bons en-têtes
+      return response()->streamDownload(function () use ($file) {
+          echo $file;
+      }, 'missing_product_reassort.pdf', ['Content-Type' => 'application/pdf']);
     }
   }
 }

@@ -274,6 +274,8 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3,6']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
+
+    Route::post("/missingProductReassort", [Order::class, "missingProductReassort"])->name('missingProductReassort');
 });
 
 // ADMIN - CHEF D'ÉQUIPE & SAV
@@ -348,7 +350,6 @@ Route::get("/bordereauChrono", [Controller::class, "bordereauChrono"])->name('bo
 Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders');
 
 // Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
-
 
 // DEPLACER SUR CRON ELYAMAJE FR
 // Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');

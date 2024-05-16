@@ -453,9 +453,8 @@
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
-						<h2 class="text-center text-danger">Attention, cette commande est incomplète</h2>
-						<h4 class="mb-2 text-center">Souhaitez-vous la mettre de côté ? Le chef d'équipe en sera informé</h4>
-						<textarea style="resize:none" class="mb-3 form-control" id="note_partial_order" placeholder="Note..." rows="3"></textarea>
+						<h2 class="text-center text-danger">Attention, ce transfert est incomplet</h2>
+						<span class="mb-3 text-center partial_transfert">Souhaitez-vous le valider quand même ? <b>(un bon avec les produits manquant sera généré)</b></span>
 						<div class="w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
 							<button from_transfers="true" style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
@@ -498,7 +497,6 @@
 				</div>
 			</div>
 		</div>
-
 
 	</div>
 </div>

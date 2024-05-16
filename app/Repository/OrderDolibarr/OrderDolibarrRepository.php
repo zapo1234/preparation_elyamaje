@@ -62,6 +62,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    // Pour l'emballage d'une commande
    public function getOrdersDolibarrById($order_id){
+
       $order_lines = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'lines_commande_doli.id_product as product_dolibarr_id', 'users.name as preparateur')
