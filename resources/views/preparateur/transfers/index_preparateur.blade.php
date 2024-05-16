@@ -428,6 +428,9 @@
 						<span style="font-size:25px" class="mb-3 text-center">Produit(s) restant(s) à bipper : <span class="text-danger" style="font-size:30px" id="quantity_product_to_verif"></span></span>
 						<input type="hidden" value="" id="product_to_verif">
 					</div>
+					<div class="mb-3 w-100 d-flex justify-content-center">
+						<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+					</div>
 				</div>
 			</div>
 		</div>
