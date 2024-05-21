@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Kit;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Admin;
@@ -185,6 +186,7 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
     Route::post("/checkProductBarcodeForTransfers", [Order::class, "checkProductBarcodeForTransfers"])->name('orders.checkProductBarcodeForTransfers'); 
+    Route::get("/kit", [Kit::class, "kit"])->name('orders.kit');
 });
 
 // EMBALLEUR

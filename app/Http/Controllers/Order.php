@@ -626,8 +626,7 @@ class Order extends BaseController
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {
           $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
-          
-          // dd($order);
+
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
@@ -735,8 +734,11 @@ class Order extends BaseController
     // Historique commande préparateur
     public function ordersHistory(){
       $history = $this->order->getHistoryByUser(Auth()->user()->id);
+      $history_dolibarr = $this->orderDolibarr->getAllHistoryByUser(Auth()->user()->id);
+      $history = count($history_dolibarr) > 0 ? array_merge($history, $history_dolibarr) : $history;
       $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
-      
+
+      // Renvoie la vue historique du préparateurs
       return view('preparateur.history', ['history' => $history, 'printer' => $printer[0] ?? false, 'preparateur' => []]);
     }
 

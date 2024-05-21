@@ -695,7 +695,7 @@ a {
 	.detail_order_to_wrap .main {
 		padding: 0 2rem;
 		overflow-y: auto;
-		max-height: 36vh;
+		max-height: 55vh;
 	}
 	.generate_label_modal .modal-dialog{
 		max-width: 75% !important;
@@ -8243,6 +8243,7 @@ select option[disabled] {
 	overflow: visible;
   }
   
+  
 
   .sidebar .nav-links::-webkit-scrollbar{
 	display: none;
@@ -8305,13 +8306,27 @@ select option[disabled] {
 
   
 
-  .sidebar .nav-links li i{
-	height: 50px;
+.close .div_icon, .close .top_menu{
+	height: 40px !important;
+}
+
+.top_menu > a{
+	height: 40px !important;
+}
+
+.close .top_menu > a{
+	height: 100% !important;
+}
+
+
+
+.sidebar .nav-links li i{
+	/* height: 50px; */
 	min-width: 65px;
 	text-align: center;
-	line-height: 50px;
+	/* line-height: 50px; */
 	color: #000000;
-	font-size: 20px;
+	font-size: 18px;
 	cursor: pointer;
 	transition: all 0.3s ease;
   }
@@ -8321,7 +8336,7 @@ select option[disabled] {
 	min-width: 65px;
 	text-align: center;
 	line-height: 50px;
-	font-size: 16px;
+	font-size: 15px;
 	transition: all 0.3s ease;
   }
 
@@ -8604,7 +8619,9 @@ select option[disabled] {
 .sidebar.close .orders_customer span, 
 .sidebar.close .orders_distributor span,
 .sidebar.close .transfers_orders span{
-	right: -10px !important;
+	right: -20px !important;
+	width: 30px;
+	font-size: 0.7em;
 }
 
 .sidebar.close .sub-menu:has(.orders_customer){
@@ -9533,3 +9550,20 @@ select option[disabled] {
 	color: red;
 	font-weight: bold;
 }
+
+
+body:has(.comming_soon){
+	background-image: url(../images/comming_soon.svg);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center 50px;
+}
+
+body:has(.comming_soon) .page-content::after{
+	content: "En développement";
+	display: flex;
+	justify-content: center;
+	font-size: 1.8em;
+	font-weight: bold;
+}
+

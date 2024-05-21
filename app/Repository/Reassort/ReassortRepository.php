@@ -87,6 +87,7 @@ class ReassortRepository implements ReassortInterface
         // Cas de produits double si par exemple 1 en cadeau et 1 normal
         $product_double = [];
         foreach($list as $key1 => $li){
+
             foreach($li['items'] as $key2 => $item){
                 if(isset($product_double[$key1])){
 

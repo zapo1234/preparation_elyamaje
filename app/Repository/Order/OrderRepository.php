@@ -910,8 +910,9 @@ class OrderRepository implements OrderInterface
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $user_id)
+         ->join('users', 'users.id', '=', 'orders.user_id')
          ->whereIn('orders.status', ['prepared-order'])
-         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         ->select('orders.*', 'users.name as preparateur', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
@@ -944,7 +945,7 @@ class OrderRepository implements OrderInterface
 
       // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       foreach($orders as $order){
-   
+         $list_orders[$order['order_woocommerce_id']]['preparateur'] =  $order['preparateur'];
          $list_orders[$order['order_woocommerce_id']]['details'] = [
             'id' => $order['order_woocommerce_id'],
             'first_name' => $order['billing_customer_first_name'],

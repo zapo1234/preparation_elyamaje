@@ -69,7 +69,7 @@
                         <li>
                             <a class="link_name" href="{{ url('getVieuxSplay') }}">
                                 Transferts
-                                <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+                                <span class="alert-count" style="left: 95px; top: 10px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
 
                             </a>
                         </li>
@@ -286,7 +286,7 @@
                 <li>
                     <div class="top_menu icon-link">
                         <a href="#">
-                            <i class='bx bx-box'></i>
+                            <i class='bx bx-barcode-reader'></i>
                             <span class="link_name">Préparation</span>
                         </a>
                         <i class='bx bxs-chevron-down arrow' ></i>
@@ -296,6 +296,7 @@
                         <li class="orders_customer"><a href="{{ url('orders') }}">Internet</a></li>
                         <li class="orders_distributor"><a href="{{ url('ordersDistributeurs') }}">Distributeurs</a></li>
                         <li class="transfers_orders"><a href="{{ url('ordersTransfers') }}">Transfert</a></li>
+                        <li class=""><a href="{{ url('kit') }}">Kits</a></li>
                         <li><a href="{{ url('ordersHistory') }}">Historique</a></li>
                     </ul>
                 </li>
@@ -306,7 +307,7 @@
                 <li>
                     <div class="top_menu">
                         <a href="{{ url('wrapOrder') }}">
-                            <i class='bx bx-box'></i>
+                            <i class='bx bx-archive'></i>
                             <span class="link_name">Emballer</span>
                         </a>
                     </div>

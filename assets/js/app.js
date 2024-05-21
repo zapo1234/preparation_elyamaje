@@ -58,6 +58,10 @@ $(function () {
 
 	"use strict";
 	/* perfect scrol bar */
+
+	$(".top_menu .arrow").on('click', function(){
+		$("li").not($(this).closest("li")).removeClass("showMenu");	
+	})
 	
 	// Clôture de journée
 	$(".close_day").on('click', function(){
@@ -440,15 +444,6 @@ function notificationAlertStock(url_notification,_token){
 					console.log('erreur pusher');
 				}
 			});
-
-
-
-
-
-
-
-
-
 		}
 	});
 }
