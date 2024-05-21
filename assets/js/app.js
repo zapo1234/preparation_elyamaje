@@ -293,6 +293,29 @@ $( document ).ready(function() {
 		filter_mobile()
 	})
 
+	// Observer pour détecter l'ajout de la classe 'alert'
+	const observer = new MutationObserver(function(mutations) {
+		mutations.forEach(function(mutation) {
+			if (mutation.addedNodes.length) {
+				$(mutation.addedNodes).each(function() {
+					if ($(this).hasClass('alert')) {
+						// Supprimer la classe 'alert' après 3 secondes
+						const element = $(this);
+						setTimeout(function() {
+							element.fadeOut();
+						}, 3000);
+					}
+				});
+			}
+		});
+	});
+
+	// Configuration de l'observer
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+
 	if($.fn.dataTable){
 		$.extend(true, $.fn.dataTable.defaults, {
 			"showNEntries" : false,
