@@ -144,7 +144,7 @@
 										<tr>
 											<td data-label="Profil">
 
-												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="46" height="46" alt="">
+												<img src="{{ $user['picture'] ? 'storage/app/images/'.$user['picture'] : asset('assets/images/avatars/default_avatar.png') }}" class="rounded-circle" width="35" height="35" alt="">
 											</td>
 											<td data-label="Nom">{{ $user['name'] }}</td>
 											<td data-label="Rôles">	
@@ -343,6 +343,7 @@
 					{ "visible": false, "targets": 5 },
 				],
 				"initComplete": function(settings, json) {
+					
 					$("#example").removeClass('d-none')
 					$(".dataTables_length").css('display', 'flex')
             		$(".dataTables_length").addClass('select2_custom')

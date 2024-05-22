@@ -345,7 +345,35 @@ class ReassortRepository implements ReassortInterface
             "all_id_pere_kits" => $all_id_pere_kits,
             "composition_by_pere" => $composition_by_pere
         ];
-     }
+    }
+
+    public function getAllKits(){
+
+        $kits_details = DB::table('products_association')
+        ->leftJoin('products_dolibarr AS pd1', 'pd1.product_id', '=', 'products_association.fk_product_pere')
+        ->leftJoin('products_dolibarr AS pd2', 'pd2.product_id', '=', 'products_association.fk_product_fils')
+        ->select('pd1.label as label_parent', 'pd2.label as label_children', 'products_association.*')
+        ->get();
+        
+        
+        
+        // $composition_by_pere = array();
+
+        foreach ($kits_details as $key => $value) {
+
+            $parent_id = $value->fk_product_pere;
+            $id_fils = $value->fk_product_fils;
+            $qty = $value->qty;
+
+            if (!isset($composition_by_pere[$parent_id])) {
+                $composition_by_pere[$parent_id]['name'] = $value->label_parent;
+                $composition_by_pere[$parent_id]['children'][] = ["id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+            } else {
+                $composition_by_pere[$parent_id]['children'][] = ["id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+            }
+        }
+        return $composition_by_pere;
+    }
 
      public function updateStatusTextReassort($transfer_id, $status){
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['status' => $status]);

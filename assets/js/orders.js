@@ -91,8 +91,8 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '62vh',
-        scrollCollapse: true,
+        // scrollY: '62vh',
+        // scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
             url: 'getAllOrders',
@@ -456,26 +456,34 @@ $(document).ready(function() {
             { "visible": false, "targets": 9 },
         ],
         "initComplete": function(settings, json) {
+            $(".dataTables_length").css('display', 'flex')
+            $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
             $(".preparateur_dropdown").appendTo('.dataTables_length')
             $(".country_dropdown").appendTo('.dataTables_length')
+            $(".table_list_order thead").removeClass('d-none')
+
+            // $(".shipping_dropdown").appendTo('.dataTables_length')
+            // $(".status_dropdown").appendTo('.dataTables_length')
+            // $(".preparateur_dropdown").appendTo('.dataTables_length')
+            // $(".country_dropdown").appendTo('.dataTables_length')
 
             // Design
-            $("#example_length").parent().css('width', '70%')
-            $("#example_length").parent().css('margin-bottom', '5px')
-            $("#example_filter").parent().css('width', '30%')
-            $("#example_filter").parent().css('margin-bottom', '5px')
-            $("#example_filter").parent().parent().css('justify-content', 'space-between')
-            $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
-            $("#example_filter").parent().css('min-width', '210px')
+            // $("#example_length").parent().css('width', '70%')
+            // $("#example_length").parent().css('margin-bottom', '5px')
+            // $("#example_filter").parent().css('width', '30%')
+            // $("#example_filter").parent().css('margin-bottom', '5px')
+            // $("#example_filter").parent().parent().css('justify-content', 'space-between')
+            // $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
+            // $("#example_filter").parent().css('min-width', '210px')
 
-            $(".dataTables_length").css('display', 'flex')
-            $(".dataTables_length").addClass('select2_custom')
-            $(".shipping_dropdown").removeClass('d-none')
-            $(".status_dropdown").removeClass('d-none')
-            $(".preparateur_dropdown").removeClass('d-none')
-            $(".country_dropdown").removeClass('d-none')
+            // $(".dataTables_length").css('display', 'flex')
+            // $(".dataTables_length").addClass('select2_custom')
+            // $(".shipping_dropdown").removeClass('d-none')
+            // $(".status_dropdown").removeClass('d-none')
+            // $(".preparateur_dropdown").removeClass('d-none')
+            // $(".country_dropdown").removeClass('d-none')
 
             $(".preparateur_dropdown").select2({
                 width: '130px',
@@ -551,7 +559,7 @@ $(document).ready(function() {
     })
 
 
-    $('thead').remove()
+    // $('thead').remove()
 
     $('.shipping_dropdown').on('change', function(e){
         var shipping_dropdown = $(this).val();

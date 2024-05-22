@@ -68,7 +68,7 @@
 										<thead>
 											<tr>
 												<th class="col-md-1" scope="col">Commande</th>
-												<th class="col-md-4"scope="col">Préparée</th>
+												<th class="col-md-4" scope="col">Préparée</th>
 												<th class="col-md-4" scope="col">Emballée</th>
 												<th class="col-md-1" scope="col">Status</th>
 												<th class="col-md-1" scope="col">Détails</th>

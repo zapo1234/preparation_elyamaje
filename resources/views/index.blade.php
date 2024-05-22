@@ -138,13 +138,13 @@
 						<div class="col d-flex col-lg-8">
 								<div class="card card_table_mobile_responsive radius-10 w-100">
 									<div class="header_title hide_mobile d-flex align-items-center">
-										<div class="w-100 d-flex justify-content-between">
+										<div class="title_card_leader w-100 d-flex justify-content-between">
 											<h5 style="width:160px">Commande</h5>
-											<h5>Attribution</h5>
+											<!-- <h5>Attribution</h5>
 											<h5 style="width:100px">Date</h5>
 											<h5 style="width:100px">État</h5>
 											<h5 style="width:100px">Total</h5>
-											<h5>Détail</h5>
+											<h5>Détail</h5> -->
 										</div>
 									</div>
 									<div class="mobile_padding card-body mt-2 p-0">
@@ -188,7 +188,7 @@
 												<div class="d-none loading_show_detail_order w-100 d-flex justify-content-center">
 													<div class="spinner-grow text-dark" role="status"> <span class="visually-hidden">Loading...</span></div>
 												</div>
-												<!-- <thead>
+												<thead>
 													<tr>
 														<th scope="col">Commande</th>
 														<th scope="col">Attribution</th>
@@ -201,7 +201,7 @@
 														<th class="d-none col-md-1" scope="col">Préparateur</th>
 
 													</tr>
-												</thead> -->
+												</thead>
 												<tbody></tbody>
 												<tbody>
 													@for($i = 0; $i < 9; $i++)
