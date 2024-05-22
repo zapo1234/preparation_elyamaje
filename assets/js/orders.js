@@ -464,6 +464,7 @@ $(document).ready(function() {
             $(".country_dropdown").appendTo('.dataTables_length')
             $(".table_list_order thead").removeClass('d-none')
 
+            $(".header_title").removeClass('d-none')
             // $(".shipping_dropdown").appendTo('.dataTables_length')
             // $(".status_dropdown").appendTo('.dataTables_length')
             // $(".preparateur_dropdown").appendTo('.dataTables_length')

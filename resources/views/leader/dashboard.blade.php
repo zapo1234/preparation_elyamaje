@@ -152,9 +152,9 @@
 						</div>
 						<div class="col d-flex col-lg-8">
 								<div class="card card_table_mobile_responsive radius-10 w-100">
-									<div class="header_title hide_mobile d-flex align-items-center">
-										<div class="title_card_leader w-100 d-flex justify-content-between">
-											<h5>Commandes</h5>
+									<div class="d-none title_card_leader header_title hide_mobile d-flex align-items-center">
+										<div class="w-100 d-flex justify-content-between">
+											<h5 style="width: 160px">Commandes</h5>
 											<!-- <h5>Attribution</h5>
 											<h5>Date</h5>
 											<h5>État</h5>

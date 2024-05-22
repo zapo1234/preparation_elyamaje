@@ -137,7 +137,7 @@
 						</div>
 						<div class="col d-flex col-lg-8">
 								<div class="card card_table_mobile_responsive radius-10 w-100">
-									<div class="header_title hide_mobile d-flex align-items-center">
+									<div class="d-none header_title hide_mobile d-flex align-items-center">
 										<div class="title_card_leader w-100 d-flex justify-content-between">
 											<h5 style="width:160px">Commande</h5>
 											<!-- <h5>Attribution</h5>
