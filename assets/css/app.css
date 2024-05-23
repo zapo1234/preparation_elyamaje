@@ -9756,3 +9756,7 @@ table thead tr th:last-child{
 .wrapper_kit #infoMessageModal{
 	z-index: 1061 !important;
 }
+
+#delete_all_id i{
+	color: black !important;
+}
