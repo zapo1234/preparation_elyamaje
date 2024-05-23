@@ -9680,3 +9680,7 @@ table thead tr th:last-child{
 .detail_shipping_billing .shipping_detail{
 	margin-top: -25px !important;
 }
+
+#delete_all_id i{
+	color: black !important;
+}
