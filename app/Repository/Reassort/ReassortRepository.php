@@ -352,11 +352,10 @@ class ReassortRepository implements ReassortInterface
         $kits_details = DB::table('products_association')
         ->leftJoin('products_dolibarr AS pd1', 'pd1.product_id', '=', 'products_association.fk_product_pere')
         ->leftJoin('products_dolibarr AS pd2', 'pd2.product_id', '=', 'products_association.fk_product_fils')
-        ->select('pd1.label as label_parent', 'pd2.label as label_children', 'products_association.*')
+        ->select('pd1.label as label_parent', 'pd2.label as label_children', 'products_association.*', 'pd2.barcode')
         ->get();
         
-        
-        
+
         // $composition_by_pere = array();
 
         foreach ($kits_details as $key => $value) {
@@ -367,9 +366,10 @@ class ReassortRepository implements ReassortInterface
 
             if (!isset($composition_by_pere[$parent_id])) {
                 $composition_by_pere[$parent_id]['name'] = $value->label_parent;
-                $composition_by_pere[$parent_id]['children'][] = ["id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+                $composition_by_pere[$parent_id]['id'] = $value->fk_product_pere;
+                $composition_by_pere[$parent_id]['children'][] = ["barcode" => $value->barcode, "parent_id" => $value->fk_product_pere, "id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
             } else {
-                $composition_by_pere[$parent_id]['children'][] = ["id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+                $composition_by_pere[$parent_id]['children'][] = ["barcode" => $value->barcode, "parent_id" => $value->fk_product_pere, "id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
             }
         }
         return $composition_by_pere;

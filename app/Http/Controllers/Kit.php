@@ -46,12 +46,18 @@ class Kit extends BaseController
             ["name" => "VSP", "compare" => "Gamme", "image" => "VSP.png"],
         ];
 
+        // Sorting name asc
+        usort($products, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
         foreach ($products as $productId => $product) {
             $found = false;
             foreach ($groups as &$group) {
-                similar_text(explode(" ", $product['name'])[0], $group['compare'], $percent);
-             
+                similar_text(explode(" ", $product['name'])[0], $group['compare'], $percent);;
                 if ($percent > 50) {
+                   
+
                     $group['kits'][] = $product;
                     $found = true;
                     break;
@@ -62,7 +68,7 @@ class Kit extends BaseController
                     'name' => explode(" ", $product['name'])[0],
                     'kits' => [$product],
                     "compare" => explode(" ", $product['name'])[0],
-                    'image' => false
+                    'image' => false,
                 ];
             }
         }
