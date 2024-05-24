@@ -425,7 +425,7 @@ $("body").on("click", ".next2", function(e) {
 
                     $(".prepare_by_detail").remove()
                     $("#prepare_by").append(`
-                        <div class="d-flex flex-column prepare_by_detail">
+                        <div class="d-flex flex-column prepare_by_detail info_order">
                             <div class="d-flex align-items-center gap-3"><span class="title">Préparateur :</span><span> `+JSON.parse(data).user+`</span></div>
                             <div class="d-flex align-items-center gap-3"><span class="title">Date :</span><span> `+JSON.parse(data).date+`</span></div>
                             <div class="d-flex align-items-center gap-3"><span class="title">Identifiant :</span><span> `+JSON.parse(data).unique_id+`</span></div>
@@ -548,7 +548,6 @@ function imprimerPages() {
         builder.addTextSmooth(true);
         builder.addTextFont(builder.FONT_A);
         builder.addTextSize(1, 1);
-        builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
         builder.addText("\n"+$(".show .info_order").text()+"\n");
         builder.addText("\n");
         builder.addCut(builder.CUT_FEED);
