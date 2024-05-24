@@ -2699,7 +2699,7 @@ class Controller extends BaseController
     }
 
     public function shop(){
-        return view('shop.index');
+        return view('kit.index');
     }
 
     public function giftCardOrders($token){

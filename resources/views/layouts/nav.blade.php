@@ -390,6 +390,24 @@
                 </li>
             </div>
         @endif
+
+        <!-- Espace Vendeuse -->
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  8)))
+            <div class="div_icon">
+                <li>
+                    <div class="top_menu">
+                        <a href="{{ url('kit') }}">
+                            <i class='bx bx-box'></i>
+                            <span class="link_name">Kits</span>
+                        </a>
+                    </div>
+                    <ul class="sub-menu blank">
+                        <li><a class="link_name" href="{{ url('kit') }}">Kits</a></li>
+                    </ul>
+                </li>
+            </div>
+        @endif
+
             <div>
                 <li>
                     <div class="profile-details">

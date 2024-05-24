@@ -39,7 +39,8 @@ class Kit extends BaseController
         $kits = $this->reassort->getAllKits();
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $sort = $this->groupProductsByName($kits);
-        return view('preparateur.kits.kit', ['kits' => $sort, 'printer' => $printer[0]]);
+
+        return view('preparateur.kits.kit', ['kits' => $sort, 'printer' => isset($printer[0]) ? $printer[0] : false]);
     }
 
     // Fonction pour regrouper les produits par noms similaires
@@ -96,7 +97,9 @@ class Kit extends BaseController
         if(isset($kits[$kit_id])){
             foreach($kits[$kit_id]['children'] as $key => $kit){
                 $total_product = $total_product + intval($kit['quantity']);
-                if ($key !== false) {
+
+                $found = array_search($kit['barcode'], $barcode_array);
+                if ($found !== false) {
                     if(intval($kit['quantity']) != intval($products_quantity[$key])){
                         $check_if_done = false;
                     }
@@ -107,16 +110,19 @@ class Kit extends BaseController
 
             if($check_if_done){
                 // Insert to history
+                $unique_id =  "KIT-".time();
                 try{
                     $this->history->save([
-                        'order_id' => $kit_id,
+                        'order_id' => $unique_id,
                         'user_id' => Auth()->user()->id,
                         'status' => 'finished',
                         'created_at' => date('Y-m-d H:i:s'),
-                        'total_product' => $total_product ?? null
+                        'total_product' => $total_product ?? null,
+                        'kit' => $kit_id
+
                     ]);
 
-                    echo json_encode(["success" => true, 'user' => Auth()->user()->name, 'date' => date('d/m/Y H:i')]);
+                    echo json_encode(["success" => true, 'user' => Auth()->user()->name, 'date' => date('d/m/Y H:i'), 'unique_id' => $unique_id]);
                     return;
                 } catch (Exception $e){
                     echo json_encode(["success" => false, "message" => "Oops, une erreur est survenue !"]);

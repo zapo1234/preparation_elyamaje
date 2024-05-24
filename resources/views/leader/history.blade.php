@@ -81,10 +81,10 @@
 													<td data-label="Préparée">
 														<div class="d-flex flex-column">
 															<div class="d-flex flex-wrap histo_order align-items-center">
-																<span class="p-2 badge bg-dark">{{ $histo['prepared'] ?? ($histo['finished'] ?'Un autre jour' : '') }}</span>
-																<!-- @if($histo['prepared']) -->
-																	<span class="date_prepared">le {{ $histo['prepared_date'] }}</span>  
-																<!-- @endif -->
+																<span class="p-2 badge bg-dark">{{ $histo['kit'] ? $histo['finished'] : ($histo['prepared'] ?? ($histo['finished'] ?'Un autre jour' : '')) }}</span>
+																@if($histo['prepared'] || $histo['kit'])
+																	<span class="date_prepared">le {{ $histo['kit'] ? $histo['finished_date'] : $histo['prepared_date'] }}</span>  
+																@endif
 															</div>
 															
 														</div>
@@ -115,7 +115,9 @@
 
 														@elseif($histo['order_transfer_status'])
 															<span class="p-2 badge bg-secondary">{{ __('status_transfers.'.$histo['order_transfer_status']) }}</span>
-														@else 
+														@elseif($histo['kit'])
+															<span class="p-2 badge bg-secondary">{{ __('status.finished') }}</span>
+														@else
 															<span class="p-2 badge" style="background-color:#d16c6c">Aucune information</span>
 														@endif
 													</td>

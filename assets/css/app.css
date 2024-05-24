@@ -9810,3 +9810,12 @@ table thead tr th:last-child{
 	font-weight: bold;
 	font-size: 25px;
 }
+
+.prepare_by_detail .title{
+	font-size: 16px;
+}
+
+.prepare_by_detail .title{
+	font-weight: bold;
+	font-size: 18px;
+}	

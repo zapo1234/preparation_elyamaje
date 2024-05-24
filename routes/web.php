@@ -56,7 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
                 return redirect()->route('labels');
                 break;
             case 8 :
-                return redirect()->route('shop');
+                return redirect()->route('kit');
                 break;
             default:
                 return redirect()->route('logout');
@@ -182,16 +182,20 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
 
-    // Kit prepare
-    Route::post("/kitPrepared", [Kit::class, "kitPrepared"])->name('orders.kitPrepared');
-
     // Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
     Route::post("/checkProductBarcodeForTransfers", [Order::class, "checkProductBarcodeForTransfers"])->name('orders.checkProductBarcodeForTransfers'); 
+});
+
+// PRÉPARATEUR & VENDEUSE
+Route::group(['middleware' => ['auth', 'role:2,8']], function () {
+    // Kit prepare
+    Route::post("/kitPrepared", [Kit::class, "kitPrepared"])->name('orders.kitPrepared');
     Route::get("/kit", [Kit::class, "kit"])->name('orders.kit');
 });
+
 
 // EMBALLEUR
 Route::group(['middleware' => ['auth', 'role:3']], function () {
@@ -308,7 +312,7 @@ Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
 
 // Vendeuse
 Route::group(['middleware' =>  ['auth', 'role:8']], function () {
-    Route::get("/shop", [Controller::class, "shop"])->name('shop');
+    // Route::get("/shop", [Controller::class, "shop"])->name('shop');
 });
 
 // TOUS LES ROLES

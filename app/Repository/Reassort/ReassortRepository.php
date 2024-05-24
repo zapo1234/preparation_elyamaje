@@ -8,11 +8,9 @@ use App\Models\Reassort;
 use App\Http\Service\Api\Api;
 use App\Models\Categorie_dolibarr;
 use Illuminate\Support\Facades\DB;
-use App\Http\Service\PDF\CreatePdf;
 use App\Models\products_categories;
 use App\Models\Products_association;
 use Illuminate\Support\Facades\Http;
-use App\Repository\Reassort\ReassortMissingRepository;
 
 class ReassortRepository implements ReassortInterface 
 {   
@@ -22,12 +20,9 @@ class ReassortRepository implements ReassortInterface
     private $products_association;
     private $products;
     private $api;
-    private $pdf;
-    private $missing_reassort;
 
     public function __construct(Reassort $model,products_categories $products_categories,
-    Categorie_dolibarr $categories_dolibarr,Products_association $products_association,Product $products,Api $api,
-    CreatePdf $pdf, ReassortMissingRepository $missing_reassort
+    Categorie_dolibarr $categories_dolibarr,Products_association $products_association,Product $products,Api $api
     )
     {
         $this->model = $model;
@@ -36,8 +31,6 @@ class ReassortRepository implements ReassortInterface
         $this->products_association = $products_association;
         $this->products = $products;
         $this->api = $api;
-        $this->pdf = $pdf;
-        $this->missing_reassort = $missing_reassort;
     }
 
     public function getReassortByUser($user_id){
@@ -152,10 +145,9 @@ class ReassortRepository implements ReassortInterface
 
     public function getReassortByIdWithMissingProduct($order_id){
 
-        $transfer = $this->model::select('missing_products_reassort.missing as missing_product', 'products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
+        $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
             ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
             ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
-            ->leftJoin('missing_products_reassort', 'missing_products_reassort.identifiant_reassort', '=', 'hist_reassort.identifiant_reassort')
             ->where([
                 ['hist_reassort.identifiant_reassort', $order_id],
                 ['type', 0]
@@ -170,7 +162,6 @@ class ReassortRepository implements ReassortInterface
             $transfer[$key]['quantity'] = abs($order['qty']) - abs($order['missing']);
             $transfer[$key]['pick'] = abs($order['pick']);
             $transfer[$key]['shipping_method_detail'] = "Transfert";
-            $transfer[$key]['missing_product'] = $transfer[$key]['missing_product'] ? true : false;
         }
 
         return $transfer;
@@ -474,19 +465,6 @@ class ReassortRepository implements ReassortInterface
                 $missing_products[] = $list_products[$keyList];
             }
         }
-
-        if(count($missing_products) > 0){
-            // Create PDF
-            $missing_product_pdf = $this->pdf->generateMissingProductReassort($order_id, $missing_products);
-            $data = [
-                'identifiant_reassort' => $order_id,
-                'missing' =>  $missing_product_pdf
-            ];
-
-            $this->missing_reassort->insert($data);
-        }
-
-
        
         // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
         $casesPick = collect($list_products)->map(function ($item) {

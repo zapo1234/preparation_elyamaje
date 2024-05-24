@@ -72,33 +72,6 @@ class CreatePdf
         $pdf = $this->loadPDF->loadView('admin.bordereauChrono', compact('order_detail'));
         return $pdf->stream('invoice.pdf');
     }
-
-    public function generateMissingProductReassort($order_id, $missing_products){
-        $date = isset($missing_products[0]['date']) ? date('d/m/Y', strtotime($missing_products[0]['date'])) : date('d/m/Y');
-
-        $table = '<h3 style="text-align:center">Bon de produits manquants, transfert '.$order_id.' du ('.$date.')</h3></br>';
-        $table .= '<table style="width: 100%;" cellpadding="1" cellspacing="1">';
-        $table .='<tr>';
-            $table.='<th style="border:1px solid black" bgcolor="white">Produit</th>';
-            $table.='<th style="border:1px solid black" bgcolor="white">Quantité</th>';
-        $table .='</tr>';
-
-        foreach ($missing_products as $missing) {
-            $table .= '<tr>';
-                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $missing['name'] . '</td>';
-                $table .= '<td  style="border:1px solid black" bgcolor="white">' . $missing['missing'] . '</td>';
-            $table .= '</tr>';
-        }
-
-        try{
-            $this->dompdf->loadHtml($table);
-            $this->dompdf->render();
-
-            return $this->dompdf->output();
-        } catch(Exception $e){
-            dd($e->getMessage());
-        }
-    }
 }
 
 

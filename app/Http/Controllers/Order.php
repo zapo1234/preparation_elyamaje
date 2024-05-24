@@ -31,7 +31,6 @@ use App\Http\Service\Woocommerce\WoocommerceService;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repository\Commandeids\CommandeidsRepository;
 use App\Repository\Distributor\DistributorRepository;
-use App\Repository\Reassort\ReassortMissingRepository;
 use App\Repository\Notification\NotificationRepository;
 use App\Repository\ProductOrder\ProductOrderRepository;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -66,7 +65,6 @@ class Order extends BaseController
     private $orderDolibarr;
     private $commandeids;
     private $colissimoTracking;
-    private $missing_reassort;
 
     public function __construct(Api $api, UserRepository $user, 
       OrderRepository $order,
@@ -89,8 +87,7 @@ class Order extends BaseController
       ReassortRepository $reassort,
       OrderDolibarrRepository $orderDolibarr,
       CommandeidsRepository $commandeids,
-      ColissimoTracking $colissimoTracking,
-      ReassortMissingRepository $missing_reassort
+      ColissimoTracking $colissimoTracking
     ){
       $this->api = $api;
       $this->user = $user;
@@ -115,7 +112,6 @@ class Order extends BaseController
       $this->orderDolibarr = $orderDolibarr;
       $this->commandeids = $commandeids;
       $this->colissimoTracking = $colissimoTracking;
-      $this->missing_reassort = $missing_reassort;
     }
   
     public function orders($id = null, $distributeur = false){
@@ -821,6 +817,7 @@ class Order extends BaseController
           }
         } else {
           $histories_order[$history['order_id']] = $history;
+          $histories_order[$history['order_id']]['kit'] = $history['kit'] ?? false;
           // $histories_order[$history['order_id']]['prepared'] = $history['order_status'];
           $history['status'] == 'prepared' ? $histories_order[$history['order_id']]['user_id_prepared'] = $history['id'] : '';
           $histories_order[$history['order_id']]['prepared'] = $history['status'] == 'prepared' ? $history['name'] : null;
@@ -1702,21 +1699,6 @@ class Order extends BaseController
         return $shippingCost;
     } else {
       return 0;
-    }
-  }
-
-
-  public function missingProductReassort(Request $request){
-    $identifiant_reassort = $request->post('identifiant_reassort');
-    $fileContent = $this->missing_reassort->getById($identifiant_reassort);
-
-    if(isset($fileContent[0]->missing)){
-      $file = $fileContent[0]->missing;
-      $file = base64_encode($file);
-      // Retournez le contenu du fichier avec les bons en-têtes
-      return response()->streamDownload(function () use ($file) {
-          echo $file;
-      }, 'missing_product_reassort.pdf', ['Content-Type' => 'application/pdf']);
     }
   }
 }
