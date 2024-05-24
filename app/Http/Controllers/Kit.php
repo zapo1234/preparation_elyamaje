@@ -55,6 +55,7 @@ class Kit extends BaseController
             ["name" => "Coffrets", "compare" => "Coffrets", "image" => "Coffrets.png"],
             ["name" => "Râpes", "compare" => "Rapes", "image" => "Rapes.png"],
             ["name" => "VSP", "compare" => "Gamme", "image" => "VSP.png"],
+            ["name" => "Lovely Box", "compare" => "Lovely", "image" => "lovelybox.png"],
         ];
 
         // Sorting name asc
