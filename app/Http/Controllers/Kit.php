@@ -63,7 +63,7 @@ class Kit extends BaseController
         });
 
         foreach ($products as $productId => $product) {
-            if (in_array(explode(" ", $product['name'])[0], $group_to_ignore)) {
+            if (!in_array(explode(" ", $product['name'])[0], $group_to_ignore) && !in_array($product['name'], $group_to_ignore)) {
                 $found = false;
                 foreach ($groups as &$group) {
                     similar_text(explode(" ", $product['name'])[0], $group['compare'], $percent);;
