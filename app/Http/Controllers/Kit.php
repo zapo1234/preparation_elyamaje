@@ -48,8 +48,8 @@ class Kit extends BaseController
 
         $groups = [
             ["name" => "Lot de limes", "compare" => "Lot", "image" => "Limes.png"],
+            ["name" => "Kits de la Prothésiste", "compare" => "Kit de la Prothésiste", "image" => "prothesiste.png"],
             ["name" => "Kits", "compare" => "Kits", "image" => "default_product.png"],
-            ["name" => "Kits de la Prothésiste", "compare" => "prothésiste", "image" => "prothesiste.png"],
             ["name" => "Coffrets", "compare" => "Coffrets", "image" => "Coffrets.png"],
             ["name" => "Râpes", "compare" => "Rapes", "image" => "Rapes.png"],
             ["name" => "VSP", "compare" => "Gamme", "image" => "VSP.png"],
