@@ -1064,17 +1064,31 @@
 
         order: [[5, 'desc']], // Tri par défaut sur la première colonne en ordre décroissant
         pageLength: 1000,
-
         dom: 'Bfrtip',
-
         buttons: [
-            'copy',
-            'excel',
-            'csv',
-            'pdf',
-            'print'
-        ],
+                    {
+                        extend: 'pdfHtml5',
 
+                        // To add red background if missing product on transfer
+                        customize: function (doc) {
+                            var body = doc.content[1].table.body;
+                            $('.show .example6 tbody tr').each(function (rowIndex) {
+                                if ($(this).hasClass('missing_product')) {
+                                    var cells = body[rowIndex + 1]; // +1 car body[0] est l'en-tête
+                                    if(cells){
+                                        for (var cellIndex = 0; cellIndex < cells.length; cellIndex++) {
+                                            cells[cellIndex].fillColor = '#f58787';
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    'copy',
+                    'excel',
+                    'csv',
+                    'print'
+        ],
         lengthMenu: [
             [5,10, 25, 50, -1],
             ['5','10', '25', '50', 'Tout']

@@ -36,7 +36,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="d-flex flex-column">
+                                    <div class="d-flex flex-column h-100">
                                         @if(isset($value['kits']))
                                             <div class="container_multy_step">
                                                 <div class="step_form form1">
@@ -50,12 +50,12 @@
                                                         </thead>
                                                         <tbody>
                                                             @foreach($value['kits'] as $kit)
-                                                                <tr>
+                                                                <tr class="select_kit">
                                                                     <td><span id="kit_name_{{ $kit['id'] }}" >{{ $kit['name'] }}<span></td>
                                                                     <td>
-                                                                        <span>
-                                                                            <input data-id="{{ $kit['id'] }}" class="form-check-input checkbox_label" type="checkbox" value="" aria-label="Checkbox for product">
-                                                                        </span>
+                                                                        <div class="d-flex justify-content-end w-100">
+                                                                            <input data-cat="{{ $key }}" data-id="{{ $kit['id'] }}" class="form-check-input checkbox_label" type="checkbox" value="" aria-label="Checkbox for product">
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -63,8 +63,12 @@
                                                     </table>
                                                     
                                                 </div>
-                                                <div style="overflow-y:auto; max-height: 62vh" class="step_form form2">
-                                                    <div class="title_step2 title_step_kit mb-4">Sélection du kit à préparer</div>
+                                                <div class="step_form form2">
+                                                    <div class="mb-4 d-flex justify-content-center align-items-center gap-4">
+                                                        <div class="title_step2 title_step_kit">Sélection du kit à préparer</div>
+                                                        <div class="restart_kit"><i class="lni lni-spinner-arrow"></i></div>
+                                                    </div>
+                                                   
                                                     @foreach($value['kits'] as $kit)
                                                         @foreach($kit['children'] as $children)
                                                             <div class="barcode_{{ $children['barcode'] }} d-none product_in_kit parent_{{ $children['parent_id'] }} d-flex justify-content-between w-100">
@@ -77,20 +81,35 @@
                                                             </div>
                                                         @endforeach
                                                     @endforeach
-                                                   
                                                 </div>
-                                                <div class="progress_container">
+                                                <div class="step_form form3">
+                                                    <div class="d-flex justify-content-center mt-4 printableDiv" id="prepare_by"></div>
+                                                    <div class="d-flex justify-content-center no-print col">
+                                                        <!-- Détails imprimante -->
+                                                        <input type="hidden" class="printer_ip"  value="{{ $printer->address_ip ?? '' }}">
+                                                        <input type="hidden" class="printer_port" value="{{ $printer->port ?? ''}}">
+
+                                                        <button type="button" class="impression_code mt-5 btn btn-dark px-5 radius-20">
+                                                            <i class="bx bx-printer"></i>
+                                                            <span>Imprimer</span>
+                                                            <div class="d-none spinner-border spinner-border-sm" role="status"> <span class="visually-hidden">Loading...</span></div>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="progress_container no-print">
                                                     <div class="progress"></div>
                                                     <div class="circle active_progress">1</div>
                                                     <div class="circle">2</div>
+                                                    <div class="circle">3</div>
+
                                                 </div>
                                             </div>
                                         @else 
-                                            <div>Aucun kit</div>
+                                            <div class="no_kit h-100 w-100 d-flex align-items-center justify-content-center">Aucun kit</div>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="modal-footer">
+                                <div class="no-print modal-footer">
                                     <div class="btn_box">
                                         <button class="d-none btn btn-dark px-5 back1" type="button">Retour</button>
                                         <button class="btn btn-dark px-5 next1" type="button">Suivant</button>
@@ -157,6 +176,7 @@
     <script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
     <script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+    <script src="{{asset('assets/js/epos-2.24.0.js')}}"></script>
 
     <script>
 
@@ -180,11 +200,6 @@
                                     }
                                 }
                             });
-
-                            // if ($("#order_" + order_id + " .pick").length == $(".parent_" + order_id + " .product_order").length) {
-                            //     $("#order_" + order_id + " .validate_pick_in").css('background-color', '#16e15e')
-                            //     $("#order_" + order_id + " .validate_pick_in").css('border', 'none')
-                            // }
                         }
                     })
                 }
@@ -198,15 +213,19 @@
         $(document).ready(function() {
             $(".card").on('click', function(){
                 var id = $(this).attr('data-id')
+                $("#kit_category_"+id+" .next2").remove()
 
-                if(currectActive == 1){
-                    $(".next2").remove()
-                    $(".back1").addClass("d-none")
-                    $(".next1").removeClass('d-none')
-                    $(".form2").removeClass('active')
+                if(!$("#kit_category_"+id).find('.form2').hasClass('active')){
+                    $("#kit_category_"+id+" .back1").addClass("d-none")
+                    $("#kit_category_"+id+" .next1").removeClass('d-none')
+                } else {
+                    $("#kit_category_"+id+" .back1").removeClass("d-none")
+                    $("#kit_category_"+id+" .next1").addClass('d-none')
+                    $(".back1").after(`
+                        <button class="btn btn-dark px-5 next2" type="button">Valider</button>
+                    `)
                 }
                
-
                 $('#kit_category_'+id).modal({
                     backdrop: 'static',
                     keyboard: false
@@ -235,9 +254,9 @@
                     if ($("#barcode").val().length == 13) {
 
                         var barcode = $("#barcode").val()
-                        var parent_id = $(".form2").attr("data-parent")
-
-                        if($(".parent_"+parent_id+" .to_scan.barcode_"+barcode+".to_scan").length > 0) {
+                        var parent_id = $(".show .form2").attr("data-parent")
+                      
+                        if($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).length > 0) {
                             var quantity_to_pick_in = parseInt($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_to_pick_in').text())
                             console.log(quantity_to_pick_in)
 
@@ -426,8 +445,60 @@
             $("#barcode_verif").val('')
         }
 
+        function remove_kit_prepare(kit_id){
+            var pick_items = localStorage.getItem('barcode')
+            if (pick_items) {
+                pick_items = JSON.parse(pick_items)
+                Object.keys(pick_items).forEach(function (k, v) {
+                    if (pick_items[k]) {
+                        if (kit_id == pick_items[k].order_id) {
+                            pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                        }
+                    }
+                })
+
+                if(pick_items){
+                    if (pick_items.length == 0) {
+                        localStorage.removeItem('barcode');
+                    } else {
+                        localStorage.setItem('barcode', JSON.stringify(pick_items));
+                    }
+                }
+            }
+        }
+
         $(".checkbox_label").on("change", function(){
             $(".checkbox_label").not($(this)).prop("checked", false);
+        })
+
+        // Gestion du clic sur les lignes de table
+        $(".select_kit").on('click', function(event) {
+            // Vérifier si le clic a été sur la case à cocher pour éviter les conflits
+            if (!$(event.target).is('.checkbox_label')) {
+                var checkbox = $(this).find('.checkbox_label');
+                var isChecked = checkbox.prop('checked');
+                // Décocher toutes les autres cases à cocher
+                $(".checkbox_label").not(checkbox).prop("checked", false);
+                // Basculer l'état de la checkbox cliquée
+                checkbox.prop('checked', !isChecked);
+            }
+        });
+
+        // Empêcher la propagation de l'événement de clic sur les checkboxes
+        $(".checkbox_label").on('click', function(event) {
+            event.stopPropagation();
+        });
+
+        $(".restart_kit").on('click', function(){
+            $(this).addClass('rotateRight')
+            const kit_id = $(this).parent().parent().attr('data-parent')
+
+            $(".parent_" + kit_id + " .product_in_kit").removeClass("pick")
+            $(".parent_" + kit_id + " .quantity_pick_in").text(0)
+            $("#barcode").val("")
+            $("#barcode_verif").val("")
+
+            remove_kit_prepare(kit_id)
         })
 
         let currectActive = 1;
@@ -436,57 +507,154 @@
 
             // Get checked checkbox 
             var id = $(".checkbox_label:checked").attr('data-id')
-            var kit_selected = $("#kit_name_"+id).text()
 
-            $(".form2").addClass('active')
-            $(".form2").addClass("parent_"+id)
-            $(".form2").attr("data-parent", id)
-            $(".title_step2").text(kit_selected)
-            $(".product_in_kit").addClass('d-none')
-            $(".product_in_kit").removeClass('to_scan')
+            if(typeof id != "undefined"){
+                var cat = $(".checkbox_label:checked").attr('data-cat')
+                var kit_selected = $("#kit_name_"+id).text()
 
-            $(".parent_"+id).removeClass('d-none')
-            $(".parent_"+id).addClass('to_scan')
+                $("#kit_category_"+cat+" .form2").addClass('active')
+                $("#kit_category_"+cat+" .form2").addClass("parent_"+id)
+                $("#kit_category_"+cat+" .form2").attr("data-parent", id)
+                $("#kit_category_"+cat+" .title_step2").text(kit_selected)
+                $("#kit_category_"+cat+" .modal-title").text(kit_selected)
 
-            const form1 = $(".show .form1")[0];
-            const form2 = $(".show .form2")[0];
-            
-            $(".next1").addClass('d-none')
-            $(".back1").removeClass('d-none')
-            $(".back1").after(`
-                <button class="btn btn-dark px-5 next2" type="button">Valider</button>
-            `)
+                $("#kit_category_"+cat+" .product_in_kit").addClass('d-none')
+                $("#kit_category_"+cat+" .product_in_kit").removeClass('to_scan')
 
-            form1.style.left = "-990px";
-            form2.style.left = "0px";
+                $(".parent_"+id).removeClass('d-none')
+                $(".parent_"+id).addClass('to_scan')
 
-            increamentNumber();
-            update();
-            items_picked()
+                const form1 = $(".show .form1")[0];
+                const form2 = $(".show .form2")[0];
+                const form3 = $(".show .form3")[0];
+
+                $(".next1").addClass('d-none')
+                $(".back1").removeClass('d-none')
+                $(".back1").after(`
+                    <button class="btn btn-dark px-5 next2" type="button">Valider</button>
+                `)
+
+                form1.style.left = "-990px";
+                form2.style.left = "0px";
+                form3.style.left = "990px";
+
+
+                increamentNumber();
+                update();
+                items_picked()
+            } else {
+                $(".info_message").text("Veuillez sélectionner un kit")
+                $("#infoMessageModal").modal('show')
+            }
+          
         })
 
         $("body").on("click", ".next2", function(e) {
-            console.log("aa")
+            const kit_id = $(".checkbox_label:checked").attr('data-id')
+
+            if(kit_id){
+                const nbr_product = $(".show .to_scan.product_in_kit").length
+                const nbr_product_pick = $(".show .to_scan.pick").length
+                
+                if(nbr_product == nbr_product_pick){
+                    if(localStorage.getItem('barcode')){
+                        var order_object = false
+                        var pick_items = JSON.parse(localStorage.getItem('barcode'))
+                        if (pick_items) {
+                            // Récupère les produits de cette commande
+                            order_object = pick_items.find(
+                                element => element.order_id == kit_id
+                            )
+                        }
+                    } else {
+                        var pick_items = false
+                        var order_object = false
+                    }
+
+
+                    if (order_object) {
+                        pick_items = order_object.products
+                        pick_items_quantity = order_object.quantity
+                    } else {
+                        pick_items = false
+                        pick_items_quantity = false
+                    }
+
+                    // Send kit to history
+                    $.ajax({
+                        url: "kitPrepared",
+                        method: 'POST',
+                        data: { _token: $('input[name=_token]').val(), kit_id: kit_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity }
+                    }).done(function (data) {
+                        if(JSON.parse(data).success){
+                            const form1 = $(".show .form1")[0];
+                            const form2 = $(".show .form2")[0];
+                            const form3 = $(".show .form3")[0];
+
+                            form1.style.left = "-1980px";
+                            form2.style.left = "-990px";
+                            form3.style.left = "0px";
+
+
+                            $(".next2").remove()
+                            $(".back1").after(`
+                                <button class="btn btn-dark px-5 close_modal_kit_finished" type="button">Fermer</button>
+                            `)
+                            $(".back1").remove()
+
+                            increamentNumber();
+                            update();
+
+                            $(".prepare_by_detail").remove()
+                            $("#prepare_by").append(`
+                                <div class="d-flex flex-column prepare_by_detail">
+                                    <span>Préparé par `+JSON.parse(data).user+`</span>
+                                    <span>Le `+JSON.parse(data).date+`</span>
+                                </div>
+                            `)
+                            remove_kit_prepare(kit_id)
+                        } else {
+                            alert(JSON.parse(data).message)
+                        }
+                    })
+                } else {
+                    $(".info_message").text("Veuillez bipper tous les produits")
+                    $("#infoMessageModal").modal('show')
+                }
+            } else {
+                $(".info_message").text("Veuillez sélectionner un kit")
+                $("#infoMessageModal").modal('show')
+            }
         })
+
+        $("body").on("click", ".close_modal_kit_finished", function(e) {
+            window.location.reload();
+        })
+
+        // [{"order_id":"5496","products":["3760324819630"],"quantity":[10]}]
 
         //=============== Back One==================
         $(".back1").on('click', function(){
-            $(".form2").removeClass('active')
-            $(".back1").addClass('d-none')
-            $(".next2").remove()
-            $(".next1").removeClass('d-none')
+
+            $(".show .form2").removeClass('active')
+            $(".show .back1").addClass('d-none')
+            $(".show .next2").remove()
+            $(".show .next1").removeClass('d-none')
 
             const form1 = $(".show .form1")[0];
             const form2 = $(".show .form2")[0];
+            const form3 = $(".show .form3")[0];
 
             form1.style.left = "0px";
             form2.style.left = "990px";
+            form3.style.left = "1980px";
+
             // back slide
             decreametNumber();
             // update progress bar
             update();
         })
-        
+
         //============= Progress update====================
         function update() {
             const circles = document.querySelectorAll(".show .circle");
@@ -521,6 +689,79 @@
                     currectActive = 1;
                 }
         }
+
+        function accentsTidy(r){
+            var r=r;
+            // r = r.replace(new RegExp(/\s/g),"");
+            r = r.replace(new RegExp(/[àáâãäå]/g),"a");
+            r = r.replace(new RegExp(/æ/g),"ae");
+            r = r.replace(new RegExp(/ç/g),"c");
+            r = r.replace(new RegExp(/[èéêë]/g),"e");
+            r = r.replace(new RegExp(/[ìíîï]/g),"i");
+            r = r.replace(new RegExp(/ñ/g),"n");                
+            r = r.replace(new RegExp(/[òóôõö]/g),"o");
+            r = r.replace(new RegExp(/œ/g),"oe");
+            r = r.replace(new RegExp(/[ùúûü]/g),"u");
+            r = r.replace(new RegExp(/[ýÿ]/g),"y");
+            // r = r.replace(new RegExp(/\W/g),"");
+            return r;
+        };
+
+        $('body').on('click', '.impression_code', function () {
+            $(".impression_code span").addClass('d-none')
+            $(".impression_code div").removeClass('d-none')
+            $(".impression_code").attr('disabled', true)
+            imprimerPages()
+            $(".close_modal_validation").removeClass("d-none")
+        })
+
+        function imprimerPages() {
+
+            var printer_ip = $(".printer_ip").val() ?? false
+            var deviceID = "local_printer";
+
+            if(!printer_ip){
+                window.print();
+            } else {
+                //Create an ePOS-Print Builder object
+                var builder = new epson.ePOSBuilder();
+
+                builder.addTextLang('fr')
+                builder.addTextAlign(builder.ALIGN_CENTER);
+                builder.addTextSmooth(true);
+                builder.addTextFont(builder.FONT_A);
+                builder.addTextSize(1, 1);
+                builder.addSymbol($(".show #qrcode").attr('title'), builder.SYMBOL_QRCODE_MODEL_2, builder.LEVEL_DEFAULT, 8, 0, 0);
+                builder.addText("\n"+$(".show .info_order").text()+"\n");
+                builder.addText("\n");
+                builder.addCut(builder.CUT_FEED);
+
+                //Acquire the print document
+                var request = builder.toString();
+                var address = 'https://'+printer_ip+'/cgi-bin/epos/service.cgi?devid='+deviceID+'&timeout=6000';
+                var epos = new epson.ePOSPrint(address);
+                epos.onreceive = function (res) {
+                    if(!res.success){
+                        console.log(res)
+                    }
+
+                    $(".impression_code span").removeClass('d-none')
+                    $(".impression_code div").addClass('d-none')
+                    $(".impression_code").attr('disabled', false)
+                }
+
+                epos.onerror = function (err) {
+                    window.print();
+                }
+
+                //Send the print document
+                epos.send(request);
+            }
+        }
+
+        window.addEventListener("afterprint", (event) => {
+           console.log(event)
+        });
     </script>
 
 @endsection

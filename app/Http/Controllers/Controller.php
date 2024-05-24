@@ -354,7 +354,6 @@ class Controller extends BaseController
 
 
 
-
         $identifiant_unique = array();
         $data_reassort = array();
 
@@ -498,6 +497,7 @@ class Controller extends BaseController
                 }else {
                     $hist_reassort[$key]->label = "label inconnu";
                 }
+
                 array_push($liste_reassort[$reassort->identifiant_reassort]["detail_reassort"],$reassort);
             }
 
@@ -508,7 +508,6 @@ class Controller extends BaseController
 
         // on libère de la mémoire
         unset($all_products);
-
 
         return view('admin.supply',
             [

@@ -655,8 +655,8 @@ class Order extends BaseController
       }
 
       if($order && count($order) > 0){
-        //  if($order[0]['status'] == "finished" || $order[0]['status'] == "lpc_ready_to_ship"){
-        //   echo json_encode(["success" => false, "message" => "Cette commande est déjà emballée !"]);
+        // if($order[0]['status'] == "finished"){
+        //   echo json_encode(["success" => false, "message" => "Cette commande / transfert est déjà emballé(e) !"]);
         //   return;
         // }
       
@@ -1033,8 +1033,12 @@ class Order extends BaseController
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
           
-          if($tabProduitReassort){
+          if($tabProduitReassort[0]['status'] == "finished"){
+            echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
+            return;
+          }
 
+          if($tabProduitReassort){
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){

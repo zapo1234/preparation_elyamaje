@@ -181,6 +181,10 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
     Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
+
+    // Kit prepare
+    Route::post("/kitPrepared", [Kit::class, "kitPrepared"])->name('orders.kitPrepared');
+
     // Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
