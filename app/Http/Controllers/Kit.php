@@ -46,10 +46,12 @@ class Kit extends BaseController
     // Fonction pour regrouper les produits par noms similaires
     public function groupProductsByName($products) {
 
+        $group_to_ignore = ['Carte', 'Kits-ls-académie-formation'];
+
         $groups = [
             ["name" => "Lot de limes", "compare" => "Lot", "image" => "Limes.png"],
             ["name" => "Kits de la Prothésiste", "compare" => "Kit", "image" => "prothesiste.png"],
-            ["name" => "Kits", "compare" => "Kits", "image" => "default_product.png"],
+            // ["name" => "Kits", "compare" => "Kits", "image" => "default_product.png"],
             ["name" => "Coffrets", "compare" => "Coffrets", "image" => "Coffrets.png"],
             ["name" => "Râpes", "compare" => "Rapes", "image" => "Rapes.png"],
             ["name" => "VSP", "compare" => "Gamme", "image" => "VSP.png"],
@@ -61,25 +63,25 @@ class Kit extends BaseController
         });
 
         foreach ($products as $productId => $product) {
-            $found = false;
-            foreach ($groups as &$group) {
-                similar_text(explode(" ", $product['name'])[0], $group['compare'], $percent);;
-                if ($percent > 50) {
-                   
-
-                    $group['kits'][] = $product;
-                    $found = true;
-                    break;
-                } 
-            }
-            if (!$found) {
-                $groups[] = [
-                    'name' => explode(" ", $product['name'])[0],
-                    'kits' => [$product],
-                    "compare" => explode(" ", $product['name'])[0],
-                    'image' => false,
-                ];
-            }
+            if (in_array(explode(" ", $product['name'])[0], $group_to_ignore)) {
+                $found = false;
+                foreach ($groups as &$group) {
+                    similar_text(explode(" ", $product['name'])[0], $group['compare'], $percent);;
+                    if ($percent > 50) {
+                        $group['kits'][] = $product;
+                        $found = true;
+                        break;
+                    } 
+                }
+                if (!$found) {
+                    $groups[] = [
+                        'name' => explode(" ", $product['name'])[0],
+                        'kits' => [$product],
+                        "compare" => explode(" ", $product['name'])[0],
+                        'image' => false,
+                    ];
+                }
+            } 
         }
 
         return $groups;
