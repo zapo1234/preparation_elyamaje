@@ -41,7 +41,7 @@
                                             <div class="container_multy_step">
                                                 <div class="step_form form1">
                                                     <div class="title_step_kit">Sélection du kit à préparer</div>
-                                                    <table id="example" class="table_kit d-none table_mobile_responsive w-100 table table-striped table-bordered">
+                                                    <table id="example" class="table_kit d-none  w-100 table table-striped table-bordered">
                                                         <thead>
                                                             <tr>
                                                                 <th class="col-md-1">Kit</th>
