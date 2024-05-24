@@ -49,8 +49,8 @@ class Kit extends BaseController
         $group_to_ignore = ['Carte', 'Kits-ls-académie-formation'];
 
         $groups = [
-            ["name" => "Lot de limes", "compare" => "Lot", "image" => "Limes.png"],
             ["name" => "Kits de la Prothésiste", "compare" => "Kit", "image" => "prothesiste.png"],
+            ["name" => "Lot de limes", "compare" => "Lot", "image" => "Limes.png"],
             // ["name" => "Kits", "compare" => "Kits", "image" => "default_product.png"],
             ["name" => "Coffrets", "compare" => "Coffrets", "image" => "Coffrets.png"],
             ["name" => "Râpes", "compare" => "Rapes", "image" => "Rapes.png"],
