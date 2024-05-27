@@ -469,8 +469,9 @@ function remove_product(barcode, parent_id){
     if($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).hasClass('pick')){
         $(".show .remove_"+barcode+"_"+parent_id+" i").addClass('rotateRight')
     }
-    $(".barcode_"+barcode).removeClass('pick')
-    $(".barcode_"+barcode).find('.quantity_pick_in').text("0")
+    
+    $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).removeClass('pick')
+    $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_pick_in').text("0")
 
     if (localStorage.getItem('barcode')) {
         pick_items = JSON.parse(localStorage.getItem('barcode'))
@@ -502,7 +503,6 @@ $(".valid_manually_barcode").on('click', function(){
     var product_barcode = $("#product_barcode").val()
     var barcode = $("#barcode_manually").val()
     var parent_id = $("#parent_id").val()
-
 
     if(product_barcode === barcode){
         $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).addClass('pick')
