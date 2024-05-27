@@ -420,7 +420,7 @@
 		</div>
 
 		<!-- Modal vérification quantité -->
-		<div class="modal_reset_order modal_verif_order modal fade" data-order="" id="modalverification" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal_reset_order modal_verif_order modal fade transfers_verif" data-order="" id="modalverification" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
@@ -429,7 +429,7 @@
 						<input type="hidden" value="" id="product_to_verif">
 					</div>
 					<div class="mb-3 w-100 d-flex justify-content-center">
-						<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+						<button type="button" class="close_modal d-none btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
 					</div>
 				</div>
 			</div>

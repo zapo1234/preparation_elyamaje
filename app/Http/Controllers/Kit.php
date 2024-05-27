@@ -39,7 +39,6 @@ class Kit extends BaseController
         $kits = $this->reassort->getAllKits();
         $printer = $this->printer->getPrinterByUser(Auth()->user()->id);
         $sort = $this->groupProductsByName($kits);
-
         return view('preparateur.kits.kit', ['kits' => $sort, 'printer' => isset($printer[0]) ? $printer[0] : false]);
     }
 

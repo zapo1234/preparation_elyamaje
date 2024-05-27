@@ -450,6 +450,73 @@ $("body").on("click", ".close_modal_kit_finished", function(e) {
     window.location.reload();
 })
 
+
+function enter_manually_barcode(product_id, parent_id){
+    $("#barcode_manually").css('border', '1px solid #ced4da')
+    $('#barcode_manually').attr('placeholder','');
+    $("#product_barcode").val(product_id)
+    $("#parent_id").val(parent_id)
+
+    $('#modalManuallyBarcode').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#modalManuallyBarcode").modal('show')
+}
+
+function remove_product(barcode, parent_id){
+
+    if($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).hasClass('pick')){
+        $(".show .remove_"+barcode+"_"+parent_id+" i").addClass('rotateRight')
+    }
+    $(".barcode_"+barcode).removeClass('pick')
+    $(".barcode_"+barcode).find('.quantity_pick_in').text("0")
+
+    if (localStorage.getItem('barcode')) {
+        pick_items = JSON.parse(localStorage.getItem('barcode'))
+
+        if (pick_items.length > 0) {
+            Object.keys(pick_items).forEach(function (k, v) {
+                if (pick_items[k]) {
+                    if (parent_id == pick_items[k].order_id) {
+                        Object.keys(pick_items[k].products).forEach(function (l, w) {
+                            if(pick_items[k].products[l] == barcode){
+                                pick_items[k].products.splice(l, 1);
+                                pick_items[k].quantity.splice(l, 1);
+
+                                if(JSON.stringify(pick_items)){
+                                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                                    return;
+                                }
+                            }
+                        }) 
+                    }
+                }
+            })
+        }  
+    }  
+}
+
+$(".valid_manually_barcode").on('click', function(){
+
+    var product_barcode = $("#product_barcode").val()
+    var barcode = $("#barcode_manually").val()
+    var parent_id = $("#parent_id").val()
+
+
+    if(product_barcode === barcode){
+        $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).addClass('pick')
+        $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_pick_in').text($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_to_pick_in').text())
+        $("#modalManuallyBarcode").modal('hide')
+        $("#barcode").val(barcode)
+        saveItem(parent_id, false, true, true)
+        $("#barcode_manually").val("")
+    } else {
+        $("#barcode_manually").css('border', '1px solid red')
+        $('#barcode_manually').attr('placeholder','Code barre invalide !'); 
+    }
+})
+
 //=============== Back One==================
 $(".back1").on('click', function(){
 

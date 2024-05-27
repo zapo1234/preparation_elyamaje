@@ -155,6 +155,8 @@ document.addEventListener("keyup", function (e) {
 
                             $("#modalverification").attr('data-order', order_id)
                             $("#modalverification").modal('show')
+                            setTimeout(function(){  $(".transfers_verif .close_modal").removeClass('d-none') }, 3000)
+
                             $("#barcode_verif").val($("#barcode").val())
                             saveItem(order_id, true)
                         } else if(quantity_to_pick_in > 10){

@@ -72,7 +72,17 @@
                                                     @foreach($value['kits'] as $kit)
                                                         @foreach($kit['children'] as $children)
                                                             <div class="barcode_{{ $children['barcode'] }} d-none product_in_kit parent_{{ $children['parent_id'] }} d-flex justify-content-between w-100">
-                                                                <div class="product_name">{{ $children['label'] }}</div>
+                                                                <div class="d-flex flex-column">
+                                                                    <div class="product_name">{{ $children['label'] }}</div>
+                                                                    <div style="font-size:13px" class="product_barcode">{{ $children['barcode'] }}</div>
+
+                                                                    @if($children['barcode'])
+																		<div class="d-flex">
+																			<span onclick="enter_manually_barcode({{ $children['barcode']}}, {{ $children['parent_id']}})" class="manually_barcode"><i class="lni lni-keyboard"></i></span>
+																			<span class="remove_{{ $children['barcode'] }}_{{ $children['parent_id'] }} remove_product" onclick="remove_product({{ $children['barcode']}} , {{ $children['parent_id'] }})"><i class="lni lni-spinner-arrow"></i></span>
+																		</div>
+																	@endif
+                                                                </div>
                                                                 <div>
                                                                     <span class="quantity_pick_in">0</span>
                                                                     <span>/</span>
@@ -163,6 +173,23 @@
                     </div>
                 </div>
 
+                <!-- Modal entrée manuelle de code barre -->
+                <div class="modal fade modal_reset_order" id="modalManuallyBarcode" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+                                <h2 class="text-center">Code barre</h2>
+                                <input class="mt-2 mb-2 custom_input" type="text" id="barcode_manually" name="barcode_manually" value="">
+                                <input type="hidden" id="product_barcode" value="">
+                                <input type="hidden" id="parent_id" value="">
+                                <div class="mt-3 w-100 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
+                                    <button style="margin-left:10px;" type="button" class="valid_manually_barcode btn btn-dark px-5">Valider</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
