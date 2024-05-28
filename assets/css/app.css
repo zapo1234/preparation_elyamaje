@@ -8787,7 +8787,7 @@ select option[disabled] {
 }
 .card_with_label::before {
 	position: absolute;
-    top: -24px;
+    top: -25px;
     left: -23px;
     content: '';
     background: black;
