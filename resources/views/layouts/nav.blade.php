@@ -1,4 +1,4 @@
-<div class="sidebar close">
+<div class="no-print sidebar close">
     <div class="logo-details">
       <!-- <i class='bx bxl-c-plus-plus'></i> -->
       <!-- <span class="logo_name">CodingLab</span> -->
@@ -430,8 +430,8 @@
     </ul>
 
   </div>
-  <section class="home-section close">
-    <div class="home-content">
+  <section class="home-section close no-print">
+    <div class="home-content no-print">
       <!-- <i class='bx bx-menu' ></i> -->
       <div class="show_hide_nav">
         <i class="text-dark icon_navbar font-20 fadeIn animated bx bx-chevron-right"></i>

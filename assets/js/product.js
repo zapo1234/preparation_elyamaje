@@ -47,7 +47,7 @@ $(document).ready(function() {
                 })
         },
 
-        
+
 
 
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
@@ -68,6 +68,31 @@ $(document).ready(function() {
             })
         }
     })
+})
+
+$(".barcode_image").on('click', function(){
+
+    const product_id = $(this).attr('data-id')
+    const product_name = $("#product_"+product_id).text()
+
+    $(".product_name_modal").text(product_name)
+    $(".barcode_show").children().remove()
+
+  
+    const barcodeContainer = $('.barcode_show')[0];
+    const canvas = document.createElement('canvas');
+
+    JsBarcode(canvas, $(this).attr('id'), {
+        format: "ean13",
+        displayValue: true
+    });
+    barcodeContainer.appendChild(canvas);
+
+    $('#product_barcode').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#product_barcode").modal('show')
 })
 
 $('.category_dropdown').on('change', function(e){

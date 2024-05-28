@@ -3,7 +3,7 @@ function filter_mobile(){
     if(/* $(".page-wrapper").find('.dashboard_leader').length == 0 && */ $(".dataTables_length ").length > 0 && ($("#example_length .custom_input").length > 1 || $("#example_length .select2_custom").length > 1)){
 		if($(".filter_mobile").length == 0){
             $(".table_mobile_responsive").first().before(`
-				<div class="filter_mobile">
+				<div class="no-print filter_mobile">
 				<div class="other_element d-flex"></div>
 					<div class="d-none filter_tab">
 						<span class="filter_tab_title">Filtres</span>

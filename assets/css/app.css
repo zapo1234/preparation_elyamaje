@@ -6784,6 +6784,12 @@ a{
     	overflow: hidden;
 	}
 
+	body:has(.modal_to_print ) *{
+		visibility: visible;
+		max-height: 100%;
+    	overflow: hidden;
+	}
+
 	.modal_success  .modal-content * {
 		visibility: visible;
 		overflow: visible;
