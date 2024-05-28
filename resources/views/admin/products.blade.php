@@ -74,7 +74,7 @@
 												<input data-id="" class="form-check-input check_all" type="checkbox" value="" aria-label="Checkbox for product">
 											</span>
 										</th>
-										<th>Nom</th>
+										<th class="col-md-2">Nom</th>
 										<th>Prix (TTC)</th>
 										<th>Code Barre</th>
 										<th>Catégorie</th>
