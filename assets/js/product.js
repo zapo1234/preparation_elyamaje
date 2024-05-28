@@ -29,6 +29,43 @@ $(document).ready(function() {
             });
 
             $(".select2-container").css('margin-right', '10px')
+
+                // Generate barcode
+                $(".barcode_table_products").each(function( index ) {
+                    const ean13 = $( this ).children("span").text()
+
+                    if(ean13.length == 13){
+                        const barcodeContainer = $( this ).children('.barcode_image')[0];
+                        const canvas = document.createElement('canvas');
+                        JsBarcode(canvas, ean13, {
+                            format: "ean13",
+                            displayValue: true
+                        });
+                        barcodeContainer.appendChild(canvas);
+                        $( this ).children("span").remove()
+                    }
+                })
+        },
+
+        
+
+
+        "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            // Generate barcode
+            $(".barcode_table_products").each(function( index ) {
+                const ean13 = $( this ).children("span").text()
+
+                if(ean13.length == 13){
+                    const barcodeContainer = $( this ).children('.barcode_image')[0];
+                    const canvas = document.createElement('canvas');
+                    JsBarcode(canvas, ean13, {
+                        format: "ean13",
+                        displayValue: true
+                    });
+                    barcodeContainer.appendChild(canvas);
+                    $( this ).children("span").remove()
+                }
+            })
         }
     })
 })

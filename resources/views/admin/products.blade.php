@@ -93,7 +93,15 @@
 											</td>
 											<td data-label="Nom">{{ $product->name }}</td>
 											<td data-label="Prix (TTC)">{{ $product->price }} {{ config('app.currency_symbol') }}</td>
-											<td data-label="Code Barre">{{ $product->barcode != "" ?  $product->barcode : "Aucun"}}</td>
+											<td data-label="Code Barre">
+												<div class="barcode_table_products">
+													<span>{{ $product->barcode != "" ?  $product->barcode : "Aucun"}}</span>
+													<div class="barcode_image">
+
+													</div>
+
+												</div>
+											</td>
 											<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
 											<td data-label="Status">
 												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
@@ -153,6 +161,7 @@
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+		<script src="{{asset('assets/js/jsBarcode.js')}}"></script>
 		<script src="{{asset('assets/js/product.js')}}"></script>
 	@endsection
 

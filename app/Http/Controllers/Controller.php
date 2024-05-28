@@ -167,6 +167,7 @@ class Controller extends BaseController
     {
         // Get all products
         $products = $this->products->getAllProducts();
+
         // Get all categories products
         $categories = $this->categories->getAllCategories();
         return view('admin.products', ['products' => $products, 'categories' => $categories]);

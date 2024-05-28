@@ -95,11 +95,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
-    Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
-    Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
-    Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
-    Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
+
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
     Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
@@ -267,6 +264,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     // Lyes
     Route::post('/initialQtyLot', [Admin::class, 'initialQtyLot'])->name('initialQtyLot');
     Route::post('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
+
+    // Products
+    Route::get("/products", [Controller::class, "products"])->name('admin.products');
+    Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
+    Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
+    Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR

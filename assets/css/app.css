@@ -9819,3 +9819,9 @@ table thead tr th:last-child{
 	font-weight: bold;
 	font-size: 18px;
 }	
+
+.barcode_image canvas{
+	width: 150px !important;
+	height: 91px !important;
+
+}

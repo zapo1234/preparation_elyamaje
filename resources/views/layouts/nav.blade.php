@@ -52,6 +52,7 @@
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Configuration</a></li>
                         <li><a href="{{ url('account') }}">Comptes</a></li>
+                        <li><a href="{{ url('products') }}">Produits</a></li>
                         <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                     </ul>
                 </li>
