@@ -150,7 +150,7 @@ class OrderRepository implements OrderInterface
                            'product_woocommerce_id' => 110203,
                            'category' =>  '',
                            'category_id' => '',
-                           'quantity' => $nbr_sac,
+                           'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
                            'cost' => 0,
                            'subtotal_tax' =>  0,
                            'total_tax' =>  0,

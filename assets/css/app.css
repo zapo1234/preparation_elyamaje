@@ -28,6 +28,10 @@ File: app.css
   - Responsive
 */
 
+/* html{
+	cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAx0lEQVR4nN3TsUqCYRQG4MegwbGhIAi3lhpy1iWc6ga8gKCpWe9AaHGu1cUrCBy8D1sdRGhqSbCQvhD+4UccSr+z9MIZ3jM8w4HDf0ofVxHwBO9oRsAJC9xEwAmfaEfACSvcR8AJ3+hEwKmYxyg44QkHEXDCEIcRcMILqhHwCg854Ddc4xInqOxzijlmpd76K7YNnuIc3RI8sif8irOiH+GjhNd3he9wvLF7LsEDGXNRvPUa/kItJz4u4CVuc8IN9HCaE/11fgDKoWg9EHyyXAAAAABJRU5ErkJggg==),auto;
+} */
+
 html, body, .wrapper{
 	height: 100%;
 }
