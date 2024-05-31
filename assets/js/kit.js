@@ -1,4 +1,4 @@
-function items_picked(){
+function items_picked(kit_selected){
     // Récupère le localstorage pour mettre les produits "pick" qui le sont déjà
     if (localStorage.getItem('barcode')) {
         var list_barcode = localStorage.getItem('barcode')
@@ -15,6 +15,9 @@ function items_picked(){
                                 setTimeout(function () {
                                     $(".parent_" + order_id + " .to_scan.barcode_" + item).addClass('pick')
                                 }, 0)
+
+                                // Calcul avancée pick in
+                               progress(kit_selected)
                             }
                         }
                     });
@@ -26,6 +29,22 @@ function items_picked(){
     if (localStorage.getItem('product_quantity_verif')) {
         $(".barcode_" + localStorage.getItem('product_quantity_verif')).removeClass('pick')
     }
+}
+
+function progress(order_id){
+
+    var products_to_pick = 0
+    $($(".parent_" + order_id + " .to_scan") ).each(function( index ) {
+        products_to_pick = products_to_pick + parseInt($(this).find('.quantity_to_pick_in').text());
+    });
+
+    var products_pick_in = 0
+    $($(".parent_" + order_id + " .to_scan") ).each(function( index ) {
+        products_pick_in = products_pick_in + parseInt($(this).find('.quantity_pick_in').text());
+    });
+
+    var percent = parseFloat(products_pick_in *100) / products_to_pick
+    $(".show .modal-content .validate_kit").css("background", "linear-gradient(to right, #3edd76 "+percent+"%, black 0%)")
 }
 
 $(document).ready(function() {
@@ -40,15 +59,24 @@ $(document).ready(function() {
             $("#kit_category_"+id+" .back1").removeClass("d-none")
             $("#kit_category_"+id+" .next1").addClass('d-none')
             $(".back1").after(`
-                <button class="btn btn-dark px-5 next2" type="button">Valider</button>
+                <button class="btn btn-dark px-5 next2 validate_kit" type="button">Valider</button>
             `)
         }
-       
+
+        const kit_selected = $("#kit_category_"+id+" .form2").attr('data-parent')
+    
         $('#kit_category_'+id).modal({
             backdrop: 'static',
             keyboard: false
         })
         $('#kit_category_'+id).modal('show')
+
+        setTimeout(function(){
+            if(kit_selected){
+                progress(kit_selected)
+            }
+        },500)
+        
     })
 
     $('.table_kit').each(function() {
@@ -76,7 +104,6 @@ document.addEventListener("keyup", function (e) {
               
                 if($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).length > 0) {
                     var quantity_to_pick_in = parseInt($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_to_pick_in').text())
-                    console.log(quantity_to_pick_in)
 
                     if ($(".parent_"+parent_id+" .to_scan.barcode_"+barcode).hasClass('pick')) {
                         $(".info_message").text("Ce produit à déjà été bippé !")
@@ -107,6 +134,7 @@ document.addEventListener("keyup", function (e) {
                             $("#modalverification").modal('show')
                             $("#barcode_verif").val(barcode)
                             saveItem(parent_id, true)
+                            progress(parent_id)
                         } else if(quantity_to_pick_in > 10){
                             $(".quantity_product").text('')
                             $(".quantity_product").text(quantity_to_pick_in)
@@ -121,9 +149,11 @@ document.addEventListener("keyup", function (e) {
                             $("#modalverification2").modal('show')
                             $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_pick_in').text(quantity_to_pick_in)
                             saveItem(order_id, false, true, true)
+                            progress(parent_id)
                         } else {
                             $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_pick_in').text(1)
                             saveItem(parent_id, false)
+                            progress(parent_id)
                         }
                     }
                 } else {
@@ -317,6 +347,7 @@ $(".restart_kit").on('click', function(){
     $("#barcode_verif").val("")
 
     remove_kit_prepare(kit_id)
+    progress(kit_id)
 })
 
 let currectActive = 1;
@@ -349,7 +380,7 @@ $(".next1").on('click', function(){
         $(".next1").addClass('d-none')
         $(".back1").removeClass('d-none')
         $(".back1").after(`
-            <button class="btn btn-dark px-5 next2" type="button">Valider</button>
+            <button class="validate_kit btn btn-dark px-5 next2" type="button">Valider</button>
         `)
 
         form1.style.left = "-990px";
@@ -359,7 +390,7 @@ $(".next1").on('click', function(){
 
         increamentNumber();
         update();
-        items_picked()
+        items_picked(id)
     } else {
         $(".info_message").text("Veuillez sélectionner un kit")
         $("#infoMessageModal").modal('show')
@@ -472,6 +503,7 @@ function remove_product(barcode, parent_id){
     
     $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).removeClass('pick')
     $(".parent_"+parent_id+" .to_scan.barcode_"+barcode).find('.quantity_pick_in').text("0")
+    progress(parent_id)
 
     if (localStorage.getItem('barcode')) {
         pick_items = JSON.parse(localStorage.getItem('barcode'))
@@ -510,6 +542,7 @@ $(".valid_manually_barcode").on('click', function(){
         $("#modalManuallyBarcode").modal('hide')
         $("#barcode").val(barcode)
         saveItem(parent_id, false, true, true)
+        progress(parent_id)
         $("#barcode_manually").val("")
     } else {
         $("#barcode_manually").css('border', '1px solid red')
