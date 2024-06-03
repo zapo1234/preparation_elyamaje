@@ -2786,7 +2786,7 @@ class Controller extends BaseController
                     // Remplacer par fonction qui facture plusieurs fois
                 }
             } 
-
+           
             if(count($order_to_billing) > 0){
                 // Envoie à la facturation par 4
                 $this->transferkdo->transferkdo($order_to_billing);

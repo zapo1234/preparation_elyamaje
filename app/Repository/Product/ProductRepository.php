@@ -154,7 +154,7 @@ class ProductRepository implements ProductInterface
    public function getbarcodeproduct(){
       
       // recupérer 
-      $data =  DB::table('products')->select('product_woocommerce_id','barcode')->get();
+      $data =  DB::table('products')->select('product_woocommerce_id','barcode','name','image')->get();
       // transformer les retour objets en tableau
       $list = json_encode($data);
       $lists = json_decode($data,true);
@@ -163,11 +163,14 @@ class ProductRepository implements ProductInterface
 
       foreach($lists as $values){
          $array_result[$values['product_woocommerce_id']] = $values['barcode'];
-   
+         $list_product_api[] =[
+             'name_product'=>$values['name'],
+             'image'=>$values['image'],
+         ];
       }
       
       // recuperer la liste de produit
-       //$this->setProducts($list_product_api);
+       $this->setProducts($list_product_api);
       // renvoyer un tableau associatif avec key id_product et value barcode.
       return $array_result;
    }
