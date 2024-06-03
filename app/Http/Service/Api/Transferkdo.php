@@ -528,8 +528,7 @@ class Transferkdo
                                    }
 
                                       
-
-                                     if($fk_product=="") {
+                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
                                         $info = 'Numero de comande '.$donnees['order_id'].'';
                                         $data_echec[] = $values['name'].','.$info;
@@ -547,9 +546,16 @@ class Transferkdo
                                   $id_true ="";
                                   $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
+
+                                    // differencier la facture sois c'est un -cado ou c'est un gala.
+                                    if($donnees['gala']==true){
+                                         $index_numero ='-gala';
+                                    }else{
+                                       $index_numero = '-cado';
+                                    }
                                   
                                       $data_options = [
-                                        "options_idw"=>$donnees['order_id'].'-cado',
+                                        "options_idw"=>$donnees['order_id']$index_numero,
                                         "options_idc"=>$coupons,
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
