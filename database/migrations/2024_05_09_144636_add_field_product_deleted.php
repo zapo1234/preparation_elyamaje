@@ -14,7 +14,7 @@ class AddFieldProductDeleted extends Migration
     public function up()
     {
         Schema::table('hist_reassort', function (Blueprint $table) {
-            $table->integer('missing')->after('syncro')->nullable();
+            $table->integer('missing')->after('syncro')->default(0);
         });
     }
 
