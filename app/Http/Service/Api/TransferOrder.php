@@ -722,7 +722,7 @@ class TransferOrder
                         */
 
                        // bloquer la facture ici si les produit n'ont pas de code EAN..
-                       if(count($logEAN)!=0){
+                     /*  if(count($logEAN)!=0){
                         foreach($logEAN as $kd=>$vac){
                           $chaine = implode(',',$vac);
                           $this->logError->insert(['order_id' => $kd, 'message' => 'ces produits suivant n\'ont pas de code EAN conforme dans dolibar '.$chaine.'']);
@@ -730,6 +730,8 @@ class TransferOrder
                           exit;
                          }
                        }
+
+                      */
                       
                   
                         if(count($data_tiers)!=0){
