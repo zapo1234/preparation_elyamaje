@@ -1063,7 +1063,7 @@ class Order extends BaseController
           }
 
           if (count($tabProduit) == 0) {
-              echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
+              echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
               return;
           }
           
