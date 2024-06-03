@@ -830,7 +830,7 @@ class Transferkdo
                                 "datepaye"=>$date_finale,
                                "paymentid"=>6,
                                "closepaidinvoices"=> "yes",
-                                "accountid"=>$this->getIdaccount(),// id du compte bancaire. 
+                                "accountid"=>$this->getIdaccount(),// id du compte bancaire...
 
                            ]
                        ];
