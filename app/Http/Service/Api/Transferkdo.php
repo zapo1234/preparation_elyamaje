@@ -37,6 +37,7 @@ class Transferkdo
       private $don;
       private $dons;
       private $tiers;
+      private $idaccount;
     
        public function __construct(
         Api $api,
@@ -167,6 +168,20 @@ class Transferkdo
    }
 
 
+   public function getIdaccount()
+   {
+       return $this->idaccount;
+   }
+   
+   
+   public function setIdaccount($idaccount)
+   {
+      $this->idaccount = $idaccount;
+      return $this;
+   }
+
+
+
 
     public  function createtiers($donnees)
     {
@@ -181,7 +196,7 @@ class Transferkdo
    
      
      /** 
-     *@return array
+     *@return array                                                                                    
      */
       public function Transferkdo($orders)
       {
@@ -193,6 +208,7 @@ class Transferkdo
              $emballeur="";
              $preparateur="";
              $gift_card_amount="";// presence de dépense avec gift_card.
+             $id_compte="";
              foreach($orders as $val){
                  if(isset($val['fk_commande'])){
                     $id_commande="exist";
@@ -213,6 +229,8 @@ class Transferkdo
                  if($val['gift_card_amount']!=""){
                       $gift_card_amount = $val['gift_card_amount'];
                  }
+
+                
              }
 
              
@@ -518,7 +536,7 @@ class Transferkdo
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
                                                 "multicurrency_total_tva" => 0,
                                                 "multicurrency_total_ttc" => floatval($values['total']),
-                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice).
+                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
@@ -566,6 +584,7 @@ class Transferkdo
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
+                                        "options_point_fidelite"=>0,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
@@ -650,6 +669,7 @@ class Transferkdo
 
                               }
                                
+                            
 
                               foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
@@ -686,6 +706,18 @@ class Transferkdo
         {
              // recuperer les données api dolibar.
              // recuperer les données api dolibar copie projet tranfer x.
+      
+             $id_account="";
+             foreach($orders as $vn){
+              if($vn['gala']=="true"){
+                  $id_account = 48;// gala
+               }else{
+                  $id_account= 46; // kado
+               }
+              }
+
+             $this->setIdaccount($id_account);
+             
              $method = "GET";
              // recupérer les clé Api dolibar transfertx........
              $apiKey = env('KEY_API_DOLIBAR'); 
@@ -774,7 +806,7 @@ class Transferkdo
            "datepaye"=>$date_finale,
            "paymentid"=>6,
            "closepaidinvoices"=> "yes",
-           "accountid"=> 46, // id du compte bancaire.
+           "accountid"=> $this->getIdaccount(), // id du compte bancaire.
            ];
 
             // contruire le tableau newbank
@@ -792,7 +824,7 @@ class Transferkdo
                                 "datepaye"=>$date_finale,
                                "paymentid"=>6,
                                "closepaidinvoices"=> "yes",
-                                "accountid"=>46// id du compte bancaire. 
+                                "accountid"=>$this->getIdaccount(),// id du compte bancaire. 
 
                            ]
                        ];
@@ -806,7 +838,7 @@ class Transferkdo
                                     "datepaye"=>$vk['datepaye'],
                                     "paymentid"=>6,
                                     "closepaidinvoices"=> "yes",
-                                     "accountid"=>46,// id du compte bancaire.
+                                     "accountid"=>$this->getIdaccount(),// id du compte bancaire..
                                      "num_payment"=>$ord[$keys]
                                    ]
                              ];
