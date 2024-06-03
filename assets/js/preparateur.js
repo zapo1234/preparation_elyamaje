@@ -481,6 +481,27 @@ $('body').on('click', '.valid_partial_order', function () {
         from_dolibarr: from_dolibarr, from_transfers: from_transfers }
     }).done(function (data) {
         if (JSON.parse(data).success) {
+
+            // Clean storage
+            if (localStorage.getItem('barcode')) {
+                pick_items = JSON.parse(localStorage.getItem('barcode'))
+                Object.keys(pick_items).forEach(function (k, v) {
+                    if (pick_items[k]) {
+                        if (order_id == pick_items[k].order_id) {
+                            pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                        }
+                    }
+                })
+            }
+
+            if(pick_items){
+                if (pick_items.length == 0) {
+                    localStorage.removeItem('barcode');
+                } else {
+                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                }
+            }
+            
             location.reload()
         } else {
             alert("Erreur !")

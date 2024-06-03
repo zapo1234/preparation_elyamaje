@@ -548,13 +548,19 @@ class Transferkdo
                                   $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
+                                      if($donnees['gala']==true){
+                                        $index_numero ='-gala';
+                                      }else{
+                                          $index_numero = '-cado';
+                                      }
+                                    
                                       $data_options = [
-                                        "options_idw"=>$donnees['order_id'].'-cado',
+                                        "options_idw"=>$donnees['order_id'].$index_numero,
                                         "options_idc"=>$coupons,
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
-                                        ];
+                                      ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
                                        // data normale de la facture sans bon cadeaux ou achat via bon gift cart.
@@ -637,8 +643,7 @@ class Transferkdo
 
                               }
                                
-                            
-
+  
                               foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
                                 $retour_create =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
@@ -652,7 +657,7 @@ class Transferkdo
                                $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              }
                             // traiter la réponse de l'api
-                             $response = json_decode($retour_create, true);
+                            //  $response = json_decode($retour_create, true);
 
                              // recupérer les commande a facture
                              $this->setIdcommande($ids_commande);
@@ -759,10 +764,10 @@ class Transferkdo
         }
       
             $newbank = [
-           "datepaye"=>$date_finale,
-           "paymentid"=>6,
-           "closepaidinvoices"=> "yes",
-           "accountid"=> 46, // id du compte bancaire.
+            "datepaye"=>$date_finale,
+            "paymentid"=>6,
+            "closepaidinvoices"=> "yes",
+            "accountid"=> 46, // id du compte bancaire.
            ];
 
             // contruire le tableau newbank

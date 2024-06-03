@@ -689,8 +689,8 @@ class Admin extends BaseController
 
             try {
 
-                 //$this->transfers->Transfertext($order);
-                 $this->factorder->Transferorder($order);  
+                //$this->transfers->Transfertext($order);
+                $this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -706,7 +706,7 @@ class Admin extends BaseController
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 $this->order->updateOrdersById([$order_id], "finished");
                
-                $status_finished = " lpc_ready_to_ship";
+                $status_finished = "lpc_ready_to_ship";
                 if(isset($order[0]['shipping_method'])){
                     if(str_contains($order[0]['shipping_method'], 'chrono')){
                         $status_finished = "chronopost-pret";

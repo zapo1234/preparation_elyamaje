@@ -343,7 +343,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          } else {
             $diff_barcode = true;
          }
-      }
+      }  
 
       if(count($product_pick_in) > 0){
          // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit

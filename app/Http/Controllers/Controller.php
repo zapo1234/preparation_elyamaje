@@ -2714,28 +2714,28 @@ class Controller extends BaseController
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
 
             if(isset($orders['message'])){
-            $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
-            return false;
+                $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
+                return false;
             }
 
             if(!$orders){
-            return array();
+                return array();
             } 
             
             $count = count($orders);
     
             // Check if others page
             if($count == 100){
-            while($count == 100){
-                $page = $page + 1;
-                $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
-            
-                if(count($orders_other ) > 0){
-                $orders = array_merge($orders, $orders_other);
+                while($count == 100){
+                    $page = $page + 1;
+                    $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+                
+                    if(count($orders_other ) > 0){
+                    $orders = array_merge($orders, $orders_other);
+                    }
+                
+                    $count = count($orders_other);
                 }
-            
-                $count = count($orders_other);
-            }
             }  
 
             $order_to_billing = [];
@@ -2777,7 +2777,6 @@ class Controller extends BaseController
                     }
 
                     $order_to_billing[] = $order;
-
                     if(count($order_to_billing) == 4){
                         // Envoie à la facturation par 4
                         $this->transferkdo->transferkdo($order_to_billing);
@@ -2787,8 +2786,6 @@ class Controller extends BaseController
                     // Remplacer par fonction qui facture plusieurs fois
                 }
             } 
-
-    
 
             if(count($order_to_billing) > 0){
                 // Envoie à la facturation par 4
