@@ -518,7 +518,7 @@ class Transferkdo
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
                                                 "multicurrency_total_tva" => 0,
                                                 "multicurrency_total_ttc" => floatval($values['total']),
-                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
+                                                "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice).
                                                 "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.

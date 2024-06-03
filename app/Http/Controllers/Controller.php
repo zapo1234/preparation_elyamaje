@@ -2787,7 +2787,9 @@ class Controller extends BaseController
                     // Remplacer par fonction qui facture plusieurs fois
                 }
             } 
+           
 
+            dd($order);
     
 
             if(count($order_to_billing) > 0){
