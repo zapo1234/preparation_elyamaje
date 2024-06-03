@@ -219,7 +219,7 @@ class TransferOrder
 
 
 
-                 $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 2000, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
@@ -237,7 +237,7 @@ class TransferOrder
                   //$this->tiers->insertiers();// mise a jour api
                   $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
                   // recuperer les ids commandes
-                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
+                  $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande.
                   $key_commande = $this->commande->getIds();// lindex les ids commande existant.
                  // recupérer le tableau de ids
                   $ids_commandes =[];
@@ -722,7 +722,7 @@ class TransferOrder
                         */
 
                        // bloquer la facture ici si les produit n'ont pas de code EAN..
-                     /*  if(count($logEAN)!=0){
+                       if(count($logEAN)!=0){
                         foreach($logEAN as $kd=>$vac){
                           $chaine = implode(',',$vac);
                           $this->logError->insert(['order_id' => $kd, 'message' => 'ces produits suivant n\'ont pas de code EAN conforme dans dolibar '.$chaine.'']);
@@ -731,7 +731,7 @@ class TransferOrder
                          }
                        }
 
-                      */
+                      
                       
                   
                         if(count($data_tiers)!=0){
