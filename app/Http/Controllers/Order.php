@@ -1027,6 +1027,7 @@ class Order extends BaseController
 
       try {
           $tabProduit = [];
+          $productToIgnore = [];
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
           
@@ -1039,12 +1040,13 @@ class Order extends BaseController
           if($tabProduitReassort){
             // For type == 0
             foreach($tabProduitReassort as $tab){
-             
               if($tab['type'] == 0){
                 if($tab['qty'] > $tab['missing']){
                   $tab["qty"] = abs($tab['qty']) - $tab['missing'];
                   $tabProduit[] = $tab;
                   $productsToTransfer[$tab['product_id']] = $tab;
+                } else {
+                  $productToIgnore[] = $tab['product_id'];
                 }
               } 
             }
@@ -1052,14 +1054,13 @@ class Order extends BaseController
             // For type == 1
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 1){
-                  if(isset($productsToTransfer[$tab['product_id']])){
-                  $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
-                  $tabProduit[] = $tab;
+                    if(isset($productsToTransfer[$tab['product_id']])){
+                    $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
+                    $tabProduit[] = $tab;
                   }
               } 
             }
           }
-
 
           if (count($tabProduit) == 0) {
               echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
@@ -1091,19 +1092,22 @@ class Order extends BaseController
                       'datem' => date("Y-m-d", strtotime($line["datem"])), 
                       'dlc' => date("Y-m-d", strtotime($line["dlc"])),
                       'dluo' => date("Y-m-d", strtotime($line["dluo"])),
-                  );
-                  // on execute le réassort
-                  $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+                  );  
 
-                  if ($stockmovements) {
-                      $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                      if (count($tabProduit) != $i) {
-                          $ids .= $line['id'] . ",";
-                      }else{
-                          $ids .= $line['id'];
-                      }
-                      $i++;  
-                      $incrementation++;
+                  if(!in_array($line["product_id"], $productToIgnore)){
+                    // on execute le réassort
+                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+
+                    if ($stockmovements) {
+                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                        if (count($tabProduit) != $i) {
+                            $ids .= $line['id'] . ",";
+                        }else{
+                            $ids .= $line['id'];
+                        }
+                        $i++;  
+                        $incrementation++;
+                    }
                   }
               }
           }
@@ -1129,7 +1133,7 @@ class Order extends BaseController
 
           echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
       } catch (\Throwable $th) {
-          // dd($th);
+          $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $th->getMessage()]);
           echo json_encode(['success' => false, 'message' => $th->getMessage()]);
           // return ["response" => false, "error" => $th->getMessage()];
       } 
