@@ -2706,8 +2706,9 @@ class Controller extends BaseController
     public function giftCardOrders($token){
 
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
+
             $status = "completed";
-            $after = date('Y-m-d H:i:s', strtotime('-2 day'));
+            $after = date('Y-m-d H:i:s', strtotime('-15 day'));
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
@@ -2738,17 +2739,23 @@ class Controller extends BaseController
             }  
 
             $order_to_billing = [];
-
             // Check if just gift card in order
             foreach($orders as $order){
                 $item_gift_card = 0;
+                $item_is_virtual = 0;
+
                 foreach($order['line_items'] as $or){
                     if(str_contains($or['name'], 'Carte Cadeau')){
                         $item_gift_card = $item_gift_card + 1;
                     }
+
+                    if($or['is_virtual'] == "yes"){
+                        $item_is_virtual = $item_is_virtual + 1;
+                    }
                 }
 
-                if($item_gift_card == count($order['line_items'])){
+                if($item_gift_card == count($order['line_items']) || $item_is_virtual  == count($order['line_items']) 
+                || $item_is_virtual + $item_gift_card >=  count($order['line_items'])){
                     $order['coupons'] = '';
                     $order['preparateur'] = 'Aucun';
                     $order['emballeur'] = 'Aucun';
@@ -2761,6 +2768,13 @@ class Controller extends BaseController
                     $order['shipping_amount'] = 0;
                     $order['shipping_method_detail'] = "";
                     $order['discount_amount'] = 0;
+
+                    // Is GALA product (billet gala septembre 2024)
+                    if($item_is_virtual  == count($order['line_items'])){
+                        $order['gala'] = true;
+                    } else {
+                        $order['gala'] = false;
+                    }
 
                     $order_to_billing[] = $order;
 
