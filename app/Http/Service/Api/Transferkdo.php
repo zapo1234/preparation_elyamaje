@@ -186,6 +186,7 @@ class Transferkdo
       public function Transferkdo($orders)
       {
             
+           
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -341,8 +342,8 @@ class Transferkdo
                         $array_commande_data =[];// recupérer les commande deja facturé.
                         
                         foreach($orders as $k => $donnees) {
-                          
-                                // créer des tiers pour dolibarr via les datas woocomerce. 
+
+                             // créer des tiers pour dolibarr via les datas woocomerce. 
                                 // créer le client via dolibarr à partir de woocomerce...
                                  $ref_client = rand(4,10);
                                  //  $email_true = mb_strtolower($donnees['billing']['email']);
@@ -478,10 +479,15 @@ class Transferkdo
                                       if($val['key']=="barcode"){
                                          //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                             $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
-                                      }
+                                            $product_type ="";
+                                            $desc="";
+                                            $product_label= $values['name'];
+                                       }
                                        else{
-                                           $fk_product="";
-                                           
+                                             $fk_product="gala";
+                                             $product_type="1";
+                                             $desc="Achat billet gala Septmebre 2024";
+                                             $product_label="";
                                         }
 
                                      }
@@ -506,14 +512,14 @@ class Transferkdo
 
                                                $tva_product = 0;
                                                $data_product[] = [
-                                                "desc"=>'',
+                                                "desc"=>$desc,
                                                 "remise_percent"=> $donnees['discount_amount'],
                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
                                                 "multicurrency_total_tva" => 0,
                                                 "multicurrency_total_ttc" => floatval($values['total']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                "product_label" =>$values['name'],
+                                                "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
                                                 "tva_tx" => "",
@@ -528,7 +534,8 @@ class Transferkdo
                                    }
 
                                       
-                                      if($fk_product=="") {
+
+                                     if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
                                         $info = 'Numero de comande '.$donnees['order_id'].'';
                                         $data_echec[] = $values['name'].','.$info;
@@ -547,15 +554,14 @@ class Transferkdo
                                   $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
 
-                                    // differencier la facture sois c'est un -cado ou c'est un gala.
-                                    if($donnees['gala']==true){
-                                         $index_numero ='-gala';
+                                    if($donnees['gala']=="true"){
+                                       $index_number="-gala";
                                     }else{
-                                       $index_numero = '-cado';
+                                        $index_number ="-cado";
                                     }
                                   
                                       $data_options = [
-                                        "options_idw"=>$donnees['order_id']$index_numero,
+                                        "options_idw"=>$donnees['order_id'].''.$index_number,
                                         "options_idc"=>$coupons,
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
@@ -623,6 +629,7 @@ class Transferkdo
                                exit;
                             }
                       
+                          
                           // Create le client via Api.....
                         // fitrer les ids de commande .qui sont deja facture et les enlever.
                           $array_tab = []; // au recupere les socid
@@ -643,7 +650,6 @@ class Transferkdo
 
                               }
                                
-                            
 
                               foreach($data_tiers as $data) {
                                 // insérer les données tiers dans dolibar
