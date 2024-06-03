@@ -578,6 +578,12 @@ class Transferkdo
                                         $index_number ="-cado";
                                     }
                                   
+                                      if($donnees['gala']==true){
+                                        $index_numero ='-gala';
+                                      }else{
+                                          $index_numero = '-cado';
+                                      }
+                                    
                                       $data_options = [
                                         "options_idw"=>$donnees['order_id'].''.$index_number,
                                         "options_idc"=>$coupons,
@@ -684,7 +690,7 @@ class Transferkdo
                                $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              }
                             // traiter la réponse de l'api
-                             $response = json_decode($retour_create, true);
+                            //  $response = json_decode($retour_create, true);
 
                              // recupérer les commande a facture
                              $this->setIdcommande($ids_commande);

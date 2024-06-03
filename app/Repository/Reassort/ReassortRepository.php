@@ -466,6 +466,7 @@ class ReassortRepository implements ReassortInterface
             }
         }
        
+
         // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
         $casesPick = collect($list_products)->map(function ($item) {
             return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['pick']));

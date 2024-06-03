@@ -64,11 +64,11 @@ $(".validate_order").on("click", function(){
                             <span style="width: fit-content" class="mb-3 badge bg-default">${country}</span>
                         </div>`: ''} 
                    
-                        ${!transfers ?
-                            `<div class="d-flex w-100 justify-content-center">
-                                <span style="width: fit-content" class="badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
-                            </div>`
-                        : ''}
+                       
+                        <div class="d-flex w-100 justify-content-center">
+                            <span style="width: fit-content" class="badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
+                        </div>
+                     
 
                         ${!transfers ?
                             `<div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
