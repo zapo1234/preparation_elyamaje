@@ -90,7 +90,6 @@ class Label extends BaseController
         $array_order = [];
         
         foreach($orders as $order){
-
             if(!isset($array_order[$order['order_woocommerce_id']])){
                 $array_order[$order['order_woocommerce_id']][] = $order;
             }
@@ -485,7 +484,8 @@ class Label extends BaseController
             } 
 
             $order[0]['total_order'] = $subtotal;
-            
+
+       
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){

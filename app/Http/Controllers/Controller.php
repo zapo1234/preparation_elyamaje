@@ -167,6 +167,7 @@ class Controller extends BaseController
     {
         // Get all products
         $products = $this->products->getAllProducts();
+
         // Get all categories products
         $categories = $this->categories->getAllCategories();
         return view('admin.products', ['products' => $products, 'categories' => $categories]);
@@ -278,7 +279,7 @@ class Controller extends BaseController
             } else {
                 $transfers_progress[] = $rea;
             }
-        }
+        }   
   
         return view('preparateur.transfers.index_preparateur', 
         [
@@ -350,7 +351,6 @@ class Controller extends BaseController
       
 
         $hist_reassort = DB::table('hist_reassort')->get()->toArray();
-
 
 
 
@@ -446,6 +446,7 @@ class Controller extends BaseController
                 
             } 
 
+
             $liste_reassort[$value->identifiant_reassort] = [
                 "identifiant" => $value->identifiant_reassort,
                 "libelle_reassort" => $value->libelle_reassort,
@@ -485,6 +486,7 @@ class Controller extends BaseController
 
         foreach ($hist_reassort as $key => $reassort) {
 
+
             if ($reassort->qty > 0) {
                 
 
@@ -496,16 +498,17 @@ class Controller extends BaseController
                 }else {
                     $hist_reassort[$key]->label = "label inconnu";
                 }
+
                 array_push($liste_reassort[$reassort->identifiant_reassort]["detail_reassort"],$reassort);
             }
 
         }      
 
+
         $users = $this->users->getUsers()->toArray();  
 
         // on libère de la mémoire
         unset($all_products);
-
 
         return view('admin.supply',
             [
@@ -2253,10 +2256,11 @@ class Controller extends BaseController
     function postReassort(Request $request,$data = NULL){
 
         
-       
+        
 
 
         try {
+
 
             $methode = $request->isMethod('post');
 
@@ -2288,7 +2292,7 @@ class Controller extends BaseController
 
                 foreach ($tabProduitReassort1 as $key => $lineR) {
 
-                    if ($lineR["qte_transfere"] != 0) {           
+                    if ($lineR["qte_transfere"] > 0) {           
                         $data1 = array(
                             'product_id' => $lineR["product_id"],
                             'warehouse_id' => $entrepot_source, 
@@ -2340,6 +2344,8 @@ class Controller extends BaseController
                 }
 
                 try {
+
+
                     $resDB = DB::table('hist_reassort')->insert($data_save);
                 } catch (\Throwable $th) {
 
@@ -2694,14 +2700,15 @@ class Controller extends BaseController
     }
 
     public function shop(){
-        return view('shop.index');
+        return view('kit.index');
     }
 
     public function giftCardOrders($token){
 
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
+
             $status = "completed";
-            $after = date('Y-m-d H:i:s', strtotime('-2 day'));
+            $after = date('Y-m-d H:i:s', strtotime('-15 day'));
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
@@ -2732,17 +2739,23 @@ class Controller extends BaseController
             }  
 
             $order_to_billing = [];
-
             // Check if just gift card in order
             foreach($orders as $order){
                 $item_gift_card = 0;
+                $item_is_virtual = 0;
+
                 foreach($order['line_items'] as $or){
                     if(str_contains($or['name'], 'Carte Cadeau')){
                         $item_gift_card = $item_gift_card + 1;
                     }
+
+                    if($or['is_virtual'] == "yes"){
+                        $item_is_virtual = $item_is_virtual + 1;
+                    }
                 }
 
-                if($item_gift_card == count($order['line_items'])){
+                if($item_gift_card == count($order['line_items']) || $item_is_virtual  == count($order['line_items']) 
+                || $item_is_virtual + $item_gift_card >=  count($order['line_items'])){
                     $order['coupons'] = '';
                     $order['preparateur'] = 'Aucun';
                     $order['emballeur'] = 'Aucun';
@@ -2755,6 +2768,13 @@ class Controller extends BaseController
                     $order['shipping_amount'] = 0;
                     $order['shipping_method_detail'] = "";
                     $order['discount_amount'] = 0;
+
+                    // Is GALA product (billet gala septembre 2024)
+                    if($item_is_virtual  == count($order['line_items'])){
+                        $order['gala'] = true;
+                    } else {
+                        $order['gala'] = false;
+                    }
 
                     $order_to_billing[] = $order;
 

@@ -959,7 +959,7 @@ class Admin extends BaseController
             // $apiUrl = env('KEY_API_URL');
             $apiKey = env('KEY_API_DOLIBAR');
 
-            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
+            $apiUrl = config('app.dolibarr_api_url');
 
 
             $produitParamProduct = array(

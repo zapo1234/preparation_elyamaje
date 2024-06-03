@@ -62,6 +62,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    // Pour l'emballage d'une commande
    public function getOrdersDolibarrById($order_id){
+
       $order_lines = $this->model::select('products.*', 'products.name as productName', 'orders_doli.*', 'orders_doli.id as orderDoliId', 'orders_doli.name as firstname', 'orders_doli.pname as lastname',
       'lines_commande_doli.qte as quantity', 'lines_commande_doli.pick', 'lines_commande_doli.price as priceDolibarr', 'lines_commande_doli.total_ht', 'lines_commande_doli.total_ttc', 'lines_commande_doli.id as line_items_id_dolibarr',
       'lines_commande_doli.total_tva', 'lines_commande_doli.remise_percent', 'lines_commande_doli.id_product as product_dolibarr_id', 'users.name as preparateur')
@@ -100,6 +101,17 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $order_lines[$key]['billing_customer_postcode'] = $order['billing_code_postal'] ?? $order_lines[$key]['shipping_customer_postcode'];
          $order_lines[$key]['billing_customer_phone'] = $order['phone'];
 
+      }
+
+
+      // Remove products double
+      $product_double = [];
+      foreach($order_lines as $key1 => $item){
+         if(in_array($item['product_woocommerce_id'], $product_double)){
+            unset($order_lines[$key1]);
+         } else {
+            $product_double[] = $item['product_woocommerce_id'];
+         }
       }
 
       return $order_lines;
@@ -146,6 +158,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $orders = json_decode(json_encode($orders), true);
          $list = [];
       
+
+
       // List of categories
       $categories = DB::table('categories')->select('category_id_woocommerce', 'parent_category_id', 'order_display')->get();
       $list_categories = [];
@@ -153,6 +167,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $list_categories[$cat->category_id_woocommerce] = $cat->order_display;
          $list_categories[$cat->parent_category_id] = $cat->order_display;
       }
+
 
          foreach($orders as $key => $order){
             $category_parent_id = explode(',', $order['category_id']);
@@ -201,7 +216,46 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            });
          }
 
-         return ['orders' => $list];
+      $product_double = [];
+      foreach($list as $key1 => $li){
+         foreach($li['items'] as $key2 => $item){
+            if(isset($product_double[$key1])){
+
+              $id_product = array_column($product_double[$key1], "id");
+              $clesRecherchees = array_keys($id_product,  $item['product_woocommerce_id']);
+
+              if(count($clesRecherchees) > 0){
+                  $detail_doublon = $product_double[$key1][$clesRecherchees[0]];
+                  unset($list[$key1]['items'][$key2]);
+
+                  // // Merge quantity
+                  // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['quantity'] = $item['quantity'] + $detail_doublon['quantity'];
+               
+                  // // Merge pick product
+                  // $list[$detail_doublon['key1']]['items'][$detail_doublon['key2']]['pick'] = $item['pick'] + $detail_doublon['pick'];
+              } else {
+                  $product_double[$key1][] = [
+                     'id' => $item['product_woocommerce_id'],
+                     'quantity' => $item['quantity'], 
+                     'key1' => $key1,
+                     'key2' => $key2,
+                     'pick' => $item['pick']
+                 ];
+              }
+            } else {
+               $product_double[$key1][] = [
+                  'id' => $item['product_woocommerce_id'],
+                  'quantity' => $item['quantity'], 
+                  'key1' => $key1,
+                  'key2' => $key2,
+                  'pick' => $item['pick']
+               ];
+            }
+         }
+      }
+      
+      $list = array_values($list);
+      return ['orders' => $list];
    }
 
    public function checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, $partial){
@@ -220,6 +274,29 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $total_product = $total_product + intval($product);
       }
 
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($list_product_orders as $key_barcode => $list){
+
+         if(isset($product_double[$list["barcode"]])){
+            if(isset($product_double[$list["barcode"]][0])){
+
+               $quantity = $product_double[$list["barcode"]][0]['quantity'];
+               $key_barcode_to_remove = $product_double[$list["barcode"]][0]['key_barcode_to_remove'];
+
+               unset($list_product_orders[$key_barcode_to_remove]);
+               //   $list_product_orders[$key_barcode]['qte'] = $list_product_orders[$key_barcode]['qte'] + $quantity;
+            }
+         } else {
+            $product_double[$list["barcode"]][] = [
+              'quantity' => $list['qte'],
+              'key_barcode_to_remove' => $key_barcode
+            ];
+         }
+      }
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       $list_products = [];
       foreach($list_product_orders as $list){
          // Ne prend pas en compte les produits déjà bippé
@@ -317,10 +394,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersAndLabelByFilter($filters){
          $query = $this->model::select('orders_doli.*', /* 'label_product_order.*',*/ 'labels.id as label_id', 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-         'labels.cn23', 'labels.download_cn23', 'labels.origin')
+         'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
          // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.ref_order')
          ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order');
 
+         
          $haveFilter = false;
          foreach($filters as $key => $filter){
 
@@ -395,34 +473,36 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
    }
 
    public function getAllOrdersAndLabel(){
+      
       $date = date('Y-m-d');
-      $results = $this->model::select('orders_doli.id as order_woocommerce_id', 'orders_doli.fk_commande', 'orders_doli.statut as status', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
-      'labels.cn23', 'labels.download_cn23', 'labels.origin')
+      $results = $this->model::select('orders_doli.*', /*'label_product_order.*',*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
+      'labels.cn23', 'labels.download_cn23', 'labels.origin', 'labels.id as label_id')
       // ->Leftjoin('label_product_order', 'label_product_order.order_id', '=', 'orders_doli.id')
       ->Leftjoin('labels', 'labels.order_id', '=', 'orders_doli.ref_order')
       ->where('labels.created_at', 'LIKE', '%'.$date.'%')
       ->orderBy('labels.created_at', 'DESC')
-      ->limit(100)
+      ->limit(500)
       ->get();
 
-
+   
       foreach($results as $key => $result){
-
          $results[$key]['id'] = $result->ref_order;
          $results[$key]['order_woocommerce_id'] = $result->ref_order;
          $results[$key]['status'] = $result->statut;
          $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
 
          // Billing
-         $results[$key]['billing_customer_first_name'] = $result->billing_name;
-         $results[$key]['billing_customer_last_name'] = $result->billing_pname;
-         $results[$key]['billing_customer_company'] = $result->billing_company;
-         $results[$key]['billing_customer_address_1'] = $result->billing_adresse;
+
+         $results[$key]['billing_customer_first_name'] = $result->billing_name ?? $result->name;
+
+         $results[$key]['billing_customer_last_name'] = $result->billing_pname ?? $result->pname;
+         $results[$key]['billing_customer_company'] = $result->billing_company ?? $result->company;
+         $results[$key]['billing_customer_address_1'] = $result->billing_adresse ?? $result->adresse;
          $results[$key]['billing_customer_address_2'] = "";
-         $results[$key]['billing_customer_city'] = $result->billing_city;
+         $results[$key]['billing_customer_city'] = $result->billing_city ?? $result->city;
          $results[$key]['billing_customer_state'] = "";
-         $results[$key]['billing_customer_postcode'] = $result->billing_code_postal;
-         $results[$key]['billing_customer_country'] = $result->billing_country;
+         $results[$key]['billing_customer_postcode'] = $result->billing_code_postal ?? $result->code_postal;
+         $results[$key]['billing_customer_country'] = $result->billing_country ?? $result->contry;
          $results[$key]['billing_customer_email'] = $result->email;
          $results[$key]['billing_customer_phone'] = $result->phone;
 
@@ -630,6 +710,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
       $orders = json_decode(json_encode($orders), true);
 
+
+
       // Cas de produits double si par exemple 1 en cadeau et 1 normal
       $product_double = [];
       foreach($orders as $key => $list){
@@ -649,6 +731,70 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              
          }
       }
+
+
+      // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
+      foreach($orders as $order){
+         $list_orders[$order['ref_order']]['preparateur'] =  $order['preparateur'];
+         $list_orders[$order['ref_order']]['details'] = [
+            'id' => $order['ref_order'],
+            'first_name' => $order['billing_name'],
+            'last_name' => $order['billing_pname'],
+            'date' => $order['date'],
+            'total' => $order['total_order_ttc'],
+            'total_tax' => $order['total_tax'],
+            'status' => $order['statut'],
+            'coupons' => '',
+            'discount' => '',
+            'discount_amount' => 0,
+            'gift_card_amount' => 0,
+            'shipping_amount' => 0,
+         ];
+         $list_orders[$order['ref_order']]['items'][] = $order;
+      }
+
+      $list_orders = array_values($list_orders);
+      return $list_orders;
+   }
+
+   public function getAllHistoryByUser($user_id){
+      $list_orders = [];
+
+      $orders = $this->model->join('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
+         ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
+         ->join('users', 'users.id', '=', 'orders_doli.user_id')
+         ->whereIn('orders_doli.statut', ['prepared-order'])
+         ->select('orders_doli.*', 'users.name as preparateur','products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         'products.name', 'products.barcode', 'products.location', 'lines_commande_doli.pick', 'lines_commande_doli.qte as quantity',
+         'lines_commande_doli.total_tva as total_tax','lines_commande_doli.total_ttc as total_price', 'lines_commande_doli.price as cost', 'products.weight', 'lines_commande_doli.remise_percent')
+         ->where('orders_doli.user_id', $user_id)
+         ->orderBy('products.menu_order', 'ASC')
+         ->get();
+
+      $orders = json_decode(json_encode($orders), true);
+
+
+
+      // Cas de produits double si par exemple 1 en cadeau et 1 normal
+      $product_double = [];
+      foreach($orders as $key => $list){
+        
+         if(isset($product_double[$list['ref_order']][$list["barcode"]])){
+            $quantity = $product_double[$list['ref_order']][$list["barcode"]]['quantity'];
+            $key_barcode_to_remove = $product_double[$list['ref_order']][$list["barcode"]]['key_barcode_to_remove'];
+   
+            unset($orders[$key_barcode_to_remove]);
+            $orders[$key]['quantity'] = $orders[$key]['quantity'] + $quantity;
+            $orders[$key]['pick'] = $orders[$key]['quantity'];
+         } else {
+            $product_double[$list['ref_order']][$list["barcode"]] = [
+               'quantity' => $list['quantity'],
+               'key_barcode_to_remove' => $key
+            ];
+             
+         }
+      }
+
 
       // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       foreach($orders as $order){

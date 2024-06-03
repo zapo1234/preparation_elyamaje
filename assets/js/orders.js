@@ -91,8 +91,8 @@ $(document).ready(function() {
     var to = 0
 
     $('#example').DataTable({
-        scrollY: '62vh',
-        scrollCollapse: true,
+        // scrollY: '62vh',
+        // scrollCollapse: true,
         order: [ 0, 'asc' ],
         ajax: {
             url: 'getAllOrders',
@@ -456,26 +456,35 @@ $(document).ready(function() {
             { "visible": false, "targets": 9 },
         ],
         "initComplete": function(settings, json) {
+            $(".dataTables_length").css('display', 'flex')
+            $(".dataTables_length").addClass('select2_custom')
             $(".shipping_dropdown").appendTo('.dataTables_length')
             $(".status_dropdown").appendTo('.dataTables_length')
             $(".preparateur_dropdown").appendTo('.dataTables_length')
             $(".country_dropdown").appendTo('.dataTables_length')
+            $(".table_list_order thead").removeClass('d-none')
+
+            $(".header_title").removeClass('d-none')
+            // $(".shipping_dropdown").appendTo('.dataTables_length')
+            // $(".status_dropdown").appendTo('.dataTables_length')
+            // $(".preparateur_dropdown").appendTo('.dataTables_length')
+            // $(".country_dropdown").appendTo('.dataTables_length')
 
             // Design
-            $("#example_length").parent().css('width', '70%')
-            $("#example_length").parent().css('margin-bottom', '5px')
-            $("#example_filter").parent().css('width', '30%')
-            $("#example_filter").parent().css('margin-bottom', '5px')
-            $("#example_filter").parent().parent().css('justify-content', 'space-between')
-            $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
-            $("#example_filter").parent().css('min-width', '210px')
+            // $("#example_length").parent().css('width', '70%')
+            // $("#example_length").parent().css('margin-bottom', '5px')
+            // $("#example_filter").parent().css('width', '30%')
+            // $("#example_filter").parent().css('margin-bottom', '5px')
+            // $("#example_filter").parent().parent().css('justify-content', 'space-between')
+            // $("#example_filter").parent().parent().css('flex-wrap', 'wrap')
+            // $("#example_filter").parent().css('min-width', '210px')
 
-            $(".dataTables_length").css('display', 'flex')
-            $(".dataTables_length").addClass('select2_custom')
-            $(".shipping_dropdown").removeClass('d-none')
-            $(".status_dropdown").removeClass('d-none')
-            $(".preparateur_dropdown").removeClass('d-none')
-            $(".country_dropdown").removeClass('d-none')
+            // $(".dataTables_length").css('display', 'flex')
+            // $(".dataTables_length").addClass('select2_custom')
+            // $(".shipping_dropdown").removeClass('d-none')
+            // $(".status_dropdown").removeClass('d-none')
+            // $(".preparateur_dropdown").removeClass('d-none')
+            // $(".country_dropdown").removeClass('d-none')
 
             $(".preparateur_dropdown").select2({
                 width: '130px',
@@ -551,7 +560,7 @@ $(document).ready(function() {
     })
 
 
-    $('thead').remove()
+    // $('thead').remove()
 
     $('.shipping_dropdown').on('change', function(e){
         var shipping_dropdown = $(this).val();
@@ -825,14 +834,13 @@ function show(id){
             if(order.length > 0){
                 // Dolibarr et Woocommerce
                 if(!order[0].transfers){
+                    var shipping_amount = order[0].shipping_amount ? parseFloat(order[0].shipping_amount) : 0;
                     var total = parseFloat(order[0].total_order)
                     var discount_total = !order[0].from_dolibarr ? parseFloat(order[0].discount) : 0
                     var gift_card = !order[0].from_dolibarr ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount): 0) : 0
                     var total_tax = !order[0].from_dolibarr ? parseFloat(order[0].total_tax_order) : parseFloat(order[0].total_tax)
-                    var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? parseFloat(order[0].shipping_amount) : 0)
+                    var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? shipping_amount : 0)
                 }
-
-               
 
                 $(".modal_order_admin").remove()
                 $('body').append(`<div class="modal_order_admin modal_dashboard modal_detail_order modal_order modal fade" id="order_`+order[0].order_woocommerce_id+`" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -857,8 +865,8 @@ function show(id){
                                                 <span class="column22">${parseFloat(element.cost).toFixed(2)}</span>
                                                 <span class="column33 quantity">${element.pick } / ${element.quantity}</span>
                                                 <span class="column44">${parseFloat(element.price * element.quantity).toFixed(2)}
-                                                
-                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct(' + order[0].order_woocommerce_id + ',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
+
+                                                    ${!order[0].from_dolibarr ? '<span style="margin-left: 5px" class="column55"><i onclick="deleteProduct( \''+ order[0].order_woocommerce_id+ '\',' + element.line_item_id + ',' + element.product_woocommerce_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>' : 
                                                     '<span style="margin-left: 5px" class="column55_action"><i onclick="deleteProductDolibarr(' + order[0].orderDoliId + ', \'' + order[0].order_woocommerce_id + '\', ' + element.product_dolibarr_id + ',' + element.quantity + ')" class="edit_order bx bx-trash"></i></span>'}
                                                 </span>
                                                
@@ -1011,15 +1019,23 @@ function showCustomerOrderDetail(id){
 
 // Delete product's order Woocommerce
 function deleteProduct(order_id, line_item_id, product_id, quantity){
-    var id = product_id
-    var name = $("#order_"+order_id).find("."+product_id).find('.detail_product_name_order').children('span').text()
 
-    $("#order_id").val(order_id)
-    $("#line_item_id").val(line_item_id)
-    $("#product_order_id").val(id)
-    $("#quantity_order").val(quantity)
-    $(".product_name_to_delete").text(name)
-    $("#deleteProductOrderModal").appendTo("body").modal('show')
+    if(order_id.includes('SAV')){
+        alert('Impossible de supprimer des produits d\'une commande SAV !')
+    } else {
+        var id = product_id
+
+        // For SAV ORDER
+        var name = $("#order_"+order_id).find("."+product_id).find('.detail_product_name_order').children('span').text()
+    
+        $("#order_id").val(order_id)
+        $("#line_item_id").val(line_item_id)
+        $("#product_order_id").val(id)
+        $("#quantity_order").val(quantity)
+        $(".product_name_to_delete").text(name)
+        $("#deleteProductOrderModal").appendTo("body").modal('show')
+    }
+   
 }
 
 // Delete product's confirm order woocommerce

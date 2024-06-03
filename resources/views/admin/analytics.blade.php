@@ -49,7 +49,7 @@
 				@endif
 
 				<div class="card card_table_mobile_responsive radius-10">
-					<div class="header_title hide_mobile d-flex align-items-center">
+					<!-- <div class="header_title hide_mobile d-flex align-items-center">
 						<div class="w-100 d-flex justify-content-between">
 							<h5>Nom</h5>
 							<h5>Commandes Préparées</h5>
@@ -58,14 +58,24 @@
 							<h5>Produits Emballés</h5>
 							<h5>Date</h5>
 						</div>
-					</div>
+					</div> -->
 
 					<div class="mobile_padding  card-body analytics_preparation p-0 mt-2">
 						<div>
 							<input format="dd/mm/yyyy" type="date" class="d-none custom_dropdown date_dropdown">
 				
-							<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
+							<table id="example" class="d-none table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 								<!-- <tbody></tbody> -->
+								<thead>
+									<tr>
+										<th scope="col">Nom</th>
+										<th scope="col">Commandes Préparées</th>
+										<th scope="col">Commandes Emballées</th>
+										<th scope="col">Produits Bippé</th>
+										<th scope="col">Produits Emballés</th>
+										<th scope="col">Date</th>
+									</tr>
+								</thead>
 								<tbody>
 									@for($i = 0; $i < 5; $i++)
 										<tr class="loading_table_analytics">

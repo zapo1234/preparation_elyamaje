@@ -46,7 +46,7 @@
 						<div class="card card_table_mobile_responsive">
 							<div class="card-body">
 								<div class="table-responsive">
-									<table id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
+									<table style="margin-top: 50px !important; margin-bottom: 50px !important" id="example" class="table_mobile_responsive w-100 table_list_order table table-striped table-bordered">
 										<thead>
 											<tr>
 												<th>Nom</th>

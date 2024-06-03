@@ -32,7 +32,7 @@ class HistoryRepository implements HistoryInterface
 
       if($order_id){
          return  $this->model::select('histories.id as histo', 'users.id', 'users.name', 'histories.poste', 'histories.created_at', 'histories.order_id',
-         'histories.status', 'orders.status as order_status', 'orders_doli.statut as order_dolibarr_status', 'hist_reassort.status as order_transfer_status')
+         'histories.status', 'orders.status as order_status', 'orders_doli.statut as order_dolibarr_status', 'hist_reassort.status as order_transfer_status', 'histories.kit')
             ->Leftjoin('users', 'users.id', '=', 'histories.user_id')
             ->Leftjoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
             ->Leftjoin('orders_doli', 'orders_doli.ref_order', '=', 'histories.order_id')
@@ -44,7 +44,7 @@ class HistoryRepository implements HistoryInterface
             ->toArray();
       } else {
          return $this->model::select('histories.id as histo', 'users.id', 'users.name', 'histories.poste', 'histories.created_at', 'histories.order_id',
-         'histories.status', 'orders.status as order_status', 'orders_doli.statut as order_dolibarr_status', 'hist_reassort.status as order_transfer_status')
+         'histories.status', 'orders.status as order_status', 'orders_doli.statut as order_dolibarr_status', 'hist_reassort.status as order_transfer_status', 'histories.kit')
             ->Leftjoin('users', 'users.id', '=', 'histories.user_id')
             ->Leftjoin('orders', 'orders.order_woocommerce_id', '=', 'histories.order_id')
             ->Leftjoin('orders_doli', 'orders_doli.ref_order', '=', 'histories.order_id')

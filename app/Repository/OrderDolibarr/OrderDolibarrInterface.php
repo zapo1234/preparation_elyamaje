@@ -49,6 +49,8 @@ interface OrderDolibarrInterface
 
     public function getAllHistory();
 
+    public function getAllHistoryByUser($user_id);
+
     public function getOrderDetails($order_id);
 
     public function  updateStock($data, $typeUpdate);

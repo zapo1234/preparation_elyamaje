@@ -1,4 +1,4 @@
-<div class="sidebar close">
+<div class="no-print sidebar close">
     <div class="logo-details">
       <!-- <i class='bx bxl-c-plus-plus'></i> -->
       <!-- <span class="logo_name">CodingLab</span> -->
@@ -52,6 +52,7 @@
                     <ul class="sub-menu">
                         <li><a class="link_name" href="#">Configuration</a></li>
                         <li><a href="{{ url('account') }}">Comptes</a></li>
+                        <li><a href="{{ url('products') }}">Produits</a></li>
                         <li><a href="{{ url('printers') }}">Imprimantes</a></li>
                     </ul>
                 </li>
@@ -69,7 +70,7 @@
                         <li>
                             <a class="link_name" href="{{ url('getVieuxSplay') }}">
                                 Transferts
-                                <span class="alert-count" style="left: 100px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
+                                <span class="alert-count" style="left: 95px; top: 10px" id="alerte_reassort">{{session()->has('alerte_reassortEnAttente')? session()->get('alerte_reassortEnAttente') : 0}}</span>
 
                             </a>
                         </li>
@@ -286,7 +287,7 @@
                 <li>
                     <div class="top_menu icon-link">
                         <a href="#">
-                            <i class='bx bx-box'></i>
+                            <i class='bx bx-barcode-reader'></i>
                             <span class="link_name">Préparation</span>
                         </a>
                         <i class='bx bxs-chevron-down arrow' ></i>
@@ -296,6 +297,7 @@
                         <li class="orders_customer"><a href="{{ url('orders') }}">Internet</a></li>
                         <li class="orders_distributor"><a href="{{ url('ordersDistributeurs') }}">Distributeurs</a></li>
                         <li class="transfers_orders"><a href="{{ url('ordersTransfers') }}">Transfert</a></li>
+                        <li class=""><a href="{{ url('kit') }}">Kits</a></li>
                         <li><a href="{{ url('ordersHistory') }}">Historique</a></li>
                     </ul>
                 </li>
@@ -306,7 +308,7 @@
                 <li>
                     <div class="top_menu">
                         <a href="{{ url('wrapOrder') }}">
-                            <i class='bx bx-box'></i>
+                            <i class='bx bx-archive'></i>
                             <span class="link_name">Emballer</span>
                         </a>
                     </div>
@@ -389,6 +391,24 @@
                 </li>
             </div>
         @endif
+
+        <!-- Espace Vendeuse -->
+        @if(count(array_keys(array_column(Auth()->user()->roles->toArray(), "id"),  8)))
+            <div class="div_icon">
+                <li>
+                    <div class="top_menu">
+                        <a href="{{ url('kit') }}">
+                            <i class='bx bx-box'></i>
+                            <span class="link_name">Kits</span>
+                        </a>
+                    </div>
+                    <ul class="sub-menu blank">
+                        <li><a class="link_name" href="{{ url('kit') }}">Kits</a></li>
+                    </ul>
+                </li>
+            </div>
+        @endif
+
             <div>
                 <li>
                     <div class="profile-details">
@@ -410,8 +430,8 @@
     </ul>
 
   </div>
-  <section class="home-section close">
-    <div class="home-content">
+  <section class="home-section close no-print">
+    <div class="home-content no-print">
       <!-- <i class='bx bx-menu' ></i> -->
       <div class="show_hide_nav">
         <i class="text-dark icon_navbar font-20 fadeIn animated bx bx-chevron-right"></i>

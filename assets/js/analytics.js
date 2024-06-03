@@ -128,7 +128,7 @@ $(document).ready(function() {
 
     })
 
-    $("thead").remove()
+    // $("thead").remove()
 })
 
 
