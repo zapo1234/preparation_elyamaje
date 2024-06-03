@@ -825,6 +825,7 @@ class Transferkdo
            }
 
              for($i=$nombre_count; $i<$inv+1; $i++){
+              
                   $new_bank[]=
                              [$i =>[
                                 "datepaye"=>$date_finale,
