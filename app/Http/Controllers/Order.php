@@ -1075,8 +1075,10 @@ class Order extends BaseController
           $decrementation = 0;
           $total_product = 0;
           $i = 1;
-          $ids="";
+          $ids = [];
           $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+
+          $error_product= [];
 
           foreach ($tabProduit as $key => $line) {
               if ($line["qty"] != 0) {   
@@ -1094,25 +1096,29 @@ class Order extends BaseController
                       'dluo' => date("Y-m-d", strtotime($line["dluo"])),
                   );  
 
+                  // products to ignore = products out of stock
                   if(!in_array($line["product_id"], $productToIgnore)){
                     // on execute le réassort
                     $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
 
-                    if ($stockmovements) {
+                    // If is int transfers is succes
+                    if(is_int(json_decode($stockmovements))){
+                      if ($stockmovements) {
                         $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                        if (count($tabProduit) != $i) {
-                            $ids .= $line['id'] . ",";
-                        }else{
-                            $ids .= $line['id'];
-                        }
+                        $ids[] = $line['id'];
+                      
                         $i++;  
                         $incrementation++;
+                      }
+                    } else {
+                      $error_product[] = $data;
                     }
+                   
                   }
               }
           }
 
-          $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
+          $updateQuery .= " ELSE -1 END WHERE id IN (".implode(',', $ids).")";
           $response = DB::update($updateQuery);
 
           // Update status transfers
@@ -1130,7 +1136,6 @@ class Order extends BaseController
           ];
 
           $this->history->save($data);
-
           echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
       } catch (\Throwable $th) {
           $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $th->getMessage()]);
