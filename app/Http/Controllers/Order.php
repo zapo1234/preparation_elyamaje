@@ -1030,6 +1030,7 @@ class Order extends BaseController
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
           
+
           if($tabProduitReassort[0]['status'] == "finished"){
             echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
             return;
@@ -1038,6 +1039,7 @@ class Order extends BaseController
           if($tabProduitReassort){
             // For type == 0
             foreach($tabProduitReassort as $tab){
+             
               if($tab['type'] == 0){
                 if($tab['qty'] > $tab['missing']){
                   $tab["qty"] = abs($tab['qty']) - $tab['missing'];
@@ -1058,6 +1060,7 @@ class Order extends BaseController
             }
           }
 
+
           if (count($tabProduit) == 0) {
               echo json_encode(['success' => false, 'message' => "Transfère introuvable".$identifiant_reassort]);
               return;
@@ -1073,6 +1076,7 @@ class Order extends BaseController
           $i = 1;
           $ids="";
           $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+
           foreach ($tabProduit as $key => $line) {
               if ($line["qty"] != 0) {   
                   $total_product = $total_product + intval($line["qty"]);
@@ -1103,6 +1107,7 @@ class Order extends BaseController
                   }
               }
           }
+
           $updateQuery .= " ELSE -1 END WHERE id IN (".$ids.")";
           $response = DB::update($updateQuery);
 
