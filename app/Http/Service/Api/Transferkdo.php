@@ -504,7 +504,7 @@ class Transferkdo
                                        else{
                                              $fk_product="gala";
                                              $product_type="1";
-                                             $desc="Achat billet gala Septmebre 2024";
+                                             $desc="Billet d’entrée au Gala Elyamaje 2024 Marseille";
                                              $product_label="";
                                         }
 
