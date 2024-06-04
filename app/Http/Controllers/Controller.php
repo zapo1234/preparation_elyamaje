@@ -2776,8 +2776,6 @@ class Controller extends BaseController
                         $order['gala'] = false;
                     }
 
-                    dd($order);
-
                     $order_to_billing[] = $order;
                     if(count($order_to_billing) == 4){
                         // Envoie à la facturation par 4
