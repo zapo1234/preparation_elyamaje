@@ -2783,7 +2783,7 @@ class Controller extends BaseController
                         // Réinitialise le tableau
                         $order_to_billing = [];
                 }
-                    // Remplacer par fonction qui facture plusieurs fois
+                    // Remplacer par fonction qui facture plusieurs fois.
                 }
             } 
            
