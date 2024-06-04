@@ -655,39 +655,7 @@ class Admin extends BaseController
 
     public function billingOrder(Request $request){
 
-     /*   $sponsorhis =[
-            ["sponsors_code"=>"emilies-coding",
-             'code_live'=>'emilie-amb',
-             'email_students'=>'emilie@elyamaje.com',
-             'id_connect'=> 3,
-             'created_at' => date('Y-m-d H:i:s'),
-             'status'=>1,
-             'user_id'=>'0',
-             'date_use'=> null,
-           ],
-           
-           ['sponsors_code'=>'zapos-coding',
-            'code_live'=>'zapo-amb',
-            'email_students'=>'martial@elyamaje.com',
-            'id_connect'=> 3,
-            'created_at' => date('Y-m-d H:i:s'),
-            'status'=>1,
-             'user_id'=>'0',
-            'date_use'=> null,
-          ],
-
-          ];
-
-        $reponse = Http::withHeaders([
-            'Authorization' => '0zY_YfZxWKrdwuCZASfUgOrPNxQJ12wO',
-            ])->post('http://192.168.1.137:3000/sponsorships/addSponsorships', $sponsorhis);
-
-         */
-         // dd($reponse);
-
-          // traformer mon retour de response.;;
-          $json = json_encode($reponse);
-          $jons = json_decode($reponse,true);
+    
           
         $order_id = $request->post('order_id');
         $order = $this->order->getOrderByIdWithCustomer($order_id);
