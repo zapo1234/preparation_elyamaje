@@ -419,10 +419,14 @@ class Controller extends BaseController
 
             $id_etrepot_source = (explode("to",$value->sense))[0];
             $id_etrepot_destination = (explode("to",$value->sense))[1];
-                
+
             $val_etat = $value->id_reassort;
 
-            if (!$value->origin_id_reassort) {          
+            if($value->status == "finished"){
+                $etat = '<span class="badge bg-success">Términé</span>';
+                $disabled = "disabled";
+            } else if (!$value->origin_id_reassort) { 
+                
                 if ($val_etat == 0) {
                     $etat = '<span class="badge bg-warning text-dark">En attente de préparation</span>';
                     $disabled = "";
