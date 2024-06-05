@@ -504,7 +504,7 @@ class Transferkdo
                                        else{
                                              $fk_product="gala";
                                              $product_type="1";
-                                             $desc="Achat billet gala Septmebre 2024";
+                                             $desc="Billet d’entrée au Gala Elyamaje 2024 Marseille";
                                              $product_label="";
                                         }
 
@@ -712,17 +712,17 @@ class Transferkdo
         {
              // recuperer les données api dolibar.
              // recuperer les données api dolibar copie projet tranfer x.
-      
-             $id_account="";
+              $account_id =[];
              foreach($orders as $vn){
               if($vn['gala']=="true"){
-                  $id_account = 48;// gala
-               }else{
-                  $id_account= 46; // kado
-               }
+                   $id_account = 48;// gala
+                 }else{
+                   $id_account= 46; // kado
+                 }
+                 //
+                 $account_id[] = $id_account;
               }
 
-             $this->setIdaccount($id_account);
              
              $method = "GET";
              // recupérer les clé Api dolibar transfertx........
@@ -812,7 +812,7 @@ class Transferkdo
            "datepaye"=>$date_finale,
            "paymentid"=>6,
            "closepaidinvoices"=> "yes",
-           "accountid"=> $this->getIdaccount(), // id du compte bancaire.
+           "accountid"=> 46, // id du compte bancaire.
            ];
 
             // contruire le tableau newbank
@@ -825,12 +825,13 @@ class Transferkdo
            }
 
              for($i=$nombre_count; $i<$inv+1; $i++){
+              
                   $new_bank[]=
                              [$i =>[
                                 "datepaye"=>$date_finale,
                                "paymentid"=>6,
                                "closepaidinvoices"=> "yes",
-                                "accountid"=>$this->getIdaccount(),// id du compte bancaire...
+                                "accountid"=>46,// id du compte bancaire...
 
                            ]
                        ];
@@ -844,7 +845,7 @@ class Transferkdo
                                     "datepaye"=>$vk['datepaye'],
                                     "paymentid"=>6,
                                     "closepaidinvoices"=> "yes",
-                                     "accountid"=>$this->getIdaccount(),// id du compte bancaire..
+                                     "accountid"=>$account_id[$keys],// id du compte bancaire..
                                      "num_payment"=>$ord[$keys]
                                    ]
                              ];
