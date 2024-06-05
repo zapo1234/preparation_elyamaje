@@ -25,7 +25,7 @@ class LabelRepository implements LabelInterface
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
          'created_at' => date('Y-m-d H:i:s'),
-         'tracking_status' => 0,
+         'tracking_status' => $label['tracking_status'] ?? 0,
          'cn23' => $label['cn23'] ?? null,
          'weight' => $label['weight'] ?? null
      ]);

@@ -233,6 +233,7 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
               
                 foreach($option as $key => $op){
@@ -264,6 +265,7 @@ class Admin extends BaseController
                             'menu_order' => $product['menu_order'],
                             'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
+                            'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
                     }
                 }
@@ -285,6 +287,7 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
             }
         }
