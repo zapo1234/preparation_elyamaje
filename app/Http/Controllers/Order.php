@@ -1136,7 +1136,7 @@ class Order extends BaseController
 
           $this->history->save($data);
           echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
-      } catch (Exception $th) {
+      } catch (Exception $e) {
           $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $e->getMessage()]);
           echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       } 
