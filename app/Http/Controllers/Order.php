@@ -1113,34 +1113,38 @@ class Order extends BaseController
                     } else {
                       $error_product[] = $data;
                     }
-                   
                   }
               }
           }
 
-          $updateQuery .= " ELSE -1 END WHERE id IN (".implode(',', $ids).")";
-          $response = DB::update($updateQuery);
+          try {
+            $updateQuery .= " ELSE -1 END WHERE id IN (".implode(',', $ids).")";
+            DB::update($updateQuery);
 
-          // Update status transfers
-          $colonnes_values = ['status' => "finished"];
-          $res = $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
+            // Update status transfers
+            $colonnes_values = ['status' => "finished"];
+            $res = $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
 
-          // Insert la commande dans histories
-          $data = [
-            'order_id' => $identifiant_reassort,
-            'user_id' => Auth()->user()->id,
-            'status' => 'finished',
-            'poste' => Auth()->user()->poste,
-            'created_at' => date('Y-m-d H:i:s'),
-            'total_product' => $total_product ?? null
-          ];
+            // Insert la commande dans histories
+            $data = [
+              'order_id' => $identifiant_reassort,
+              'user_id' => Auth()->user()->id,
+              'status' => 'finished',
+              'poste' => Auth()->user()->poste,
+              'created_at' => date('Y-m-d H:i:s'),
+              'total_product' => $total_product ?? null
+            ];
 
-          $this->history->save($data);
-          echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
-      } catch (\Throwable $th) {
-          $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $th->getMessage()]);
-          echo json_encode(['success' => false, 'message' => $th->getMessage()]);
-          // return ["response" => false, "error" => $th->getMessage()];
+            $this->history->save($data);
+            echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
+
+          } catch (Exception $e) {
+            $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $e->getMessage()]);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+          }
+      } catch (Exception $th) {
+          $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $e->getMessage()]);
+          echo json_encode(['success' => false, 'message' => $e->getMessage()]);
       } 
   }
 
