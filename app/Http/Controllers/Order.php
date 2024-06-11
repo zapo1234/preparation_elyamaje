@@ -1024,20 +1024,18 @@ class Order extends BaseController
 
     public function executerTransfere($identifiant_reassort){
 
-
       try {
           $tabProduit = [];
           $productToIgnore = [];
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
           
-
-          if($tabProduitReassort[0]['status'] == "finished"){
-            echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
-            return;
-          }
-
           if($tabProduitReassort){
+
+            // if($tabProduitReassort[0]['status'] == "finished"){
+            //   echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
+            //   return;
+            // }
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){
@@ -1060,82 +1058,85 @@ class Order extends BaseController
                   }
               } 
             }
-          }
 
-          if (count($tabProduit) == 0) {
-              echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
-              return;
-          }
+            dd($tabProduit);
+            if (count($tabProduit) == 0) {
+                echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
+                return;
+            }
+            
+            $apiKey = env('KEY_API_DOLIBAR');   
+            $apiUrl = env('KEY_API_URL');
           
-          $apiKey = env('KEY_API_DOLIBAR');   
-          $apiUrl = env('KEY_API_URL');
-        
-          $data_save = array();
-          $incrementation = 0;
-          $decrementation = 0;
-          $total_product = 0;
-          $i = 1;
-          $ids = [];
-          $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
+            $data_save = array();
+            $incrementation = 0;
+            $decrementation = 0;
+            $total_product = 0;
+            $i = 1;
+            $ids = [];
+            $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
 
-          $error_product= [];
+            $error_product= [];
 
-          foreach ($tabProduit as $key => $line) {
-              if ($line["qty"] != 0) {   
-                  $total_product = $total_product + intval($line["qty"])*1;
-                  $data = array(
-                      'product_id' => $line["product_id"],
-                      'warehouse_id' => $line["warehouse_id"], 
-                      'qty' => $line["qty"]*1, 
-                      'type' => $line["type"], 
-                      'movementcode' => $line["movementcode"], 
-                      'movementlabel' => $line["movementlabel"], 
-                      'price' => $line["price"], 
-                      'datem' => date("Y-m-d", strtotime($line["datem"])), 
-                      'dlc' => date("Y-m-d", strtotime($line["dlc"])),
-                      'dluo' => date("Y-m-d", strtotime($line["dluo"])),
-                  );  
+            foreach ($tabProduit as $key => $line) {
+                if ($line["qty"] != 0) {   
+                    $total_product = $total_product + intval($line["qty"])*1;
+                    $data = array(
+                        'product_id' => $line["product_id"],
+                        'warehouse_id' => $line["warehouse_id"], 
+                        'qty' => $line["qty"]*1, 
+                        'type' => $line["type"], 
+                        'movementcode' => $line["movementcode"], 
+                        'movementlabel' => $line["movementlabel"], 
+                        'price' => $line["price"], 
+                        'datem' => date("Y-m-d", strtotime($line["datem"])), 
+                        'dlc' => date("Y-m-d", strtotime($line["dlc"])),
+                        'dluo' => date("Y-m-d", strtotime($line["dluo"])),
+                    );  
 
-                  // products to ignore = products out of stock
-                  if(!in_array($line["product_id"], $productToIgnore)){
-                    // on execute le réassort
-                    $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
+                    // products to ignore = products out of stock
+                    if(!in_array($line["product_id"], $productToIgnore)){
+                      // on execute le réassort
+                      $stockmovements = $this->api->CallAPI("POST", $apiKey, $apiUrl."stockmovements",json_encode($data));
 
-                    // If is int transfers is succes
-                    if(is_int(json_decode($stockmovements))){
-                      if ($stockmovements) {
-                        $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
-                        $ids[] = $line['id'];
-                      
-                        $i++;  
-                        $incrementation++;
+                      // If is int transfers is succes
+                      if(is_int(json_decode($stockmovements))){
+                        if ($stockmovements) {
+                          $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
+                          $ids[] = $line['id'];
+                        
+                          $i++;  
+                          $incrementation++;
+                        }
+                      } else {
+                        $error_product[] = $data;
                       }
-                    } else {
-                      $error_product[] = $data;
                     }
-                  }
-              }
+                }
+            }
+
+            $updateQuery .= " ELSE -1 END WHERE id IN (".implode(',', $ids).")";
+            DB::update($updateQuery);
+
+            // Update status transfers
+            $colonnes_values = ['status' => "finished"];
+            $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
+
+            // Insert la commande dans histories
+            $data = [
+              'order_id' => $identifiant_reassort,
+              'user_id' => Auth()->user()->id,
+              'status' => 'finished',
+              'poste' => Auth()->user()->poste,
+              'created_at' => date('Y-m-d H:i:s'),
+              'total_product' => $total_product ?? null
+            ];
+
+            $this->history->save($data);
+            echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
+          } else {
+            echo json_encode(['success' => false, 'message' => "Aucun transfert n'a été trouvé"]);
           }
-
-          $updateQuery .= " ELSE -1 END WHERE id IN (".implode(',', $ids).")";
-          DB::update($updateQuery);
-
-          // Update status transfers
-          $colonnes_values = ['status' => "finished"];
-          $this->reassort->update_in_hist_reassort($identifiant_reassort, $colonnes_values);
-
-          // Insert la commande dans histories
-          $data = [
-            'order_id' => $identifiant_reassort,
-            'user_id' => Auth()->user()->id,
-            'status' => 'finished',
-            'poste' => Auth()->user()->poste,
-            'created_at' => date('Y-m-d H:i:s'),
-            'total_product' => $total_product ?? null
-          ];
-
-          $this->history->save($data);
-          echo json_encode(['success' => true, 'message' => 'Transfert '.$identifiant_reassort.' transféré avec succès !']);
       } catch (Exception $e) {
           $this->logError->insert(['order_id' => $identifiant_reassort, 'message' => $e->getMessage()]);
           echo json_encode(['success' => false, 'message' => $e->getMessage()]);
