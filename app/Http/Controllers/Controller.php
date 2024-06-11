@@ -969,7 +969,7 @@ class Controller extends BaseController
                                         "name_entrepot" => $name_entrepot,
                                         "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
                                         "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
-                                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : 0,
                                         "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
                                     ];
 
@@ -989,7 +989,7 @@ class Controller extends BaseController
                                     "name_entrepot" => $name_entrepot,
                                     "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
                                     "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
-                                    "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                    "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : 0,
                                     "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
 
                                 ];
@@ -1028,7 +1028,7 @@ class Controller extends BaseController
                                 "name_entrepot" => $name_entrepot,
                                 "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
                                 "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
-                                "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                                "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : 0,
                                 "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
 
                             ];
@@ -1047,7 +1047,7 @@ class Controller extends BaseController
                         "name_entrepot" => $name_entrepot,
                         "seuil_stock_alerte" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['seuil_stock_alerte'] : "inconnu",
                         "desiredstock" => (isset($infos_stock_min[$id_product])) ? $infos_stock_min[$id_product]['desiredstock'] : "inconnu",
-                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : "inconnu",
+                        "stock_actuel" => (isset($stocks_products[$id_product])) ? $stocks_products[$id_product]['reel'] : 0,
                         "label" => (isset($all_products[$id_product])) ? utf8_encode($all_products[$id_product]['label']) : "inconnu",
 
                     ];

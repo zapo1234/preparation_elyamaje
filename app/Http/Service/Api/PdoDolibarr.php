@@ -215,7 +215,7 @@ class PdoDolibarr
 
 
 
-        $sql = 'SELECT fk_product, reel FROM llxyq_product_stock WHERE fk_entrepot = :entrepot';
+        $sql = 'SELECT * FROM llxyq_product_stock WHERE fk_entrepot = :entrepot';
         
         $stmt = $this->pdo->prepare($sql);
 
