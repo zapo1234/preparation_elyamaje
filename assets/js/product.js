@@ -29,8 +29,70 @@ $(document).ready(function() {
             });
 
             $(".select2-container").css('margin-right', '10px')
+
+                // Generate barcode
+                $(".barcode_table_products").each(function( index ) {
+                    const ean13 = $( this ).children("span").text()
+
+                    if(ean13.length == 13){
+                        const barcodeContainer = $( this ).children('.barcode_image')[0];
+                        const canvas = document.createElement('canvas');
+                        JsBarcode(canvas, ean13, {
+                            format: "ean13",
+                            displayValue: true
+                        });
+                        barcodeContainer.appendChild(canvas);
+                        $( this ).children("span").remove()
+                    }
+                })
+        },
+
+
+
+
+        "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            // Generate barcode
+            $(".barcode_table_products").each(function( index ) {
+                const ean13 = $( this ).children("span").text()
+
+                if(ean13.length == 13){
+                    const barcodeContainer = $( this ).children('.barcode_image')[0];
+                    const canvas = document.createElement('canvas');
+                    JsBarcode(canvas, ean13, {
+                        format: "ean13",
+                        displayValue: true
+                    });
+                    barcodeContainer.appendChild(canvas);
+                    $( this ).children("span").remove()
+                }
+            })
         }
     })
+})
+
+$(".barcode_image").on('click', function(){
+
+    const product_id = $(this).attr('data-id')
+    const product_name = $("#product_"+product_id).text()
+
+    $(".product_name_modal").text(product_name)
+    $(".barcode_show").children().remove()
+
+  
+    const barcodeContainer = $('.barcode_show')[0];
+    const canvas = document.createElement('canvas');
+
+    JsBarcode(canvas, $(this).attr('id'), {
+        format: "ean13",
+        displayValue: true
+    });
+    barcodeContainer.appendChild(canvas);
+
+    $('#product_barcode').modal({
+        backdrop: 'static',
+        keyboard: false
+    })
+    $("#product_barcode").modal('show')
 })
 
 $('.category_dropdown').on('change', function(e){

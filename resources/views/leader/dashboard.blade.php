@@ -152,14 +152,14 @@
 						</div>
 						<div class="col d-flex col-lg-8">
 								<div class="card card_table_mobile_responsive radius-10 w-100">
-									<div class="header_title hide_mobile d-flex align-items-center">
+									<div class="d-none title_card_leader header_title hide_mobile d-flex align-items-center">
 										<div class="w-100 d-flex justify-content-between">
-											<h5 style="width:135px">Commande</h5>
-											<h5>Attribution</h5>
+											<h5 style="width: 160px">Commandes</h5>
+											<!-- <h5>Attribution</h5>
 											<h5>Date</h5>
 											<h5>État</h5>
 											<h5>Total</h5>
-											<h5>Détail</h5>
+											<h5>Détail</h5> -->
 										</div>
 									</div>
 									<div class="mobile_padding card-body mt-2 p-0">
@@ -199,7 +199,7 @@
 											</select>
 
 											<table id="example" class="loading_table_content w-100 table_list_order table_mobile_responsive table table-striped table-bordered">
-												<thead>
+												<thead class="d-none">
 													<tr>
 														<th scope="col">Commande</th>
 														<th scope="col">Attribution</th>
@@ -226,7 +226,7 @@
 													@endfor
 												</tbody>
 											</table>
-										</div>
+										<!-- </div> -->
 
 									</div>
 								</div>

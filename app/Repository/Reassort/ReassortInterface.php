@@ -8,6 +8,8 @@ interface ReassortInterface
 
     public function getReassortById($id);
 
+    public function getReassortByIdWithMissingProduct($id);
+
     public function findByIdentifiantReassort($identifiant, $cle = null);
     
     public function deleteByIdentifiantReassort($identifiant);

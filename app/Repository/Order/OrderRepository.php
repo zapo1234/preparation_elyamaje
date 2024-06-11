@@ -31,10 +31,7 @@ class OrderRepository implements OrderInterface
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
-
-            
                if(!isset($orderData['from_dolibarr'])){
-
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
                   $coupons = [];
                   $discount = [];
@@ -62,7 +59,7 @@ class OrderRepository implements OrderInterface
                      $pickUpLocationId = null;
                      $is_professional = false;
                   }
-                 
+                  
                   if(isset($orderData['cart_hash'])){
 
                      // Insert produits
@@ -153,7 +150,7 @@ class OrderRepository implements OrderInterface
                            'product_woocommerce_id' => 110203,
                            'category' =>  '',
                            'category_id' => '',
-                           'quantity' => $nbr_sac,
+                           'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
                            'cost' => 0,
                            'subtotal_tax' =>  0,
                            'total_tax' =>  0,
@@ -913,8 +910,9 @@ class OrderRepository implements OrderInterface
          ->Leftjoin('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
          ->Leftjoin('categories', 'products_order.category_id', '=', 'categories.category_id_woocommerce')
          ->where('user_id', $user_id)
+         ->join('users', 'users.id', '=', 'orders.user_id')
          ->whereIn('orders.status', ['prepared-order'])
-         ->select('orders.*', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
+         ->select('orders.*', 'users.name as preparateur', 'products.product_woocommerce_id', 'products.category', 'products.category_id', 'products.variation',
          'products.name', 'products.barcode', 'products.location', 'categories.order_display', 'products_order.pick', 'products_order.quantity',
          'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight')
          ->orderBy('orders.date', 'ASC')
@@ -947,7 +945,7 @@ class OrderRepository implements OrderInterface
 
       // Reconstruis le tableaux sans trou dans les clés à cause du unset précédent
       foreach($orders as $order){
-   
+         $list_orders[$order['order_woocommerce_id']]['preparateur'] =  $order['preparateur'];
          $list_orders[$order['order_woocommerce_id']]['details'] = [
             'id' => $order['order_woocommerce_id'],
             'first_name' => $order['billing_customer_first_name'],

@@ -25,7 +25,7 @@ class LabelRepository implements LabelInterface
          'tracking_number' => $label['tracking_number'],
          'label_format' => $label['label_format'],
          'created_at' => date('Y-m-d H:i:s'),
-         'tracking_status' => 0,
+         'tracking_status' => $label['tracking_status'] ?? 0,
          'cn23' => $label['cn23'] ?? null,
          'weight' => $label['weight'] ?? null
      ]);
@@ -89,14 +89,14 @@ class LabelRepository implements LabelInterface
 
       // Colissimo
       foreach ($labels['colissimo'] as  $value) {
-         $order_id[] = $value['order_id'];
-         $updateQuery.= " WHEN ".$value['order_id']." THEN ". $value['step'];         
+         $order_id[] = $value['order_id'];  
+         $updateQuery .= " WHEN '" . $value['order_id'] . "' THEN " . $value['step'];   
       }
 
       // Chronopost
       foreach ($labels['chronopost'] as  $value2) {
          $order_id[] = $value2['order_id'];
-         $updateQuery.= " WHEN ".$value2['order_id']." THEN ". $value2['step'];         
+         $updateQuery .= " WHEN '" . $value2['order_id'] . "' THEN " . $value2['step'];                
       }
 
       $updateQuery.= " END) WHERE order_id IN (".implode(',',$order_id).")";

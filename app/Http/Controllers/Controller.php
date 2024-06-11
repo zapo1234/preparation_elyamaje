@@ -167,6 +167,7 @@ class Controller extends BaseController
     {
         // Get all products
         $products = $this->products->getAllProducts();
+
         // Get all categories products
         $categories = $this->categories->getAllCategories();
         return view('admin.products', ['products' => $products, 'categories' => $categories]);
@@ -354,7 +355,6 @@ class Controller extends BaseController
 
 
 
-
         $identifiant_unique = array();
         $data_reassort = array();
 
@@ -419,10 +419,14 @@ class Controller extends BaseController
 
             $id_etrepot_source = (explode("to",$value->sense))[0];
             $id_etrepot_destination = (explode("to",$value->sense))[1];
-                
+
             $val_etat = $value->id_reassort;
 
-            if (!$value->origin_id_reassort) {          
+            if($value->status == "finished"){
+                $etat = '<span class="badge bg-success">Términé</span>';
+                $disabled = "disabled";
+            } else if (!$value->origin_id_reassort) { 
+                
                 if ($val_etat == 0) {
                     $etat = '<span class="badge bg-warning text-dark">En attente de préparation</span>';
                     $disabled = "";
@@ -445,6 +449,7 @@ class Controller extends BaseController
                 }
                 
             } 
+
 
             $liste_reassort[$value->identifiant_reassort] = [
                 "identifiant" => $value->identifiant_reassort,
@@ -497,6 +502,7 @@ class Controller extends BaseController
                 }else {
                     $hist_reassort[$key]->label = "label inconnu";
                 }
+
                 array_push($liste_reassort[$reassort->identifiant_reassort]["detail_reassort"],$reassort);
             }
 
@@ -507,7 +513,6 @@ class Controller extends BaseController
 
         // on libère de la mémoire
         unset($all_products);
-
 
         return view('admin.supply',
             [
@@ -2699,12 +2704,13 @@ class Controller extends BaseController
     }
 
     public function shop(){
-        return view('shop.index');
+        return view('kit.index');
     }
 
     public function giftCardOrders($token){
 
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
+
             $status = "completed";
             $after = date('Y-m-d H:i:s', strtotime('-2 day'));
             $per_page = 100;
@@ -2712,42 +2718,48 @@ class Controller extends BaseController
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
 
             if(isset($orders['message'])){
-            $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
-            return false;
+                $this->logError->insert(['order_id' => 0, 'message' => 'Tache Cron commande avec carte cadeaux seulement : '.$orders['message']]);
+                return false;
             }
 
             if(!$orders){
-            return array();
+                return array();
             } 
             
             $count = count($orders);
     
             // Check if others page
             if($count == 100){
-            while($count == 100){
-                $page = $page + 1;
-                $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
-            
-                if(count($orders_other ) > 0){
-                $orders = array_merge($orders, $orders_other);
+                while($count == 100){
+                    $page = $page + 1;
+                    $orders_other = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
+                
+                    if(count($orders_other ) > 0){
+                    $orders = array_merge($orders, $orders_other);
+                    }
+                
+                    $count = count($orders_other);
                 }
-            
-                $count = count($orders_other);
-            }
             }  
 
             $order_to_billing = [];
-
             // Check if just gift card in order
             foreach($orders as $order){
                 $item_gift_card = 0;
+                $item_is_virtual = 0;
+
                 foreach($order['line_items'] as $or){
                     if(str_contains($or['name'], 'Carte Cadeau')){
                         $item_gift_card = $item_gift_card + 1;
                     }
+
+                    if($or['is_virtual'] == "yes"){
+                        $item_is_virtual = $item_is_virtual + 1;
+                    }
                 }
 
-                if($item_gift_card == count($order['line_items'])){
+                if($item_gift_card == count($order['line_items']) || $item_is_virtual  == count($order['line_items']) 
+                || $item_is_virtual + $item_gift_card >=  count($order['line_items'])){
                     $order['coupons'] = '';
                     $order['preparateur'] = 'Aucun';
                     $order['emballeur'] = 'Aucun';
@@ -2761,20 +2773,24 @@ class Controller extends BaseController
                     $order['shipping_method_detail'] = "";
                     $order['discount_amount'] = 0;
 
-                    $order_to_billing[] = $order;
+                    // Is GALA product (billet gala septembre 2024)
+                    if($item_is_virtual  == count($order['line_items'])){
+                        $order['gala'] = true;
+                    } else {
+                        $order['gala'] = false;
+                    }
 
+                    $order_to_billing[] = $order;
                     if(count($order_to_billing) == 4){
                         // Envoie à la facturation par 4
                         $this->transferkdo->transferkdo($order_to_billing);
                         // Réinitialise le tableau
                         $order_to_billing = [];
                 }
-                    // Remplacer par fonction qui facture plusieurs fois
+                    // Remplacer par fonction qui facture plusieurs fois.
                 }
             } 
-
-    
-
+           
             if(count($order_to_billing) > 0){
                 // Envoie à la facturation par 4
                 $this->transferkdo->transferkdo($order_to_billing);

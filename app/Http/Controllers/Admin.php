@@ -15,6 +15,7 @@ use App\Models\products_categories;
 use App\Models\Products_association;
 use App\Http\Service\Api\PdoDolibarr;
 use App\Http\Service\Api\TransferOrder;
+use Illuminate\Support\Facades\Http;
 use App\Http\Service\Api\Transfertext;
 use App\Http\Service\PDF\InvoicesPdf;
 use App\Http\Service\Api\Construncstocks;
@@ -232,6 +233,7 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
               
                 foreach($option as $key => $op){
@@ -263,6 +265,7 @@ class Admin extends BaseController
                             'menu_order' => $product['menu_order'],
                             'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
+                            'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
                     }
                 }
@@ -284,6 +287,7 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
             }
         }
@@ -653,6 +657,9 @@ class Admin extends BaseController
     }
 
     public function billingOrder(Request $request){
+
+    
+          
         $order_id = $request->post('order_id');
         $order = $this->order->getOrderByIdWithCustomer($order_id);
 
@@ -689,8 +696,8 @@ class Admin extends BaseController
 
             try {
 
-                 //$this->transfers->Transfertext($order);
-                 $this->factorder->Transferorder($order);  
+                //$this->transfers->Transfertext($order);
+                $this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -706,7 +713,7 @@ class Admin extends BaseController
                 // Modifie le status de la commande sur Woocommerce en "Prêt à expédier"
                 $this->order->updateOrdersById([$order_id], "finished");
                
-                $status_finished = " lpc_ready_to_ship";
+                $status_finished = "lpc_ready_to_ship";
                 if(isset($order[0]['shipping_method'])){
                     if(str_contains($order[0]['shipping_method'], 'chrono')){
                         $status_finished = "chronopost-pret";
@@ -923,7 +930,7 @@ class Admin extends BaseController
             // $apiUrl = env('KEY_API_URL');
             $apiKey = env('KEY_API_DOLIBAR');
 
-            $apiUrl = "https://www.poserp.elyamaje.com/api/index.php/";
+            $apiUrl = config('app.dolibarr_api_url');
 
 
             $produitParamProduct = array(

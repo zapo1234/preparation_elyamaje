@@ -10,7 +10,7 @@
 		@section("wrapper")
 			<div class="page-wrapper">
 				<div class="page-content">
-					<div class="page-breadcrumb d-sm-flex align-items-center mb-3">
+					<div class="no-print page-breadcrumb d-sm-flex align-items-center mb-3">
 						<div class="breadcrumb-title pe-3">Configuration</div>
 						<div class="ps-3">
 							<nav aria-label="breadcrumb">
@@ -74,7 +74,7 @@
 												<input data-id="" class="form-check-input check_all" type="checkbox" value="" aria-label="Checkbox for product">
 											</span>
 										</th>
-										<th>Nom</th>
+										<th class="col-md-2">Nom</th>
 										<th>Prix (TTC)</th>
 										<th>Code Barre</th>
 										<th>Catégorie</th>
@@ -91,9 +91,17 @@
 													<input data-id="{{ $product->product_woocommerce_id }}" class="form-check-input checkbox_label" type="checkbox" value="" aria-label="Checkbox for product">
 												</span>
 											</td>
-											<td data-label="Nom">{{ $product->name }}</td>
+											<td data-label="Nom"><div id="product_{{ $product->product_woocommerce_id }}">{{ $product->name }}</div></td>
 											<td data-label="Prix (TTC)">{{ $product->price }} {{ config('app.currency_symbol') }}</td>
-											<td data-label="Code Barre">{{ $product->barcode != "" ?  $product->barcode : "Aucun"}}</td>
+											<td data-label="Code Barre">
+												<div data-id="{{ $product->product_woocommerce_id }}" class="barcode_table_products">
+													<span>{{ $product->barcode != "" ?  $product->barcode : "Aucun"}}</span>
+													<div id="{{ $product->barcode }}" class="barcode_image">
+
+													</div>
+
+												</div>
+											</td>
 											<td data-label="Catégorie">{{ str_replace(',', ' / ', $product->category) }}</td>
 											<td data-label="Status">
 												<span class="badge bg-{{ $product->status }}">{{ $product->status }}</span>	
@@ -147,12 +155,31 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Modal show and print barcode -->
+			<div class="modal_to_print modal modal_radius fade" id="product_barcode" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<h2 class="text-center product_name_modal"></h2>
+							<div class="barcode_show d-flex justify-content-center">
+
+							</div>
+							<div class="mt-2 no-print w-100 d-flex justify-content-center">
+								<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
+								<button onclick="window.print()" style="margin-left:15px" type="button" class="btn btn-dark px-5 ">Imprimer</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		@endsection
 
 	@section("script")
 		<script src="{{asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 		<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+		<script src="{{asset('assets/js/jsBarcode.js')}}"></script>
 		<script src="{{asset('assets/js/product.js')}}"></script>
 	@endsection
 

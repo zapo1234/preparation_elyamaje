@@ -43,7 +43,7 @@ $(".validate_order").on("click", function(){
             // Type de commande, devis, transfers ou commande from_dolibarr à false et transfers à false
             var from_dolibarr = JSON.parse(data).from_dolibarr
             var transfers = JSON.parse(data).transfers
-
+            
             // Supprime le visuel par défaut d'arrivé sur la page
             $(".empty_order").addClass('d-none')
             $(".detail_shipping_billing_div").remove()
@@ -56,7 +56,7 @@ $(".validate_order").on("click", function(){
                 <div class="to_hide detail_shipping_billing_div">
                     <div class="d-flex w-100 justify-content-around mb-3">
 
-                        ${order_shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail ?? ''+'</span>'}
+                        ${order_shipping_method.includes("chrono") ? '<div class="shipping_chrono_logo"></div>' : '<span style="width: fit-content" class="badge bg-primary shipping_method">'+order[0].shipping_method_detail && order[0].shipping_method_detail != null ? order[0].shipping_method_detail : ''+'</span>'}
                             <span class="badge bg-dark distributor">${is_distributor ? 'Distributrice' : ''}</span>
                         </div>
 
@@ -64,11 +64,11 @@ $(".validate_order").on("click", function(){
                             <span style="width: fit-content" class="mb-3 badge bg-default">${country}</span>
                         </div>`: ''} 
                    
-                        ${!transfers ?
-                            `<div class="d-flex w-100 justify-content-center">
-                                <span style="width: fit-content" class="badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
-                            </div>`
-                        : ''}
+                       
+                        <div class="d-flex w-100 justify-content-center">
+                            <span style="width: fit-content" class="badge status_order bg-default bg-light-${order[0]['status']}">${JSON.parse(data).status}</span>
+                        </div>
+                     
 
                         ${!transfers ?
                             `<div class="shipping_detail d-flex flex-wrap justify-content-around mb-2">
@@ -106,16 +106,24 @@ $(".validate_order").on("click", function(){
                 $(".amount_total_order").text(order[0].total_order+'€ (TTC)')
             }
 
-            $(".total_order_details").append(`
+            if(!transfers){
+                $(".total_order_details").append(`
+                    <div class="d-flex button_order_action">
+                        <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
+                        <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button" onclick="validWrapOrder(true)" class="btn btn-primary d-flex mx-auto"> Valider avec étiquette</button>
+                        </div>
+                        <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
+                            <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
+                        </div>
+                    </div>`)
+            } else {
+                $(".total_order_details").append(`
                 <div class="d-flex button_order_action">
                     <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                        <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button" onclick="validWrapOrder(true)" class="btn btn-primary d-flex mx-auto"> Valider avec étiquette</button>
+                        <button style="max-width:300px" id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
                     </div>
-                    <div class="to_hide action_button d-flex w-100 justify-content-center flex-wrap">
-                        <button id="validWrapper" transfers="`+transfers+`" from_dolibarr="`+from_dolibarr+`" type="button"  onclick="$('.modal_no_label').modal('show')" class="btn btn-primary d-flex mx-auto"> Valider </button>
-                    </div>
-                </div>
-            `)
+                </div>`)
+            }
             
             //  <button type="button" onclick=validWrapOrder(true) class="btn btn-primary d-flex mx-auto"> Générer une étiquette </button>
             
@@ -126,13 +134,14 @@ $(".validate_order").on("click", function(){
                 var gift = parseFloat(value.cost) == 0.00 ? true : false;
                 total_product_order = total_product_order + value.quantity
                 listProduct += `
-                    <div class="row row-main to_hide">
+                    <div class="${value.quantity == 0 ? "no_product" : ""} row row-main to_hide">
                         <div class="col-2"> 
                             ${value.image ? '<img loading="lazy" class="img-fluid" src="'+value.image+'">' : '<img loading="lazy" class="img-fluid" src="assets/images/icons/default_image.png">'}
                             </div>
                             <div class="col-8">
                                 <div class="row d-flex">
                                     <p><b>${gift ? '<span class="text-success">(Cadeau)</span>' : ''} ${value.name} (x${value.quantity})</b></p>
+                                    ${value.quantity == 0 ? "<p class='out_of_stock'>Pas en stock</p>" : ""}
                                 </div>
                                 <div class="row d-flex">
                                     <p class="text-muted">${gift ? '<span class="text-success">'+parseFloat(value.cost).toFixed(2)+'€' : parseFloat(value.cost).toFixed(2)}</p>

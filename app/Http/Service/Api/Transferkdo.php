@@ -37,6 +37,7 @@ class Transferkdo
       private $don;
       private $dons;
       private $tiers;
+      private $idaccount;
     
        public function __construct(
         Api $api,
@@ -167,6 +168,20 @@ class Transferkdo
    }
 
 
+   public function getIdaccount()
+   {
+       return $this->idaccount;
+   }
+   
+   
+   public function setIdaccount($idaccount)
+   {
+      $this->idaccount = $idaccount;
+      return $this;
+   }
+
+
+
 
     public  function createtiers($donnees)
     {
@@ -181,17 +196,19 @@ class Transferkdo
    
      
      /** 
-     *@return array
+     *@return array                                                                                    
      */
       public function Transferkdo($orders)
       {
             
+           
              $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
              $emballeur="";
              $preparateur="";
              $gift_card_amount="";// presence de dépense avec gift_card.
+             $id_compte="";
              foreach($orders as $val){
                  if(isset($val['fk_commande'])){
                     $id_commande="exist";
@@ -212,6 +229,8 @@ class Transferkdo
                  if($val['gift_card_amount']!=""){
                       $gift_card_amount = $val['gift_card_amount'];
                  }
+
+                
              }
 
              
@@ -341,8 +360,8 @@ class Transferkdo
                         $array_commande_data =[];// recupérer les commande deja facturé.
                         
                         foreach($orders as $k => $donnees) {
-                          
-                                // créer des tiers pour dolibarr via les datas woocomerce. 
+
+                             // créer des tiers pour dolibarr via les datas woocomerce. 
                                 // créer le client via dolibarr à partir de woocomerce...
                                  $ref_client = rand(4,10);
                                  //  $email_true = mb_strtolower($donnees['billing']['email']);
@@ -478,10 +497,15 @@ class Transferkdo
                                       if($val['key']=="barcode"){
                                          //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
                                             $fk_product = array_search($val['value'],$data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
-                                      }
+                                            $product_type ="";
+                                            $desc="";
+                                            $product_label= $values['name'];
+                                       }
                                        else{
-                                           $fk_product="";
-                                           
+                                             $fk_product="gala";
+                                             $product_type="1";
+                                             $desc="Billet d’entrée au Gala Elyamaje 2024 Marseille";
+                                             $product_label="";
                                         }
 
                                      }
@@ -506,14 +530,14 @@ class Transferkdo
 
                                                $tva_product = 0;
                                                $data_product[] = [
-                                                "desc"=>'',
+                                                "desc"=>$desc,
                                                 "remise_percent"=> $donnees['discount_amount'],
                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
                                                 "multicurrency_total_tva" => 0,
                                                 "multicurrency_total_ttc" => floatval($values['total']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
-                                                "product_label" =>$values['name'],
+                                                "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
                                                 "tva_tx" => "",
@@ -547,13 +571,26 @@ class Transferkdo
                                   $id_true ="";
                                   $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
+
+                                    if($donnees['gala']=="true"){
+                                       $index_number="-gala";
+                                    }else{
+                                        $index_number ="-cado";
+                                    }
                                   
+                                      if($donnees['gala']==true){
+                                        $index_numero ='-gala';
+                                      }else{
+                                          $index_numero = '-cado';
+                                      }
+                                    
                                       $data_options = [
-                                        "options_idw"=>$donnees['order_id'].'-cado',
+                                        "options_idw"=>$donnees['order_id'].''.$index_number,
                                         "options_idc"=>$coupons,
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
+                                        "options_point_fidelite"=>0,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
@@ -617,6 +654,7 @@ class Transferkdo
                                exit;
                             }
                       
+                          
                           // Create le client via Api.....
                         // fitrer les ids de commande .qui sont deja facture et les enlever.
                           $array_tab = []; // au recupere les socid
@@ -652,7 +690,7 @@ class Transferkdo
                                $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              }
                             // traiter la réponse de l'api
-                             $response = json_decode($retour_create, true);
+                            //  $response = json_decode($retour_create, true);
 
                              // recupérer les commande a facture
                              $this->setIdcommande($ids_commande);
@@ -674,6 +712,18 @@ class Transferkdo
         {
              // recuperer les données api dolibar.
              // recuperer les données api dolibar copie projet tranfer x.
+              $account_id =[];
+             foreach($orders as $vn){
+              if($vn['gala']=="true"){
+                   $id_account = 48;// gala
+                 }else{
+                   $id_account= 46; // kado
+                 }
+                 //
+                 $account_id[] = $id_account;
+              }
+
+             
              $method = "GET";
              // recupérer les clé Api dolibar transfertx........
              $apiKey = env('KEY_API_DOLIBAR'); 
@@ -775,12 +825,13 @@ class Transferkdo
            }
 
              for($i=$nombre_count; $i<$inv+1; $i++){
+              
                   $new_bank[]=
                              [$i =>[
                                 "datepaye"=>$date_finale,
                                "paymentid"=>6,
                                "closepaidinvoices"=> "yes",
-                                "accountid"=>46// id du compte bancaire. 
+                                "accountid"=>46,// id du compte bancaire...
 
                            ]
                        ];
@@ -794,7 +845,7 @@ class Transferkdo
                                     "datepaye"=>$vk['datepaye'],
                                     "paymentid"=>6,
                                     "closepaidinvoices"=> "yes",
-                                     "accountid"=>46,// id du compte bancaire.
+                                     "accountid"=>$account_id[$keys],// id du compte bancaire..
                                      "num_payment"=>$ord[$keys]
                                    ]
                              ];

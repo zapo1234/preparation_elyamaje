@@ -420,13 +420,16 @@
 		</div>
 
 		<!-- Modal vérification quantité -->
-		<div class="modal_reset_order modal_verif_order modal fade" data-order="" id="modalverification" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal_reset_order modal_verif_order modal fade transfers_verif" data-order="" id="modalverification" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
 						<h2 class="text-center">Attention, cette commande contient <span class="quantity_product"></span> <span class="name_quantity_product"></span></h2>
 						<span style="font-size:25px" class="mb-3 text-center">Produit(s) restant(s) à bipper : <span class="text-danger" style="font-size:30px" id="quantity_product_to_verif"></span></span>
 						<input type="hidden" value="" id="product_to_verif">
+					</div>
+					<div class="mb-3 w-100 d-flex justify-content-center">
+						<button type="button" class="close_modal d-none btn btn-dark px-5" data-bs-dismiss="modal">Fermer</button>
 					</div>
 				</div>
 			</div>
@@ -453,9 +456,8 @@
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
-						<h2 class="text-center text-danger">Attention, cette commande est incomplète</h2>
-						<h4 class="mb-2 text-center">Souhaitez-vous la mettre de côté ? Le chef d'équipe en sera informé</h4>
-						<textarea style="resize:none" class="mb-3 form-control" id="note_partial_order" placeholder="Note..." rows="3"></textarea>
+						<h2 class="text-center text-danger">Attention, ce transfert est incomplet</h2>
+						<span class="mb-3 text-center partial_transfert">Souhaitez-vous le valider quand même ? <b>(un bon avec les produits manquant sera généré)</b></span>
 						<div class="w-100 d-flex justify-content-center">
 							<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Non</button>
 							<button from_transfers="true" style="margin-left:10px;" type="button" class="valid_partial_order btn btn-dark px-5">Oui</button>
@@ -498,7 +500,6 @@
 				</div>
 			</div>
 		</div>
-
 
 	</div>
 </div>

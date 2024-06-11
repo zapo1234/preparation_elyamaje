@@ -288,5 +288,5 @@
 
 
 @section("script")
-<script src="{{asset('assets/js/wrapOrder.js')}}"></script>
+    <script src="{{asset('assets/js/wrapOrder.js')}}"></script>
 @endsection

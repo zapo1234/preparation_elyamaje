@@ -5,13 +5,12 @@ namespace App\Repository\Reassort;
 use Exception;
 use App\Models\Product;
 use App\Models\Reassort;
+use App\Http\Service\Api\Api;
 use App\Models\Categorie_dolibarr;
 use Illuminate\Support\Facades\DB;
 use App\Models\products_categories;
-
 use App\Models\Products_association;
 use Illuminate\Support\Facades\Http;
-use App\Http\Service\Api\Api;
 
 class ReassortRepository implements ReassortInterface 
 {   
@@ -21,6 +20,7 @@ class ReassortRepository implements ReassortInterface
     private $products_association;
     private $products;
     private $api;
+
     public function __construct(Reassort $model,products_categories $products_categories,
     Categorie_dolibarr $categories_dolibarr,Products_association $products_association,Product $products,Api $api
     )
@@ -80,6 +80,7 @@ class ReassortRepository implements ReassortInterface
         // Cas de produits double si par exemple 1 en cadeau et 1 normal
         $product_double = [];
         foreach($list as $key1 => $li){
+
             foreach($li['items'] as $key2 => $item){
                 if(isset($product_double[$key1])){
 
@@ -142,9 +143,34 @@ class ReassortRepository implements ReassortInterface
         return $transfer;
     }
 
+    public function getReassortByIdWithMissingProduct($order_id){
+
+        $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
+            ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
+            ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
+            ->where([
+                ['hist_reassort.identifiant_reassort', $order_id],
+                ['type', 0]
+            ])
+            ->groupBy('product_id')
+            ->get();
+
+        foreach($transfer as $key => $order){
+            $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
+            $transfer[$key]['transfers'] = true;
+            $transfer[$key]['cost'] = $order['price'];
+            $transfer[$key]['quantity'] = abs($order['qty']) - abs($order['missing']);
+            $transfer[$key]['pick'] = abs($order['pick']);
+            $transfer[$key]['shipping_method_detail'] = "Transfert";
+        }
+
+        return $transfer;
+    }
+
     public function checkProductBarcode($product_id, $barcode){
         return $this->model::where('product_id', $product_id)->where('barcode', $barcode)->count();
     }
+    
 
     public function findByIdentifiantReassort($identifiant, $cles = null){
         try {
@@ -158,10 +184,10 @@ class ReassortRepository implements ReassortInterface
         } catch (Exception $e) {
             return -1;
         }
-
     }
 
-     public function deleteByIdentifiantReassort($identifiant)
+
+    public function deleteByIdentifiantReassort($identifiant)
      {
         try {
             $deletedRows = Reassort::where('identifiant_reassort', $identifiant)->delete();
@@ -310,7 +336,35 @@ class ReassortRepository implements ReassortInterface
             "all_id_pere_kits" => $all_id_pere_kits,
             "composition_by_pere" => $composition_by_pere
         ];
-     }
+    }
+
+    public function getAllKits(){
+
+        $kits_details = DB::table('products_association')
+        ->leftJoin('products_dolibarr AS pd1', 'pd1.product_id', '=', 'products_association.fk_product_pere')
+        ->leftJoin('products_dolibarr AS pd2', 'pd2.product_id', '=', 'products_association.fk_product_fils')
+        ->select('pd1.label as label_parent', 'pd2.label as label_children', 'products_association.*', 'pd2.barcode')
+        ->get();
+        
+
+        // $composition_by_pere = array();
+
+        foreach ($kits_details as $key => $value) {
+
+            $parent_id = $value->fk_product_pere;
+            $id_fils = $value->fk_product_fils;
+            $qty = $value->qty;
+
+            if (!isset($composition_by_pere[$parent_id])) {
+                $composition_by_pere[$parent_id]['name'] = $value->label_parent;
+                $composition_by_pere[$parent_id]['id'] = $value->fk_product_pere;
+                $composition_by_pere[$parent_id]['children'][] = ["barcode" => $value->barcode, "parent_id" => $value->fk_product_pere, "id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+            } else {
+                $composition_by_pere[$parent_id]['children'][] = ["barcode" => $value->barcode, "parent_id" => $value->fk_product_pere, "id" => $id_fils, "label" => $value->label_children, "quantity" => $qty];
+            }
+        }
+        return $composition_by_pere;
+    }
 
      public function updateStatusTextReassort($transfer_id, $status){
         return $this->model::where('identifiant_reassort', $transfer_id)->update(['status' => $status]);
@@ -328,10 +382,13 @@ class ReassortRepository implements ReassortInterface
         $transfer = json_decode(json_encode($transfer), true);
 
         $total_product = 0;
-        foreach($products_quantity as $product){
-            $total_product = $total_product + intval($product);
-        }
 
+        if($products_quantity){
+            foreach($products_quantity as $product){
+                $total_product = $total_product + intval($product);
+            }
+        }
+       
         // Cas de produits double si par exemple 1 en cadeau et 1 normal
         $product_double = [];
         foreach($transfer as $key_barcode => $list){
@@ -353,97 +410,111 @@ class ReassortRepository implements ReassortInterface
         }
 
         $list_products = [];
+        $lits_id = [];
+
         foreach($transfer as $list){
             if($list['qty'] != $list['pick']){
+                $lits_id[] = $list['id'];
+
                 $list_products[] = [
+                    "name" => $list['name'],
                     "barcode" => $list['barcode'],
                     "quantity" =>  $list['qty'],
                     "id" =>  $list['id'],
+                    "missing" => 0,
+                    "date" => $list['datem'],
                 ];
             }
         }
 
         $product_pick_in = [];
-        $lits_id = [];
 
         // Construit le tableaux à update 
         $barcode_research = array_column($list_products, "barcode");
         
-        foreach($barcode_array as $key => $barcode){
-            $clesRecherchees = array_keys($barcode_research, $barcode);
-
-            if(count($clesRecherchees) != 0){
-                $lits_id[] = $list_products[$clesRecherchees[0]]['id'];
-
-                $product_pick_in[] = [
-                    'id' => $list_products[$clesRecherchees[0]]['id'],
-                    'barcode' => $barcode,
-                    'quantity' => intval($products_quantity[$key])
-                ];
+        if($barcode_array){
+            foreach($barcode_array as $key => $barcode){
+                $clesRecherchees = array_keys($barcode_research, $barcode);
+                if(count($clesRecherchees) != 0){
+                    $product_pick_in[] = [
+                        'id' => $list_products[$clesRecherchees[0]]['id'],
+                        'barcode' => $barcode,
+                        'quantity' => intval($products_quantity[$key])
+                    ];
+                }
             }
         }
-
+        
         // Récupère les différences entre les produits de la commande et ceux qui ont été bippés
         $barcode = array_column($product_pick_in, "barcode");
-        $diff_quantity = false;
-        $diff_barcode = false;
+        $missing_products = [];
 
-        foreach($list_products as $list){
+        foreach($list_products as $keyList => $list){
             $clesRecherchees = array_keys($barcode, $list['barcode']);
+
             if(count($clesRecherchees) != 0){
-                if($product_pick_in[$clesRecherchees[0]]['quantity'] != $list['quantity']){
-                $diff_quantity = true;
+                $list_products[$keyList]["missing"] = $list['quantity'] - $product_pick_in[$clesRecherchees[0]]["quantity"];
+                $list_products[$keyList]["pick"] = $product_pick_in[$clesRecherchees[0]]["quantity"];
+
+                if($list['quantity'] - $product_pick_in[$clesRecherchees[0]]["quantity"] != 0){
+                    $missing_products[] = $list_products[$keyList];
                 }
             } else {
-                $diff_barcode = true;
-
+                $list_products[$keyList]["missing"] = $list['quantity'];
+                $list_products[$keyList]["pick"] = 0;
+                $missing_products[] = $list_products[$keyList];
             }
         }
+       
 
-    
-        if(count($product_pick_in) > 0){
-            // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
-            $cases = collect($product_pick_in)->map(function ($item) {
-                return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['quantity']));
-            })->implode(' ');
+        // Mise à jour de la valeur pick avec la quantité qui a été bippé pour chaque produit
+        $casesPick = collect($list_products)->map(function ($item) {
+            return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['pick']));
+        })->implode(' ');
 
+        $query1 = "UPDATE prepa_hist_reassort 
+        SET pick = (CASE id {$casesPick} END) 
+        WHERE id IN (".implode(',',$lits_id).")";
 
-            $query = "UPDATE prepa_hist_reassort SET pick = (CASE id {$cases} END) WHERE id IN (".implode(',',$lits_id).")";
-            DB::statement($query);
-        }
+        // Mise à jour de la valeur missing avec la quantité manquante
+        $casesMissing = collect($list_products)->map(function ($item) {
+            return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['missing']));
+        })->implode(' ');
 
-        if(!$partial){
-            if(!$diff_quantity && !$diff_barcode){
-                // Modifie le status de la commande en "Commande préparée",
-                $this->updateStatusTextReassort($order_id ,"prepared-order");
+        $query2 = "UPDATE prepa_hist_reassort 
+        SET missing = (CASE id {$casesMissing} END) 
+        WHERE id IN (".implode(',',$lits_id).")";
+       
+                
+        try {
+            DB::beginTransaction();
+            DB::statement($query1);
+            DB::statement($query2);
 
-                // Insert la commande dans histories
-                DB::table('histories')->insert([
-                    'order_id' => $order_id,
-                    'user_id' => Auth()->user()->id,
-                    'status' => 'prepared',
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'total_product' => $total_product ?? null
-                ]);
+            // Modifie le status de la commande en "Commande préparée",
+            $this->updateStatusTextReassort($order_id ,"prepared-order");
 
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            // Modifie le status de la commande en "en attente de validation"
-            try{
-                $this->updateStatusTextReassort($order_id, "waiting_to_validate");
-                return true;
-            } catch(Exception $e){
-                return $e->getMessage();
-            }
-        }
+            // Insert la commande dans histories
+            DB::table('histories')->insert([
+                'order_id' => $order_id,
+                'user_id' => Auth()->user()->id,
+                'status' => 'prepared',
+                'created_at' => date('Y-m-d H:i:s'),
+                'total_product' => $total_product ?? null
+            ]);    
+
+            // Validation et commit de la transaction
+            DB::commit();
+
+            return true;
+        } catch (\Exception $e) {
+            // En cas d'erreur, rollback de la transaction
+            DB::rollback();
+            return false;
+        } 
     }
 
     public function getLastCategorie($cat, $catParent){
-
-
         if (count($cat) == 1) {
             return $cat[0];
         }

@@ -75,8 +75,8 @@
                                             <input style="border: 1px solid black" class="date_bordereau_input" type="date" name="date" value="{{ date('Y-m-d') }}">
                                         </div>
                                         <div class="btn_box">
-                                        <button class="btn btn-dark px-5" id="back1" type="button">Retour</button>
-                                        <button class="btn btn-dark px-5" id="next2" type="submit">Valider</button>
+                                            <button class="btn btn-dark px-5" id="back1" type="button">Retour</button>
+                                            <button class="btn btn-dark px-5" id="next2" type="submit">Valider</button>
                                         </div>
                                     </div>
                                 </form>

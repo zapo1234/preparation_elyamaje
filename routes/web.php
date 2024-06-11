@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Kit;
 use App\Http\Controllers\Auth;
 use App\Http\Controllers\User;
 use App\Http\Controllers\Admin;
@@ -55,7 +56,7 @@ Route::group(['middleware' => ['auth']], function () {
                 return redirect()->route('labels');
                 break;
             case 8 :
-                return redirect()->route('shop');
+                return redirect()->route('kit');
                 break;
             default:
                 return redirect()->route('logout');
@@ -94,11 +95,8 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
 
     //  Route::get("/teste_insert", [Controller::class, "teste_insert"])->name('teste_insert');
     Route::get("/categories", [Controller::class, "categories"])->name('admin.categories');
-    Route::get("/products", [Controller::class, "products"])->name('admin.products');
     Route::get("/syncCategories", [Admin::class, "syncCategories"])->name('admin.syncCategories');
-    Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
-    Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
-    Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
+
     Route::post("/updateOrderCategory", [Admin::class, "updateOrderCategory"])->name('admin.updateOrderCategory');
     Route::get("/analytics", [Admin::class, "analytics"])->name('admin.analytics');
     Route::get("/getAnalytics", [Admin::class, "getAnalytics"])->name('admin.getAnalytics');
@@ -180,12 +178,21 @@ Route::group(['middleware' => ['auth', 'role:2']], function () {
     Route::get("/ordersTransfers", [Controller::class, "ordersTransfers"])->name('orders.transfers');
     Route::post("/transfersProcesssing", [Controller::class, "transfersProcesssing"])->name('orders.transfersProcesssing');
     Route::post("/ordersPrepared", [Order::class, "ordersPrepared"])->name('orders.prepared');
+
     // Route::post("/transfersPrepared", [Order::class, "transfersPrepared"])->name('transfers.prepared');
     Route::post("/ordersReset", [Order::class, "ordersReset"])->name('orders.reset');
     Route::get("/ordersHistory", [Order::class, "ordersHistory"])->name('orders.history');
     Route::post("/checkProductBarcode", [Order::class, "checkProductBarcode"])->name('orders.checkProductBarcode');
     Route::post("/checkProductBarcodeForTransfers", [Order::class, "checkProductBarcodeForTransfers"])->name('orders.checkProductBarcodeForTransfers'); 
 });
+
+// PRÉPARATEUR & VENDEUSE
+Route::group(['middleware' => ['auth', 'role:2,8']], function () {
+    // Kit prepare
+    Route::post("/kitPrepared", [Kit::class, "kitPrepared"])->name('orders.kitPrepared');
+    Route::get("/kit", [Kit::class, "kit"])->name('orders.kit');
+});
+
 
 // EMBALLEUR
 Route::group(['middleware' => ['auth', 'role:3']], function () {
@@ -257,6 +264,12 @@ Route::group(['middleware' =>  ['auth', 'role:1,4']], function () {
     // Lyes
     Route::post('/initialQtyLot', [Admin::class, 'initialQtyLot'])->name('initialQtyLot');
     Route::post('/updateProducts', [Admin::class, 'updateProducts'])->name('updateProducts');
+
+    // Products
+    Route::get("/products", [Controller::class, "products"])->name('admin.products');
+    Route::get("/syncProducts", [Admin::class, "syncProducts"])->name('admin.syncProducts');
+    Route::post("/products", [Admin::class, "updateProduct"])->name('update.product');
+    Route::post("/productsMultiple", [Admin::class, "updateProductsMultiple"])->name('admin.updateProductsMultiple');
 });
 
 // ADMIN - CHEF D'ÉQUIPE ET EMBALLEUR
@@ -274,6 +287,8 @@ Route::group(['middleware' =>  ['auth', 'role:1,4,3,6']], function () {
     Route::post("/bordereauPDF", [Label::class, "bordereauPDF"])->name('bordereau.download');
     Route::post("/bordereauDelete", [Label::class, "bordereauDelete"])->name('bordereau.delete');
     Route::post("/getProductOrderLabel", [Label::class, "getProductOrderLabel"])->name('label.product_order_label');
+
+    Route::post("/missingProductReassort", [Order::class, "missingProductReassort"])->name('missingProductReassort');
 });
 
 // ADMIN - CHEF D'ÉQUIPE & SAV
@@ -300,7 +315,7 @@ Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
 
 // Vendeuse
 Route::group(['middleware' =>  ['auth', 'role:8']], function () {
-    Route::get("/shop", [Controller::class, "shop"])->name('shop');
+    // Route::get("/shop", [Controller::class, "shop"])->name('shop');
 });
 
 // TOUS LES ROLES
@@ -348,7 +363,6 @@ Route::get("/bordereauChrono", [Controller::class, "bordereauChrono"])->name('bo
 Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders');
 
 // Route::get("/syncHistoriesTotalProduct", [Order::class, "syncHistoriesTotalProduct"])->name('syncHistoriesTotalProduct');
-
 
 // DEPLACER SUR CRON ELYAMAJE FR
 // Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');

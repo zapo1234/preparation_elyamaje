@@ -270,7 +270,20 @@ class WoocommerceService
         $transformOrder['total_products'] = $total_product;
       }
     }
-    
+
+    // Remove products double
+    if(isset($transformOrder['line_items'])){
+      $product_double = [];
+      foreach($transformOrder['line_items'] as $key1 => $item){
+          if(in_array($item['product_dolibarr_id'], $product_double)){
+            unset($transformOrder['line_items'][$key1]);
+          } else {
+            $product_double[] = $item['product_dolibarr_id'];
+          }
+      }
+      $transformOrder['line_items'] = array_values($transformOrder['line_items']);
+    }
+   
 
     $transformOrder['shipping_method_name'] = $this->getShippingMethod($transformOrder['shipping_method']);
     $newArray[] = $transformOrder;

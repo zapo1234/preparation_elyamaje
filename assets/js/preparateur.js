@@ -155,6 +155,8 @@ document.addEventListener("keyup", function (e) {
 
                             $("#modalverification").attr('data-order', order_id)
                             $("#modalverification").modal('show')
+                            setTimeout(function(){  $(".transfers_verif .close_modal").removeClass('d-none') }, 3000)
+
                             $("#barcode_verif").val($("#barcode").val())
                             saveItem(order_id, true)
                         } else if(quantity_to_pick_in > 10){
@@ -343,15 +345,28 @@ $(".validate_pick_in").on('click', function () {
         });
     } else {
         // Récupère les produits de cette commande
-        $(".valid_partial_order").attr('from_dolibarr', from_dolibarr)
-        $(".valid_partial_order").attr('from_transfers', from_transfers)
-        if ($("#order_" + order_id + " .pick").length >= 0) {
-            $('#modalPartial').modal({
-                backdrop: 'static',
-                keyboard: false
-            })
-            $("#modalPartial").modal('show')
+        if(!from_transfers){
+            $(".valid_partial_order").attr('from_dolibarr', from_dolibarr)
+            $(".valid_partial_order").attr('from_transfers', from_transfers)
+            if ($("#order_" + order_id + " .pick").length >= 0) {
+                $('#modalPartial').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+                $("#modalPartial").modal('show')
+            }
+        } else {
+            $(".valid_partial_order").attr('from_dolibarr', from_dolibarr)
+            $(".valid_partial_order").attr('from_transfers', from_transfers)
+            if ($("#order_" + order_id + " .pick").length >= 0) {
+                $('#modalPartial').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+                $("#modalPartial").modal('show')
+            }
         }
+       
     }
 })
 
@@ -456,21 +471,42 @@ $('body').on('click', '.valid_partial_order', function () {
         pick_items_quantity = [];
     }
 
-        var customer_name = $(".customer_name").text()
-        var user_name = $('#userinfo').val()
-    
-        $.ajax({
-            url: "ordersPrepared",
-            method: 'POST',
-            data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order, 
-            from_dolibarr: from_dolibarr, from_transfers: from_transfers }
-        }).done(function (data) {
-            if (JSON.parse(data).success) {
-                location.reload()
-            } else {
-                alert("Erreur !")
+    var customer_name = $(".customer_name").text()
+    var user_name = $('#userinfo').val()
+
+    $.ajax({
+        url: "ordersPrepared",
+        method: 'POST',
+        data: { _token: $('input[name=_token]').val(), order_id: order_id, pick_items: pick_items, pick_items_quantity: pick_items_quantity, partial: 1, note_partial_order: note_partial_order, 
+        from_dolibarr: from_dolibarr, from_transfers: from_transfers }
+    }).done(function (data) {
+        if (JSON.parse(data).success) {
+
+            // Clean storage
+            if (localStorage.getItem('barcode')) {
+                pick_items = JSON.parse(localStorage.getItem('barcode'))
+                Object.keys(pick_items).forEach(function (k, v) {
+                    if (pick_items[k]) {
+                        if (order_id == pick_items[k].order_id) {
+                            pick_items.splice(pick_items.indexOf(pick_items[k]), pick_items.indexOf(pick_items[k]) + 1);
+                        }
+                    }
+                })
             }
-        })
+
+            if(pick_items){
+                if (pick_items.length == 0) {
+                    localStorage.removeItem('barcode');
+                } else {
+                    localStorage.setItem('barcode', JSON.stringify(pick_items));
+                }
+            }
+            
+            location.reload()
+        } else {
+            alert("Erreur !")
+        }
+    })
     // }
 })
 
@@ -715,6 +751,7 @@ $(".valid_manually_barcode").on('click', function(){
 
 /* ----------------- TRANSFER ----------------- */
 
+// Validation manuelle d'un code barre
 $(".valid_manually_barcode_transfert").on('click', function(){
 
     var product_id = $("#product_id_barcode").val()
