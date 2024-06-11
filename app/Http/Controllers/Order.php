@@ -1032,10 +1032,10 @@ class Order extends BaseController
           
           if($tabProduitReassort){
 
-            // if($tabProduitReassort[0]['status'] == "finished"){
-            //   echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
-            //   return;
-            // }
+            if($tabProduitReassort[0]['status'] == "finished"){
+              echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
+              return;
+            }
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){
@@ -1059,7 +1059,7 @@ class Order extends BaseController
               } 
             }
 
-            dd($tabProduit);
+
             if (count($tabProduit) == 0) {
                 echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
                 return;
