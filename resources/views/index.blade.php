@@ -266,8 +266,8 @@
 														</div>
 													</div>
 												<div class="delete_modal w-100 d-flex justify-content-center flex-column">
-													<button onclick="deleteProductOrderConfirm(1)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui et remettre en stock</button>
-													<button onclick="deleteProductOrderConfirm(0)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui sans remettre en stock</button>
+													<!-- <button onclick="deleteProductOrderConfirm(1)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui et remettre en stock</button> -->
+													<button onclick="deleteProductOrderConfirm(0)" type="button" class="bg-danger border-danger mb-2 btn btn-dark px-5 ">Oui</button>
 													<button type="button" class="btn btn-dark px-5" data-bs-dismiss="modal">Annuler</button>
 												</div>
 											</div>

@@ -1055,15 +1055,18 @@ function deleteProductOrderConfirm(increase){
     }).done(function(data) {
         if(JSON.parse(data).success){
 
+            const order = JSON.parse(data).order[0]
+            console.log(order.total_order)
+
             // Update total modal detail order
-            $("#order_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
-            $("#order_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
-            $("#order_"+order_id+" .total_paid_order").text(JSON.parse(data).order.total)
+            $("#order_"+order_id+" .total_ht_order").text(order.total_order != 0.00 ? parseFloat(order.total_order - order.total_tax_order).toFixed(2) : parseFloat(order.total_order).toFixed(2))
+            $("#order_"+order_id+" .total_tax_order").text(parseFloat(order.total_tax_order))
+            $("#order_"+order_id+" .total_paid_order").text(order.total_order)
 
             // Update total dashboard
-            $("#order_total_"+order_id+" .total_ht_order").text(JSON.parse(data).order.total != 0.00 ? parseFloat(JSON.parse(data).order.total - JSON.parse(data).order.total_tax).toFixed(2) : parseFloat(JSON.parse(data).order.total).toFixed(2))
-            $("#order_total_"+order_id+" .total_tax_order").text(parseFloat(JSON.parse(data).order.total_tax))
-            $("#order_total_"+order_id+" .total_ttc_order").text(JSON.parse(data).order.total)
+            $("#order_total_"+order_id+" .total_ht_order").text(order.total_order != 0.00 ? parseFloat(order.total_order - order.total_tax_order).toFixed(2) : parseFloat(order.total_order).toFixed(2))
+            $("#order_total_"+order_id+" .total_tax_order").text(parseFloat(order.total_tax_order))
+            $("#order_total_"+order_id+" .total_ttc_order").text(order.total_order)
 
             $('.'+product_id+'_'+line_item_id).fadeOut()
             $('.'+product_id+'_'+line_item_id).remove()

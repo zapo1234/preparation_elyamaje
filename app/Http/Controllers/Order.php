@@ -940,18 +940,47 @@ class Order extends BaseController
       $quantity = $request->post('quantity');
       $product_id = $request->post('product_id');
 
-      // Supprimer de ma base en local le produit lié à la commande
-      $delete_product = $this->productOrder->deleteProductOrderByLineItem($order_id, $line_item_id);
-      //Supprimer de la commande via api woocommerce
-      $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
+      try{
+        // Supprimer de ma base en local le produit lié à la commande
+        $order = $this->order->getOrderById($order_id);
+        $order = $this->woocommerce->transformArrayOrder($order);
 
-      // Update le total de la commande en base de données
-      if(is_array($delete)){
-        $update_order = $this->order->updateTotalOrder($order_id, $delete);
-        echo json_encode(['success' => true, 'order' => $delete]);
-      } else {
+        $total_tax_order_to_subtract = 0;
+        $total_order_to_subtract = 0;
+
+        if($order[0]){
+          foreach($order[0]['line_items'] as $value){
+            if($value['product_id'] == $product_id){
+              $total_tax_order_to_subtract = $value['total_tax'];
+              $total_order_to_subtract = floatval($value['total_tax'] + $value['total']);
+            }
+          }
+        }
+
+        $total_tax = $order[0]['total_tax_order'] - $total_tax_order_to_subtract;
+        $total = $order[0]['total_order'] - $total_order_to_subtract;
+        $order[0]['total_tax_order'] = $total_tax;
+        $order[0]['total_order'] = $total;
+        $update_order = $this->order->updateTotalOrder($order_id, array("total_tax" => $total_tax, "total" => $total));
+
+        if($this->productOrder->deleteProductOrderByLineItem($order_id, $line_item_id)){
+          echo json_encode(['success' => true, 'order' => $order]);
+        }
+      } catch(Exception $e){
         echo json_encode(['success' => false]);
       }
+
+
+      //Supprimer de la commande via api woocommerce
+      // $delete = $this->api->deleteProductOrderWoocommerce($order_id, $line_item_id, $increase, $quantity, $product_id);
+
+      // // Update le total de la commande en base de données
+      // if(is_array($delete)){
+      //   $update_order = $this->order->updateTotalOrder($order_id, $delete);
+      //   echo json_encode(['success' => true, 'order' => $delete]);
+      // } else {
+      //   echo json_encode(['success' => false]);
+      // }
     }
 
     public function deleteOrderProductsDolibarr(Request $request){
@@ -1052,7 +1081,7 @@ class Order extends BaseController
 
             // Stock list products to transfers (for debug)
             file_put_contents('products_to_transferts_'.$identifiant_reassort.'.txt', json_encode($productsToTransfer));
-
+            
             // For type == 1
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 1){
