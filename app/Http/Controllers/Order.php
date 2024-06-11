@@ -1036,6 +1036,7 @@ class Order extends BaseController
               echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
               return;
             }
+
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){
@@ -1049,16 +1050,21 @@ class Order extends BaseController
               } 
             }
 
+            // Stock list products to transfers (for debug)
+            file_put_contents('products_to_transferts_'.$identifiant_reassort.'.txt', json_encode($productsToTransfer));
+
             // For type == 1
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 1){
-                    if(isset($productsToTransfer[$tab['product_id']])){
-                    $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
-                    $tabProduit[] = $tab;
-                  }
+                if(isset($productsToTransfer[$tab['product_id']])){
+                  $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
+                  $tabProduit[] = $tab;
+                }
               } 
             }
 
+            // Stock list products to transfers (for debug)
+            file_put_contents('transferts_'.$identifiant_reassort.'.txt', json_encode($tabProduit));
 
             if (count($tabProduit) == 0) {
                 echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
@@ -1068,16 +1074,15 @@ class Order extends BaseController
             $apiKey = env('KEY_API_DOLIBAR');   
             $apiUrl = env('KEY_API_URL');
           
-            $data_save = array();
-            $incrementation = 0;
-            $decrementation = 0;
+            // $data_save = array();
+            // $incrementation = 0;
+            // $decrementation = 0;
             $total_product = 0;
-            $i = 1;
+            // $i = 1;
             $ids = [];
             $updateQuery = "UPDATE prepa_hist_reassort SET id_reassort = CASE";
 
             $error_product= [];
-
             foreach ($tabProduit as $key => $line) {
                 if ($line["qty"] != 0) {   
                     $total_product = $total_product + intval($line["qty"])*1;
@@ -1105,8 +1110,8 @@ class Order extends BaseController
                           $updateQuery .= " WHEN id = ".$line['id']. " THEN ". $stockmovements;
                           $ids[] = $line['id'];
                         
-                          $i++;  
-                          $incrementation++;
+                          // $i++;  
+                          // $incrementation++;
                         }
                       } else {
                         $error_product[] = $data;
