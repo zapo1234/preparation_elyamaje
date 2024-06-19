@@ -1056,7 +1056,6 @@ function deleteProductOrderConfirm(increase){
         if(JSON.parse(data).success){
 
             const order = JSON.parse(data).order[0]
-            console.log(order.total_order)
 
             // Update total modal detail order
             $("#order_"+order_id+" .total_ht_order").text(order.total_order != 0.00 ? parseFloat(order.total_order - order.total_tax_order).toFixed(2) : parseFloat(order.total_order).toFixed(2))

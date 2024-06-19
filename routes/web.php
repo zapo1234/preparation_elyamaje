@@ -36,32 +36,36 @@ Route::get('/index', function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', function () {
-        switch (Auth()->user()->roles->toArray()[0]['id']) {
-            case 1 :
-                return redirect()->route('admin.analytics');
-                break;
-            case 2 :
-                return redirect()->route('orders');
-                break;
-            case 3 :
-                return redirect()->route('wrapOrder');
-                break;
-            case 4 :
-                return redirect()->route('leader.dashboard');
-                break;
-            case 5 :
-                return redirect()->route('noRole');
-                break;
-            case 6 :
-                return redirect()->route('labels');
-                break;
-            case 8 :
-                return redirect()->route('kit');
-                break;
-            default:
-                return redirect()->route('logout');
-                break;
-        }   
+        if(count(Auth()->user()->roles->toArray()) == 0){
+            return redirect()->route('noRole');
+        } else {
+            switch (Auth()->user()->roles->toArray()[0]['id']) {
+                case 1 :
+                    return redirect()->route('admin.analytics');
+                    break;
+                case 2 :
+                    return redirect()->route('orders');
+                    break;
+                case 3 :
+                    return redirect()->route('wrapOrder');
+                    break;
+                case 4 :
+                    return redirect()->route('leader.dashboard');
+                    break;
+                case 5 :
+                    return redirect()->route('noRole');
+                    break;
+                case 6 :
+                    return redirect()->route('labels');
+                    break;
+                case 8 :
+                    return redirect()->route('kit');
+                    break;
+                default:
+                    return redirect()->route('logout');
+                    break;
+            }
+        }
     })->name('/');
 });
 
