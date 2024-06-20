@@ -18,14 +18,10 @@ use App\Http\Controllers\SupplierOrderController;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+|   Liste des routes de l'application "Préparation" définies selon
+|   les rôles utilisateurs ci-dessous.
 |
 */
-
-// sans connexion
-Route::get('/alerteStockCron/{token}', [Controller::class, 'alerteStockCron'])->name('alerteStockCron');
 
 Route::get('/index', function () {
     return redirect()->route('/');
@@ -340,6 +336,8 @@ Route::group(['middleware' =>  ['auth', 'role:5']], function () {
     Route::get("/noRole", [User::class, "noRole"])->name('noRole');
 });
 
+// ROUTES NON AUTHENTIFIÉES
+
 // Connexion & Déconnexion
 Route::get("/login", [Auth::class, "login"])->name('login');
 Route::post("/login", [Auth::class, "postLogin"])->name('login');
@@ -351,12 +349,16 @@ Route::post('/resetPassword', [Auth::class, 'resetPassword'])->name('password.re
 Route::get('/authentication-reset-password', [Auth::class, 'resetLinkPage'])->name('auth.passwords.reset');
 Route::post('/authentication-reset-password', [Auth::class, 'postResetLinkPage'])->name('auth.passwords.reset');
 
-// Tache crons mise a jours tiers chaque 30minute tous les jours.
+// TACHES CRONS
+
+// Mise a jours tiers chaque 30minute tous les jours.
 Route::get("/imports/tiers/{token}", [TiersController::class, "imports"])->name('imports');
 
-// Tache cron récupère les commandes avec carte cadeaux seulement
+// Récupère les commandes avec carte cadeaux seulement
 Route::get("/giftCardOrders/{token}", [Controller::class, "giftCardOrders"]);
 
+// Alerte Stock 
+Route::get('/alerteStockCron/{token}', [Controller::class, 'alerteStockCron'])->name('alerteStockCron');
 
 
 // Route test validation emballage à enlever par la suite
