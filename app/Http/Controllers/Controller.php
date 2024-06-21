@@ -2712,6 +2712,8 @@ class Controller extends BaseController
             $triPartial = false;
             $tableBD = 'llxyq_propaldet';
 
+        
+
 
 
             if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
@@ -2756,6 +2758,7 @@ class Controller extends BaseController
                 foreach ($sortedArrayCommande as $key => $value) {
                     $sortedArrayCommande[$key]["ranf_final"] =  $key+1;
                 }
+
 
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
 

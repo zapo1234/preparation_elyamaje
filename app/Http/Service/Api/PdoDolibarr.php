@@ -507,29 +507,39 @@ class PdoDolibarr
     
 
     function updateRang($data,$tableBD) {
-        // Préparer les parties CASE et la liste des rowid
-        $cases = [];
-        $ids = [];
 
-        foreach ($data as $item) {
-            $rowid = (int) $item['rowid'];
-            $rang_final = (int) $item['ranf_final'];
+        try {
+            $cases = [];
+            $ids = [];
+
+            foreach ($data as $item) {
+                $rowid = (int) $item['rowid'];
+                $rang_final = (int) $item['ranf_final'];
+                
+                $cases[] = "WHEN {$rowid} THEN {$rang_final}";
+                $ids[] = $rowid;
+            }
+
+            $caseStatement = implode(" ", $cases);
+            $idsList = implode(", ", $ids);
+
+
+            // Construire la requête SQL
+
+
             
-            $cases[] = "WHEN {$rowid} THEN {$rang_final}";
-            $ids[] = $rowid;
+            $sql = " UPDATE ".$tableBD." SET rang = CASE rowid {$caseStatement} END WHERE rowid IN ({$idsList}); ";
+
+
+
+            // Préparer et exécuter la requête SQL
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute();
+        } catch (\Throwable $th) {
+            dd($th);
         }
-
-        $caseStatement = implode(" ", $cases);
-        $idsList = implode(", ", $ids);
-
-
-        // Construire la requête SQL
         
-        $sql = "UPDATE ".$tableBD." SET rang = CASE rowid{$caseStatement}  END WHERE rowid IN ({$idsList}); ";
-
-        // Préparer et exécuter la requête SQL
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute();
+        
     }
 
 
