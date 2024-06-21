@@ -1072,16 +1072,13 @@ class Order extends BaseController
                 if($tab['qty'] > $tab['missing']){
                   $tab["qty"] = abs($tab['qty']) - $tab['missing'];
                   $tabProduit[] = $tab;
-                  $productsToTransfer[$tab['product_id']] = $tab;
                 } else {
                   $productToIgnore[] = $tab['product_id'];
                 }
               } 
             }
 
-            // Stock list products to transfers (for debug)
-            file_put_contents('products_to_transferts_'.$identifiant_reassort.'.txt', json_encode($productsToTransfer));
-            
+
             // For type == 1
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 1){
@@ -1091,9 +1088,6 @@ class Order extends BaseController
                 }
               } 
             }
-
-            // Stock list products to transfers (for debug)
-            file_put_contents('transferts_'.$identifiant_reassort.'.txt', json_encode($tabProduit));
 
             if (count($tabProduit) == 0) {
                 echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
