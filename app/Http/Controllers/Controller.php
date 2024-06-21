@@ -2614,7 +2614,7 @@ class Controller extends BaseController
 
             
             
-            $id = 88; //request('id');
+            $id = request('id');
             $token = request('tokenPrepa');
             $server_name = request('server_name');
 
@@ -2647,7 +2647,7 @@ class Controller extends BaseController
                         $commande[$key]["cat"] = $all_categories[$fk_product]["fk_categorie"];
 
                     }else {
-                        dump($value);
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
                     }
                 }
 
@@ -2666,19 +2666,19 @@ class Controller extends BaseController
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande);
 
                 if ($resUpdateRang) {
-                    return redirect('https://'.$server_name.'/commande/card.php?id=8&action=successSortCommande');
+                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=successSortCommande');
                 }else {
-                    return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorSortCommande');
+                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=errorSortCommande');
                 }              
 
             }else {
                 // $message = "pas le droit";
-                return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorDroit');
+                return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=errorDroit');
 
             }
         } catch (Throwable $th) {
 
-            return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorTryCatch');
+            return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=errorTryCatch');
         }
     }
 
