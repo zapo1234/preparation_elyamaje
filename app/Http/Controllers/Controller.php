@@ -2603,6 +2603,7 @@ class Controller extends BaseController
 
     function sortCommande(Request $request){
 
+       
 
         try {
 
@@ -2647,9 +2648,12 @@ class Controller extends BaseController
                         $commande[$key]["cat"] = $all_categories[$fk_product]["fk_categorie"];
 
                     }else {
-                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
+                        dump($value);
+                        // return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
                     }
                 }
+
+                dd("fin");
 
                 $collection = collect($commande);
 
