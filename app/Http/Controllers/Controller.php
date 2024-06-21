@@ -2618,6 +2618,7 @@ class Controller extends BaseController
             $id = request('id');
             $token = request('tokenPrepa');
             $server_name = request('server_name');
+            $triPartial = false;
 
 
 
@@ -2648,12 +2649,12 @@ class Controller extends BaseController
                         $commande[$key]["cat"] = $all_categories[$fk_product]["fk_categorie"];
 
                     }else {
-                        dump($value);
+                        $triPartial = true;
+                        $commande[$key]["cat"] = -1;
+                        // dump($value);
                         // return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
                     }
                 }
-
-                dd("fin");
 
                 $collection = collect($commande);
 
@@ -2670,7 +2671,12 @@ class Controller extends BaseController
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande);
 
                 if ($resUpdateRang) {
-                    return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=successSortCommande');
+                    if ($triPartial) {
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
+                    }else {
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=successSortCommande');
+                    }
+                   
                 }else {
                     return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=errorSortCommande');
                 }              
