@@ -1098,6 +1098,7 @@ class TransferOrder
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
+                   $array_paiments4 = array('CHQ');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1118,6 +1119,12 @@ class TransferOrder
                          $account_id=3; // PROD
                          $paimentid=3;// PROD
                    }
+
+                   elseif(in_array($account_name,$array_paiments4)){
+                    // CB
+                     $account_id=5; // PROD
+                     $paimentid=5;// PROD
+                    }
                     else{
                           // CB
                           $account_id=4; // PROD
@@ -1263,6 +1270,8 @@ class TransferOrder
             $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
             $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
             $array_paimentss = array('DONS');
+            $array_paiments4 = array('CHQ');
+
             $valid="";
             $remise_percent="";
            foreach($orders as $values){
@@ -1328,6 +1337,12 @@ class TransferOrder
                     // dons 
                      $account_id=4; // PROD
                       $paimentid =4;// PROD
+                  }
+
+                  elseif(in_array($moyen_paiement,$array_paiments4)){
+                    // dons 
+                     $account_id=5; // PROD
+                      $paimentid =5;// PROD
                   }
 
                   else{

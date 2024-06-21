@@ -92,8 +92,12 @@ class Auth extends BaseController
                 $user = User::findByEmail($input['email']);
                 $request->session()->regenerateToken();
                 if($user){
-                    At::login($user);
-                    return redirect()->route('/');
+                    if($user->active == 0){
+                        return redirect()->route('login')->with('error','Ce compte est inactif !');
+                    } else {
+                        At::login($user);
+                        return redirect()->route('/');
+                    }
                 } else {
                     return redirect()->route('login')->with('error','Identifiants incorrectes !');
                 }

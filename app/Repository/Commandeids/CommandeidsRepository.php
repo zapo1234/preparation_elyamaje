@@ -99,7 +99,8 @@ class CommandeidsRepository implements CommandeidsInterface
              '6,apple_pay'=>'apple_pay',
              '6,wc-scalapay-payin3' => 'wc-scalapay-payin3',
              '6,wc-scalapay-payin4' => 'wc-scalapay-payin4',
-             '4,LIQ'=>'LIQ'
+             '4,LIQ'=>'LIQ',
+             '7,CHQ'=>'CHQ',
            ];
 
            return $data_array;
