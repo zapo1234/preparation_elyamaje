@@ -27,6 +27,8 @@ Route::get("/preparationCommandeByToken", [Controller::class, "preparationComman
 Route::get("/sortCommande", [Controller::class, "sortCommande"])->name('sortCommande'); // acces pour preparer la commande doli
 
 
+Route::get("/sortPropal", [Controller::class, "sortPropal"])->name('sortPropal'); // acces pour preparer la commande doli
+
 // Route::group(['middleware' =>  ['auth:sanctum']], function () {
 // });
 Route::post("/login", [ApiController::class, "login"]);

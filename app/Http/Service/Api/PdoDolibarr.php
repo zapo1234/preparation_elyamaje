@@ -493,7 +493,20 @@ class PdoDolibarr
 
     }
 
-    function updateRang($data) {
+    
+    function propaldetById($id_propal){
+
+        $sql = 'SELECT rowid, fk_propal, fk_product, rang FROM llxyq_propaldet WHERE fk_propal ='.$id_propal;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);              
+        return $res;
+
+    }
+
+    
+
+    function updateRang($data,$tableBD) {
         // Préparer les parties CASE et la liste des rowid
         $cases = [];
         $ids = [];
@@ -511,14 +524,8 @@ class PdoDolibarr
 
 
         // Construire la requête SQL
-        $sql = "
-            UPDATE llxyq_commandedet
-            SET rang = CASE rowid
-                {$caseStatement}
-            END
-            WHERE rowid IN ({$idsList});
-        ";
-
+        
+        $sql = "UPDATE ".$tableBD." SET rang = CASE rowid{$caseStatement}  END WHERE rowid IN ({$idsList}); ";
 
         // Préparer et exécuter la requête SQL
         $stmt = $this->pdo->prepare($sql);
