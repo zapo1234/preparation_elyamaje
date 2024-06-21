@@ -23,6 +23,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // http://localhost/preparation.elyamaje.com/preparationCommandeByToken
 Route::get("/preparationCommandeByToken", [Controller::class, "preparationCommandeByToken"])->name('preparationCommandeByToken'); // acces pour preparer la commande doli
 
+
+Route::get("/sortCommande", [Controller::class, "sortCommande"])->name('sortCommande'); // acces pour preparer la commande doli
+
+
+Route::get("/sortPropal", [Controller::class, "sortPropal"])->name('sortPropal'); // acces pour preparer la commande doli
+
 // Route::group(['middleware' =>  ['auth:sanctum']], function () {
 // });
 Route::post("/login", [ApiController::class, "login"]);
