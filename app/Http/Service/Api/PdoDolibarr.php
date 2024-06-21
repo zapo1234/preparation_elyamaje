@@ -483,6 +483,49 @@ class PdoDolibarr
         return $datasFinal;
     }
 
+    function commandedetById($id_commande){
+
+        $sql = 'SELECT rowid, fk_commande, fk_product, rang FROM llxyq_commandedet WHERE fk_commande ='.$id_commande;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);              
+        return $res;
+
+    }
+
+    function updateRang($data) {
+        // Préparer les parties CASE et la liste des rowid
+        $cases = [];
+        $ids = [];
+
+        foreach ($data as $item) {
+            $rowid = (int) $item['rowid'];
+            $rang_final = (int) $item['ranf_final'];
+            
+            $cases[] = "WHEN {$rowid} THEN {$rang_final}";
+            $ids[] = $rowid;
+        }
+
+        $caseStatement = implode(" ", $cases);
+        $idsList = implode(", ", $ids);
+
+
+        // Construire la requête SQL
+        $sql = "
+            UPDATE llxyq_commandedet
+            SET rang = CASE rowid
+                {$caseStatement}
+            END
+            WHERE rowid IN ({$idsList});
+        ";
+
+
+        // Préparer et exécuter la requête SQL
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute();
+    }
+
+
 }
 
 

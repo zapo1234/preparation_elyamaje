@@ -35,6 +35,7 @@ use App\Repository\OrderDolibarr\OrderDolibarrRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Collection;
 
 
 
@@ -2597,6 +2598,87 @@ class Controller extends BaseController
             }
         } catch (Throwable $th) {
             return $th->getMessage();
+        }
+    }
+
+    function sortCommande(Request $request){
+
+
+        try {
+
+            
+            $apiUrl = env('KEY_API_URL');
+            $apiKey = env('KEY_API_DOLIBAR');
+            // $apiUrl = 'https://www.transfertx.elyamaje.com/api/index.php/';
+            // $apiKey = 'f2HAnva64Zf9MzY081Xw8y18rsVVMXaQ';
+
+            
+            
+            $id = 88; //request('id');
+            $token = request('tokenPrepa');
+            $server_name = request('server_name');
+
+
+
+
+            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
+
+                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+
+                $commande = $pdoDolibarr->commandedetById($id);
+
+                
+                $cat_lab = $this->reassort->getAllCategoriesLabel();
+
+                // Récupérer le couple categories - produits
+                $all_categories = $this->reassort->getAllCategoriesAndProducts($cat_lab);
+
+                // dd(isset($all_categories[88]));updateRang
+
+
+                // dd($all_categories[5528]);
+
+                foreach ($commande as $key => $value) {
+
+                    $fk_product = (int) $value["fk_product"];
+
+                    if (isset($all_categories[$fk_product])) {
+
+                        $commande[$key]["cat"] = $all_categories[$fk_product]["fk_categorie"];
+
+                    }else {
+                        dump($value);
+                    }
+                }
+
+                $collection = collect($commande);
+
+                // Trier la collection par la clé "cat"
+                $sorted = $collection->sortBy('cat');
+
+                // Si vous avez besoin d'un tableau à partir de la collection triée
+                $sortedArrayCommande = $sorted->values()->toArray();
+
+                foreach ($sortedArrayCommande as $key => $value) {
+                    $sortedArrayCommande[$key]["ranf_final"] =  $key+1;
+                }
+
+                $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande);
+
+                if ($resUpdateRang) {
+                    return redirect('https://'.$server_name.'/commande/card.php?id=8&action=successSortCommande');
+                }else {
+                    return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorSortCommande');
+                }              
+
+            }else {
+                // $message = "pas le droit";
+                return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorDroit');
+
+            }
+        } catch (Throwable $th) {
+
+            return redirect('https://'.$server_name.'/commande/card.php?id=8&action=errorTryCatch');
         }
     }
 

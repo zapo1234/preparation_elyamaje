@@ -852,11 +852,14 @@ class Admin extends BaseController
     }
 
     public function updatePrepaCategoriesDolibarr(){
-
    
         
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
+            //Une érreur s'est produite => SQLSTATE[HY000] [1045] Access denied for user 'admineu13'@'82.96.133.166' (using password: YES)
+
+
 
             $tab_categories = $pdoDolibarr->getCategoriesDolibarr();
            
