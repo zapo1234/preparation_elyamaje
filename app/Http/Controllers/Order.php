@@ -1065,6 +1065,11 @@ class Order extends BaseController
               echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
               return;
             }
+            
+            if(isset($tabProduitReassort[0]['status'])){
+              file_put_contents("transfert_".$identifiant_reassort, $tabProduitReassort[0]['status']);
+            }
+            
 
             // For type == 0
             foreach($tabProduitReassort as $tab){
@@ -1077,7 +1082,6 @@ class Order extends BaseController
                 }
               } 
             }
-
 
             // For type == 1
             foreach($tabProduitReassort as $tab){
