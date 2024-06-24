@@ -1078,6 +1078,7 @@ class Order extends BaseController
                 if($tab['qty'] > $tab['missing']){
                   $tab["qty"] = abs($tab['qty']) - $tab['missing'];
                   $tabProduit[] = $tab;
+                  $productsToTransfer[$tab['product_id']] = $tab;
                 } else {
                   $productToIgnore[] = $tab['product_id'];
                 }
@@ -1091,7 +1092,7 @@ class Order extends BaseController
                   $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
                   $tabProduit[] = $tab;
                 }
-              } 
+              }  
             }
 
             if (count($tabProduit) == 0) {
