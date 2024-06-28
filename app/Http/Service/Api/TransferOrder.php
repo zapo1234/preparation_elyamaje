@@ -534,7 +534,7 @@ class TransferOrder
 
                                            // recupérer la methode shipping_method_name
                                            
-                                           // $chaine_name_shipping = $donnees['shipping_method_detail'];
+                                            $chaine_name_shipping = $donnees['shipping_method_detail'];
                                             
                                             /*$shipping_true = str_replace(' ', '', $chaine_name_shipping);
                                             dump($shipping_true);
