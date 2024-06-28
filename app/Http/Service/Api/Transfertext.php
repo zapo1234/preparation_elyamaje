@@ -622,7 +622,7 @@ class Transfertext
                                        $total_tva=20;
                                        if($donnees['shipping_method_detail']!=""){
                                           $array_line_product[]=[
-                                           "desc"=>$chaine_name_shipping,
+                                           "desc"=>$donnees['shipping_method_detail'],
                                            "multicurrency_subprice"=> floatval($donnees['shipping_amount']),
                                            "multicurrency_total_ht" => floatval($donnees['shipping_amount']),
                                            "multicurrency_total_tva" => floatval($total_a_tva),
