@@ -619,7 +619,7 @@ class Transfertext
                                      // gérer les moyens de transport de collisimo
                                        $array_line_product =[];
                                        $total_a_tva = $donnees['shipping_amount']*20/100;
-                                       $total_tva=20;
+                                       $total_product=20;
                                        if($donnees['shipping_method_detail']!=""){
                                           $array_line_product[]=[
                                            "desc"=>$donnees['shipping_method_detail'],
