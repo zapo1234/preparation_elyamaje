@@ -582,7 +582,7 @@ class Transfertext
 
                                            // recupérer la methode shipping_method_name
                                            
-                                            $chaine_name_shipping = "Colissimo avec signature";
+                                          //$chaine_name_shipping = $donnees['shipping_method_detail'];
                                             
                                             /*$shipping_true = str_replace(' ', '', $chaine_name_shipping);
                                             dump($shipping_true);
@@ -619,7 +619,8 @@ class Transfertext
                                      // gérer les moyens de transport de collisimo
                                        $array_line_product =[];
                                        $total_a_tva = $donnees['shipping_amount']*20/100;
-                                       if($chaine_name_shipping!=""){
+                                       $total_tva=20;
+                                       if($donnees['shipping_method_detail']!=""){
                                           $array_line_product[]=[
                                            "desc"=>$chaine_name_shipping,
                                            "multicurrency_subprice"=> floatval($donnees['shipping_amount']),
