@@ -141,25 +141,27 @@ class OrderRepository implements OrderInterface
                         $is_distributor = true;
                      }
                      
+                     // commented functions 27/06/24 
+
                      // IF distributor add bag 30 for 1000 euros
-                     if($is_distributor && $total_order >= 1000){
-                        $montant_par_tranche = 1000;
-                        $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
-                        $productsToInsert[] = [
-                           'order_id' => $orderData['id'],
-                           'product_woocommerce_id' => 110203,
-                           'category' =>  '',
-                           'category_id' => '',
-                           'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
-                           'cost' => 0,
-                           'subtotal_tax' =>  0,
-                           'total_tax' =>  0,
-                           'total_price' => 0,
-                           'pick' => 0,
-                           'line_item_id' => $orderData['id'].''.time(),
-                           'pick_control' => 0
-                        ];
-                     }
+                     // if($is_distributor && $total_order >= 1000){
+                     //    $montant_par_tranche = 1000;
+                     //    $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+                     //    $productsToInsert[] = [
+                     //       'order_id' => $orderData['id'],
+                     //       'product_woocommerce_id' => 110203,
+                     //       'category' =>  '',
+                     //       'category_id' => '',
+                     //       'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
+                     //       'cost' => 0,
+                     //       'subtotal_tax' =>  0,
+                     //       'total_tax' =>  0,
+                     //       'total_price' => 0,
+                     //       'pick' => 0,
+                     //       'line_item_id' => $orderData['id'].''.time(),
+                     //       'pick_control' => 0
+                     //    ];
+                     // }
                   }
                } else {
                   DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);

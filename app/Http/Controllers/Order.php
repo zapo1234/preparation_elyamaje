@@ -1058,9 +1058,8 @@ class Order extends BaseController
           $productToIgnore = [];
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-          
-          if($tabProduitReassort){
 
+          if($tabProduitReassort){
             if($tabProduitReassort[0]['status'] == "finished"){
               echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
               return;
@@ -1071,7 +1070,6 @@ class Order extends BaseController
               file_put_contents("transfert_details".$identifiant_reassort.".txt", json_encode($tabProduitReassort[0]));
             }
     
-
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){
@@ -1102,7 +1100,7 @@ class Order extends BaseController
             
             $apiKey = env('KEY_API_DOLIBAR');   
             $apiUrl = env('KEY_API_URL');
-          
+            
             // $data_save = array();
             // $incrementation = 0;
             // $decrementation = 0;
