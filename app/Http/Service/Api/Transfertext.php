@@ -582,7 +582,7 @@ class Transfertext
 
                                            // recupérer la methode shipping_method_name
                                            
-                                            $chaine_name_shipping = $donnees['shipping_method_detail'];
+                                          //$chaine_name_shipping = $donnees['shipping_method_detail'];
                                             
                                             /*$shipping_true = str_replace(' ', '', $chaine_name_shipping);
                                             dump($shipping_true);
@@ -619,9 +619,10 @@ class Transfertext
                                      // gérer les moyens de transport de collisimo
                                        $array_line_product =[];
                                        $total_a_tva = $donnees['shipping_amount']*20/100;
-                                       if($chaine_name_shipping!=""){
+                                       $tva_product=20;
+                                       if($donnees['shipping_method_detail']!=""){
                                           $array_line_product[]=[
-                                           "desc"=>$chaine_name_shipping,
+                                           "desc"=>$donnees['shipping_method_detail'],
                                            "multicurrency_subprice"=> floatval($donnees['shipping_amount']),
                                            "multicurrency_total_ht" => floatval($donnees['shipping_amount']),
                                            "multicurrency_total_tva" => floatval($total_a_tva),
@@ -630,7 +631,7 @@ class Transfertext
                                            "product_type"=>'1',
                                            "product_label" =>'',
                                             "qty" => '1',
-                                            "fk_product" =>'',//  insert id product dans dolibar.
+                                            "fk_product" =>'',//  insert id product dans dolibar...
                                             "tva_tx" => floatval($tva_product),
                                             "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                          ];

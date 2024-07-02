@@ -647,9 +647,6 @@ class TransferOrder
                                       // tableau de construction des facture de gift_cart lorqu'elle sont détecter.
                                       // créer les facture pour le gift cart.
                                        $ext_traitement = 0;
-                                      
-                                      
-
                                        // construire mon tableau de ma seconde facture au cas il existe des bon d'achat gift_card ou des cadeaux line
                                         // Récupérer pour les cadeaux.
                                         $data_options_kdo = [
@@ -732,12 +729,10 @@ class TransferOrder
                        }
 
                       
-                      
-                  
-                        if(count($data_tiers)!=0){
+                       if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
-                          $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                           $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                              if($retour_create_tiers==""){
                                 $message ="Problème sur la création du client";
                                 $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
@@ -931,7 +926,7 @@ class TransferOrder
                                exit;
                             }
 
-                          // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
                                $this->invoicespay($orders);
                              }
@@ -1098,7 +1093,7 @@ class TransferOrder
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
-                   $array_paiments4 = array('CHQ');
+                   $array_paiments4 = array('CHQ');// chéque.
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1121,7 +1116,7 @@ class TransferOrder
                    }
 
                    elseif(in_array($account_name,$array_paiments4)){
-                    // CB
+                    // cheque
                      $account_id=5; // PROD
                      $paimentid=5;// PROD
                     }
@@ -1427,13 +1422,9 @@ class TransferOrder
                    $data_list_product[$values['barcode']] = $values['id'];
                    $data_list_products[$values['id']] = $values['barcode'];
               }
-              // tableau associatve entre ref et label product....
+              // tableau associatve entre ref et label product......
            }
           
-           
-           
-          
-        
            // recupérer et construire un tableau des products pour les réecrire dans la facture
            $data_update_product =[];
            $data_correction =[];
