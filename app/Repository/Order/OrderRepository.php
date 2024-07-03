@@ -72,7 +72,7 @@ class OrderRepository implements OrderInterface
                         // Check for gift card
                         $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
                         if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
-                           if($value['total'] == "0.00" || intval($value['total']) == 0){
+                           if(($value['total'] == "0.00" || intval($value['total']) == 0) && (str_contains(strtolower($value['name']), 'vernis semi permanent'))){
                               if($total_gift == 0){
                                  if(intval($value['quantity']) >= $max_gift){
                                     $value['quantity'] = $max_gift;
