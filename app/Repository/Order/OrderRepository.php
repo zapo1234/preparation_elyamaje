@@ -72,44 +72,44 @@ class OrderRepository implements OrderInterface
                         // Check for gift card
                         $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
                         if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
-                           if(($value['total'] == "0.00" || intval($value['total']) == 0) && (str_contains(strtolower($value['name']), 'vernis semi permanent'))){
-                              if($total_gift == 0){
-                                 if(intval($value['quantity']) >= $max_gift){
-                                    $value['quantity'] = $max_gift;
-                                    $total_gift = $max_gift;
-                                 } else {
-                                    $total_gift = $total_gift + intval($value['quantity']);
-                                 }
-                              } else {
-                                 if(intval($value['quantity'] + $total_gift) >= $max_gift){
-                                    $value['quantity'] = $max_gift - $total_gift;
-                                    $total_gift = $max_gift;
-                                 } else {
-                                    $total_gift = intval($total_gift + $value['quantity']);
-                                 }
-                                 if(intval($value['quantity']) <= 0){
-                                    $total_gift = $max_gift + 1;
-                                 }  
-                              }
+                           // if(($value['total'] == "0.00" || intval($value['total']) == 0) && (str_contains(strtolower($value['name']), 'vernis semi permanent'))){
+                           //    if($total_gift == 0){
+                           //       if(intval($value['quantity']) >= $max_gift){
+                           //          $value['quantity'] = $max_gift;
+                           //          $total_gift = $max_gift;
+                           //       } else {
+                           //          $total_gift = $total_gift + intval($value['quantity']);
+                           //       }
+                           //    } else {
+                           //       if(intval($value['quantity'] + $total_gift) >= $max_gift){
+                           //          $value['quantity'] = $max_gift - $total_gift;
+                           //          $total_gift = $max_gift;
+                           //       } else {
+                           //          $total_gift = intval($total_gift + $value['quantity']);
+                           //       }
+                           //       if(intval($value['quantity']) <= 0){
+                           //          $total_gift = $max_gift + 1;
+                           //       }  
+                           //    }
 
-                              if($total_gift <= $max_gift) {
-                                 $quantity = intval($value['quantity']) + $quantity;
-                                 $productsToInsert[] = [
-                                    'order_id' => $orderData['id'],
-                                    'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                                    'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                                    'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                                    'quantity' => $value['quantity'],
-                                    'cost' => $value['subtotal'] / $value['quantity'],
-                                    'subtotal_tax' =>  $value['subtotal_tax'],
-                                    'total_tax' =>  $value['total_tax'],
-                                    'total_price' => $value['total'],
-                                    'pick' => $is_virtual ? $value['quantity'] : 0,
-                                    'line_item_id' => $value['id'],
-                                    'pick_control' => 0
-                                 ];
-                              }
-                           } else {
+                           //    if($total_gift <= $max_gift) {
+                           //       $quantity = intval($value['quantity']) + $quantity;
+                           //       $productsToInsert[] = [
+                           //          'order_id' => $orderData['id'],
+                           //          'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                           //          'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                           //          'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                           //          'quantity' => $value['quantity'],
+                           //          'cost' => $value['subtotal'] / $value['quantity'],
+                           //          'subtotal_tax' =>  $value['subtotal_tax'],
+                           //          'total_tax' =>  $value['total_tax'],
+                           //          'total_price' => $value['total'],
+                           //          'pick' => $is_virtual ? $value['quantity'] : 0,
+                           //          'line_item_id' => $value['id'],
+                           //          'pick_control' => 0
+                           //       ];
+                           //    }
+                           // } else {
                               $quantity = intval($value['quantity']) + $quantity;
                               $productsToInsert[] = [
                                  'order_id' => $orderData['id'],
@@ -125,7 +125,7 @@ class OrderRepository implements OrderInterface
                                  'line_item_id' => $value['id'],
                                  'pick_control' => 0
                               ];
-                           }
+                           // }
                         }
                      }
 
