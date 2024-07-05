@@ -202,7 +202,7 @@ class Transfertext
              $coupons="";
              $emballeur="";
              $preparateur="";
-             $gift_card_amount="";// presence de dépense avec gift_card.
+             $gift_card_amount="";// presence de dépense avec gift_card..
              foreach($orders as $val){
                  if(isset($val['fk_commande'])){
                     $id_commande="exist";
