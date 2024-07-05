@@ -696,7 +696,7 @@ class Admin extends BaseController
 
             try {
 
-                dd($orders);
+                dd($order);
 
                 $this->transfers->Transfertext($order);
         
