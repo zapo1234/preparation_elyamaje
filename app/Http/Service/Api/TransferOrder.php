@@ -1091,7 +1091,7 @@ class TransferOrder
 
 
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
-                   $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
+                   $array_paiments = array('bacs','VIR');// virement bancaire id.....
                    $array_paimentss = array('DONS');
                    $array_paiments4 = array('CHQ');// chéque.
 
@@ -1125,6 +1125,8 @@ class TransferOrder
                           $account_id=4; // PROD
                           $paimentid =4;// PROD
                     }
+
+                    // facture venant de doliba
 
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
