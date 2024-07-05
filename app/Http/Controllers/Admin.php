@@ -696,10 +696,7 @@ class Admin extends BaseController
 
             try {
 
-                dd($order);
-
                 $this->transfers->Transfertext($order);
-        
                 //$this->factorder->Transferorder($order);  
 
                 // Stock historique

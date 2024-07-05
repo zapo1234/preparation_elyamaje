@@ -196,7 +196,6 @@ class Transfertext
       public function Transfertext($orders)
       {
            
-         dd($orders);
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -1001,6 +1000,10 @@ class Transfertext
              // domp affichage test 
               // recupérer le dernière id des facture 
               // recuperer dans un tableau les ref_client existant id.
+              $ref_order="";
+              foreach($orders as $values){
+                 $ref_order= $values['order_id'];
+              }
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 
@@ -1240,7 +1243,7 @@ class Transfertext
                            $valid=2;
                        }
 
-                      if($status_dist!="true"){
+                      if($status_dist!="true" && $account_name!="VIR"){
                        // $mode reglement de la facture ....
                         $newCommandepaye = [
                         "paye"	=> 1,
@@ -1252,6 +1255,22 @@ class Transfertext
                            $valid=3;
   
                     }
+
+
+                    $chaine_prefix="CO";
+                    // dolibar && vir bancaire.
+                    if(strpos($ref_order,$chaine_prefix)!==false && $account_name=="VIR"){
+                        $newCommandepaye = [
+                        "paye"	=> 1,
+                        "statut"	=> 2,
+                        "mode_reglement_id"=>$mode_reglement_id,
+                       "idwarehouse"=>6,
+                       "notrigger"=>0,
+                        ];
+                      
+                         $valid =1;// mettre la facture en impayé.(dolibar && virement bancaire)
+
+                      }
         
 
                     $newCommandepaye = [
