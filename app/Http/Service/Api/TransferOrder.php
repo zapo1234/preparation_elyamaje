@@ -219,7 +219,7 @@ class TransferOrder
 
 
 
-                 $produitParam = ["limit" => 2000, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
