@@ -1052,7 +1052,6 @@ class Order extends BaseController
     }
 
     public function executerTransfere($identifiant_reassort){
-
       try {
           $tabProduit = [];
           $productToIgnore = [];
@@ -1062,6 +1061,11 @@ class Order extends BaseController
           if($tabProduitReassort){
             if($tabProduitReassort[0]['status'] == "finished"){
               echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
+              return;
+            }
+
+            if($tabProduitReassort[0]['status'] == "processing"){
+              echo json_encode(["success" => false, "message" => "Veuillez terminer la préparation de ce transfert avant de le valider"]);
               return;
             }
             
@@ -1418,7 +1422,7 @@ class Order extends BaseController
       $per_page = 100;
       $page = 1;
       $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-  
+      
       if(isset($orders['message'])){
         $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
         return false;
