@@ -218,7 +218,7 @@ class TransferOrder
 
 
 
-                 $produitParam = ["limit" => 2000, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
@@ -966,6 +966,10 @@ class TransferOrder
              // domp affichage test 
               // recupérer le dernière id des facture 
               // recuperer dans un tableau les ref_client existant id.
+              $ref_order="";
+              foreach($orders as $values){
+                  $ref_order=$values['order_id'];
+              }
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 
@@ -1090,9 +1094,10 @@ class TransferOrder
 
 
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
-                   $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
+                   $array_paiments = array('bacs');// virement bancaire id.....
                    $array_paimentss = array('DONS');
                    $array_paiments4 = array('CHQ');// chéque.
+                   $array_facture_dolibar = array('VIR');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1125,6 +1130,8 @@ class TransferOrder
                           $paimentid =4;// PROD
                     }
 
+                    // facture venant de doliba
+
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
@@ -1149,7 +1156,7 @@ class TransferOrder
                            $valid=2;
                        }
 
-                      if($status_dist!="true"){
+                      if($status_dist!="true" && $account_name!="VIR"){
                        // $mode reglement de la facture ....
                         $newCommandepaye = [
                         "paye"	=> 1,
@@ -1158,9 +1165,24 @@ class TransferOrder
                         "idwarehouse"=>6,
                          "notrigger"=>0,
                        ];
-                           $valid=3;
+                           $valid=3;// facture validée.
   
                     }
+
+                    $chaine_prefix="CO";
+                    // dolibar && vir bancaire.
+                    if(strpos($ref_order,$chaine_prefix)!==false && $account_name=="VIR"){
+                        $newCommandepaye = [
+                        "paye"	=> 1,
+                        "statut"	=> 2,
+                        "mode_reglement_id"=>$mode_reglement_id,
+                       "idwarehouse"=>6,
+                       "notrigger"=>0,
+                        ];
+                      
+                         $valid =1;// mettre la facture en impayé.(dolibar && virement bancaire)
+
+                      }
         
 
                     $newCommandepaye = [

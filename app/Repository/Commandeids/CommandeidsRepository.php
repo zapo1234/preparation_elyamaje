@@ -101,6 +101,7 @@ class CommandeidsRepository implements CommandeidsInterface
              '6,wc-scalapay-payin4' => 'wc-scalapay-payin4',
              '4,LIQ'=>'LIQ',
              '7,CHQ'=>'CHQ',
+             '3,VIR'=>'VIR'
            ];
 
            return $data_array;
