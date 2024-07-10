@@ -248,8 +248,9 @@ class Admin extends BaseController
                             }
                         } 
 
-                        if($product['variations'][$key] == 183375){
-                            dd("ddd");
+                        if($product['id'] == 31110){
+                            dump($option);
+                            dump($key);
                         }
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
@@ -276,6 +277,7 @@ class Admin extends BaseController
                        
                     }
                 }
+                dd('stop 1');
             } else {
                 $insert_products [] = [
                     'product_woocommerce_id' => $product['id'],
@@ -299,7 +301,7 @@ class Admin extends BaseController
             }
         }
 
-        dd("stop !");
+        dd("stop 2");
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){
