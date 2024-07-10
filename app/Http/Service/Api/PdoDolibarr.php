@@ -210,17 +210,104 @@ class PdoDolibarr
 
     }
 
+    function reassortForAllProductByEntrepot($entrepot_destination = null) {
+        // Base SQL query
+        $sql = 'SELECT rowid,label FROM llxyq_product WHERE (tosell != "0" && tobuy != "0")';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $sql2 = 'SELECT * FROM llxyq_product_stock WHERE fk_entrepot = '.$entrepot_destination;
+        $stmt2 = $this->pdo->prepare($sql2);
+        $stmt2->execute();
+        $products_stock = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+       
+        $indexed_result = [];
+        foreach ($products_stock as $row) {
+            $indexed_result[$row['fk_product']] = $row;
+        }
+
+        // AND fk_product IN (' . implode(',', $array_product_id) . ')';
+        
+        $sql3 = 'SELECT fk_product, fk_entrepot, seuil_stock_alerte, desiredstock, import_key FROM llxyq_product_warehouse_properties WHERE fk_entrepot ='. $entrepot_destination;
+        $stmt3 = $this->pdo->prepare($sql3);
+        $stmt3->execute();
+        $sotock_alert_product = $stmt3->fetchAll(PDO::FETCH_ASSOC);  
+
+        $indexed_sotock_alert_product = [];
+        foreach ($sotock_alert_product as $row) {
+            $indexed_sotock_alert_product[$row['fk_product']] = $row;
+        }
+
+
+        $tabFinal = array();
+
+        foreach ($products as $key => $value) {
+
+            $id_product = $value["rowid"];
+
+            if (isset($indexed_result[$id_product])) {
+
+                if (!isset($tabFinal[$id_product])) {
+
+                    $tabFinal[$id_product] = [
+                        "fk_product" => $id_product,
+                        "name_entrepot" => "Boutique Malpasse",
+                        "seuil_stock_alerte" => isset($indexed_sotock_alert_product[$id_product]) ? $indexed_sotock_alert_product[$id_product]["seuil_stock_alerte"] : "inconnu",
+                        "desiredstock" => isset($indexed_sotock_alert_product[$id_product]) ? $indexed_sotock_alert_product[$id_product]["desiredstock"] : "inconnu",
+                        "stock_actuel" => $indexed_result[$id_product]["reel"],
+                        "label" => $value["label"]
+                    ];
+
+                }
+                else {
+                    dump("produit en doublonsssssssssssssssssssssssssssssssssss");
+                    dd($value);
+                }
+            }else {
+                if (!isset($tabFinal[$id_product])) {
+
+                    // dd($id_product);
+
+                    $tabFinal[$id_product] = [
+                        "fk_product" => $id_product,
+                        "name_entrepot" => "Boutique Malpasse",
+                        "seuil_stock_alerte" => isset($indexed_sotock_alert_product[$id_product]) ? $indexed_sotock_alert_product[$id_product]["seuil_stock_alerte"] : "inconnu",
+                        "desiredstock" => isset($indexed_sotock_alert_product[$id_product]) ? $indexed_sotock_alert_product[$id_product]["desiredstock"] : "inconnu",
+                        "stock_actuel" => "0",
+                        "label" => $value["label"]
+                    ];
+
+                }
+                else {
+                    dump("produit en doublonsssssssssssssssssssssssssssssssssss");
+                    dd($value);
+                }
+            }
+        }
+
+        // Return the results
+        return $tabFinal;
+    }
     
-    function getStockProductByEntrepot($entrepot_destination){
+    
+
+    
+    function getStockProductByEntrepot($entrepot_destination = null){
 
 
 
-        $sql = 'SELECT * FROM llxyq_product_stock WHERE fk_entrepot = :entrepot';
+        $sql = 'SELECT * FROM llxyq_product_stock';
+
+        ($entrepot_destination)? $sql .= ' WHERE fk_entrepot = :entrepot' : $sql=$sql;
         
         $stmt = $this->pdo->prepare($sql);
 
 
-        $stmt->bindParam(':entrepot', $entrepot_destination, PDO::PARAM_INT);
+        if ($entrepot_destination) {
+            $stmt->bindParam(':entrepot', $entrepot_destination, PDO::PARAM_INT);
+        }
+        
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         

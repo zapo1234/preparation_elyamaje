@@ -360,6 +360,7 @@ Route::get("/giftCardOrders/{token}", [Controller::class, "giftCardOrders"]);
 // Alerte Stock 
 Route::get('/alerteStockCron/{token}', [Controller::class, 'alerteStockCron'])->name('alerteStockCron');
 
+Route::get('/alerteStockCronForAllProduct/{token}/{idWarhouse}', [Controller::class, 'alerteStockCronForAllProduct'])->name('alerteStockCronForAllProduct');
 
 // Route test validation emballage à enlever par la suite
 Route::get("/validWrapOrder", [Order::class, "validWrapOrder"])->name('validWrapOrder');
