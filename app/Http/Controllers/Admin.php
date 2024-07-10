@@ -181,10 +181,6 @@ class Admin extends BaseController
 
         foreach($products as $product){
 
-            if($product['id'] == 31110){
-                dd($product);
-            }
-
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
