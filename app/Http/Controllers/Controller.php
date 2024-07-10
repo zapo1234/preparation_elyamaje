@@ -605,10 +605,10 @@ class Controller extends BaseController
                 $datasIncompletes = array();
         
                 $tab_min = [
-                    1 => 0.8,  // lundi      à 17h45h  Alerte
-                    2 => 0.65,  // Mardi     à 17h45h  Alerte      
-                    3 => 0.5,  // Mercredi   à 17h45h  Alerte
-                    4 => 0.3,  // Jeudi      à 17h45h  Alerte
+                    1 => 0.7,  // lundi      à 17h45h  Alerte
+                    2 => 0.6,  // Mardi     à 17h45h  Alerte      
+                    3 => 0.4,  // Mercredi   à 17h45h  Alerte
+                    4 => 0.25,  // Jeudi      à 17h45h  Alerte
                     5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
                     // 6 => 0.6,  // Samedi     à 22h
                     // 7 => 0.6,  // Dimanche   à 22h
