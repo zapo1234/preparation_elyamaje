@@ -237,6 +237,10 @@ class Admin extends BaseController
                     'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
               
+                if($product['id'] == 31110){
+                    dd($product);
+                }
+
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -248,10 +252,7 @@ class Admin extends BaseController
                             }
                         } 
 
-                        if($product['id'] == 31110){
-                            dump($option);
-                            dump($key);
-                        }
+                        
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
