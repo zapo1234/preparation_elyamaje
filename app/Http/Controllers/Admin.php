@@ -181,6 +181,10 @@ class Admin extends BaseController
 
         foreach($products as $product){
 
+            if($product['id'] == 31110){
+                dd($product);
+            }
+            
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
@@ -236,10 +240,6 @@ class Admin extends BaseController
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                     'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
-              
-                if($product['id'] == 31110){
-                    dd($product);
-                }
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
