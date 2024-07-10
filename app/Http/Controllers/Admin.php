@@ -248,9 +248,6 @@ class Admin extends BaseController
                             }
                         } 
 
-                        if($product['variations'][$key] == 183375){
-                            dd($product);
-                        }
 
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
@@ -272,6 +269,10 @@ class Admin extends BaseController
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
                             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
+
+                        if($product['variations'][$key] == 183375){
+                            dd($insert_products);
+                        }
                     }
                 }
             } else {
