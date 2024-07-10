@@ -427,6 +427,7 @@ class ReassortRepository implements ReassortInterface
             }
         }
 
+
         $product_pick_in = [];
 
         // Construit le tableaux à update 
@@ -480,6 +481,7 @@ class ReassortRepository implements ReassortInterface
         $casesMissing = collect($list_products)->map(function ($item) {
             return sprintf("WHEN %d THEN '%s'", $item['id'], intval($item['missing']));
         })->implode(' ');
+
 
         $query2 = "UPDATE prepa_hist_reassort 
         SET missing = (CASE id {$casesMissing} END) 

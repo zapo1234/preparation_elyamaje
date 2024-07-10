@@ -351,10 +351,8 @@ class Controller extends BaseController
 
       
 
+        // $hist_reassort = DB::table('hist_reassort')->orderBy('identifiant_reassort', 'DESC')->get()->toArray();
         $hist_reassort = DB::table('hist_reassort')->get()->toArray();
-
-
-
 
         $identifiant_unique = array();
         $data_reassort = array();
@@ -479,6 +477,9 @@ class Controller extends BaseController
         $product_detail = array();
         $all_products = $this->api->CallAPI("GET", $apiKey, $apiUrl."products",$produitParamProduct);  
         $all_products = json_decode($all_products,true);
+        // $all_products = DB::table('products_dolibarr')->get()->toArray();
+        // $all_products = json_encode($all_products,true);
+        // $all_products = json_decode($all_products,true);
 
         foreach ($all_products as $key => $product) {
             if (!isset($product_detail[$product["id"]])) {
@@ -514,7 +515,6 @@ class Controller extends BaseController
 
         // on libère de la mémoire
         unset($all_products);
-
         return view('admin.supply',
             [
                 "listWarehouses" => $listWarehouses,

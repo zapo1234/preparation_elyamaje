@@ -181,7 +181,6 @@ class TransferOrder
      */
       public function Transferorder($orders)
       {
-          
             $fk_commande="";
              $linkedObjectsIds =[];
              $coupons="";
@@ -219,7 +218,7 @@ class TransferOrder
 
 
 
-                 $produitParam = ["limit" => 2000, "sortfield" => "rowid"];
+                 $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                  // reference ref_client dans dolibar
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
@@ -647,9 +646,6 @@ class TransferOrder
                                       // tableau de construction des facture de gift_cart lorqu'elle sont détecter.
                                       // créer les facture pour le gift cart.
                                        $ext_traitement = 0;
-                                      
-                                      
-
                                        // construire mon tableau de ma seconde facture au cas il existe des bon d'achat gift_card ou des cadeaux line
                                         // Récupérer pour les cadeaux.
                                         $data_options_kdo = [
@@ -732,12 +728,10 @@ class TransferOrder
                        }
 
                       
-                      
-                  
-                        if(count($data_tiers)!=0){
+                       if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
-                          $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
+                           $retour_create_tiers =  $this->api->CallAPI("POST", $apiKey, $apiUrl."thirdparties", json_encode($data));
                              if($retour_create_tiers==""){
                                 $message ="Problème sur la création du client";
                                 $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => $message]);
@@ -931,7 +925,7 @@ class TransferOrder
                                exit;
                             }
 
-                          // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            // mettre la facture en status en payé et l'attribue un compte bancaire.
                             if(count($data_lines)!=0){
                                $this->invoicespay($orders);
                              }
@@ -972,6 +966,10 @@ class TransferOrder
              // domp affichage test 
               // recupérer le dernière id des facture 
               // recuperer dans un tableau les ref_client existant id.
+              $ref_order="";
+              foreach($orders as $values){
+                  $ref_order=$values['order_id'];
+              }
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 
@@ -1096,9 +1094,10 @@ class TransferOrder
 
 
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
-                   $array_paiments = array('bacs', 'VIR');// virement bancaire id.....
+                   $array_paiments = array('bacs');// virement bancaire id.....
                    $array_paimentss = array('DONS');
-                   $array_paiments4 = array('CHQ');
+                   $array_paiments4 = array('CHQ');// chéque.
+                   $array_facture_dolibar = array('VIR');
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
@@ -1121,7 +1120,7 @@ class TransferOrder
                    }
 
                    elseif(in_array($account_name,$array_paiments4)){
-                    // CB
+                    // cheque
                      $account_id=5; // PROD
                      $paimentid=5;// PROD
                     }
@@ -1130,6 +1129,8 @@ class TransferOrder
                           $account_id=4; // PROD
                           $paimentid =4;// PROD
                     }
+
+                    // facture venant de doliba
 
                    // si c'est un distributeur (mettre la facture impayé)
                       if($status_dist=="true" && $account_name=="bacs"){
@@ -1155,7 +1156,7 @@ class TransferOrder
                            $valid=2;
                        }
 
-                      if($status_dist!="true"){
+                      if($status_dist!="true" && $account_name!="VIR"){
                        // $mode reglement de la facture ....
                         $newCommandepaye = [
                         "paye"	=> 1,
@@ -1164,9 +1165,24 @@ class TransferOrder
                         "idwarehouse"=>6,
                          "notrigger"=>0,
                        ];
-                           $valid=3;
+                           $valid=3;// facture validée.
   
                     }
+
+                    $chaine_prefix="CO";
+                    // dolibar && vir bancaire.
+                    if(strpos($ref_order,$chaine_prefix)!==false && $account_name=="VIR"){
+                        $newCommandepaye = [
+                        "paye"	=> 1,
+                        "statut"	=> 2,
+                        "mode_reglement_id"=>$mode_reglement_id,
+                       "idwarehouse"=>6,
+                       "notrigger"=>0,
+                        ];
+                      
+                         $valid =1;// mettre la facture en impayé.(dolibar && virement bancaire)
+
+                      }
         
 
                     $newCommandepaye = [
@@ -1427,13 +1443,9 @@ class TransferOrder
                    $data_list_product[$values['barcode']] = $values['id'];
                    $data_list_products[$values['id']] = $values['barcode'];
               }
-              // tableau associatve entre ref et label product....
+              // tableau associatve entre ref et label product......
            }
           
-           
-           
-          
-        
            // recupérer et construire un tableau des products pour les réecrire dans la facture
            $data_update_product =[];
            $data_correction =[];

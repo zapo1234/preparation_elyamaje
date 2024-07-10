@@ -149,7 +149,6 @@
 								<button style="margin-left:10px" class="research_label_order d-flex align-items-center btn btn-primary" type="submit">Rechercher</button>
 							</form>
 							
-					
 							<table id="example" class="dashboard_label d-none table_mobile_responsive w-100 table table-striped table-bordered">
 								<thead>
 									<tr>

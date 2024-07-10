@@ -61,30 +61,71 @@ class OrderRepository implements OrderInterface
                   }
                   
                   if(isset($orderData['cart_hash'])){
-
                      // Insert produits
                      $total_order = floatval($orderData['total']) + floatval(isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0);
-                     foreach($orderData['line_items'] as $value){
+                     
+                     // Limit total gift 20
+                     $total_gift = 0;
+                     $max_gift = 20; 
 
+                     foreach($orderData['line_items'] as $key => $value) {
                         // Check for gift card
                         $is_virtual = $value['is_virtual'] != "yes" && !str_contains($value['name'], 'Carte Cadeau') ? false : true;
-
                         if (!$is_virtual || ($is_virtual && count($orderData['line_items']) != 1)){
-                           $quantity = intval($value['quantity']) + $quantity;
-                           $productsToInsert[] = [
-                              'order_id' => $orderData['id'],
-                              'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
-                              'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
-                              'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
-                              'quantity' => $value['quantity'],
-                              'cost' => $value['subtotal'] / $value['quantity'],
-                              'subtotal_tax' =>  $value['subtotal_tax'],
-                              'total_tax' =>  $value['total_tax'],
-                              'total_price' => $value['total'],
-                              'pick' => $is_virtual ? $value['quantity'] : 0,
-                              'line_item_id' => $value['id'],
-                              'pick_control' => 0
-                           ];
+                           // if(($value['total'] == "0.00" || intval($value['total']) == 0) && (str_contains(strtolower($value['name']), 'vernis semi permanent'))){
+                           //    if($total_gift == 0){
+                           //       if(intval($value['quantity']) >= $max_gift){
+                           //          $value['quantity'] = $max_gift;
+                           //          $total_gift = $max_gift;
+                           //       } else {
+                           //          $total_gift = $total_gift + intval($value['quantity']);
+                           //       }
+                           //    } else {
+                           //       if(intval($value['quantity'] + $total_gift) >= $max_gift){
+                           //          $value['quantity'] = $max_gift - $total_gift;
+                           //          $total_gift = $max_gift;
+                           //       } else {
+                           //          $total_gift = intval($total_gift + $value['quantity']);
+                           //       }
+                           //       if(intval($value['quantity']) <= 0){
+                           //          $total_gift = $max_gift + 1;
+                           //       }  
+                           //    }
+
+                           //    if($total_gift <= $max_gift) {
+                           //       $quantity = intval($value['quantity']) + $quantity;
+                           //       $productsToInsert[] = [
+                           //          'order_id' => $orderData['id'],
+                           //          'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                           //          'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                           //          'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                           //          'quantity' => $value['quantity'],
+                           //          'cost' => $value['subtotal'] / $value['quantity'],
+                           //          'subtotal_tax' =>  $value['subtotal_tax'],
+                           //          'total_tax' =>  $value['total_tax'],
+                           //          'total_price' => $value['total'],
+                           //          'pick' => $is_virtual ? $value['quantity'] : 0,
+                           //          'line_item_id' => $value['id'],
+                           //          'pick_control' => 0
+                           //       ];
+                           //    }
+                           // } else {
+                              $quantity = intval($value['quantity']) + $quantity;
+                              $productsToInsert[] = [
+                                 'order_id' => $orderData['id'],
+                                 'product_woocommerce_id' => $value['variation_id'] != 0 ? $value['variation_id'] : $value['product_id'],
+                                 'category' =>  isset($value['category'][0]['name']) ? $value['category'][0]['name'] : '',
+                                 'category_id' => isset($value['category'][0]['term_id']) ? $value['category'][0]['term_id'] : '',
+                                 'quantity' => $value['quantity'],
+                                 'cost' => $value['subtotal'] / $value['quantity'],
+                                 'subtotal_tax' =>  $value['subtotal_tax'],
+                                 'total_tax' =>  $value['total_tax'],
+                                 'total_price' => $value['total'],
+                                 'pick' => $is_virtual ? $value['quantity'] : 0,
+                                 'line_item_id' => $value['id'],
+                                 'pick_control' => 0
+                              ];
+                           // }
                         }
                      }
 
@@ -141,25 +182,27 @@ class OrderRepository implements OrderInterface
                         $is_distributor = true;
                      }
                      
+                     // commented functions 27/06/24 
+
                      // IF distributor add bag 30 for 1000 euros
-                     if($is_distributor && $total_order >= 1000){
-                        $montant_par_tranche = 1000;
-                        $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
-                        $productsToInsert[] = [
-                           'order_id' => $orderData['id'],
-                           'product_woocommerce_id' => 110203,
-                           'category' =>  '',
-                           'category_id' => '',
-                           'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
-                           'cost' => 0,
-                           'subtotal_tax' =>  0,
-                           'total_tax' =>  0,
-                           'total_price' => 0,
-                           'pick' => 0,
-                           'line_item_id' => $orderData['id'].''.time(),
-                           'pick_control' => 0
-                        ];
-                     }
+                     // if($is_distributor && $total_order >= 1000){
+                     //    $montant_par_tranche = 1000;
+                     //    $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+                     //    $productsToInsert[] = [
+                     //       'order_id' => $orderData['id'],
+                     //       'product_woocommerce_id' => 110203,
+                     //       'category' =>  '',
+                     //       'category_id' => '',
+                     //       'quantity' => $nbr_sac > 100 ? 100 : $nbr_sac,
+                     //       'cost' => 0,
+                     //       'subtotal_tax' =>  0,
+                     //       'total_tax' =>  0,
+                     //       'total_price' => 0,
+                     //       'pick' => 0,
+                     //       'line_item_id' => $orderData['id'].''.time(),
+                     //       'pick_control' => 0
+                     //    ];
+                     // }
                   }
                } else {
                   DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);
@@ -168,6 +211,7 @@ class OrderRepository implements OrderInterface
    
            // Insérer les données dans la base de données par lot
            try{
+               
                DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
                   DB::table('orders')->insertOrIgnore($ordersToInsert);
                   DB::table('products_order')->insertOrIgnore($productsToInsert);

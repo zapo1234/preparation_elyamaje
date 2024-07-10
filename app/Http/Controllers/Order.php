@@ -1052,20 +1052,28 @@ class Order extends BaseController
     }
 
     public function executerTransfere($identifiant_reassort){
-
       try {
           $tabProduit = [];
           $productToIgnore = [];
           $productsToTransfer = [];
           $tabProduitReassort = $this->reassort->findByIdentifiantReassort($identifiant_reassort);
-          
-          if($tabProduitReassort){
 
+          if($tabProduitReassort){
             if($tabProduitReassort[0]['status'] == "finished"){
               echo json_encode(["success" => false, "message" => "Ce transfert est déjà terminé !"]);
               return;
             }
 
+            if($tabProduitReassort[0]['status'] == "processing"){
+              echo json_encode(["success" => false, "message" => "Veuillez terminer la préparation de ce transfert avant de le valider"]);
+              return;
+            }
+            
+            if(isset($tabProduitReassort[0]['status'])){
+              file_put_contents("transfert_status".$identifiant_reassort.".txt", $tabProduitReassort[0]['status']);
+              file_put_contents("transfert_details".$identifiant_reassort.".txt", json_encode($tabProduitReassort[0]));
+            }
+    
             // For type == 0
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 0){
@@ -1079,9 +1087,6 @@ class Order extends BaseController
               } 
             }
 
-            // Stock list products to transfers (for debug)
-            file_put_contents('products_to_transferts_'.$identifiant_reassort.'.txt', json_encode($productsToTransfer));
-            
             // For type == 1
             foreach($tabProduitReassort as $tab){
               if($tab['type'] == 1){
@@ -1089,11 +1094,8 @@ class Order extends BaseController
                   $tab["qty"] = -(abs($tab['qty']) - $productsToTransfer[$tab['product_id']]['missing']);
                   $tabProduit[] = $tab;
                 }
-              } 
+              }  
             }
-
-            // Stock list products to transfers (for debug)
-            file_put_contents('transferts_'.$identifiant_reassort.'.txt', json_encode($tabProduit));
 
             if (count($tabProduit) == 0) {
                 echo json_encode(['success' => false, 'message' => "Transfère introuvable ".$identifiant_reassort." ou aucun produit à transférer"]);
@@ -1102,7 +1104,7 @@ class Order extends BaseController
             
             $apiKey = env('KEY_API_DOLIBAR');   
             $apiUrl = env('KEY_API_URL');
-          
+            
             // $data_save = array();
             // $incrementation = 0;
             // $decrementation = 0;
@@ -1420,7 +1422,7 @@ class Order extends BaseController
       $per_page = 100;
       $page = 1;
       $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page);
-  
+      
       if(isset($orders['message'])){
         $this->logError->insert(['order_id' => 0, 'message' => $orders['message']]);
         return false;

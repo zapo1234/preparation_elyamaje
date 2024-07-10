@@ -330,22 +330,25 @@ class Colissimo
 
     protected function getInsuranceValue($product_code, $order){
 
-        if($order['total_order'] * 100 > 1500){
+        $total_order_ht = floatval($order['total_order'] - $order['total_tax_order']);
+
+        if($total_order_ht * 100 > 1500){
             $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
             if(in_array($product_code, $tranches_except)){
-                if($order['total_order'] * 100 > 100000){
+                if($total_order_ht * 100 > 100000){
                     return 100000;
                 } else {
-                    return $order['total_order'] * 100;
+                    return $total_order_ht * 100;
                 }
             } else {
-                if($order['total_order'] * 100 > 500000){
+                if($total_order_ht * 100 > 500000){
                     return 500000;
                 } else {
-                    return $order['total_order'] * 100;
+                    return $total_order_ht * 100;
                 }
             }
         } else {
+            // We do not insure the package
             return 0;
         }
        
