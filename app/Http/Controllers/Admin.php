@@ -180,6 +180,11 @@ class Admin extends BaseController
         }  
 
         foreach($products as $product){
+
+            if($product['id'] == 31110){
+                dd($product);
+            }
+
             $barcode = $this->getValueByKey($product['meta_data'], "barcode");
             $category_name = [];
             $category_id = [];
@@ -247,6 +252,10 @@ class Admin extends BaseController
                             }
                         } 
 
+                        if($product['variations'][$key] == 183375){
+                            dd($product);
+                        }
+
                         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
                         $insert_products [] = [
                             'product_woocommerce_id' => $product['variations'][$key],
@@ -292,7 +301,7 @@ class Admin extends BaseController
             }
         }
 
-   
+        dd("stop !");
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){
