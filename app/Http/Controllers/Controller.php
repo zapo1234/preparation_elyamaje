@@ -592,6 +592,136 @@ class Controller extends BaseController
         return $array; // Retourne le tableau résultat
     }
 
+    function alerteStockCronForAllProduct($token, $idWarhouse){
+        
+
+        if ($token == env('TOKEN_REASSOT')) {       
+
+            $numeroJour = date('N');
+
+            if ($numeroJour <= 5 ) {
+
+                $datasAlerte = array();
+                $datasIncompletes = array();
+        
+                $tab_min = [
+                    1 => 0.8,  // lundi      à 17h45h  Alerte
+                    2 => 0.65,  // Mardi     à 17h45h  Alerte      
+                    3 => 0.5,  // Mercredi   à 17h45h  Alerte
+                    4 => 0.3,  // Jeudi      à 17h45h  Alerte
+                    5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
+                    // 6 => 0.6,  // Samedi     à 22h
+                    // 7 => 0.6,  // Dimanche   à 22h
+                ];
+
+                $percent_min = $tab_min[$numeroJour];
+
+                // chercher le label de l'entrepot
+
+                $warhouse_label = "";
+                $warhouse = $this->api->CallAPI("GET", env('KEY_API_DOLIBAR'), env('KEY_API_URL')."warehouses/".$idWarhouse);     
+                $warhouse = json_decode($warhouse,true); 
+
+
+                if ($warhouse) {
+                    $warhouse_label = $warhouse["label"];
+                }else {
+                    dd("entrepots non trouvé");
+                }
+
+                // chercher tout les produits elyamaje puis filtrer que les en vente et en achat
+
+                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+                $datasAlerte = $pdoDolibarr->reassortForAllProductByEntrepot($idWarhouse);
+
+
+                if ($numeroJour == 5) {
+
+                    if ($datasAlerte) {
+                        // On crée un fichier excel qui contiendra le réassort de lundi
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
+
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
+
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data);  
+
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_reassort_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                            $this->api->insertCronRequest($data); 
+                        }
+                    }
+                    
+                                    
+                }else {
+                    if ($datasAlerte) {
+                        // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+
+                   
+
+                        $res = $this->exportExcel($datasAlerte,$percent_min);
+
+                        dd($res);
+
+                       
+
+                        if ($res["response"] == true) {
+                            // injecter la réponse dans la table cron 
+
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 0,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }else {
+                            $data = 
+                            [
+                                'name' => 'Generate_alerte_or_lundi', 
+                                'origin' => 'preparation', 
+                                'error' => 1,
+                                'message' =>  $res["message"], 
+                                'code' => null, 
+                                'from_cron' => 1
+                            ];
+                
+                        }
+                        $this->api->insertCronRequest($data);
+                    }
+                    
+                }
+
+            }
+
+        }else {
+            dd("Vous n'avez pas accèes à cette route");
+        }
+
+    }
+
     function alerteStockCron($token){
 
      
@@ -723,8 +853,6 @@ class Controller extends BaseController
 
     public function exportExcel($datasAlerte,$percent_min)
     {
-
-
         try {
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
@@ -740,17 +868,21 @@ class Controller extends BaseController
 
             if (date('N') == 5) {
                 foreach ($datasAlerte as $key => $value) {
+                    if ($value["desiredstock"] != "inconnu") {
 
-                    $qte = ($percent_min * $value["desiredstock"]) - $value["stock_actuel"];
+                        $qte = ($percent_min * $value["desiredstock"]) - $value["stock_actuel"];
 
-                    
-    
-                    $sheet->setCellValue('A' . $row, $value['fk_product']);
-                    $sheet->setCellValue('B' . $row, $value['label']);
-                    $sheet->setCellValue('C' . $row, $qte);
-                    $sheet->setCellValue('D' . $row, "");
-                    
-                    $row++;
+                        
+        
+                        if ($qte > 0) {
+                            $sheet->setCellValue('A' . $row, $value['fk_product']);
+                            $sheet->setCellValue('B' . $row, $value['label']);
+                            $sheet->setCellValue('C' . $row, ceil($qte));
+                            $sheet->setCellValue('D' . $row, "");
+                            
+                            $row++;
+                        }
+                    }
                 }
     
                 // Créez un Excel et sauvegardez le fichier
@@ -766,26 +898,38 @@ class Controller extends BaseController
                 // Retournez une réponse de téléchargement pour le fichier Excel
                 return ["response" => true, "message" => "réassort créer avec succés"];
             }else {
+
+            
                 foreach ($datasAlerte as $key => $value) {
 
-                    $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]);
-                    // + (1.8 - 0.7)*$value["desiredstock"];
+                    if ($value["desiredstock"] != "inconnu") {
 
-                    // le 0,7 vient du fait qu'on suppose que arrivé au vendredi a 18h on sera a 70% du stock min alors on fait le
-                    // calcule pour atteidre les 1.8*stock_desire qui couvriront la semaine d'après
+                        $qte = (($percent_min * $value["desiredstock"]) - $value["stock_actuel"]);
+
+                        // + (1.8 - 0.7)*$value["desiredstock"];
+
+                        // le 0,7 vient du fait qu'on suppose que arrivé au vendredi a 18h on sera a 70% du stock min alors on fait le
+                        // calcule pour atteidre les 1.8*stock_desire qui couvriront la semaine d'après
+
+                        if ($qte > 0) {
+                            $sheet->setCellValue('A' . $row, $value['fk_product']);
+                            $sheet->setCellValue('B' . $row, $value['label']);
+                            $sheet->setCellValue('C' . $row, ceil($qte));
+                            $sheet->setCellValue('D' . $row, "");
+                            
+                            $row++;
+                        }
+                    }
+                  
                     
-                    $sheet->setCellValue('A' . $row, $value['fk_product']);
-                    $sheet->setCellValue('B' . $row, $value['label']);
-                    $sheet->setCellValue('C' . $row, ceil($qte));
-                    $sheet->setCellValue('D' . $row, "");
-                    
-                    $row++;
                 }  
                 
                 // Créez un Excel et sauvegardez le fichier
                 $writer = new Csv($spreadsheet);
                 $date = date("d-m-y", strtotime("+0 days")); 
-                $fileName = $date.'_alerte.csv'; // Nom du fichier              
+                $fileName = $date.'_alerte.csv'; // Nom du fichier    
+                
+                // dd($fileName);
     
                 $writer->save(storage_path('app/public/alertes/notraite/' . $fileName));
     
@@ -798,6 +942,9 @@ class Controller extends BaseController
 
 
         } catch (\Throwable $th) {
+
+            dd($th);
+
             return ["response" => false, "message" => $th->getMessage()];
         }
     }
@@ -852,7 +999,6 @@ class Controller extends BaseController
         }
 
         // On récupère les produits et leurs stock dans l'entrepos selectionner 
-        
 
         $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
         $stocks_products = $pdoDolibarr->getStockProductByEntrepot($entrepot_destination);
