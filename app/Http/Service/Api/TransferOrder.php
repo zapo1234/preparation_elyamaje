@@ -854,7 +854,8 @@ class TransferOrder
                                       ];
 
                                      // attribuer le compte bancaire.
-                                     $datetime = date('d-m-Y H:i:s');
+                                    
+                                     $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));
                                     $d = DateTime::createFromFormat(
                                    'd-m-Y H:i:s',
                                       $datetime,
