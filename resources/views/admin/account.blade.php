@@ -54,10 +54,19 @@
 													<input class="form-check-input" style="cursor: pointer; width: 20px; height: 20px;" type="checkbox" value="" id="passwordCheck" name="passwordCheck">
 													<label style="margin-left: 15px; margin-top: 5px" class="form-check-label" for="passwordCheck">Renseigner un mot de passe manuellement</label>
 												</div>
-												<div class="col-md-12" style="display: none;" id="showPasswordInput">
+												<!-- <div class="col-md-12" style="display: none;" id="showPasswordInput">
 													<label for="password" class="form-label">Mot de passe*</label>
 													<input name="password" type="password" class="form-control" id="password">
+												</div> -->
+												<div class="col-md-12" style="display: none;" id="showPasswordInput">
+													<label for="password" class="form-label">Mot de passe*</label>
+													<div class="input-group" id="show_hide_password_2">
+														<input name="password" type="password" class="form-control" id="password">
+														<a href="javascript:;" class="input-group-text bg-white"><i class='bx bx-hide'></i></a>
+													</div>
+													
 												</div>
+
 												<div class="col-md-12">
 													<label for="role" class="form-label">Rôle*</label>
 													<select required name="role[]" id="role" class="form-select select">
@@ -332,6 +341,19 @@
 		}
 
 		$(document).ready(function() {
+			// Show / Hide password
+			$("#show_hide_password_2 a").on('click', function (event) {
+				event.preventDefault();
+				if ($('#show_hide_password_2 input').attr("type") == "text") {
+					$('#show_hide_password_2 input').attr('type', 'password');
+					$('#show_hide_password_2 i').addClass("bx-hide");
+					$('#show_hide_password_2 i').removeClass("bx-show");
+				} else if ($('#show_hide_password_2 input').attr("type") == "password") {
+					$('#show_hide_password_2 input').attr('type', 'text');
+					$('#show_hide_password_2 i').removeClass("bx-hide");
+					$('#show_hide_password_2 i').addClass("bx-show");
+				}
+			});
 
 			$(".select").select2({multiple: true, maximumSelectionLength: 3})
 			$('.select').val(null);

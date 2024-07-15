@@ -7341,6 +7341,12 @@ textarea:focus{
 	border-bottom-right-radius: 10px;
 }
 
+#show_hide_password_2 a{
+	position: absolute;
+	z-index: 10;
+	right: 0px;
+}
+
 .prepared-order,
 .prepared{
 	border: none;
