@@ -403,7 +403,36 @@ function notificationsListener(user_role_logged){
 								<div class="modal-dialog modal-dialog-centered" role="document">
 									<div class="modal-content">
 										<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
-											<h2 class="text-center">Attention, la commande ${data.message.order_id} à été réatribuée </h2>
+											<h2 class="text-center">Attention, la commande ${data.message.order_id} a été réatribuée </h2>
+											<div class="mt-3 w-100 d-flex justify-content-center">
+												<button onClick="window.location.reload();" type="button" class="btn btn-dark px-5">Fermer</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						`)
+
+						$('#modalInfo').modal({
+							backdrop: 'static',
+							keyboard: false
+						})
+						$("#modalInfo").modal('show')
+					}
+				});
+			// If two users on the same account prepare the same order
+			} else if(data.message.type == "order_already_prepared"){
+				// Checks if the user has this command A TESTER ENCORE
+				$( ".tab-pane .show_order" ).each(function( index ) {
+					if(data.message.order_id == $( this ).attr('id') && !$(".modal_success").hasClass('show')){
+						$("#modalInfo").remove()
+						$("body").append(`
+							<div class="modal_reset_order modal fade" id="modalInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+										<div class="modal_body_reset modal-body d-flex flex-column justify-content-center">
+											<h2 class="text-center">Attention, la commande ${data.message.order_id} a déjà été validée</h2>
+											<p class="text-center text-danger">Vous êtes peut-être sur le même compte qu'une autre personne</p>
 											<div class="mt-3 w-100 d-flex justify-content-center">
 												<button onClick="window.location.reload();" type="button" class="btn btn-dark px-5">Fermer</button>
 											</div>

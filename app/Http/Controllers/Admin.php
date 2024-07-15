@@ -205,7 +205,6 @@ class Admin extends BaseController
                 }
             }
 
-          
             if($variation){
                 $ids = array_column($product['attributes'], "name");
                 $clesRecherchees = array_keys($ids,  $variation);
@@ -235,7 +234,7 @@ class Admin extends BaseController
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                     'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
-              
+
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
                         if(isset($product['variation_attributes'])){
@@ -267,6 +266,8 @@ class Admin extends BaseController
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
                             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
+
+                       
                     }
                 }
             } else {
@@ -292,7 +293,6 @@ class Admin extends BaseController
             }
         }
 
-   
         $sync = $this->products->insertProductsOrUpdate($insert_products);
 
         if($sync){

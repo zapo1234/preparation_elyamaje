@@ -324,6 +324,16 @@ class Order extends BaseController
       }
     }
 
+    public function orderAlreadyPrepared($order_id){
+      // NOTIF COMMANDE PREPARE MULTI COMPTE
+      $notification_push = [
+        'role' => 2,
+        'order_id' => $order_id ?? "",
+        'type' => 'order_already_prepared',
+      ];
+      event(New NotificationPusher($notification_push));
+    }
+
     public function ordersPrepared(Request $request){
       $barcode_array = $request->post('pick_items');
       $products_quantity = $request->post('pick_items_quantity');
@@ -339,6 +349,7 @@ class Order extends BaseController
             $check_if_order_done = $this->orderDolibarr->checkIfDoneOrderDolibarr($order_id, $barcode_array, $products_quantity, intval($partial));
           } else if($partial == "1" && $barcode_array == null){
             $this->orderDolibarr->updateOneOrderStatus("waiting_to_validate", $order_id);
+            $this->orderAlreadyPrepared($order_id);
             $check_if_order_done = true;
           }
         } else if($from_transfers){
@@ -350,6 +361,7 @@ class Order extends BaseController
             $check_if_order_done = $this->order->checkIfDone($order_id, $barcode_array, $products_quantity, intval($partial));
           } else if($partial == "1" && $barcode_array == null){
             $this->order->updateOrdersById([$order_id], "waiting_to_validate");
+            $this->orderAlreadyPrepared($order_id);
             $check_if_order_done = true;
           }
         }
@@ -403,19 +415,21 @@ class Order extends BaseController
 
         if($picked && $from_dolibarr){
             $this->orderDolibarr->updateOneOrderStatus("prepared-order", $order_id);
+            $this->orderAlreadyPrepared($order_id);
             echo json_encode(["success" => true]);
             return;
         } else if($picked && $from_transfers){
             $this->reassort->updateStatusTextReassort($order_id ,"prepared-order");
+            // $this->orderAlreadyPrepared($order_id);
             echo json_encode(["success" => true]);
             return;
         } else if($picked && !$from_transfers && !$from_dolibarr){
           $this->order->updateOrdersById([$order_id], "prepared-order");
           $this->api->updateOrdersWoocommerce("prepared-order", $order_id);
+          $this->orderAlreadyPrepared($order_id);
           echo json_encode(["success" => true]);
           return;
         }
-
         echo json_encode(["success" => $picked]);
       }
     }
