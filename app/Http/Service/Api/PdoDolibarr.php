@@ -572,8 +572,14 @@ class PdoDolibarr
 
     function commandedetById($id_commande){
 
-        $sql = 'SELECT rowid, fk_commande, fk_product, rang FROM llxyq_commandedet WHERE fk_commande ='.$id_commande;
+        $sql = 'SELECT pd.rowid, pd.fk_commande, pd.fk_product, pd.rang, p.label 
+        FROM llxyq_commandedet pd
+        JOIN llxyq_product p ON pd.fk_product = p.rowid
+
+        WHERE pd.fk_commande ='.$id_commande;
+
         $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id_commande', $id_commande, PDO::PARAM_INT);
         $stmt->execute();
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);              
         return $res;
@@ -583,10 +589,15 @@ class PdoDolibarr
     
     function propaldetById($id_propal){
 
-        $sql = 'SELECT rowid, fk_propal, fk_product, rang FROM llxyq_propaldet WHERE fk_propal ='.$id_propal;
+        $sql = 'SELECT pd.rowid, pd.fk_propal, pd.fk_product, pd.rang, p.label 
+            FROM llxyq_propaldet pd
+            JOIN llxyq_product p ON pd.fk_product = p.rowid
+            WHERE pd.fk_propal = :id_propal';
+        
         $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id_propal', $id_propal, PDO::PARAM_INT);
         $stmt->execute();
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);              
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $res;
 
     }
