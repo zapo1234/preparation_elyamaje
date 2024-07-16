@@ -679,9 +679,6 @@ class Controller extends BaseController
                    
 
                         $res = $this->exportExcel($datasAlerte,$percent_min);
-
-                        dd($res);
-
                        
 
                         if ($res["response"] == true) {
