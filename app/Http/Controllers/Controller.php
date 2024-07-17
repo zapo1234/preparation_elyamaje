@@ -677,14 +677,9 @@ class Controller extends BaseController
                     }else {
                         if ($datasAlerte) {
                             // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
-    
-                            dd($datasAlerte);
-                       
+                           
     
                             $res = $this->exportExcel($datasAlerte,$percent_min);
-    
-                          
-    
                            
     
                             if ($res["response"] == true) {
