@@ -593,129 +593,140 @@ class Controller extends BaseController
     }
 
     function alerteStockCronForAllProduct($token, $idWarhouse){
-        
 
-        if ($token == env('TOKEN_REASSOT')) {       
-
-            $numeroJour = date('N');
-
-            if ($numeroJour <= 5 ) {
-
-                $datasAlerte = array();
-                $datasIncompletes = array();
-        
-                $tab_min = [
-                    1 => 0.7,  // lundi      à 17h45h  Alerte
-                    2 => 0.6,  // Mardi     à 17h45h  Alerte      
-                    3 => 0.4,  // Mercredi   à 17h45h  Alerte
-                    4 => 0.25,  // Jeudi      à 17h45h  Alerte
-                    5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
-                    // 6 => 0.6,  // Samedi     à 22h
-                    // 7 => 0.6,  // Dimanche   à 22h
-                ];
-
-                $percent_min = $tab_min[$numeroJour];
-
-                // chercher le label de l'entrepot
-
-                $warhouse_label = "";
-                $warhouse = $this->api->CallAPI("GET", env('KEY_API_DOLIBAR'), env('KEY_API_URL')."warehouses/".$idWarhouse);     
-                $warhouse = json_decode($warhouse,true); 
+        try {
 
 
-                if ($warhouse) {
-                    $warhouse_label = $warhouse["label"];
-                }else {
-                    dd("entrepots non trouvé");
-                }
+            if ($token == env('TOKEN_REASSOT')) {       
 
-                // chercher tout les produits elyamaje puis filtrer que les en vente et en achat
-
-                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
-                $datasAlerte = $pdoDolibarr->reassortForAllProductByEntrepot($idWarhouse);
-
-
-                if ($numeroJour == 5) {
-
-                    if ($datasAlerte) {
-                        // On crée un fichier excel qui contiendra le réassort de lundi
-                        $res = $this->exportExcel($datasAlerte,$percent_min);
-
-                        if ($res["response"] == true) {
-                            // injecter la réponse dans la table cron 
-
-                            $data = 
-                            [
-                                'name' => 'Generate_reassort_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 0,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                            $this->api->insertCronRequest($data);  
-
-                        }else {
-                            $data = 
-                            [
-                                'name' => 'Generate_reassort_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 1,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                            $this->api->insertCronRequest($data); 
-                        }
+                $numeroJour = date('N');
+    
+                if ($numeroJour <= 5 ) {
+    
+                    $datasAlerte = array();
+                    $datasIncompletes = array();
+            
+                    $tab_min = [
+                        1 => 0.7,  // lundi      à 17h45h  Alerte
+                        2 => 0.6,  // Mardi     à 17h45h  Alerte      
+                        3 => 0.4,  // Mercredi   à 17h45h  Alerte
+                        4 => 0.25,  // Jeudi      à 17h45h  Alerte
+                        5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
+                        // 6 => 0.6,  // Samedi     à 22h
+                        // 7 => 0.6,  // Dimanche   à 22h
+                    ];
+    
+                    $percent_min = $tab_min[$numeroJour];
+    
+                    // chercher le label de l'entrepot
+    
+                    $warhouse_label = "";
+                    $warhouse = $this->api->CallAPI("GET", env('KEY_API_DOLIBAR'), env('KEY_API_URL')."warehouses/".$idWarhouse);     
+                    $warhouse = json_decode($warhouse,true); 
+    
+    
+                    if ($warhouse) {
+                        $warhouse_label = $warhouse["label"];
+                    }else {
+                        dd("entrepots non trouvé");
                     }
+    
+                    // chercher tout les produits elyamaje puis filtrer que les en vente et en achat
+    
+                    $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+                    $datasAlerte = $pdoDolibarr->reassortForAllProductByEntrepot($idWarhouse);
+    
+    
+                    if ($numeroJour == 5) {
+    
+                        if ($datasAlerte) {
+                            // On crée un fichier excel qui contiendra le réassort de lundi
+                            $res = $this->exportExcel($datasAlerte,$percent_min);
+    
+                            if ($res["response"] == true) {
+                                // injecter la réponse dans la table cron 
+    
+                                $data = 
+                                [
+                                    'name' => 'Generate_reassort_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 0,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
                     
-                                    
-                }else {
-                    if ($datasAlerte) {
-                        // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
-
-                   
-
-                        $res = $this->exportExcel($datasAlerte,$percent_min);
+                                $this->api->insertCronRequest($data);  
+    
+                            }else {
+                                $data = 
+                                [
+                                    'name' => 'Generate_reassort_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 1,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
+                    
+                                $this->api->insertCronRequest($data); 
+                            }
+                        }
+                        
+                                        
+                    }else {
+                        if ($datasAlerte) {
+                            // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+    
+                            dd($datasAlerte);
                        
-
-                        if ($res["response"] == true) {
-                            // injecter la réponse dans la table cron 
-
-                            $data = 
-                            [
-                                'name' => 'Generate_alerte_or_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 0,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                        }else {
-                            $data = 
-                            [
-                                'name' => 'Generate_alerte_or_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 1,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                        }
-                        $this->api->insertCronRequest($data);
-                    }
+    
+                            $res = $this->exportExcel($datasAlerte,$percent_min);
+    
+                          
+    
+                           
+    
+                            if ($res["response"] == true) {
+                                // injecter la réponse dans la table cron 
+    
+                                $data = 
+                                [
+                                    'name' => 'Generate_alerte_or_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 0,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
                     
+                            }else {
+                                $data = 
+                                [
+                                    'name' => 'Generate_alerte_or_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 1,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
+                    
+                            }
+                            $this->api->insertCronRequest($data);
+                        }
+                        
+                    }
+    
                 }
-
+    
+            }else {
+                dd("Vous n'avez pas accèes à cette route");
             }
-
-        }else {
-            dd("Vous n'avez pas accèes à cette route");
+        } catch (\Throwable $th) {
+            dd($th);
         }
+
+      
 
     }
 
