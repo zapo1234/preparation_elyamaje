@@ -593,132 +593,135 @@ class Controller extends BaseController
     }
 
     function alerteStockCronForAllProduct($token, $idWarhouse){
-        
 
-        if ($token == env('TOKEN_REASSOT')) {       
-
-            $numeroJour = date('N');
-
-            if ($numeroJour <= 5 ) {
-
-                $datasAlerte = array();
-                $datasIncompletes = array();
-        
-                $tab_min = [
-                    1 => 0.7,  // lundi      à 17h45h  Alerte
-                    2 => 0.6,  // Mardi     à 17h45h  Alerte      
-                    3 => 0.4,  // Mercredi   à 17h45h  Alerte
-                    4 => 0.25,  // Jeudi      à 17h45h  Alerte
-                    5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
-                    // 6 => 0.6,  // Samedi     à 22h
-                    // 7 => 0.6,  // Dimanche   à 22h
-                ];
-
-                $percent_min = $tab_min[$numeroJour];
-
-                // chercher le label de l'entrepot
-
-                $warhouse_label = "";
-                $warhouse = $this->api->CallAPI("GET", env('KEY_API_DOLIBAR'), env('KEY_API_URL')."warehouses/".$idWarhouse);     
-                $warhouse = json_decode($warhouse,true); 
+        try {
 
 
-                if ($warhouse) {
-                    $warhouse_label = $warhouse["label"];
-                }else {
-                    dd("entrepots non trouvé");
-                }
+            if ($token == env('TOKEN_REASSOT')) {       
 
-                // chercher tout les produits elyamaje puis filtrer que les en vente et en achat
-
-                $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
-                $datasAlerte = $pdoDolibarr->reassortForAllProductByEntrepot($idWarhouse);
-
-
-                if ($numeroJour == 5) {
-
-                    if ($datasAlerte) {
-                        // On crée un fichier excel qui contiendra le réassort de lundi
-                        $res = $this->exportExcel($datasAlerte,$percent_min);
-
-                        if ($res["response"] == true) {
-                            // injecter la réponse dans la table cron 
-
-                            $data = 
-                            [
-                                'name' => 'Generate_reassort_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 0,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                            $this->api->insertCronRequest($data);  
-
-                        }else {
-                            $data = 
-                            [
-                                'name' => 'Generate_reassort_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 1,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                            $this->api->insertCronRequest($data); 
-                        }
+                $numeroJour = date('N');
+    
+                if ($numeroJour <= 5 ) {
+    
+                    $datasAlerte = array();
+                    $datasIncompletes = array();
+            
+                    $tab_min = [
+                        1 => 0.7,  // lundi      à 17h45h  Alerte
+                        2 => 0.6,  // Mardi     à 17h45h  Alerte      
+                        3 => 0.4,  // Mercredi   à 17h45h  Alerte
+                        4 => 0.25,  // Jeudi      à 17h45h  Alerte
+                        5 => 1,  // Vendredi     à 17h45h  // on génère un reassort
+                        // 6 => 0.6,  // Samedi     à 22h
+                        // 7 => 0.6,  // Dimanche   à 22h
+                    ];
+    
+                    $percent_min = $tab_min[$numeroJour];
+    
+                    // chercher le label de l'entrepot
+    
+                    $warhouse_label = "";
+                    $warhouse = $this->api->CallAPI("GET", env('KEY_API_DOLIBAR'), env('KEY_API_URL')."warehouses/".$idWarhouse);     
+                    $warhouse = json_decode($warhouse,true); 
+    
+    
+                    if ($warhouse) {
+                        $warhouse_label = $warhouse["label"];
+                    }else {
+                        dd("entrepots non trouvé");
                     }
+    
+                    // chercher tout les produits elyamaje puis filtrer que les en vente et en achat
+    
+                    $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+                    $datasAlerte = $pdoDolibarr->reassortForAllProductByEntrepot($idWarhouse);
+    
+    
+                    if ($numeroJour == 5) {
+    
+                        if ($datasAlerte) {
+                            // On crée un fichier excel qui contiendra le réassort de lundi
+                            $res = $this->exportExcel($datasAlerte,$percent_min);
+    
+                            if ($res["response"] == true) {
+                                // injecter la réponse dans la table cron 
+    
+                                $data = 
+                                [
+                                    'name' => 'Generate_reassort_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 0,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
                     
-                                    
-                }else {
-                    if ($datasAlerte) {
-                        // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
-
-                   
-
-                        $res = $this->exportExcel($datasAlerte,$percent_min);
-
-                        dd($res);
-
-                       
-
-                        if ($res["response"] == true) {
-                            // injecter la réponse dans la table cron 
-
-                            $data = 
-                            [
-                                'name' => 'Generate_alerte_or_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 0,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
-                        }else {
-                            $data = 
-                            [
-                                'name' => 'Generate_alerte_or_lundi', 
-                                'origin' => 'preparation', 
-                                'error' => 1,
-                                'message' =>  $res["message"], 
-                                'code' => null, 
-                                'from_cron' => 1
-                            ];
-                
+                                $this->api->insertCronRequest($data);  
+    
+                            }else {
+                                $data = 
+                                [
+                                    'name' => 'Generate_reassort_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 1,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
+                    
+                                $this->api->insertCronRequest($data); 
+                            }
                         }
-                        $this->api->insertCronRequest($data);
-                    }
+                        
+                                        
+                    }else {
+                        if ($datasAlerte) {
+                            // On lance juste une alerte ... la quantité a suggérer serai de la somme entre compbler le reste de la semain + la semaine d'apres
+                           
+    
+                            $res = $this->exportExcel($datasAlerte,$percent_min);
+                           
+    
+                            if ($res["response"] == true) {
+                                // injecter la réponse dans la table cron 
+    
+                                $data = 
+                                [
+                                    'name' => 'Generate_alerte_or_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 0,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
                     
+                            }else {
+                                $data = 
+                                [
+                                    'name' => 'Generate_alerte_or_lundi', 
+                                    'origin' => 'preparation', 
+                                    'error' => 1,
+                                    'message' =>  $res["message"], 
+                                    'code' => null, 
+                                    'from_cron' => 1
+                                ];
+                    
+                            }
+                            $this->api->insertCronRequest($data);
+                        }
+                        
+                    }
+    
                 }
-
+    
+            }else {
+                dd("Vous n'avez pas accèes à cette route");
             }
-
-        }else {
-            dd("Vous n'avez pas accèes à cette route");
+        } catch (\Throwable $th) {
+            dd($th);
         }
+
+      
 
     }
 
@@ -1479,7 +1482,7 @@ class Controller extends BaseController
 
                     // dd($nbr_facure_gel);
                 
-                // traitement selon les clients
+                    // traitement selon les clients
                     $fks_facture = array();
                     foreach ($res2 as $key => $value) {
                         array_push($fks_facture,$value["fk_facture"]);
@@ -1535,6 +1538,8 @@ class Controller extends BaseController
 
             }
 
+            
+
            // boutique elyamaje
             if ($entrepot_destination== "1" || $entrepot_destination== "15") {
 
@@ -1574,6 +1579,8 @@ class Controller extends BaseController
 
 
             $array_factures_total = array();
+
+           
             
             if ($first_transfert) {
                 if ($start_date && $end_date) {
@@ -1794,8 +1801,6 @@ class Controller extends BaseController
 
 
 
-
-
         // avec la mise à jpurs il faut aller chercher les stocks des produits manuellement (warehouse_array_list)
 
         // on récupère la liste des produit et leurs stock d'alerte 
@@ -1805,22 +1810,6 @@ class Controller extends BaseController
       
         // $id_entrepot_select = 1;
         $allStocks = $pdoDolibarr->getAllStockProduct();
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     
@@ -1838,6 +1827,13 @@ class Controller extends BaseController
                 if (isset($allStocks[$product["id"]])) {
 
                     // dd($allStocks[$product["id"]]);
+
+                    // if ($product["id"] == "5528") {
+                    //     dump($product["id"]);
+                    //     dd( $allStocks[$product["id"]]);
+                    // }
+                   
+
 
                     $products_dolibarrs[$elm][$kkp]["warehouse_array_list"][$product["id"]] = $allStocks[$product["id"]];
 
@@ -1881,6 +1877,7 @@ class Controller extends BaseController
 
         $products_dolibarrs_first_tr = array();
 
+       
 
 
         foreach ($products_dolibarrs as $key => $value) {
@@ -2087,6 +2084,8 @@ class Controller extends BaseController
             }
         }
 
+        
+
           // on détermine l'entrepot a alimenter
           $name_entrepot_a_alimenter = "";
           $name_entrepot_a_destocker = "";
@@ -2112,6 +2111,9 @@ class Controller extends BaseController
 
         //   dump($vente_by_product);
         //   dd($products_dolibarrs_first_tr);
+
+    
+
         if ($first_transfert) {
 
             return view('admin.supply',
@@ -2164,7 +2166,7 @@ class Controller extends BaseController
             }
         }
 
-        // dd($products_dolibarrs[0][2]);
+    
 
        
         // remplissage du tableau "list_product" pour chaque entrepot (tout les entrepot) NB : on peut se limiter au remplissage que du concerné
@@ -2201,6 +2203,8 @@ class Controller extends BaseController
                 }
             }
         }   
+
+       
         
 
         $products_reassort = array();
@@ -2211,8 +2215,24 @@ class Controller extends BaseController
 
             // source data
             $qte_en_stock_in_source = "";
+
             if (isset($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct])) {
-                $qte_en_stock_in_source = $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct]["stock"];
+
+                if ($entrepot_source == "6") {
+                    $qte_en_stock_in_source = 
+
+                        $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct]["stock"] + 
+                        $warehouses_product_stock["Entrepot Malpasse Stockage"]["list_product"][$kproduct]["stock"];
+
+                }else {
+
+                    $qte_en_stock_in_source = $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct]["stock"];
+
+                }
+
+               // $qte_en_stock_in_source = $warehouses_product_stock[$name_entrepot_a_destocker]["list_product"][$kproduct]["stock"];
+              
+
             }else {
                 $qte_en_stock_in_source = "0";
             }
@@ -2373,9 +2393,11 @@ class Controller extends BaseController
 
     //    dd($warehouses_product_stock[$name_entrepot_a_destocker]["list_product"]);
 
+       // dd($products_reassort);
+
         // foreach ($products_reassort as $key => $value) {
-        //     if ($value["product_id"] == 5262) {
-        //         dump($value);
+        //     if ($value["product_id"] == 4905) {
+        //         dd($value);
         //     }
         // }
 
@@ -2639,7 +2661,7 @@ class Controller extends BaseController
             // $server_name = request('server_name');
 
 
-            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
+            if ($token == env('TOKEN_DOLLIBARR') && $id) {
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
@@ -2749,7 +2771,6 @@ class Controller extends BaseController
 
     function sortCommande(Request $request){
 
-       
 
         try {
 
@@ -2766,25 +2787,17 @@ class Controller extends BaseController
             $server_name = request('server_name');
             $triPartial = false;
 
+            $tableBD = 'llxyq_commandedet';
 
 
-
-            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
+            if ($token == env('TOKEN_DOLLIBARR') && $id) {
 
                 $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
 
                 $commande = $pdoDolibarr->commandedetById($id);
-
-                
                 $cat_lab = $this->reassort->getAllCategoriesLabel();
-
                 // Récupérer le couple categories - produits
                 $all_categories = $this->reassort->getAllCategoriesAndProducts($cat_lab);
-
-                // dd(isset($all_categories[88]));updateRang
-
-
-                // dd($all_categories[5528]);
 
                 foreach ($commande as $key => $value) {
 
@@ -2797,8 +2810,7 @@ class Controller extends BaseController
                     }else {
                         $triPartial = true;
                         $commande[$key]["cat"] = -1;
-                        // dump($value);
-                        // return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
                     }
                 }
 
@@ -2810,11 +2822,9 @@ class Controller extends BaseController
                 // Si vous avez besoin d'un tableau à partir de la collection triée
                 $sortedArrayCommande = $sorted->values()->toArray();
 
-                foreach ($sortedArrayCommande as $key => $value) {
-                    $sortedArrayCommande[$key]["ranf_final"] =  $key+1;
-                }
+                $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
 
-                $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande);
+                $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande, $tableBD);
 
                 if ($resUpdateRang) {
                     if ($triPartial) {
@@ -2834,13 +2844,13 @@ class Controller extends BaseController
             }
         } catch (Throwable $th) {
 
+            dd($th);
+
             return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=errorTryCatch');
         }
     }
 
     function sortPropal(Request $request){
-
-       
 
         try {
 
@@ -2853,29 +2863,25 @@ class Controller extends BaseController
             
             
             $id = request('id');
-            $token = request('tokenPrepa');
-            $server_name = request('server_name');
+            $token =  request('tokenPrepa');
+            $server_name =  request('server_name');
             $triPartial = false;
             $tableBD = 'llxyq_propaldet';
 
         
 
 
-
-            if ($token == "btmhtn0zZyy8h4dvV3wOHCVTOwrHePKkosx85dG4WLrkk1I623U1yJiEeJLlFNuuylNDVVOhxkKVLMl05" && $id) {
+            if ($token == env('TOKEN_DOLLIBARR') && $id) {
 
                 $pdoDolibarr = new PdoDolibarr(env('DB_HOST_2'),env('DB_DATABASE_2'),env('DB_USERNAME_2'),env('DB_PASSWORD_2'));
+
                 $propal = $pdoDolibarr->propaldetById($id);
+
 
                 $cat_lab = $this->reassort->getAllCategoriesLabel();
 
                 // Récupérer le couple categories - produits
                 $all_categories = $this->reassort->getAllCategoriesAndProducts($cat_lab);
-
-                // dd(isset($all_categories[88]));updateRang
-
-
-                // dd($all_categories[5528]);
 
                 foreach ($propal as $key => $value) {
 
@@ -2888,23 +2894,20 @@ class Controller extends BaseController
                     }else {
                         $triPartial = true;
                         $propal[$key]["cat"] = -1;
-                        // dump($value);
-                        // return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
+                        return redirect('https://'.$server_name.'/commande/card.php?id='.$id.'&action=noCategorie');
                     }
                 }
 
+                
+
                 $collection = collect($propal);
-
-                // Trier la collection par la clé "cat"
+         
                 $sorted = $collection->sortBy('cat');
-
-                // Si vous avez besoin d'un tableau à partir de la collection triée
+                
                 $sortedArrayCommande = $sorted->values()->toArray();
 
-                foreach ($sortedArrayCommande as $key => $value) {
-                    $sortedArrayCommande[$key]["ranf_final"] =  $key+1;
-                }
-
+                // trier les categorie
+                $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
 
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
 
@@ -2919,6 +2922,8 @@ class Controller extends BaseController
                     return redirect('https://'.$server_name.'/comm/propal/card.php?id='.$id.'&action=errorSortPropal');
                 }              
 
+          
+          
             }else {
                 // $message = "pas le droit";
                 return redirect('https://'.$server_name.'/comm/propal/card.php?id='.$id.'&action=errorDroit');
@@ -2926,7 +2931,60 @@ class Controller extends BaseController
             }
         } catch (Throwable $th) {
 
+            dd($th);
+
             return redirect('https://'.$server_name.'/comm/propal/card.php?id='.$id.'&action=errorTryCatch');
+        }
+    }
+
+    function sortVsp($sortedArrayCommande){
+        try {
+                // Étape 1: Filtrer les éléments dont la catégorie est 1
+                $filtered = array_filter($sortedArrayCommande, function($item) {
+                    return $item['cat'] == 1;
+                });
+
+                // Étape 2: Trier les éléments filtrés par le chiffre dans le label
+                usort($filtered, function($a, $b) {
+                    // Extraire les chiffres du label
+                    preg_match('/(\d+)/', $a['label'], $matchesA);
+                    preg_match('/(\d+)/', $b['label'], $matchesB);
+
+                    // Si aucun chiffre trouvé dans les deux labels, on garde l'ordre initial
+                    if (empty($matchesA) && empty($matchesB)) {
+                        return 0;
+                    }
+
+                    // Si le label A n'a pas de chiffre, il va après le label B
+                    if (empty($matchesA)) {
+                        return 1;
+                    }
+
+                    // Si le label B n'a pas de chiffre, il va après le label A
+                    if (empty($matchesB)) {
+                        return -1;
+                    }
+
+                    // Comparer les chiffres extraits
+                    return $matchesA[0] - $matchesB[0];
+                });
+
+                // Étape 3: Filtrer les éléments dont la catégorie n'est pas 1
+                $otherItems = array_filter($sortedArrayCommande, function($item) {
+                    return $item['cat'] != 1;
+                });
+
+                // Étape 4: Combiner les deux tableaux
+                $sortedArrayCommande = array_merge($filtered, $otherItems);
+
+                foreach ($sortedArrayCommande as $key => $value) {
+                    $sortedArrayCommande[$key]["ranf_final"] =  $key+1;
+                }
+
+                return $sortedArrayCommande;
+
+        } catch (\Throwable $th) {
+            dd($th);
         }
     }
 
