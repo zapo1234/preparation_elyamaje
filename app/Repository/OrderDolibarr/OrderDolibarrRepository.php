@@ -69,7 +69,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
-         ->where('products.status', 'publish')
+         // ->where('products.status', 'publish') // Des commandes Elyamaje academy comportent que des produits privés
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
