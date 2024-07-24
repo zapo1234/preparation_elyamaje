@@ -664,7 +664,7 @@ function returnOrder(id){
                                                             <span class="title_span ">Méthode de paiement : </span>
                                                             <select name="payment_method" style="width: 250px" class="custom_input">
                                                                 ${Object.keys(list_paiement).map((element) => 
-                                                                    order[0].payment_method == element ? `<option selected value="`+element+`">`+list_paiement[element]+`</option>` : `<option value="`+element+`">`+list_paiement[element]+`</option>`
+                                                                    order[0].payment_method == "DONS" ? `<option selected value="`+element+`">`+list_paiement[element]+`</option>` : `<option value="`+element+`">`+list_paiement[element]+`</option>`
                                                                 )}
                                                             </select>
                                                         </div>

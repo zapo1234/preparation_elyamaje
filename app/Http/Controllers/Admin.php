@@ -491,7 +491,8 @@ class Admin extends BaseController
     }
 
     public function printers(){
-        $preparateurs = $this->user->getUsersAndRoles();
+        // $preparateurs = $this->user->getUsersAndRoles();
+        $preparateurs = $this->user->getUsersByRole([2]);
         $printers = $this->printer->getPrinters();
         return view('admin.printers', ['printers' => $printers, 'preparateurs' => $preparateurs]);
     }
