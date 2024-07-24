@@ -201,8 +201,6 @@ class Order extends BaseController
     public function getAllOrders(){
       // Preparator
       $users =  $this->user->getUsersAndRoles();
-
-      // $users = $this->user->getUsersByRole([2]);
       $products_pick =  $this->productOrder->getAllProductsPicked()->toArray();
       $products_pick_dolibarr =  $this->orderDolibarr->getAllProductsPickedDolibarr();
 
