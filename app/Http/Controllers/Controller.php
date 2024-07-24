@@ -2926,8 +2926,6 @@ class Controller extends BaseController
 
                 $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
 
-                dd($sortedArrayCommande);
-
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
 
                 if ($resUpdateRang) {
