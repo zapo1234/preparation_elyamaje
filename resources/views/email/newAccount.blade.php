@@ -16,7 +16,7 @@
                         <img src="{{ asset('assets/images/bg-themes/bg-email.jpg') }}" width="100%"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
                         </br>
                         <h1>Bonjour {{ $name }} </h1>
-                        <p>Votre compte à été activé !</p>
+                        <p>Votre compte a été activé !</p>
                         <p></p>
                         <p>Voici le lien et le mot de passe pour vous connecter :</p>
                         <p></p>

@@ -210,7 +210,7 @@ $(document).ready(function() {
                     Object.entries(row.users).forEach(([key, value]) => {
                         if(value.user_id == row.user_id){
                             selectOptions += `<option ${value.role_id.includes(2) ? '' : 'disabled'} selected value="${value.user_id}">${value.name}</option>`;
-                        } else {
+                        } else if(value.role_id.includes(2)){ // Only preparateur
                             selectOptions += `<option ${value.role_id.includes(2) ? '' : 'disabled'}  value="${value.user_id}">${value.name}</option>`;
                         }
 
