@@ -2852,6 +2852,8 @@ class Controller extends BaseController
 
     function sortPropal(Request $request){
 
+      
+
         try {
 
             
@@ -2901,13 +2903,20 @@ class Controller extends BaseController
                 
 
                 $collection = collect($propal);
+
+
          
                 $sorted = $collection->sortBy('cat');
                 
                 $sortedArrayCommande = $sorted->values()->toArray();
 
                 // trier les categorie
+
+                dd($sortedArrayCommande);
+
                 $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
+
+                
 
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
 
