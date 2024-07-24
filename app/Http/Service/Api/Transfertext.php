@@ -233,7 +233,7 @@ class Transfertext
                         }else{
 
                           if($amount_card!=0){
-                              // si y'a eu paimement espece et card cardeau
+                              // si y'a eu paimement espece et card carte 
                                $indice_amount_liq =  $total_montant - $amount_card;
                           }
 
@@ -1153,7 +1153,7 @@ class Transfertext
                        
                     }
                      
-                       // si lacommande ne vient pas par un BPP(beauty proofs)
+                       // si lacommande ne vient pas par un BPP(du Gala)
                     if($index_amount_true[1]=="nobpp"){
                          
                        $moyen_paid =  array_search($account_name,$moyen_card);
@@ -1205,7 +1205,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=47;// PROD 
+                        $account_id=47;// PROD // compte du gala avenir ici.
                         $paimentid =4;// PROD
                      }
 
