@@ -2912,11 +2912,21 @@ class Controller extends BaseController
 
                 // trier les categorie
 
-                dd($sortedArrayCommande);
+                // foreach ($sortedArrayCommande as $key => $value) {
+                    
+                    
+
+
+                //     if (strpos($value["label"], "VSP")!== false) {
+                //         dump($value["cat"]);
+                //     }
+                // }
+
+                
 
                 $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
 
-                
+                dd($sortedArrayCommande);
 
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
 
@@ -2950,7 +2960,9 @@ class Controller extends BaseController
         try {
                 // Étape 1: Filtrer les éléments dont la catégorie est 1
                 $filtered = array_filter($sortedArrayCommande, function($item) {
-                    return $item['cat'] == 1;
+
+                    return strpos($item["label"], "VSP")!== false;
+
                 });
 
                 // Étape 2: Trier les éléments filtrés par le chiffre dans le label
