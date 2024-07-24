@@ -15,6 +15,10 @@ class CreateTickeraTable extends Migration
     {
         Schema::create('tickera', function (Blueprint $table) {
             $table->id();
+            $table->string('last_name');
+            $table->string('first_name');
+            $table->string('email');
+            $table->string('ticket_id');
             $table->timestamps();
         });
     }
