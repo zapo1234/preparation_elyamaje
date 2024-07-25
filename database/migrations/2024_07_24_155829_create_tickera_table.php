@@ -19,12 +19,13 @@ class CreateTickeraTable extends Migration
             $table->string('first_name');
             $table->string('email');
             $table->string('ticket_id');
+            $table->string('montant_attribue');
             $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations..
      *
      * @return void
      */
