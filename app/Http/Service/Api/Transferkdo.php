@@ -590,7 +590,7 @@ class Transferkdo
                                         "options_fid"=>$fid,
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
-                                        "options_point_fidelite"=>0,
+                                        "options_point_fidelite"=>"0.00",
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
