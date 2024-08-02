@@ -17,9 +17,13 @@ class CreateTickeraTable extends Migration
             $table->id();
             $table->string('last_name');
             $table->string('first_name');
+            $table->string('adresse');
+            $table->string('zip');
+            $table->string('ville');
             $table->string('email');
             $table->string('ticket_id');
             $table->string('montant_attribue');
+            $table->string('code_reduction');
             $table->timestamps();
         });
     }
