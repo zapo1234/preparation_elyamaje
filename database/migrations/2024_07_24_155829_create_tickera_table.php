@@ -19,7 +19,7 @@ class CreateTickeraTable extends Migration
             $table->string('first_name');
             $table->string('adresse');
             $table->string('zip');
-            $table->string('ville');
+            $table->string('city');
             $table->string('email');
             $table->string('ticket_id');
             $table->string('montant_attribue');
