@@ -35,6 +35,10 @@ Route::get("/sortPropal", [Controller::class, "sortPropal"])->name('sortPropal')
 
 Route::group(['middleware' =>  ['auth:sanctum']], function () {
     Route::post("/checkUser", [ApiController::class, "checkUser"]);
+
+    // Récupère tous les participants dans la table tickera (personnes ayant acheté le billet du gala 2024)
+    Route::get("/getAllCustomer", [ApiController::class, "getAllCustomer"]);
+    Route::post("/updateCustomer", [ApiController::class, "updateCustomer"]);
 });
 
 Route::post("/login", [ApiController::class, "login"]);

@@ -17,13 +17,14 @@ class CreateTickeraTable extends Migration
             $table->id();
             $table->string('last_name');
             $table->string('first_name');
-            $table->string('adresse');
-            $table->string('zip');
-            $table->string('city');
+            $table->string('adresse')->nullable();
+            $table->string('zip')->nullable();
+            $table->string('city')->nullable();
             $table->string('email');
             $table->string('ticket_id');
             $table->string('montant_attribue');
             $table->string('code_reduction');
+            $table->integer('amount_wheel')->default(0); // Montant gagné à la roue de la fortune
             $table->timestamps();
         });
     }

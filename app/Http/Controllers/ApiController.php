@@ -5,6 +5,7 @@ use Exception;
 use App\Models\User;
 use App\Helper\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use Illuminate\Support\Facades\Auth;
 use App\Repository\Label\LabelRepository;
@@ -45,6 +46,32 @@ class ApiController extends Controller
       if($request->user('sanctum')) {
          return response()->json(['success' => true, 'user' => ['name' => $request->user('sanctum')->name, 'email' => $request->user('sanctum')->email,
          'id' => $request->user('sanctum')->id]]);
+      } else {
+         return response()->json(['success' => false]);
+      }
+   }
+
+   // Récupère tous les participants dans la table tickera (personnes ayant acheté le billet du gala 2024)
+   public function getAllCustomer(){
+      try {
+         $customers = DB::table('tickera')->get()->toArray();
+         return response()->json(['success' => true, 'customers' => $customers]);
+      } catch (Exception $e){
+         return response()->json(['success' => false, 'message' => $e->getMessage()]);
+      }
+   }
+
+   public function updateCustomer(Request $request){
+      $amount = $request->post("amount");
+      $ticketId = $request->post("ticketId");
+
+      if($amount && $ticketId) {
+         try { 
+            DB::table('tickera')->where('ticket_id', $ticketId)->update(['amount_wheel' => $amount]);
+            return response()->json(['success' => true]);
+         } catch (Exception $e){
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+         }
       } else {
          return response()->json(['success' => false]);
       }
