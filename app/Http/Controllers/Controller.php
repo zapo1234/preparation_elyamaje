@@ -2852,6 +2852,8 @@ class Controller extends BaseController
 
     function sortPropal(Request $request){
 
+      
+
         try {
 
             
@@ -2901,12 +2903,27 @@ class Controller extends BaseController
                 
 
                 $collection = collect($propal);
+
+
          
                 $sorted = $collection->sortBy('cat');
                 
                 $sortedArrayCommande = $sorted->values()->toArray();
 
                 // trier les categorie
+
+                // foreach ($sortedArrayCommande as $key => $value) {
+                    
+                    
+
+
+                //     if (strpos($value["label"], "VSP")!== false) {
+                //         dump($value["cat"]);
+                //     }
+                // }
+
+                
+
                 $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);
 
                 $resUpdateRang = $pdoDolibarr->updateRang($sortedArrayCommande,$tableBD);
@@ -2941,7 +2958,9 @@ class Controller extends BaseController
         try {
                 // Étape 1: Filtrer les éléments dont la catégorie est 1
                 $filtered = array_filter($sortedArrayCommande, function($item) {
-                    return $item['cat'] == 1;
+
+                    return strpos($item["label"], "VSP")!== false;
+
                 });
 
                 // Étape 2: Trier les éléments filtrés par le chiffre dans le label
@@ -3102,7 +3121,7 @@ class Controller extends BaseController
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
 
             $status = "completed";
-            $after = date('Y-m-d H:i:s', strtotime('-2 day'));
+            $after = date('Y-m-d H:i:s', strtotime('-50 day'));
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);

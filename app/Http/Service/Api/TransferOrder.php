@@ -1196,19 +1196,19 @@ class TransferOrder
 
                    // recupérer la datetime et la convertir timestamp
                    // liée la facture à un mode de rélgement
-                  // convertir la date en datetime en timestamp.....
-                  //$datetime = date('d-m-Y H:i:s');
-                  $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));
-                  $d = DateTime::createFromFormat(
-                  'd-m-Y H:i:s',
-                   $datetime,
-                   new DateTimeZone('UTC')
-               );
+                   // convertir la date en datetime en timestamp.....
+                   //$datetime = date('d-m-Y H:i:s');
+                   $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
+                    $d = DateTime::createFromFormat(
+                    'd-m-Y H:i:s',
+                     $datetime,
+                    new DateTimeZone('UTC')
+                 );
      
-              if($d === false) {
+                if($d === false) {
                      die("Incorrect date string");
                 } else {
-                $date_finale =  $d->getTimestamp(); // conversion de date.
+                $date_finale =  $d->getTimestamp(); // conversion de date...
                }
       
                  $newbank = [
@@ -1218,9 +1218,8 @@ class TransferOrder
                  "accountid"=> $account_id, // id du compte bancaire.
                  ];
 
-            
-                // valider les facture dans dolibar....
-               // dd($newCommandeValider);
+                 // valider les facture dans dolibar....
+                 // dd($newCommandeValider);
                 if($valid==1){
                    // valider la facture en impayée.
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));

@@ -233,7 +233,7 @@ class Transfertext
                         }else{
 
                           if($amount_card!=0){
-                              // si y'a eu paimement espece et card cardeau
+                              // si y'a eu paimement espece et card carte 
                                $indice_amount_liq =  $total_montant - $amount_card;
                           }
 
@@ -468,7 +468,7 @@ class Transfertext
                                   }
                                    $name="";
 
-                                   $chaine_index ="BPP";
+                                   $chaine_index ="GAL";
                                    if(strpos($donnees['order_id'],$chaine_index)!==false){
                                      $code_client = $donnees['order_id'];
                                    }else{
@@ -643,13 +643,14 @@ class Transfertext
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                       // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                                      // veifier si la commande a facturé vient d'une beauty proof BPP
+                                      // veifier si la commande a facturé vient d'une beauty proof GAL
                                       
                                        $chaine_ext ="CO";
-                                       $index_int="";// eviter que les commande de la BPP sois prise en compte.
-                                       if(strpos($donnees['order_id'],$chaine_ext)!==false){
+                                       $chaine_exts ="GAL";
+                                       $index_int="";// eviter que les commande de la GAL sois prise en compte.
+                                       if(strpos($donnees['order_id'],$chaine_ext)!==false OR strpos($donnees['order_id'],$chaine_exts)!==false){
                                             $index_int=1;
-                                            $montant_fidelite = 0.000;
+                                            $montant_fidelite = "0.000";
                                        }else{
                                              $index_int="";
                                              $total_shipping = $donnees['shipping_amount']*1.2;
@@ -1153,7 +1154,7 @@ class Transfertext
                        
                     }
                      
-                       // si lacommande ne vient pas par un BPP(beauty proofs)
+                       // si lacommande ne vient pas par un GAL(du Gala)
                     if($index_amount_true[1]=="nobpp"){
                          
                        $moyen_paid =  array_search($account_name,$moyen_card);
@@ -1205,7 +1206,7 @@ class Transfertext
                     
                    // paimement liquide.
                      if($account_multiple=="yesliq"){
-                        $account_id=47;// PROD 
+                        $account_id=47;// PROD // compte du gala avenir ici.
                         $paimentid =4;// PROD
                      }
 
