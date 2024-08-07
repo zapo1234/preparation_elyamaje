@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->json(['message' => 'CSRF cookie set']);
+});
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -29,10 +33,11 @@ Route::get("/sortCommande", [Controller::class, "sortCommande"])->name('sortComm
 
 Route::get("/sortPropal", [Controller::class, "sortPropal"])->name('sortPropal'); // acces pour preparer la commande doli
 
-// Route::group(['middleware' =>  ['auth:sanctum']], function () {
-// });
-Route::post("/login", [ApiController::class, "login"]);
+Route::group(['middleware' =>  ['auth:sanctum']], function () {
+    Route::post("/checkUser", [ApiController::class, "checkUser"]);
+});
 
+Route::post("/login", [ApiController::class, "login"]);
 
 
 // Route api mise à jour d'étiquettes

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 use Exception;
+use App\Models\User;
 use App\Helper\UserService;
 use Illuminate\Http\Request;
 use App\Http\Service\Api\Colissimo;
+use Illuminate\Support\Facades\Auth;
 use App\Repository\Label\LabelRepository;
+use Illuminate\Support\Facades\Validator;
 use App\Repository\Product\ProductRepository;
 use App\Http\Service\Api\Chronopost\Chronopost;
 use App\Repository\LogError\LogErrorRepository;
@@ -16,6 +19,7 @@ class ApiController extends Controller
    private $colissimo;
    private $chronopost;
    private $logError;
+   private $product;
 
    public function __construct(
       LabelRepository $label,  
@@ -35,6 +39,15 @@ class ApiController extends Controller
    public function login(Request $request){
       $response = (new UserService($request->email, $request->password))->login();
       return response()->json($response);
+   }
+
+   public function checkUser(Request $request){
+      if($request->user('sanctum')) {
+         return response()->json(['success' => true, 'user' => ['name' => $request->user('sanctum')->name, 'email' => $request->user('sanctum')->email,
+         'id' => $request->user('sanctum')->id]]);
+      } else {
+         return response()->json(['success' => false]);
+      }
    }
 
    public function getLabels(Request $request){
