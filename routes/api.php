@@ -38,6 +38,9 @@ Route::group(['middleware' =>  ['auth:sanctum']], function () {
 
     // Récupère tous les participants dans la table tickera (personnes ayant acheté le billet du gala 2024)
     Route::get("/getAllCustomer", [ApiController::class, "getAllCustomer"]);
+    Route::get("/getAllCustomerAlreadyPlay", [ApiController::class, "getAllCustomerAlreadyPlay"]);
+    Route::get("/getCustomerByEmail", [ApiController::class, "getCustomerByEmail"]);
+    Route::post("/resendGiftCard", [ApiController::class, "resendGiftCard"]);
     Route::post("/updateCustomer", [ApiController::class, "updateCustomer"]);
 });
 
