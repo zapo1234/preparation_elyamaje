@@ -14,7 +14,7 @@
                         </a>     
                         </br>
                         <p style="border-top: 1px solid #c9c9c9;"></p>
-                        <img src="{{ asset('assets/images/bg-themes/gift_card.png') }}" width="200px"; height="auto" style="margin-top:25px;";>     
+                        <img src="{{ asset('assets/images/bg-themes/gift_card.png') }}" width="200px"; height="auto" style="margin-top:15px;";>     
                         </br>
                         <h1>Bonjour</h1>
                         <p>Voici votre carte cadeau Elyamaje ci-dessous :</p>
