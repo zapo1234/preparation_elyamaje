@@ -13,7 +13,7 @@
                             <img src="{{ asset('assets/images/elyamaje_logo_long_noir.png') }}" width="150px"; height="auto"; style="margin-top:10px;";>
                         </a>     
 
-                        <img src="{{ asset('assets/images/bg-themes/gift_card.png') }}" width="100%"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
+                        <img src="{{ asset('assets/images/bg-themes/gift_card.png') }}" width="500px"; height="auto" style="border-top: 1px solid #c9c9c9; margin-top:25px;";>     
                         </br>
                         <h1>Bonjour</h1>
                         <p>Voici votre carte cadeau ci-dessous :</p>
