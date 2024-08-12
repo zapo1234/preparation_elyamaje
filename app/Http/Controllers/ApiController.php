@@ -43,6 +43,16 @@ class ApiController extends Controller
       return response()->json($response);
    }
 
+   public function logout(Request $request){
+      try {
+         $user = $request->user();
+         $user->tokens()->delete();
+         return response()->json(['success' => true]);
+      } catch (Exception $e){
+         return response()->json(['success' => false, 'message' => $e->getMessage()]);
+      }
+   }
+
    public function checkUser(Request $request){
       if($request->user('sanctum')) {
          return response()->json(['success' => true, 'user' => ['name' => $request->user('sanctum')->name, 'email' => $request->user('sanctum')->email,

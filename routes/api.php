@@ -42,6 +42,7 @@ Route::group(['middleware' =>  ['auth:sanctum']], function () {
     Route::get("/getCustomerByEmail", [ApiController::class, "getCustomerByEmail"]);
     Route::post("/resendGiftCard", [ApiController::class, "resendGiftCard"]);
     Route::post("/updateCustomer", [ApiController::class, "updateCustomer"]);
+    Route::post("/logout", [ApiController::class, "logout"]);
 });
 
 Route::post("/login", [ApiController::class, "login"]);
