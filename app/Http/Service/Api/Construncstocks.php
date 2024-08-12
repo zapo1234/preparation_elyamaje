@@ -160,8 +160,6 @@ class  Construncstocks
          $listproduct = DB::table('products_dolibarr')->select('product_id','label','warehouse_array_list')->get();
          $list_product = json_encode($listproduct);
          $list_products = json_decode($listproduct,true);
-         
-         dd($list_products);
         
          $data_product =[];
          $line_product =[];
@@ -236,6 +234,8 @@ class  Construncstocks
 
           }
 
+          dd($list_data_assoc_produit);
+
              // filtrer en fonction des limes .
               $limes ="Lime";
               $data_product_array_choix =[];
@@ -246,6 +246,7 @@ class  Construncstocks
               $tab_result_array1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
+                
                     $chaine_index = explode(' ',$kel);
                       if($chaine_index[0]=="Bloc"){
                         $index_prefix ="Bloc blanc";
@@ -254,6 +255,8 @@ class  Construncstocks
                         ];
                       
                    }
+
+                   
                    
                     if($chaine_index[0]=="Bâtonnet"){
                         $index_prefix ="Bâtonnet de Buis";
@@ -308,6 +311,8 @@ class  Construncstocks
                    }
                    
                }
+
+               
 
                // recupérer les raps.
                $array_result_rap = array_merge($tab_result_arrays1,$tab_result_arrays21);
