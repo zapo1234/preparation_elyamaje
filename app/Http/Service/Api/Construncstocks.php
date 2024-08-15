@@ -234,8 +234,6 @@ class  Construncstocks
 
           }
 
-          dd($list_data_assoc_produit);
-
              // filtrer en fonction des limes .
               $limes ="Lime";
               $data_product_array_choix =[];
@@ -244,6 +242,7 @@ class  Construncstocks
               $data_details_limes =[];
               $tab_result_array2 =[];
               $tab_result_array1 =[];
+              $tab_result_arrays1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
                 
@@ -363,11 +362,13 @@ class  Construncstocks
            
           $rape_index_first =[];// crée le 1 er index
           $plaque_index_first =[];// crée le 1 er index
-          foreach($array_tab as $kd=>$vals){
+         /* foreach($array_tab as $kd=>$vals){
              foreach($vals[0] as $ml=>$vbm){
               $rape_index_first[] = $ml;
              }
           }
+
+          */
 
           foreach($array_tab1 as $kd=>$vals){
             foreach($vals[0] as $mls=>$vbm){
