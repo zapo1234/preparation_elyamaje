@@ -69,11 +69,28 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->Leftjoin('lines_commande_doli', 'lines_commande_doli.id_commande', '=', 'orders_doli.id')
          ->Leftjoin('products', 'products.barcode', '=', 'lines_commande_doli.barcode')
          ->Leftjoin('users', 'users.id', '=', 'orders_doli.user_id')
+         // ->Leftjoin('payement_caisse', 'payement_caisse.commande_id', '=', 'orders_doli.id')
          // ->where('products.status', 'publish') // Des commandes Elyamaje academy comportent que des produits privés
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
+
+      if($order_lines){
+         $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
+         ->where('payement_caisse.commande_id', $order_lines[0]['id'])
+         ->get()
+         ->toArray();
+
+         $order_payments = json_decode(json_encode($order_payments), true);
+      }
+     
       foreach($order_lines as $key => $order){
+
+         // Pour les commandes BP / GALA
+         if($order_payments){
+            $order_lines[$key]['payment_list'] = $order_payments;
+         }
+
          $order_lines[$key]['name'] = $order['productName'];
          $order_lines[$key]['order_woocommerce_id'] = $order['ref_order'];
          $order_lines[$key]['from_dolibarr'] = true;

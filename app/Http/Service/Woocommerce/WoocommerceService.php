@@ -149,7 +149,7 @@ class WoocommerceService
     $transformOrder = [];
     $newArray = [];
     $total_product = 0;
-    
+        
     $transformOrder['discount_amount'] = $orderDolibarr[0]['remise_percent'] ?? 0;
     $transformOrder['gift_card_amount'] = "";
     $transformOrder['amountCard'] = $orderDolibarr[0]['amountCard'] ?? 0;
@@ -221,6 +221,33 @@ class WoocommerceService
       "email" =>  $orderDolibarr[0]['email'],
       "phone" => $orderDolibarr[0]['phone'],
     ]; 
+
+    // Pour les commandes GAL / BP on récupère la liste des paiements utilisés pour cette commande
+    if(isset($orderDolibarr[0]['payment_list'])){
+      $transformOrder['payment_method'] = [];
+      $transformOrder['payment_list'] = [
+        "amountCard" => 0,
+        "amountSpecies" => 0,
+        "amountDiscount" => 0
+      ];
+
+      if(is_array($orderDolibarr[0]['payment_list'])){
+        foreach($orderDolibarr[0]['payment_list'] as $payement){
+          if($payement['type'] == "CB"){
+            $transformOrder['payment_method'][] = "CB";
+            $transformOrder['amountCard'] = $payement['amount_payement'];
+            $transformOrder['payment_list']["amountCard"] = floatval($payement['amount_payement'] + $transformOrder['payment_list']["amountCard"]);
+          } else if($payement['type'] == "LIQ"){
+            $transformOrder['payment_method'][] = "LIQ";
+            $transformOrder['payment_list']["amountSpecies"] = floatval($payement['amount_payement'] + $transformOrder['payment_list']["amountSpecies"]);
+          } else if($payement['type'] == "TICK"){
+            $transformOrder['payment_list']["amountDiscount"] = floatval($payement['amount_payement'] + $transformOrder['payment_list']["amountDiscount"]);
+          }
+        }
+        // On transforme en chaine de caractère la liste des moyens d epaiement CB / Espèces
+        $transformOrder['payment_method'] = implode(',', array_unique($transformOrder['payment_method']));
+      }
+    }
 
     if($withProducts){
       foreach($orderDolibarr as $order){

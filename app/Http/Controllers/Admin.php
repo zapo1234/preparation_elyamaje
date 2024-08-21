@@ -171,7 +171,7 @@ class Admin extends BaseController
           while($count == 100){
             $page = $page + 1;
             $products_other = $this->api->getAllProducts($per_page, $page);
-           
+            
             if(count($products_other ) > 0){
               $products = array_merge($products, $products_other);
             }
@@ -234,6 +234,34 @@ class Admin extends BaseController
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
                     'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
+
+                // Nouvelle manière se récupérer les variations plus opti et récupère même si un produit possède plusieurs variations - A TESTER -
+                // $variation_number = 0;
+                // foreach($product['variation_attributes'] as $key_attr => $attr){
+                //     $values = array_values($attr);
+                //     $name = $product['name'].' - '.implode(' - ',$values);
+                //     $insert_products [] = [
+                //         'product_woocommerce_id' => $key_attr,
+                //         'parent_id' => $product['id'],
+                //         'category' =>  implode(',', $category_name),
+                //         'category_id' => implode(',', $category_id),
+                //         'variation' => 1,
+                //         'name' => $name,
+                //         'price' => $product['variation_prices'][$variation_number],
+                //         'barcode' => str_replace(' ', '', $product['barcodes_list'][$variation_number]),
+                //         'status' => $product['status'],
+                //         'manage_stock' => $product['manage_stock_variation'][$variation_number] == "yes" ? 1 : 0,
+                //         'stock' => $product['stock_quantity_variation'][$variation_number] ?? 0,
+                //         'is_variable' => 0,
+                //         'weight' =>  $product['weights_variation'][$variation_number] != "" ? $product['weights_variation'][$variation_number] : $product['weight'],
+                //         'menu_order' => $product['menu_order'],
+                //         'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                //         'ref' => isset($product['sku']) ? $product['sku'] : null,
+                //         'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                //     ];
+                //     $variation_number = $variation_number + 1;
+
+                // }
 
                 foreach($option as $key => $op){
                     if(isset($product['variations'][$key])){
@@ -658,9 +686,6 @@ class Admin extends BaseController
     }
 
     public function billingOrder(Request $request){
-
-    
-          
         $order_id = $request->post('order_id');
         $order = $this->order->getOrderByIdWithCustomer($order_id);
 
@@ -668,7 +693,7 @@ class Admin extends BaseController
             return redirect()->route('admin.billing')->with('error', 'Veuillez renseigner un numéro de commande');
         } else {
 
-            if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+            if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
                 $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
                 if(count($order) > 0){
                     $order = $this->woocommerce->transformArrayOrderDolibarr($order);
@@ -1487,12 +1512,11 @@ class Admin extends BaseController
 
     
     public function stockscat(){
-        
         $data = $this->construcstocks->Constructstocks();
+        dd($data);
         $message="";
          // recupérer les produit en stocks
          $list_faible_stocks = $this->construcstocks->getStocksproduct();
-         
         // recupérer les lines qu'il faut dans notification
         $list_product = $this->stocks->getAll();
         if(count($list_product)==0){
