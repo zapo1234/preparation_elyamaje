@@ -40,11 +40,8 @@ class UserService{
             } else {
                 return ['status' => false, 'passwordError' => 'Mot de passe incorrect'];
             }
-           
         }
     }
-
-
 }
 
 

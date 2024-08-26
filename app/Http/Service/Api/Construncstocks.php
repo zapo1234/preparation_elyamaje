@@ -160,8 +160,6 @@ class  Construncstocks
          $listproduct = DB::table('products_dolibarr')->select('product_id','label','warehouse_array_list')->get();
          $list_product = json_encode($listproduct);
          $list_products = json_decode($listproduct,true);
-         
-         dd($list_products);
         
          $data_product =[];
          $line_product =[];
@@ -244,8 +242,10 @@ class  Construncstocks
               $data_details_limes =[];
               $tab_result_array2 =[];
               $tab_result_array1 =[];
+              $tab_result_arrays1 =[];
               
               foreach($list_data_assoc_produit as $kel =>$valus){
+                
                     $chaine_index = explode(' ',$kel);
                       if($chaine_index[0]=="Bloc"){
                         $index_prefix ="Bloc blanc";
@@ -254,6 +254,8 @@ class  Construncstocks
                         ];
                       
                    }
+
+                   
                    
                     if($chaine_index[0]=="Bâtonnet"){
                         $index_prefix ="Bâtonnet de Buis";
@@ -309,6 +311,8 @@ class  Construncstocks
                    
                }
 
+               
+
                // recupérer les raps.
                $array_result_rap = array_merge($tab_result_arrays1,$tab_result_arrays21);
                $this->setRape($array_result_rap);
@@ -358,11 +362,13 @@ class  Construncstocks
            
           $rape_index_first =[];// crée le 1 er index
           $plaque_index_first =[];// crée le 1 er index
-          foreach($array_tab as $kd=>$vals){
+         /* foreach($array_tab as $kd=>$vals){
              foreach($vals[0] as $ml=>$vbm){
               $rape_index_first[] = $ml;
              }
           }
+
+          */
 
           foreach($array_tab1 as $kd=>$vals){
             foreach($vals[0] as $mls=>$vbm){
