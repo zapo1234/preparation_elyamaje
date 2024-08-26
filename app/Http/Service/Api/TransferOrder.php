@@ -1121,6 +1121,7 @@ class TransferOrder
                    $array_paiments4 = array('CHQ');// chéque.
                    $array_facture_dolibar = array('VIR');
                    $array_revolut = array('revolut_cc', 'revolut_pay');// le nouveau compte revolut.
+                   $array_scalapay = array('wc-scalapay-payin3', 'wc-scalapay-payin4'); // compte bancaire Scalapay
 
 
                    
@@ -1144,6 +1145,14 @@ class TransferOrder
                        }
 
                    }
+
+                    elseif(in_array($account_name,$array_scalapay)){
+                      // defini le paiment comme virement bancaire......
+                       //$mode_reglement_id = 4;
+                       $account_id = 52; // PROD
+                       $paimentid = 111;// PROD
+                    }
+
 
                    elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
