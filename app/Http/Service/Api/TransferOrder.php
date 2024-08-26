@@ -1113,7 +1113,7 @@ class TransferOrder
                    }
 
 
-                   
+
                    // defini les famille de methode de paiement qui arrive dans les données woommerce pour attribuer des compte bancaire
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
@@ -1134,13 +1134,13 @@ class TransferOrder
                    } elseif(in_array($account_name,$array_revolut)){
                     // revolut nouveaux compte.
                     // voir id moyens de paiment dans la table de dolibar paiment.
-                       $account_id=49; 
+                       $account_id=51; 
                        if($account_name=="revolut_pay"){
-                         $paimentid =55;
+                         $paimentid =110;
                        }
 
                        if($account_name=="revolut_cc"){
-                          $paimentid=107;
+                          $paimentid=109;
                        }
 
                    }
