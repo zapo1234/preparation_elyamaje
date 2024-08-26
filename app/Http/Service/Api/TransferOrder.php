@@ -1112,6 +1112,7 @@ class TransferOrder
                         $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
                    }
 
+
                    
                    // defini les famille de methode de paiement qui arrive dans les données woommerce pour attribuer des compte bancaire
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
