@@ -1099,12 +1099,26 @@ class TransferOrder
                    $array_paimentss = array('DONS');
                    $array_paiments4 = array('CHQ');// chéque.
                    $array_facture_dolibar = array('VIR');
+                   $array_revolut = array('revolut_cc', 'revolut_pay');// le nouveau compte revolut.
+
 
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
+                   } elseif(in_array($account_name,$array_revolut)){
+                    // revolut nouveaux compte.
+                    // voir id moyens de paiment dans la table de dolibar paiment.
+                       $account_id=49; 
+                       if($account_name=="revolut_pay"){
+                         $paimentid =55;
+                       }
+
+                       if($account_name=="revolut_cc"){
+                          $paimentid=107;
+                       }
+
                    }
 
                    elseif(in_array($account_name,$array_paiments)){

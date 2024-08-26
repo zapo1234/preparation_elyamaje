@@ -85,6 +85,8 @@ class CommandeidsRepository implements CommandeidsInterface
             
          // create array _dol
            $data_array =[
+             '109,revolut_cc'=>'revolut_cc',
+             '110,revolut_pay'=>'revolut_pay',
              '54,DONS'=>'DONS',
              '107,stripe'=>'stripe',
              '106,payplug'=>'payplug',
