@@ -22,13 +22,18 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
 
+
         $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
         $customsArticle = $this->customsArticle($order, $items);
 
+        
+
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
+
+
         $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
@@ -92,15 +97,26 @@ class Colissimo
                         ]
                     ]
                 ];
+
+                // dd($requestParameter);
+               
                 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
+
+
+                $data["letter"]["parcel"]["insuranceValue"] = 0;
+
+                
+
 
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
 
         
+                // dd($data);
+            
               
 
                 preg_match('/--(.*)\b/', $response, $boundary);
@@ -109,14 +125,20 @@ class Colissimo
                 ? $this->parseMonoPartBody($response)
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
+                // dd($content);
+
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
+
 
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
                 }
 
                 $trackingNumber = isset($content['<jsonInfos>']['labelV2Response']['parcelNumber']) ? $content['<jsonInfos>']['labelV2Response']['parcelNumber'] : null;
+
+
+               
 
                 if($trackingNumber){
                     $data = [
@@ -150,6 +172,10 @@ class Colissimo
                     return array('success' => false);
                 }
             } catch (Exception $e) {
+
+              
+
+
                 return $e->getMessage();
             }
         } else {

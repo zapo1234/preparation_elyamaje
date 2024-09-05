@@ -437,6 +437,8 @@ class Label extends BaseController
 
     public function generateLabel(Request $request){
 
+       
+
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
         $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
         $product_to_add_label = $request->post('label_product');
@@ -452,12 +454,17 @@ class Label extends BaseController
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
 
+
+
         if($order_by_id && $product_to_add_label){
+
+    
 
             if($from_dolibarr){
                 $order = $this->woocommerce->transformArrayOrderDolibarr($order_by_id, $product_to_add_label);
             } else {
                 $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+
             }
 
             $weight = 0; // Kg
@@ -485,10 +492,20 @@ class Label extends BaseController
             $order[0]['total_order'] = $subtotal;
 
        
+           
+
+
             if(count($items) > 0){
                 // Étiquette Chronopost
+
+           
+
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
                     $labelChrono = $this->chronopost->generateLabelChrono($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null);
+                   
+
+              
+
                     if(isset($labelChrono['success'])){
                         // Pas besoin pour étiquette PDF
                         if($labelChrono['label_format'] != "PDF"){
@@ -515,6 +532,10 @@ class Label extends BaseController
                 } else { 
                     // Étiquette Colissimo
                     $label = $this->colissimo->generateLabel($order[0], $weight, $order[0]['order_woocommerce_id'], count($colissimo) > 0 ? $colissimo[0] : null, $items);
+                 
+                    // dd($label);
+
+
                     if(isset($label['success'])){
                         $label['label'] =  mb_convert_encoding($label['label'], 'ISO-8859-1');
                         $label['cn23'] != null ? mb_convert_encoding($label['cn23'], 'ISO-8859-1') : $label['cn23'];
