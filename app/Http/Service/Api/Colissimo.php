@@ -22,7 +22,6 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
 
-
         $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
@@ -98,24 +97,23 @@ class Colissimo
                     ]
                 ];
 
-                // dd($requestParameter);
+                
                
                 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
 
+                // code lyes
 
-                $data["letter"]["parcel"]["insuranceValue"] = 0;
-
+                if ($order["shipping_method"] == "lpc_relay") {
+                    $data["letter"]["parcel"]["insuranceValue"] = 0;
+                }
                 
 
 
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
-
-        
-                // dd($data);
             
               
 
