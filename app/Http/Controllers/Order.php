@@ -1083,10 +1083,10 @@ class Order extends BaseController
               return;
             }
             
-            if(isset($tabProduitReassort[0]['status'])){
-              file_put_contents("transfert_status".$identifiant_reassort.".txt", $tabProduitReassort[0]['status']);
-              file_put_contents("transfert_details".$identifiant_reassort.".txt", json_encode($tabProduitReassort[0]));
-            }
+            // if(isset($tabProduitReassort[0]['status'])){
+            //   file_put_contents("transfert_status".$identifiant_reassort.".txt", $tabProduitReassort[0]['status']);
+            //   file_put_contents("transfert_details".$identifiant_reassort.".txt", json_encode($tabProduitReassort[0]));
+            // }
     
             // For type == 0
             foreach($tabProduitReassort as $tab){

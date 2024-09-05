@@ -149,7 +149,7 @@
 															@if($item['name'])
 																<span>{{ $item['name'] }}</span>
 															@else
-																<span class="text-danger">Produit manquant ({{ $item['productID'] }})</span>
+																<span class="text-danger">Produit manquant ({{ isset($item['productID']) ? $item['productID'] : "" }})</span>
 															@endif
 														@endif
 														<div class="mt-1 d-flex flex-column align-items-start">

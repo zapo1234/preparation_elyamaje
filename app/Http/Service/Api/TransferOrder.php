@@ -67,10 +67,10 @@ class TransferOrder
       /**
    * @return array
     */
-   public function getDataidcommande(): array
-   {
+    public function getDataidcommande(): array
+    {
       return $this->dataidcommande;
-   }
+    }
    
    
    public function setDataidcommande(array $dataidcommande)
@@ -96,7 +96,7 @@ class TransferOrder
    
    
    
-        /**
+    /**
    * @return array
     */
    public function getCountc(): array
@@ -164,6 +164,7 @@ class TransferOrder
          
     }
 
+     // a ne pas utiliser.
     public function getnameshippingmethod(){
           
         $array_name =[
@@ -187,6 +188,8 @@ class TransferOrder
              $emballeur="";
              $preparateur="";
              $gift_card_amount="";// presence de dépense avec gift_card.
+
+             // je faire la logique pour detecter si la commande provient d'un devis dolibar(pour distributeur)
              foreach($orders as $val){
                  if(isset($val['fk_commande'])){
                     $id_commande="exist";
@@ -210,19 +213,18 @@ class TransferOrder
              }
 
              
-             
-                 $method = "GET";
-                 // recupérer les clé Api dolibar transfertx........
-                 $apiKey = env('KEY_API_DOLIBAR'); 
-                 $apiUrl = env('KEY_API_URL');
+                  // je me connecte au clé dolibarr pour intéragir avec api.
+                   $method = "GET";
+                  $apiKey = env('KEY_API_DOLIBAR'); 
+                  $apiUrl = env('KEY_API_URL');
 
 
-
-                 $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
-	               $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
-                 // reference ref_client dans dolibar
+                  // je veux recupérer tous mes produits  de dolibar pour crée des datas utilie
+                   $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
+	                 $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
-
+                  
+                   // tester si l'api repond pour renvoyé un message d'erreur s'il faut .
                   if(count($listproduct)==0){
                     $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'la facture n\'a pas été crée signalé au service informatique !']);
                     
@@ -232,13 +234,13 @@ class TransferOrder
 
                   //Recuperer les ref_client existant dans dolibar
 	                $tiers_ref = "";
-                  // recupérer directement les tiers de puis bdd.
-                  //$this->tiers->insertiers();// mise a jour api
+                  // je fais chercher mes clients existant dans la table prepa_tiers.
                   $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
                   // recuperer les ids commandes
                   $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande.
-                  $key_commande = $this->commande->getIds();// lindex les ids commande existant.
-                 // recupérer le tableau de ids
+                  $key_commande = $this->commande->getIds();// je recupérer les id de commande deja facturé
+                 
+                   // je construire des tableau logique pour fixer des key valeurs.
                   $ids_commandes =[];
                   foreach($ids_commande as $key => $valis) {
                      $ids_commandes[$valis['id_commande']] = $key;
@@ -251,6 +253,7 @@ class TransferOrder
                      $data_ids_country[$valu['rowid']]= $valu['code'];
                   }
 
+                   // je construire ma logique  à partir des array.
                   // recupérer les email,socid, code client existant dans tiers
                   $data_email = [];//entre le code_client et email.
                   $data_list = []; //tableau associative de id et email
@@ -258,15 +261,19 @@ class TransferOrder
                   $data_phone = [];
                   foreach($list_tier as $val) {
                     //$data_email[$val['code_client']] = $val['email'];
+                    // je lie socid et l'email du user
                      if($val['email']!="") {
                        $data_list[$val['socid']] = mb_strtolower($val['email']);
                      }
+
+                      // pareil pour le phone.
                      
                       if($val['phone']!=""){
                         $data_phone[$val['socid']] = $val['phone'];
                      }
                      
                       // recuperer id customer du client et créer un tableau associative veant de woocomerce.
+                      // pour verifier l'exitence total du tiers si il as change de mail ou de phone.
                       $code_cl = explode('-',$val['code_client']);
                       if(count($code_cl)>2){
                         $code_cls = $code_cl[2];
@@ -293,15 +300,14 @@ class TransferOrder
                    $id_cl = $id_cl+1;
                    $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
-      
-                  foreach($listproduct as $values) {
+
+                   // important je veux recupérer un array qui lit le barcode et id du product de dloibar
+                    foreach($listproduct as $values) {
                       
                       if($values['barcode']!=""){
                           $data_list_product[$values['id']] = $values['barcode'];
-                     
-                      }
-                      // tableau associatve entre ref et label product....
-                  }
+                       }
+                    }
                     
                   // recupére les orders des données provenant de  woocomerce
                     // appel du service via api
@@ -324,6 +330,7 @@ class TransferOrder
                      $fact_to ="";
 
                      // travailler sur le nommenclature de la ref facture
+                     // je construire une nomencalture de code lient si le client est nouveau par le suite.
                       $date = date('Y-m-d');
                       $mm = date('m');
                       $jour = date('d');
@@ -335,21 +342,20 @@ class TransferOrder
                         $array_data_gift_card =[];
                         $montant_carte_kdo = [];
                         $gift_card="";
+
+                        // je commence le traitement de la commande issue de woocomerce.
                         foreach($orders as $k => $donnees) {
-                                // créer des tiers pour dolibarr via les datas woocomerce. 
                                 
-                                // créer le client via dolibarr à partir de woocomerce...
+                                 // je verifie l'exitence du client a partir de 3 infos(email,phone et id client woocommerce)
                                  $ref_client = rand(4,10);
-                                 //  $email_true = mb_strtolower($donnees['billing']['email']);
-                                 // recupérer id du tiers en fonction de son email...
-                                 $email_true = mb_strtolower($donnees['billing']['email']);
+                                 // email
+                                   $email_true = mb_strtolower($donnees['billing']['email']);
                                  // recupérer id du tiers en fonction de son email...
                                   $fk_tiers = array_search($email_true,$data_list);
                                   $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-                              
-                                   $fk_tiers_phone = array_search($espace_phone,$data_phone);
-                                   // recupérer id en fonction du customer id
-                                   // recupérer id en fonction du customer id
+                                   // phone 
+                                  $fk_tiers_phone = array_search($espace_phone,$data_phone);
+                                   // recupérer id customer woocomerce
                                    $fk_tier = array_search($donnees['customer_id'],$data_code);
                                    // convertir la date en format timesamp de la facture .
                                     $datetime = $donnees['date']; // date recu de woocomerce.
@@ -358,20 +364,21 @@ class TransferOrder
                                     $datex = $date_recu[0];
                                     $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
                       
-                             if($fk_tiers!=""){
-                                $socid = $fk_tiers;
-                             }
+                                 // j'attribue le socid existant si l'utilisateur existe deja 
+                                 if($fk_tiers!=""){
+                                    $socid = $fk_tiers;
+                                  }
 
-                              if($fk_tiers_phone!="" && $fk_tiers== ""){
-                                $socid = $fk_tiers_phone;
-                             }
-                            
-                             // recupérer le socid à partir de id_customer de woocomerce.
-                             if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
-                               $socid = $fk_tier;
-                                // recupérer dans la bdd en fonction du socid 
-                            }
-
+                                 if($fk_tiers_phone!="" && $fk_tiers== ""){
+                                   $socid = $fk_tiers_phone;
+                                  }
+                                   // recupérer le socid à partir de id_customer de woocomerce.
+                                if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
+                                    $socid = $fk_tier;
+                                  // recupérer dans la bdd en fonction du socid 
+                                }
+                           
+                            // je prepare les données du nouveau client a crée dans dolibarr.
                             if($socid!=""){
                                  $data =  $this->tiers->gettiersid($socid);
                               if(count($data)==0){
@@ -391,7 +398,7 @@ class TransferOrder
 
                           }
 
-
+                          // si le client est un nouveau client tu le gere ici en crée de la data conforme a api
                          if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
                                    
                                     $date = date('Y-m-d');
@@ -402,7 +409,7 @@ class TransferOrder
                                     $a2 = $dat[1];
                                  
                                    //$socid = $id_cl;
-                                   $socid="news";
+                                   $socid="news";// je simule une variable pour dire qu'il est nouveau.
                                    $woo = $donnees['billing']['company'];
                                    
                                      $type_id="";
@@ -439,6 +446,8 @@ class TransferOrder
                                      $id_country = array_search($code_country,$data_ids_country);
                                      $code_country = $donnees['billing']['country'];
                                    }
+
+                                   // je creer les datas pour le client.
 
                                    $data_tiers[] =[ 
                                    'entity' =>'1',
@@ -480,15 +489,15 @@ class TransferOrder
                               }
 
 
-                                // recupére des lines pour des gift card
-                                  // recupére les line ou les code bar ne son pas conforme
-                                  $logEAN =[];
+                                // je commence a traiter les produit contenu dans la commande
+                                // je lie en fonction du barcode qui provient de wocomerce la liasion a celle de dolibarr.
+                                $logEAN =[];
                                 foreach($donnees['line_items'] as $key => $values){
                                    // traiter le cas des cartes cadeaux..
 
                                      foreach($values['meta_data'] as $val) {
 
-                                     //verifié et recupérer id keys existant de l'article// a mettre à jour en vrai. pour les barcode
+                                     //verifié et recupérer id keys existant de l'article.
                                        if($val['value']!=null) {
                                           $fk_product = array_search($val['value'], $data_list_product); // fournir le barcode  de woocommerce  =  barcode  dolibar pour capter id product
                                        }
@@ -498,9 +507,9 @@ class TransferOrder
                                       }
                                       $ref="";
                                      
-                                      
+                                      // si l'id du produit existe.
                                       if($fk_product!=""){
-                                             // recupérer les données du kdo 
+                                             // je fabrique des données de carte kdo. si il existe.
                                             if($values['total'] == 0){
                                                  $data_kdo[] = [
                                                    "order_id" => $donnees['order_id'],
@@ -550,7 +559,7 @@ class TransferOrder
                                        }
 
                                       
-
+                                     // si le barcode qui vient de woocomerce n'existe pas dans dolibarr(bloquer la facture et envoye un resultat)
                                      if($fk_product=="") {
                                         // recupérer les les produits dont les barcode ne sont pas reconnu....
                                         $info = 'Numero de comande '.$donnees['order_id'].'';
@@ -564,13 +573,13 @@ class TransferOrder
                                         $list->quantite = $values['quantity'];
                                         $list->save();
 
-                                        // je veux recupérer les ligne si les code bar sont pas conforme
+                                        // je veux recupérer les ligne des product  qui n'ont pas de codebarr.
                                         $logEAN[$donnees['order_id']][] = $values['name'];
                                      }
                                  }
                                }
                                  
-                                     // gérer les moyens de transport de collisimo
+                                     // je crée une line service pour les expédition de produit.(NB etudie l'api dolibar)
                                        $array_line_product =[];
                                        $total_a_tva = $donnees['shipping_amount']*20/100;
                                        if($chaine_name_shipping!=""){
@@ -591,23 +600,30 @@ class TransferOrder
                                         }
                                      
                                     $result_data_product = array_merge($array_line_product,$data_product);
-                                  // verifier si la commande n'est pas encore traité..
-                                  $id_true ="";
-                      
+                                    $id_true ="";
+                                   // verifier si la commande n'est pas encore facture traite la
                                   if(isset($key_commande[$donnees['order_id']])==false) {
                                   
                                     $chaine_ext ="CO";
                                     $index_int="";// eviter que les commande de la BPP sois prise en compte.
+
+                                    // je construire les point fidelité a attribué en fonction de la commande
+                                    // si l'id de la commande est un devis CO pas de point.
                                     if(strpos($donnees['order_id'],$chaine_ext)!==false){
                                          $index_int=1;
                                          $montant_fidelite = 0.000;
                                     }else{
+                                           
+                                            // donne sont point la fourmule de calcule ci desous.
                                            $index_int="";
                                           $total_shipping = $donnees['shipping_amount']*1.2;
                                           $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                                           
                                     }
 
+
+                                    // les array options definir dans la api innvoice
+                                    // emballeur, preparateur, point fidelite,code promo venant de woocomerce.
                                     $data_options = [
                                     "options_idw"=>$donnees['order_id'],
                                     "options_idc"=>$coupons,
@@ -655,7 +671,7 @@ class TransferOrder
                                         "date_order" => $donnees['date'],
                                        ];
                                       
-                                        // recupérer le moyen de paiment dans la variable accountpay
+                                        // recupérer le moyen de paiment  de woocommerce dans la variable accountpay 
                                         $this->setAccountpay($donnees['payment_method']);
                                         // recupérer le status si c'est un distributeur 
                                         if(isset($donnees['is_distributor'])){
@@ -664,9 +680,9 @@ class TransferOrder
                                         else{
                                             $status_distributeur="no";
                                         }
-                                        $this->setDistristatus($status_distributeur);
+                                        $this->setDistristatus($status_distributeur);// ici je le recupérer dans le setteur.
 
-                                        $this->setFicfacture($donnees['order_id']);
+                                        $this->setFicfacture($donnees['order_id']);// je recupérer id de commande.
                                         // insert dans base de donnees historiquesidcommandes
                                         $date = date('Y-m-d');
                                         if(count($logEAN)==0){
@@ -691,7 +707,6 @@ class TransferOrder
                                     }
                                     // recupérer les id_commande deja pris
                                     if(isset($key_commande[$donnees['order_id']])==true) {
-                                        // .....
                                         $id_commande_existe[] = $donnees['order_id'];
                                     }
 
@@ -717,7 +732,7 @@ class TransferOrder
                          }
                         */
 
-                       // bloquer la facture ici si les produit n'ont pas de code EAN..
+                       // bloquer la facture ici si au moins un produit de la facture n'a pas de code barre.
                        if(count($logEAN)!=0){
                         foreach($logEAN as $kd=>$vac){
                           $chaine = implode(',',$vac);
@@ -727,7 +742,7 @@ class TransferOrder
                          }
                        }
 
-                      
+                       // création du client dans Api dolibar !
                        if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
                            // insérer les données tiers dans dolibar
@@ -741,15 +756,15 @@ class TransferOrder
                         }
                        }
 
-                        // recrire la data_lines.
+                        // si le client est nouveaux attribue la meme data line
                         if($data_lines[0]['socid']=="news"){
-                          $data_lines[0]['socid']=$retour_create_tiers;
+                          $data_lines[0]['socid']=$retour_create_tiers;// le retour de api je fournir socid crée plus haut news client
                         }else{
+                           // sinon pareil 
                            $data_lines= $data_lines;
                         }
 
-                          // traiter les commande achété avec des bon d'achat ici.
-                  
+                          // traiter les commande uniquement en bon d'achat.
                           foreach($data_lines[0]['lines'] as $keys => $val){
                             $chainex ="Carte";
                             $chainex1 ="Cadeau";
@@ -784,9 +799,8 @@ class TransferOrder
                       }
                      }
 
-                      // construire les données du clients a attacher a la facture.
-                          
-                           // on ne cree pas l'attache de la seconde facture si la condition est respecté...
+                           // construire les données du clients a attacher a la facture.
+                            // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
                               $data_gift_card =[];
                               $data_options1 =[];
@@ -801,6 +815,8 @@ class TransferOrder
 
                             }
                          
+                            // si la card cadeaux existe creer la data
+                            // fid =1 signifique je veux pas prendre en compte fidelite.
                            if(count($array_data_gift_card)!=0){
                                  $product_data = $array_data_gift_card;
                                  $fid =1;
@@ -911,6 +927,7 @@ class TransferOrder
                            $retour_create="";// gerer le retour de la création api.
                            foreach($data_lines as $donnes){
                               // insérer les details des données de la facture dans dolibarr
+                              // il est en brouillons à cette étapes.
                               $retour_create = $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices", json_encode($donnes));
                              
                            }
@@ -926,20 +943,21 @@ class TransferOrder
                                exit;
                             }
 
-                            // mettre la facture en status en payé et l'attribue un compte bancaire.
+                            // si le contenu de la facture existe(applique la fonction pour la mettre en payé et attribue un compte bancaire)
+                            // function ci desous a appéle
                             if(count($data_lines)!=0){
                                $this->invoicespay($orders);
                              }
                              // merger le client et les data coupons.....
-                            $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
-                            $tiers_exist = $this->don->gettiers();
-                            // insert le tiers dans la BDD...
-                           if(count($data_infos_order)!=0){
-                              // insert 
-                              if(isset($tiers_exist[$data_infos_order['email']])==false){
-                                $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
-                                // JOINTRE les produits.
-                               }
+                              $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
+                              $tiers_exist = $this->don->gettiers();
+                            // insert si le client est nouveaux insert le dans la table preparation_tiers.
+                              if(count($data_infos_order)!=0){
+                                 // insert 
+                                  if(isset($tiers_exist[$data_infos_order['email']])==false){
+                                   $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+                                   // JOINTRE les produits.
+                                }
                             }
                           // Ajouter le client dans la base de données interne 
                            //if(count($info_tiers_flush)!=0){
@@ -959,6 +977,7 @@ class TransferOrder
          public function invoicespay($orders)
          {
            
+            // function pour  affecte un moyen de paiment, un compte bancaire ou mettre la facture en payé ou en impayées
              $method = "GET";
              $apiKey = env('KEY_API_DOLIBAR'); 
              $apiUrl = env('KEY_API_URL');
@@ -971,6 +990,8 @@ class TransferOrder
               foreach($orders as $values){
                   $ref_order=$values['order_id'];
               }
+
+              // je recupérer  id  de la facture courante crée de puis.
                $invoices_id = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."invoices", array(
 	    	       "sortfield" => "t.rowid", 
 	    	       "sortorder" => "DESC", 
@@ -1023,7 +1044,7 @@ class TransferOrder
                       
                       }
                }
-                // insérer id commande et id_facture via dolibarr.
+                // je veux recupérer id de la commande et id de la facture cree.
                  $data_fk_facture[] =[
                  'id_commande'=> $this->getFicfacture(),
                  'id_invoices'=>$inv
@@ -1057,7 +1078,7 @@ class TransferOrder
                       $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
                  }
                  // insert dans la table 
-                 // recupérer une chaine de id_commande et id_facture
+                 // quand la facture a reussi je l'insere dans une table avec un message.
                  $chaine_data = $list_id_commande.','.$inv;
                  $sucess = new Transfertsucce();
                  $sucess->date = $dat;
@@ -1075,14 +1096,12 @@ class TransferOrder
                  "notrigger" => "0",
                 ];
                 
-                  // recupérer le mode de paiement
-                  $account_name = $this->getAccountpay();
-                  
-                  // recupérer le status
-                  $status_dist = $this->getDistristatus();
-                   // recupération les méthode de paiement.
-                   $moyen_card = $this->commande->createpaiementid();
-
+                   // recupérer le mode de paiement
+                   $account_name = $this->getAccountpay(); // je recupérer le moyen de paiment envoyé(via woocommerce) plus haut via un gettteur.
+                   // recupérer le status de la commande.
+                   $status_dist = $this->getDistristatus();
+                   // recupération l'id du moyen de reglement en fonction de la méthode de paiement de wc.
+                   $moyen_card = $this->commande->createpaiementid();// recupérer de puis le repo la lsite des compte et leur id.
                    $moyen_paid =  array_search($account_name,$moyen_card);
 
                    if($moyen_paid!=false){
@@ -1094,18 +1113,46 @@ class TransferOrder
                    }
 
 
+
+                   // defini les famille de methode de paiement qui arrive dans les données woommerce pour attribuer des compte bancaire
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
-                   $array_paimentss = array('DONS');
+                   $array_paimentss = array('DONS'); // pour les dons
                    $array_paiments4 = array('CHQ');// chéque.
                    $array_facture_dolibar = array('VIR');
+                   $array_revolut = array('revolut_cc', 'revolut_pay');// le nouveau compte revolut.
+                   $array_scalapay = array('wc-scalapay-payin3', 'wc-scalapay-payin4'); // compte bancaire Scalapay
 
+
+                   
+                   // defini les id de compte de dolibar en fonction .
                    if(in_array($account_name,$array_paiment)) {
                     // defini le mode de paiment commme une carte bancaire...
                      //$mode_reglement_id = 6;
+                     // voir ces valeur dans dolibar ou la table paiement.
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
+                   } elseif(in_array($account_name,$array_revolut)){
+                    // revolut nouveaux compte.
+                    // voir id moyens de paiment dans la table de dolibar paiment.
+                       $account_id=51; 
+                       if($account_name=="revolut_pay"){
+                         $paimentid =110;
+                       }
+
+                       if($account_name=="revolut_cc"){
+                          $paimentid=109;
+                       }
+
                    }
+
+                    elseif(in_array($account_name,$array_scalapay)){
+                      // defini le paiment comme virement bancaire......
+                       //$mode_reglement_id = 4;
+                       $account_id = 52; // PROD
+                       $paimentid = 111;// PROD
+                    }
+
 
                    elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......
@@ -1131,9 +1178,8 @@ class TransferOrder
                           $paimentid =4;// PROD
                     }
 
-                    // facture venant de doliba
-
-                   // si c'est un distributeur (mettre la facture impayé)
+                      // si c'est un distributeur (mettre la facture impayé)
+                      // recupérer le status et l'account payé par les geteur plus haut(datas qui provient de dolibarr)
                       if($status_dist=="true" && $account_name=="bacs"){
                         $newCommandepaye = [
                         "paye"	=> 1,
@@ -1143,7 +1189,7 @@ class TransferOrder
                         "notrigger"=>0,
                        ];
                          
-                         $valid=1;// mettre la facture impayés.
+                         $valid=1;// mettre la facture impayés// je defini une variable pour simuler  le status de ma facture
                     }
                      if($status_dist=="true" && $account_name!="bacs"){
                          $newCommandepaye = [
@@ -1170,7 +1216,7 @@ class TransferOrder
   
                     }
 
-                    $chaine_prefix="CO";
+                    $chaine_prefix="CO";// qaund le comande provient d'un devis dlibarr avec une méthode de paiment.
                     // dolibar && vir bancaire.
                     if(strpos($ref_order,$chaine_prefix)!==false && $account_name=="VIR"){
                         $newCommandepaye = [
@@ -1185,7 +1231,7 @@ class TransferOrder
 
                       }
         
-
+                     // je definie mon array pour attribue l'entrepot et le moyen paiement a la facture (NB defini comme dans api).
                     $newCommandepaye = [
                       "paye"	=> 1,
                      "statut"	=> 2,
@@ -1194,11 +1240,11 @@ class TransferOrder
                        "notrigger"=>0,
                      ];
 
-                   // recupérer la datetime et la convertir timestamp
-                   // liée la facture à un mode de rélgement
-                   // convertir la date en datetime en timestamp.....
-                   //$datetime = date('d-m-Y H:i:s');
-                   $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
+                   
+                    // convertir la date en datetime en timestamp.....
+                    //$datetime = date('d-m-Y H:i:s');
+                    $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
+                    // stabiliser l'heure changeant .
                     $d = DateTime::createFromFormat(
                     'd-m-Y H:i:s',
                      $datetime,
@@ -1210,7 +1256,8 @@ class TransferOrder
                 } else {
                 $date_finale =  $d->getTimestamp(); // conversion de date...
                }
-      
+                  
+                 // je definie mon tableau pour ajouter un compte bancaire a ma facture (Comme recommandé via Api)
                  $newbank = [
                  "datepaye"=>$date_finale,
                  "paymentid"=>6,
@@ -1218,20 +1265,19 @@ class TransferOrder
                  "accountid"=> $account_id, // id du compte bancaire.
                  ];
 
-                 // valider les facture dans dolibar....
-                 // dd($newCommandeValider);
+                 // intéréagir avec les enpoind api dolibarr nécessaire.
                 if($valid==1){
-                   // valider la facture en impayée.
+                   // dans ce cas tu met la facture en impayées (cas généralement des distributeur)
                    $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                }
                else{
-                      // valider et mettre en payée la facture.
-                      // traiter les retour de réponse api
+                      // dans ce cas valide je valide la facture
                        $validate_facture =  $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/validate", json_encode($newCommandeValider));
                        // traiter la réponse de l'api
                        $response = json_decode($validate_facture, true);
                        $index_facture ="FA";// facture valide
                        $index_facture1 ="PR";// detecter une erreur  sur la validation souhaité d'une facture ....
+                       // je detecte les different retour d'error de l'api.
                        if(!isset($response['ref'])){
                            $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'erreur de validation de la facture restée impayée,veuillez la valider  !']);
                           echo json_encode(['success' => false, 'message'=> 'erreur de validation de la facture restée en brouillons,veuillez la valider  !']);
@@ -1247,9 +1293,9 @@ class TransferOrder
                           
                       }
                        
-                        // Lier les factures dolibar  à un moyen de paiement et bank.
+                        // je lie le moyens de paiment de la facture et le compte bancaire
                         $this->api->CallAPI("POST", $apiKey, $apiUrl."invoices/".$inv."/payments", json_encode($newbank));
-                        // mettre le statut en payé dans la facture  dolibar
+                        // je met la facture en payée sur dolibarr.
                         $this->api->CallAPI("PUT", $apiKey, $apiUrl."invoices/".$inv, json_encode($newCommandepaye));
 
                         // traiter les factures 
@@ -1259,7 +1305,7 @@ class TransferOrder
 
 
          public function Updatefacture($orders){
-           // connexion api dolibar
+           // cette function ne concerne pas la facturation
 
            dd('service en attente ne pas utiliser pour l\'instant');
 

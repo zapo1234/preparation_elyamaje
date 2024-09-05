@@ -1487,11 +1487,12 @@ class Admin extends BaseController
 
     
     public function stockscat(){
+        
         $data = $this->construcstocks->Constructstocks();
-        dd($data);
         $message="";
          // recupérer les produit en stocks
          $list_faible_stocks = $this->construcstocks->getStocksproduct();
+         
         // recupérer les lines qu'il faut dans notification
         $list_product = $this->stocks->getAll();
         if(count($list_product)==0){
