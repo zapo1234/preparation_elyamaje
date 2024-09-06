@@ -22,13 +22,18 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
 
+       
         $productCode = $this->getProductCode($order);
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
         $customsArticle = $this->customsArticle($order, $items);
 
+        
+
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
+
+
         $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
@@ -54,7 +59,7 @@ class Colissimo
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
-                            'insuranceValue' => $insuranceValue,
+                            'insuranceValue' => intval($insuranceValue) ,
                             // 'nonMachinable' => $nonMachinable, //Format du colis, true pour non standard
                             'pickupLocationId' => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : null
                         ],
@@ -92,31 +97,62 @@ class Colissimo
                         ]
                     ]
                 ];
+
+                
+               
+               
                 
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
 
+
+                // code lyes
+
+                // dd($data["letter"]["parcel"]["insuranceValue"]);
+
+                // $data["letter"]["parcel"]["insuranceValue"] = 17447.0;
+                
+
+                // if ($order["shipping_method"] == "lpc_relay") {
+                //     $data["letter"]["parcel"]["insuranceValue"] = 0;
+                // }
+
+                // dd($data["letter"]["parcel"]["insuranceValue"]);
+                
+
+
+
+
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
-
-        
-              
+             
 
                 preg_match('/--(.*)\b/', $response, $boundary);
+
         
                 $content = empty($boundary)
                 ? $this->parseMonoPartBody($response)
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
+                
+               
+
+
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
+
+               
+
 
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
                 }
 
                 $trackingNumber = isset($content['<jsonInfos>']['labelV2Response']['parcelNumber']) ? $content['<jsonInfos>']['labelV2Response']['parcelNumber'] : null;
+
+
+               
 
                 if($trackingNumber){
                     $data = [
@@ -150,6 +186,10 @@ class Colissimo
                     return array('success' => false);
                 }
             } catch (Exception $e) {
+
+              
+
+
                 return $e->getMessage();
             }
         } else {
@@ -329,8 +369,7 @@ class Colissimo
     }
 
     protected function getInsuranceValue($product_code, $order){
-
-        $total_order_ht = floatval($order['total_order'] - $order['total_tax_order']);
+        $total_order_ht = floatval($order['total_order']); // - $order['total_tax_order']);
         if($total_order_ht * 100 > 1500){
             $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
             if(in_array($product_code, $tranches_except)){
@@ -350,7 +389,6 @@ class Colissimo
             // We do not insure the package
             return 0;
         }
-       
     }
 
     protected function isMachinable($product_code){

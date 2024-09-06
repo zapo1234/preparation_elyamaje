@@ -2909,19 +2909,6 @@ class Controller extends BaseController
                 $sorted = $collection->sortBy('cat');
                 
                 $sortedArrayCommande = $sorted->values()->toArray();
-
-                // trier les categorie
-
-                // foreach ($sortedArrayCommande as $key => $value) {
-                    
-                    
-
-
-                //     if (strpos($value["label"], "VSP")!== false) {
-                //         dump($value["cat"]);
-                //     }
-                // }
-
                 
 
                 $sortedArrayCommande = $this->sortVsp($sortedArrayCommande);

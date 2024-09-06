@@ -818,6 +818,7 @@ function show(id){
     $("#example").css('opacity', '0.3')
     $(".loading_show_detail_order ").removeClass('d-none')
     $(".detail_products").attr('disabled', true)
+    
 
     $.ajax({
         url: "getDetailsOrder",

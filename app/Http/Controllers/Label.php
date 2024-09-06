@@ -451,12 +451,17 @@ class Label extends BaseController
         $colissimo = $this->colissimoConfiguration->getConfiguration();
         $quantity_product = $request->post('quantity');
 
+
+
         if($order_by_id && $product_to_add_label){
+
+    
 
             if($from_dolibarr){
                 $order = $this->woocommerce->transformArrayOrderDolibarr($order_by_id, $product_to_add_label);
             } else {
                 $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
+
             }
 
             $weight = 0; // Kg
@@ -482,7 +487,6 @@ class Label extends BaseController
             } 
 
             $order[0]['total_order'] = $subtotal;
-
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
@@ -495,7 +499,6 @@ class Label extends BaseController
                         $insert_label = $this->label->save($labelChrono);
                         $insert_product_label_order = $this->labelProductOrder->insert($order_id, $insert_label, $product_to_add_label, $quantity_product);
                     } else {
-
                         if($from_js){
                             echo json_encode(['success' => false, 'file' => false, 'message' => $labelChrono]);
                             return;
@@ -504,7 +507,6 @@ class Label extends BaseController
                             return redirect()->back()->with('error', $labelChrono);
                         }
                     }
-
                     if($from_js){
                         echo json_encode(['success' => true, 'file' => base64_encode($labelChrono['label']), 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
                         return;
