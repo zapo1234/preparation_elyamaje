@@ -11,7 +11,7 @@
     <div class="page-wrapper">
         <div class="page-content">
             <div class="page-breadcrumb d-sm-flex align-items-center mb-2">
-                <div class="breadcrumb-title pe-3">Beauty Prof's</div>
+                <div class="breadcrumb-title pe-3">Gala Elyamaje</div>
                 @csrf
                 <div class="ps-3">
                     <nav aria-label="breadcrumb">

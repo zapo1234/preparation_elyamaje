@@ -134,7 +134,6 @@ class WoocommerceService
 
         $order_new_array['is_distributor'] = $distributor;
         $orders[] = $order_new_array;
-
         return $orders;
   }
 

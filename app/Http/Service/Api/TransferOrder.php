@@ -1112,12 +1112,18 @@ class TransferOrder
                         $mode_reglement_id =106;// fournir un paypplug par defaut. au cas il trouve pas.....
                    }
 
+
+
                    // defini les famille de methode de paiement qui arrive dans les données woommerce pour attribuer des compte bancaire
                    $array_paiment = array('cod','vir_card1','vir_card','payplug','stripe','oney_x3_with_fees','oney_x4_with_fees','apple_pay','american_express','gift_card','bancontact','CB','PAYP');// carte bancaire....
                    $array_paiments = array('bacs');// virement bancaire id.....
                    $array_paimentss = array('DONS'); // pour les dons
                    $array_paiments4 = array('CHQ');// chéque.
                    $array_facture_dolibar = array('VIR');
+                   $array_revolut = array('revolut_cc', 'revolut_pay');// le nouveau compte revolut.
+                   $array_scalapay = array('wc-scalapay-payin3', 'wc-scalapay-payin4'); // compte bancaire Scalapay
+
+
                    
                    // defini les id de compte de dolibar en fonction .
                    if(in_array($account_name,$array_paiment)) {
@@ -1126,7 +1132,27 @@ class TransferOrder
                      // voir ces valeur dans dolibar ou la table paiement.
                        $account_id=4;// PROD 
                        $paimentid =4;// PROD
+                   } elseif(in_array($account_name,$array_revolut)){
+                    // revolut nouveaux compte.
+                    // voir id moyens de paiment dans la table de dolibar paiment.
+                       $account_id=51; 
+                       if($account_name=="revolut_pay"){
+                         $paimentid =110;
+                       }
+
+                       if($account_name=="revolut_cc"){
+                          $paimentid=109;
+                       }
+
                    }
+
+                    elseif(in_array($account_name,$array_scalapay)){
+                      // defini le paiment comme virement bancaire......
+                       //$mode_reglement_id = 4;
+                       $account_id = 52; // PROD
+                       $paimentid = 111;// PROD
+                    }
+
 
                    elseif(in_array($account_name,$array_paiments)){
                       // defini le paiment comme virement bancaire......

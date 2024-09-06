@@ -16,12 +16,12 @@
             <div class="d-flex w-100 justify-content-between page-breadcrumb d-sm-flex align-items-center mb-3">
                 <div class="d-flex align-items-center multiple_title">
                     <div class="breadcrumb-title pe-3">
-                        Beauty Prof's
+                        Gala Elyamaje
                     </div>
                     <div class="ps-3">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0 p-0">
-                                <li class="breadcrumb-item active" aria-current="page">Facture BPP paris</li>
+                                <li class="breadcrumb-item active" aria-current="page">Facture</li>
                             </ol>
                         </nav>
                     </div>

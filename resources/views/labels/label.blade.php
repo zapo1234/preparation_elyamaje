@@ -99,6 +99,7 @@
 						</div>
 					@endif
 					@if(session()->has('error'))
+
 						<div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
 							<div class="text-white">{{ session()->get('error') }}</div>
 							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -356,7 +357,7 @@
 																	</div>
 
 																	<div class="mt-3 d-flex flex-column w-100 customer_shipping">
-																		<span class="customer_detail_title badge bg-dark">Détails</span>
+																		<span class="customer_detail_title badge bg-dark">Expédition</span>
 
 																		@if($order[0]['shipping_customer_first_name'])
 																			<div class="d-flex w-100 justify-content-between">
@@ -484,7 +485,6 @@
 					</div>
 				</div>
 			</div>
-
 
 			<!-- Modal generate label -->
 			<div data-bs-keyboard="false" data-bs-backdrop="static" class="modal_radius generate_label_modal modal fade" id="generateLabelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

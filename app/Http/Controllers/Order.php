@@ -575,7 +575,7 @@ class Order extends BaseController
         } else {
           
           // Get details orders for incrementation or decrementation stock dolibarr
-          if(str_contains($order_id, 'BP')){
+          if(str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
             $res = true;
             $data = $this->orderDolibarr->getOrderDetails($order_id);
             if(count($data) > 0){
@@ -691,9 +691,8 @@ class Order extends BaseController
         $orders[0]['emballeur'] = Auth()->user()->name;
         // envoi des données pour créer des facture via api dolibar....
         try{
-        
           $this->factorder->TransferOrder($orders);
-          //$this->transfert->Transfertext($orders);
+          // $this->transfert->Transfertext($orders);
 
           // Insert la commande dans histories
           $data = [
@@ -1023,7 +1022,7 @@ class Order extends BaseController
         $quantity = 1;
       }
 
-      if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+      if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
         echo json_encode(['success' => false, 'message' => 'Impossible de rajouter des produits pour des commandes qui viennent de Dolibarr !']); 
       } else {
         // Ajout Woocommerce
@@ -1203,7 +1202,7 @@ class Order extends BaseController
           $field => $field_value
         ];
 
-        if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+        if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
           $this->orderDolibarr->updateCustomerDetail($data, $order_id);
         } else {
           $this->order->update($data, $order_id);
@@ -1279,7 +1278,7 @@ class Order extends BaseController
   public function getDetailsOrder(Request $request){
     $order_id = $request->post('order_id');
 
-    if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP')){
+    if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
 
       // dd($order);
@@ -1544,7 +1543,7 @@ class Order extends BaseController
   
       $from_dolibarr = $input['from_dolibarr'] ?? null;
   
-      if($from_dolibarr == "false" || (!str_contains($input['order_id'], 'CO') && !str_contains($input['order_id'], 'BP'))){
+      if($from_dolibarr == "false" || (!str_contains($input['order_id'], 'CO') && !str_contains($input['order_id'], 'BP') && !str_contains($input['order_id'], 'GAL'))){
         // Delete from woocommerce
         echo json_encode(['success' => $this->order->delete($input['order_id'])]);
       } else {

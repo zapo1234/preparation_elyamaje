@@ -13,7 +13,7 @@
       
         <div class="page-breadcrumb d-sm-flex align-items-center mb-3 justify-content-between">
             <div class="d-flex align-items-baseline">
-                <div class="breadcrumb-title pe-3">Beauty Prof's</div>
+                <div class="breadcrumb-title pe-3">Gala Elyamaje</div>
                 <div class="ps-3 caisse_page_details">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 p-0">

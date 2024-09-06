@@ -435,7 +435,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                } else if($key == "origin"){
                   $query->where("labels.".$key , $filter);
                } else if($key == "ref_order"){
-                  if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO') && !str_contains($filter, 'SAV')){
+                  if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO') && !str_contains($filter, 'SAV') && !str_contains($filter, 'GAL')){
                      $query->where("labels.tracking_number", $filter);
                   } else {
                      $query->where("orders_doli.".$key."", $filter);
@@ -459,7 +459,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             $results[$key]['id'] = $result->ref_order;
             $results[$key]['order_woocommerce_id'] = $result->ref_order;
             $results[$key]['status'] = $result->statut;
-            $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
+            $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') || str_contains($result->ref_order, 'GAL') ? 'chrono' : 'lpc_sign';
 
             // Billing
             $results[$key]['billing_customer_first_name'] = $result->billing_name;
@@ -506,7 +506,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $results[$key]['id'] = $result->ref_order;
          $results[$key]['order_woocommerce_id'] = $result->ref_order;
          $results[$key]['status'] = $result->statut;
-         $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') ? 'chrono' : 'lpc_sign';
+         $results[$key]['shipping_method'] = str_contains($result->ref_order, 'BP') || str_contains($result->ref_order, 'GAL') ? 'chrono' : 'lpc_sign';
 
          // Billing
 
@@ -623,7 +623,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc')
       ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
       ->where('orders_doli.date', 'LIKE', '%'.$date.'%')
-      ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+      // ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+      ->where('orders_doli.ref_order', 'LIKE', '%GAL%')
       ->get()
       ->toArray();
    }
@@ -650,7 +651,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
             
 
-            $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+            // $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+            $query->where('orders_doli.ref_order', 'LIKE', '%GAL%');
             $query->where('orders_doli.seller', $user_id);
             $result = $query->get();
             return $result->toArray();
@@ -658,7 +660,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          return $this->model::select('users.id','users.name', 'orders_doli.statut as status', 'orders_doli.ref_order', 
          'orders_doli.date as created_at',  'orders_doli.id as order_id', 'orders_doli.total_order_ttc')
             ->leftJoin('users', 'users.id', '=', 'orders_doli.seller')
-            ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+            // ->where('orders_doli.ref_order', 'LIKE', '%BP%')
+            ->where('orders_doli.ref_order', 'LIKE', '%GAL%')
             ->get()
             ->toArray();
       }
@@ -682,7 +685,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          }
          
-      $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+      // $query->where('orders_doli.ref_order', 'LIKE', '%BP%');
+      $query->where('orders_doli.ref_order', 'LIKE', '%GAL%');
       $query->whereNotIn('orders_doli.statut', ['pending', 'processing']);
       $result = $query->get();
       return $result->toArray();

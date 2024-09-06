@@ -151,9 +151,9 @@ Route::group(['middleware' => ['auth', 'role:1']], function () {
    // traiter les rapes
     // requete stocks post
     Route::get("/stocksrape", [Admin::class, "postrape"])->name('admin.stocksrape'); 
-    // généré une facture de la BPP
+    // généré une facture de la BPP / GALA
     Route::get("/generateinvoices", [Admin::class, "generateinvoices"])->name('admin.generateinvoices'); 
-    // envoyer une facture BPP
+    // envoyer une facture BPP / GALA
     Route::post("/generateinvoices", [Admin::class, "generatefacture"])->name('admin.generatefacture'); 
 
     // renvoyer une facture de  bpp 

@@ -873,8 +873,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getOrderByIdWithCustomer($order_id){
-
-      
       return $this->model::select('orders.*', 'products_order.pick', 'products_order.pick_control', 'products_order.quantity',
       'products_order.subtotal_tax', 'products_order.total_tax','products_order.total_price', 'products_order.cost', 'products.weight',
       'products.name', 'products.price', 'products.barcode', 'products.manage_stock', 'products.stock', 'products_order.product_woocommerce_id',
@@ -889,7 +887,6 @@ class OrderRepository implements OrderInterface
    }
 
    public function getAllOrdersAndLabel(){
-
       $date = date('Y-m-d');
       return $this->model::select('orders.*', /*'label_product_order.*'*/ 'labels.tracking_number', 'labels.created_at as label_created_at', 'labels.label_format', 
       'labels.cn23', 'labels.download_cn23',  'labels.origin', 'labels.id as label_id')
@@ -919,7 +916,7 @@ class OrderRepository implements OrderInterface
             } else if($key == "origin"){
                $query->where("labels.origin", $filter);
             } else if($key == "order_woocommerce_id"){
-               if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO') && !str_contains($filter, 'SAV')){
+               if(strlen($filter) == 13 && !str_contains($filter, 'BP') && !str_contains($filter, 'CO') && !str_contains($filter, 'SAV') && !str_contains($filter, 'GAL')){
                   $query->where("labels.tracking_number", $filter);
                } else {
                   $query->where("orders.".$key."", $filter);

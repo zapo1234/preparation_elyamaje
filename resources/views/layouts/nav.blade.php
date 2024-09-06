@@ -250,13 +250,13 @@
                 <li>
                     <div class="top_menu icon-link">
                         <a href="#">
-                            <span class="link_text font-bold text-dark">BP</span>
-                            <span class="link_name">Beauty Prof's</span>
+                            <span class="link_text font-bold text-dark">GAL</span>
+                            <span class="link_name">Gala Elyamaje</span>
                         </a>
                         <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu beauty_prof_menu">
-                        <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                        <li><a class="link_name" href="#">Gala Elyamaje</a></li>
                         <li><a href="{{ url('seller') }}">Analytics</a></li>
                         <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
                         <li><a href="{{ url('cashier') }}">Caisse</a></li>
@@ -378,13 +378,13 @@
                 <li>
                     <div class="top_menu icon-link">
                         <a href="#">
-                            <span class="link_text font-bold text-dark">BP</span>
-                            <span class="link_name">Beauty Prof's</span>
+                            <span class="link_text font-bold text-dark">GAL</span>
+                            <span class="link_name">Gala Elyamaje</span>
                         </a>
                         <i class='bx bxs-chevron-down arrow' ></i>
                     </div>
                     <ul class="sub-menu beauty_prof_menu">
-                        <li><a class="link_name" href="#">Beauty Prof's</a></li>
+                        <li><a class="link_name" href="#">Gala Elyamaje</a></li>
                         <li><a href="{{ url('cashierWaiting') }}">Commandes en attente</a></li>
                         <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                     </ul>

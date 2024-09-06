@@ -331,7 +331,6 @@ class Colissimo
     protected function getInsuranceValue($product_code, $order){
 
         $total_order_ht = floatval($order['total_order'] - $order['total_tax_order']);
-
         if($total_order_ht * 100 > 1500){
             $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
             if(in_array($product_code, $tranches_except)){

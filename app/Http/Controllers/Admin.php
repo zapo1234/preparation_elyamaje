@@ -235,69 +235,69 @@ class Admin extends BaseController
                     'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                 ];
 
-                // Nouvelle manière se récupérer les variations plus opti et récupère même si un produit possède plusieurs variations - A TESTER -
-                // $variation_number = 0;
-                // foreach($product['variation_attributes'] as $key_attr => $attr){
-                //     $values = array_values($attr);
-                //     $name = $product['name'].' - '.implode(' - ',$values);
-                //     $insert_products [] = [
-                //         'product_woocommerce_id' => $key_attr,
-                //         'parent_id' => $product['id'],
-                //         'category' =>  implode(',', $category_name),
-                //         'category_id' => implode(',', $category_id),
-                //         'variation' => 1,
-                //         'name' => $name,
-                //         'price' => $product['variation_prices'][$variation_number],
-                //         'barcode' => str_replace(' ', '', $product['barcodes_list'][$variation_number]),
-                //         'status' => $product['status'],
-                //         'manage_stock' => $product['manage_stock_variation'][$variation_number] == "yes" ? 1 : 0,
-                //         'stock' => $product['stock_quantity_variation'][$variation_number] ?? 0,
-                //         'is_variable' => 0,
-                //         'weight' =>  $product['weights_variation'][$variation_number] != "" ? $product['weights_variation'][$variation_number] : $product['weight'],
-                //         'menu_order' => $product['menu_order'],
-                //         'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
-                //         'ref' => isset($product['sku']) ? $product['sku'] : null,
-                //         'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
-                //     ];
-                //     $variation_number = $variation_number + 1;
+                // Nouvelle manière de récupérer les variations plus opti et récupère même si un produit possède plusieurs variations - A TESTER -
+                $variation_number = 0;
+                foreach($product['variation_attributes'] as $key_attr => $attr){
+                    $values = array_values($attr);
+                    $name = $product['name'].' - '.implode(' - ',$values);
+                    $insert_products [] = [
+                        'product_woocommerce_id' => $key_attr,
+                        'parent_id' => $product['id'],
+                        'category' =>  implode(',', $category_name),
+                        'category_id' => implode(',', $category_id),
+                        'variation' => 1,
+                        'name' => $name,
+                        'price' => $product['variation_prices'][$variation_number],
+                        'barcode' => str_replace(' ', '', $product['barcodes_list'][$variation_number]),
+                        'status' => $product['status'],
+                        'manage_stock' => $product['manage_stock_variation'][$variation_number] == "yes" ? 1 : 0,
+                        'stock' => $product['stock_quantity_variation'][$variation_number] ?? 0,
+                        'is_variable' => 0,
+                        'weight' =>  $product['weights_variation'][$variation_number] != "" ? $product['weights_variation'][$variation_number] : $product['weight'],
+                        'menu_order' => $product['menu_order'],
+                        'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                        'ref' => isset($product['sku']) ? $product['sku'] : null,
+                        'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                    ];
+                    $variation_number = $variation_number + 1;
 
-                // }
+                }
 
-                foreach($option as $key => $op){
-                    if(isset($product['variations'][$key])){
-                        if(isset($product['variation_attributes'])){
-                            if(count($product['variation_attributes']) > 0){
-                                if(isset($product['variation_attributes'][$product['variations'][$key]])){
-                                    $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
-                                    $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
-                                }
-                            }
-                        } 
+                // foreach($option as $key => $op){
+                //     if(isset($product['variations'][$key])){
+                //         if(isset($product['variation_attributes'])){
+                //             if(count($product['variation_attributes']) > 0){
+                //                 if(isset($product['variation_attributes'][$product['variations'][$key]])){
+                //                     $first_key = array_key_first($product['variation_attributes'][$product['variations'][$key]]);
+                //                     $name_variation = $product['variation_attributes'][$product['variations'][$key]][$first_key];
+                //                 }
+                //             }
+                //         } 
 
-                        $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
-                        $insert_products [] = [
-                            'product_woocommerce_id' => $product['variations'][$key],
-                            'parent_id' => $product['id'],
-                            'category' =>  implode(',', $category_name),
-                            'category_id' => implode(',', $category_id),
-                            'variation' => 1,
-                            'name' => $name,
-                            'price' => $product['variation_prices'][$key],
-                            'barcode' => str_replace(' ', '', $product['barcodes_list'][$key]),
-                            'status' => $product['status'],
-                            'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
-                            'stock' => $product['stock_quantity_variation'][$key] ?? 0,
-                            'is_variable' => 0,
-                            'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
-                            'menu_order' => $product['menu_order'],
-                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
-                            'ref' => isset($product['sku']) ? $product['sku'] : null,
-                            'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
-                        ];
+                //         $name = $name_variation ? $product['name'].' - '.$name_variation : $product['name'].' - '.$op;
+                //         $insert_products [] = [
+                //             'product_woocommerce_id' => $product['variations'][$key],
+                //             'parent_id' => $product['id'],
+                //             'category' =>  implode(',', $category_name),
+                //             'category_id' => implode(',', $category_id),
+                //             'variation' => 1,
+                //             'name' => $name,
+                //             'price' => $product['variation_prices'][$key],
+                //             'barcode' => str_replace(' ', '', $product['barcodes_list'][$key]),
+                //             'status' => $product['status'],
+                //             'manage_stock' => $product['manage_stock_variation'][$key] == "yes" ? 1 : 0,
+                //             'stock' => $product['stock_quantity_variation'][$key] ?? 0,
+                //             'is_variable' => 0,
+                //             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
+                //             'menu_order' => $product['menu_order'],
+                //             'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                //             'ref' => isset($product['sku']) ? $product['sku'] : null,
+                //             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                //         ];
 
                        
-                    }
-                }
+                //     }
+                // }
             } else {
                 $insert_products [] = [
                     'product_woocommerce_id' => $product['id'],

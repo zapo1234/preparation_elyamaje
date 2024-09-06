@@ -436,7 +436,6 @@ class Label extends BaseController
     }
 
     public function generateLabel(Request $request){
-
         $from_js = $request->post('from_js') == "true" ? 1 : 0;
         $from_dolibarr = $request->post('from_dolibarr') == "true" ? 1 : 0;
         $product_to_add_label = $request->post('label_product');
@@ -484,7 +483,6 @@ class Label extends BaseController
 
             $order[0]['total_order'] = $subtotal;
 
-       
             if(count($items) > 0){
                 // Étiquette Chronopost
                 if(str_contains($order[0]['shipping_method'], 'chrono')){
@@ -502,7 +500,8 @@ class Label extends BaseController
                             echo json_encode(['success' => false, 'file' => false, 'message' => $labelChrono]);
                             return;
                         } else {
-                            return redirect()->route('labels')->with('error', $labelChrono);
+                            // return redirect()->route('labels')->with('error', $labelChrono);
+                            return redirect()->back()->with('error', $labelChrono);
                         }
                     }
 
@@ -550,7 +549,8 @@ class Label extends BaseController
                             echo json_encode(['success' => false, 'message' => $label]);
                             return;
                         } else {
-                            return redirect()->route('labels')->with('error', $label);
+                            // return redirect()->route('labels')->with('error', $label);
+                            return redirect()->back()->with('error', $label);
                         }
                     }
                 }
@@ -560,11 +560,12 @@ class Label extends BaseController
                 echo json_encode(['success' => false, 'file' => false, 'message' => 'Veuillez séléctionner des produits']);
                 return;
             } else {
-                return redirect()->route('labels')->with('error', "Veuillez séléctionner des produits");
+                return redirect()->back()->with('error', "Veuillez séléctionner des produits");
+                // return redirect()->route('labels')->with('error', "Veuillez séléctionner des produits");
             }
         }
     }
-    
+    // 200373
     // public function getTrackingLabelStatus($token){
 
     //     if($token =="XGMs6Rf3oqMTP9riHXls1d5oVT3mvRQYg7v4KoeL3bztj7mKRy"){
