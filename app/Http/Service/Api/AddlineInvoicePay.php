@@ -21,6 +21,7 @@ class AddlineInvoicePay
     public function AddlinepayInvoice($inv, $montant1, $montant2, $montant3, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl)
     {
         // Fonction pour ajouter les lignes de paiement sur les factures (cb/espece/card cadeaux.)
+        // ajouter des paiment espéce et carte cadeaux sur les facture
         
         // Appel API pour ajouter un paiement
         $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl . "invoices/" . $inv . "/payments", json_encode($newbank));
@@ -305,7 +306,8 @@ class AddlineInvoicePay
         $fk_bank = $name_list[0]['fk_bank'] + 1; // Le fk bank suivant
         $ref_definitive = $index_row[0] . '-' . $index_pay;
         $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
-        $fk_account = 51;// card cadeaux.
+        $fk_account = 51;// card cadeaux transfertx
+        // $fk_account = 53; // prod
         $paimentid =57;// carte cadeaux
         $num_paiement = $name_list[0]['num_paiement'];
         
