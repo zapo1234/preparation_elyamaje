@@ -127,6 +127,8 @@ class Order extends BaseController
         $message->from('no-reply@elyamaje.com');
         // $message->attach($path_invoice);
       });
+
+      dd("ddd");
     }
 
     public function orders($id = null, $distributeur = false){
