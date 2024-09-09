@@ -139,22 +139,25 @@
                                                                     <td data-label="Caissière"><span class="p-2 badge bg-dark">{{ $details_orders->cashierName }}</span></td>
                                                                     <td data-label="Date"><span>{{ $details_orders->date }}</span></td>
                                                                     <td data-label="Encaissement">
-                                                                        <div class="d-flex align-items-center">
-                                                                        <div>
-                                                                            <p class="mb-0 mr-2 fw-bold" style="font-size: 13px;">Espèces</p>
+                                                                        <div class="d-flex flex-column responsive_column">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div>
+                                                                                    <p class="mb-0 mr-2 fw-bold" style="font-size: 13px;">Espèces</p>
+                                                                                </div>
+                                                                                <div class="d-flex align-items-center font-20">
+                                                                                    <h4 class="my-1 font-20">{{ floatval($details_orders->cash) }} €</h4>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div>
+                                                                                    <p class="mb-0 fw-bold mr-2" style="font-size: 13px;">CB</p>
+                                                                                </div>
+                                                                                <div class="d-flex align-items-center font-20">
+                                                                                    <h4 class="my-1 font-20">{{ floatval($details_orders->card) }} €</h4>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="d-flex align-items-center font-20">
-                                                                            <h4 class="my-1 font-20">{{ floatval($details_orders->total_order_ttc -  $details_orders->amountCard) }} €</h4>
-                                                                        </div>
-                                                                        </div>
-                                                                        <div class="d-flex align-items-center">
-                                                                        <div>
-                                                                            <p class="mb-0 fw-bold mr-2" style="font-size: 13px;">CB</p>
-                                                                        </div>
-                                                                        <div class="d-flex align-items-center font-20">
-                                                                            <h4 class="my-1 font-20">{{ floatval($details_orders->amountCard) }} €</h4>
-                                                                        </div>
-                                                                        </div>
+                                                                       
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -214,7 +217,7 @@
                                 </div>
 
                                     <!-- Décaisser -->
-                                    <div class="modal fade" id="exampleSmallModal_{{ $key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                    <div class="modal_radius  modal fade" id="exampleSmallModal_{{ $key }}" tabindex="-1" style="display: none;" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -260,7 +263,7 @@
 
                                     
                                     <!-- Ajout de fonds -->
-                                    <div class="modal fade" id="addCashModal_{{ $key }}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                    <div class="modal_radius  modal fade" id="addCashModal_{{ $key }}" tabindex="-1" style="display: none;" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">

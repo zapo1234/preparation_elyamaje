@@ -33,9 +33,12 @@ class CaisseRepository implements CaisseInterface
 
    public function getAllDetailsUniqueId($date) {
       try{
-         return $this->model::select('orders_doli.*', 'cashier.name as cashierName', 'cashier.id as cashierId', 'caisse.name as caisseName', 'caisse.uniqueId as caisseId')
+         return $this->model::select('orders_doli.*', 'cashier.name as cashierName', 'cashier.id as cashierId', 'caisse.name as caisseName', 'caisse.uniqueId as caisseId',
+         'payement_caisse.amount_payement', 'payement_caisse.type')
          ->leftJoin('orders_doli', 'orders_doli.uniqueId', '=', 'caisse.uniqueId')
          ->leftJoin('users as cashier', 'cashier.id', '=', 'orders_doli.cashier')
+         ->leftJoin('payement_caisse', 'payement_caisse.commande_id', '=', 'orders_doli.id')
+
          // ->whereNotIn('orders_doli.statut', ['canceled', 'pending'])
          // ->orWhereNull('orders_doli.statut') 
          ->orderBy('caisse.name', 'ASC')

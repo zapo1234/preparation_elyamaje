@@ -1244,6 +1244,7 @@ class Admin extends BaseController
 
         // List movements for each caisse
         $movements = $this->cashMovement->getMovements($date);
+
         $list_movements = [];
         $ammount_to_deduct = [];
         $ammount_to_add = [];
@@ -1283,8 +1284,13 @@ class Admin extends BaseController
             ];
         }
 
+        $orders_id = [];
         foreach ($detailsCaisse as $detail) {
             
+            // Type of paiement
+            $amountCard = $detail->type == "CB" ? $detail->amount_payement : 0;
+            $amountSpecies = $detail->type == "LIQ" ? $detail->amount_payement : 0;
+
             // Si caisseId n'existe pas encore dans $caisse, on initialise avec un tableau vide
             if (!isset($caisse[$detail->caisseId])) {
                 $caisse[$detail->caisseId] = [
@@ -1300,11 +1306,20 @@ class Admin extends BaseController
             // Check if date is same than choice date
             if($detail->date >= $date && $detail->date < $dateRange && ($detail->statut != "canceled" && $detail->statut != "pending")){
                 // Mise à jour des totaux card et cash pour cette commande
-                $caisse[$detail->caisseId]['total_card'] += $detail->amountCard != null ? $detail->amountCard : 0;
-                $caisse[$detail->caisseId]['total_cash'] += $detail->amountCard != null ? $detail->total_order_ttc - $detail->amountCard : $detail->total_order_ttc;
+                $caisse[$detail->caisseId]['total_card'] += floatval($amountCard);
+                $caisse[$detail->caisseId]['total_cash'] += floatval($amountSpecies);
 
                 if($detail->ref_order){
-                    $caisse[$detail->caisseId]['details_orders'][] = $detail;
+                    if(!in_array($detail->id, $orders_id)){
+                        $detail['cash'] = floatval($amountSpecies);
+                        $detail['card'] = floatval($amountCard);
+                        $caisse[$detail->caisseId]['details_orders'][$detail->id] = $detail;
+                    } else {
+                        $caisse[$detail->caisseId]['details_orders'][$detail->id]['cash'] += floatval($amountSpecies);
+                        $caisse[$detail->caisseId]['details_orders'][$detail->id]['card'] += floatval($amountCard);
+                    }
+
+                    $orders_id[] = $detail->id;
                 }
 
                 // Ajouter les détails de l'utilisateur à $caisse[$order->caisseId]['details']
@@ -1318,8 +1333,8 @@ class Admin extends BaseController
                     }
         
                     // Mise à jour des détails pour cet utilisateur
-                    $caisse[$detail->caisseId]['details'][$userName]['card'] += $detail->amountCard;
-                    $caisse[$detail->caisseId]['details'][$userName]['cash'] += $detail->total_order_ttc - $detail->amountCard;
+                    $caisse[$detail->caisseId]['details'][$userName]['card'] += floatval($amountCard);
+                    $caisse[$detail->caisseId]['details'][$userName]['cash'] += floatval($amountSpecies);
                 }
             }
            
