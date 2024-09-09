@@ -1450,7 +1450,7 @@ class Transfertext {
                   if ($account_multiple == "cbliq") {
                       // Les cas où il y a des paiements en partie espèces et CB pour le Gala
                       $montant1 = $index_amount_true[0]; // CB
-                      $montant2 = $index_amount_true[1]; // Carte cadeau
+                      $montant2 = -$index_amount_true[1]; // Carte cadeau
                       $ref = $response['ref'];
                       $this->addlineinvoice->AddlinepayInvoices($inv, $montant1, $montant2, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl);
                   }
@@ -1458,7 +1458,7 @@ class Transfertext {
                   if ($account_multiple == "liqkdo") {
                       // Quand il y a eu liquide Gala et cadeau
                       $montant1 = $index_amount_true[1]; // Liquide
-                      $montant2 = $index_amount_true[2]; // Carte cadeau
+                      $montant2 = -$index_amount_true[2]; // Carte cadeau
                       $ref = $response['ref'];
                       $this->addlineinvoice->Addlinepaykdo($inv, $montant1, $montant2, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl);
                   }
@@ -1466,7 +1466,7 @@ class Transfertext {
                   if ($account_multiple == "cbcado") {
                       // Quand il y a eu CB et cadeau
                       $montant1 = $index_amount_true[0]; // CB
-                      $montant2 = $index_amount_true[1]; // Carte cadeau
+                      $montant2 = -$index_amount_true[1]; // Carte cadeau
                       $ref = $response['ref'];
                       $this->addlineinvoice->Addlinepaykdo($inv, $montant1, $montant2, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl);
                   }
@@ -1475,7 +1475,7 @@ class Transfertext {
                       // CB / Cadeau / Espèce
                       $montant1 = $index_amount_true[0]; // CB
                       $montant2 = $index_amount_true[1]; // Espèce
-                      $montant3 = $index_amount_true[2]; // Bon d'achat
+                      $montant3 = -$index_amount_true[2]; // Bon d'achat
                       $ref = $response['ref'];
                       // Ajouter des lignes de paiement (espèce, reconstruire le montant CB)
                       $this->addlineinvoice->AddlinepayInvoice($inv, $montant1, $montant2, $montant3, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl);
