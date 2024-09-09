@@ -121,14 +121,15 @@ class Order extends BaseController
       $to = "adrien1361@gmail.com";
       $subject = 'Confirmation de commande Elyamaje lors du GALA Marseille 2024';
 
+     
       Mail::send('email.invoice', ['ref_order'=> "GAL-12345678",'percent'=> "30%", "name" => "Adrien"], function ($message) use ($to, $subject) {
         $message->to($to);
         $message->subject($subject);
         $message->from('no-reply@elyamaje.com');
         // $message->attach($path_invoice);
       });
-
-      dd("Email de test envoyé sur "+$to+" !");
+      
+      dd("Email de test envoyé sur ".$to." !");
     }
 
     public function orders($id = null, $distributeur = false){
