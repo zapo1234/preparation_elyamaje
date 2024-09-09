@@ -651,12 +651,12 @@ class Order extends BaseController
       } else {
         // Check if dolibarr order
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
-        dd($order);
         if(count($order) > 0){
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {
-          $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
 
+          $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
+          dd($order);
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);

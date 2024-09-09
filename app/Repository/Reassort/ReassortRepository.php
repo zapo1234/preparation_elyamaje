@@ -145,7 +145,8 @@ class ReassortRepository implements ReassortInterface
 
     public function getReassortByIdWithMissingProduct($order_id){
 
-        $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
+        try {
+            $transfer = $this->model::select('products_dolibarr.label as name', 'products_dolibarr.price_ttc', 'products.image', 'products.location', 'hist_reassort.*')
             ->leftJoin('products_dolibarr', 'products_dolibarr.product_id', '=', 'hist_reassort.product_id')
             ->leftJoin('products', 'products.barcode', '=', 'hist_reassort.barcode')
             ->where([
@@ -155,16 +156,20 @@ class ReassortRepository implements ReassortInterface
             ->groupBy('product_id')
             ->get();
 
-        foreach($transfer as $key => $order){
-            $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
-            $transfer[$key]['transfers'] = true;
-            $transfer[$key]['cost'] = $order['price'];
-            $transfer[$key]['quantity'] = abs($order['qty']) - abs($order['missing']);
-            $transfer[$key]['pick'] = abs($order['pick']);
-            $transfer[$key]['shipping_method_detail'] = "Transfert";
-        }
+            foreach($transfer as $key => $order){
+                $transfer[$key]['order_woocommerce_id'] = $order['identifiant_reassort'];
+                $transfer[$key]['transfers'] = true;
+                $transfer[$key]['cost'] = $order['price'];
+                $transfer[$key]['quantity'] = abs($order['qty']) - abs($order['missing']);
+                $transfer[$key]['pick'] = abs($order['pick']);
+                $transfer[$key]['shipping_method_detail'] = "Transfert";
+            }
 
-        return $transfer;
+            return $transfer;
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+       
     }
 
     public function checkProductBarcode($product_id, $barcode){
