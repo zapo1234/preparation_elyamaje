@@ -1240,7 +1240,20 @@ class Admin extends BaseController
 
         // List orders for each caisse
         $detailsCaisse = $this->caisse->getAllDetailsUniqueId($date);
+        $caisses = $this->caisse->getCaisse();
         $caisse = [];
+
+        // On initialise les caisse
+        foreach($caisses as $c){
+            $caisse[$c->uniqueId] = [
+                'name' => $c->name,
+                'total_card' => 0,
+                'total_cash' => 0,
+                'cash' => 0,
+                'details' => [],
+                'details_orders' => []
+            ];
+        }
 
         // List movements for each caisse
         $movements = $this->cashMovement->getMovements($date);
