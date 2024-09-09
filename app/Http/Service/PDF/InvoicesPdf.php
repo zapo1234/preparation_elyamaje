@@ -47,7 +47,7 @@ class InvoicesPdf
             // envoi de mail au client.
             
             if($indexs=="xxxv1"){
-                Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=>$percent, "name" => $tiers["name"]], function ($message) use ($to, $subject, $content,$path_invoice) {
+                Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=> $percent, "name" => isset($tiers["name"]) ? $tiers["name"]: ""], function ($message) use ($to, $subject, $content,$path_invoice) {
                     $message->to($to);
                     $message->subject($subject);
                     $message->from('no-reply@elyamaje.com');
@@ -56,8 +56,7 @@ class InvoicesPdf
             }
 
             if($indexs=="xxxv2"){
-
-                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo], function ($message) use ($to,$subject_news, $content,$path_invoice) {
+                Mail::send('email.renvoiinvoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo, "name" => isset($tiers["name"]) ? $tiers["name"]: ""], function ($message) use ($to,$subject_news, $content,$path_invoice) {
                     $message->to($to);
                     $message->subject($subject_news);
                     $message->from('no-reply@elyamaje.com');

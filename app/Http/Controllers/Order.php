@@ -115,22 +115,23 @@ class Order extends BaseController
       $this->colissimoTracking = $colissimoTracking;
     }
     
-    public function invoice(){
+    // Test send invoice
+    // public function invoice(){
 
-      // return view('email.invoice', ['ref_order'=> "ref_order",'code_promo'=>"code_promo",'percent'=>"percent", "name" => "name"]);
-      $to = "adrien1361@gmail.com";
-      $subject = 'Confirmation de commande Elyamaje lors du GALA Marseille 2024';
+    //   // return view('email.invoice', ['ref_order'=> "ref_order",'code_promo'=>"code_promo",'percent'=>"percent", "name" => "name"]);
+    //   $to = "adrien1361@gmail.com";
+    //   $subject = 'Confirmation de commande Elyamaje lors du GALA Marseille 2024';
 
      
-      Mail::send('email.invoice', ['ref_order'=> "GAL-12345678",'percent'=> "30%", "name" => "Adrien"], function ($message) use ($to, $subject) {
-        $message->to($to);
-        $message->subject($subject);
-        $message->from('no-reply@elyamaje.com');
-        // $message->attach($path_invoice);
-      });
-      
-      dd("Email de test envoyé sur ".$to." !");
-    }
+    //   Mail::send('email.invoice', ['ref_order'=> "GAL-12345678",'percent'=> "30%", "name" => "Adrien"], function ($message) use ($to, $subject) {
+    //     $message->to($to);
+    //     $message->subject($subject);
+    //     $message->from('no-reply@elyamaje.com');
+    //     // $message->attach($path_invoice);
+    //   });
+
+    //   dd("Email de test envoyé sur ".$to." !");
+    // }
 
     public function orders($id = null, $distributeur = false){
 
@@ -650,6 +651,7 @@ class Order extends BaseController
       } else {
         // Check if dolibarr order
         $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
+        dd($order);
         if(count($order) > 0){
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {

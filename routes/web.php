@@ -375,4 +375,4 @@ Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders')
 // Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
 
 // tets email
-Route::get("/invoice", [Order::class, "invoice"])->name('invoice');
+// Route::get("/invoice", [Order::class, "invoice"])->name('invoice');
