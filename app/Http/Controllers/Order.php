@@ -643,9 +643,9 @@ class Order extends BaseController
     public function checkExpedition(Request $request){
 
       $order_id = explode(',', $request->post('order_id'))[0];
-      dd($order_id);
-
       $order = $this->order->getOrderById($order_id);
+
+      dd($order);
 
       if($order){
         // Check distributor order
