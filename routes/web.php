@@ -373,3 +373,6 @@ Route::get("/getOrders/{token}", [Order::class, "getOrders"])->name('getOrders')
 
 // DEPLACER SUR CRON ELYAMAJE FR
 // Route::get("/trackingLabelStatus/{token}", [Label::class, "getTrackingLabelStatus"])->name('label.tracking');
+
+// tets email
+Route::get("/invoice", [Order::class, "invoice"])->name('invoice');

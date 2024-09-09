@@ -12,6 +12,7 @@ use App\Events\NotificationPusher;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\Transfertext;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
@@ -113,7 +114,21 @@ class Order extends BaseController
       $this->commandeids = $commandeids;
       $this->colissimoTracking = $colissimoTracking;
     }
-  
+    
+    public function invoice(){
+
+      // return view('email.invoice', ['ref_order'=> "ref_order",'code_promo'=>"code_promo",'percent'=>"percent", "name" => "name"]);
+      $to = "adrien1361@gmail.com";
+      $subject = 'Confirmation de commande Elyamaje lors du GALA Marseille 2024';
+
+      Mail::send('email.invoice', ['ref_order'=> "GAL-12345678",'percent'=> "30%", "name" => "Adrien"], function ($message) use ($to, $subject) {
+        $message->to($to);
+        $message->subject($subject);
+        $message->from('no-reply@elyamaje.com');
+        // $message->attach($path_invoice);
+      });
+    }
+
     public function orders($id = null, $distributeur = false){
 
       if($id){
