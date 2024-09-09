@@ -21,16 +21,16 @@
                 <td class="header" style="text-align:center;">
                     <div style="text-align:center;padding: 0px;">
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="width: 170px;">
-                        <h1 style="color: #1A2028; text-align:center; margin-top: 40px; font-size: 22px; font-weight:bold; margin-bottom: 15px;">Bonjour {{ $name }},</h1>
+                        <h1 style="color: #1A2028; text-align:center; margin-top: 40px; font-size: 22px; font-weight: bold; margin-bottom: 15px;">Bonjour {{ $name }},</h1>
                     </div>
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;">Toute l'Équipe Elyamaje vous remercie pour votre venue au Gala de Marseille 2024.</p>
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;">Nous avons le plaisir de vous informer que votre commande est actuellement en cours de préparation. 
+                    <p style="text-align:center; line-height: 17px;">Toute l'Équipe Elyamaje vous remercie pour votre venue au Gala de Marseille 2024.</p>
+                    <p style="text-align:center; line-height: 17px;">Nous avons le plaisir de vous informer que votre commande est actuellement en cours de préparation. 
                     Elle vous sera livrée sous un délai de 72H.</p>
 
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;"> Pour toutes questions, vous pouvez contacter notre support en cliquant <a style="color: #F07289; font-weight:bold;" href="https://elyamaje.zendesk.com/hc/fr">ici</a>.</p>
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;">À bientôt !</p>
-                    <p style="text-align:center; line-height: 17px; font-weight: 700;">L'Équipe Elyamaje</p>
+                    <p style="text-align:center; line-height: 17px;">Vous trouverez, ci-joint, votre facture N° {{ $ref_order }}</p>
+                    <p style="text-align:center; line-height: 17px;"> Pour toutes questions, vous pouvez contacter notre support en cliquant <a style="color: #F07289; font-weight:bold;" href="https://elyamaje.zendesk.com/hc/fr">ici</a>.</p>
+                    <p style="text-align:center; line-height: 17px;">À bientôt !</p>
+                    <p style="text-align:center; line-height: 17px;">L'Équipe Elyamaje</p>
                 </td>
             </tr>
             <tr style="background-color: #000000;">
