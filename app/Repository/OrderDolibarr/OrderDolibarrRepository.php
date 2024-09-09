@@ -75,9 +75,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->get();
 
 
-      dd($order_lines);
+      dd($order_lines->toArray());
 
-      if($order_lines){
+      if(count($order_lines->toArray()) > 0){
          $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
          ->where('payement_caisse.commande_id', $order_lines[0]['id'])
          ->get()
