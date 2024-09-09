@@ -75,6 +75,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->get();
 
 
+      dd($order_lines);
+
       if($order_lines){
          $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
          ->where('payement_caisse.commande_id', $order_lines[0]['id'])
