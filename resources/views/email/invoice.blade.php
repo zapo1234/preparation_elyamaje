@@ -20,7 +20,7 @@
         <table style="max-width:600px;border-style:solid; border-width:1px; border-color:#c9c9c9;" width="100%" border="0" cellspacing="0" cellpadding="25">
             <tr>
                 <td class="header" style="text-align:center;">
-                    <div style="text-align:center;padding: 10px;">
+                    <div style="text-align:center;padding: 0px;">
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="width: 175px;">
                         <h1 style="color: #1A2028; text-align:center; margin-top: 50px; font-size: 21px; font-weight:bold;">Bonjour {{ $name }},</h1>
                     </div>
@@ -32,9 +32,6 @@
                     <p style="text-align:center;"> Pour toutes questions, vous pouvez contacter notre support en cliquant <a style="color: #F07289; font-weight:bold;" href="https://elyamaje.zendesk.com/hc/fr">ici</a>.</p>
                     <p style="text-align:center;">À bientôt !</p>
                     <p style="text-align:center;">L'Équipe Elyamaje</p>
-
-
-                  
                 </td>
             </tr>
             <tr style="background-color: #000000;">

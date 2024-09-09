@@ -128,7 +128,7 @@ class Order extends BaseController
         // $message->attach($path_invoice);
       });
 
-      dd("ddd");
+      dd("Email envoyé !");
     }
 
     public function orders($id = null, $distributeur = false){
