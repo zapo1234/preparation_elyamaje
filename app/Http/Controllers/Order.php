@@ -641,7 +641,10 @@ class Order extends BaseController
     }
 
     public function checkExpedition(Request $request){
-      $order_id = explode(',', $request->post('order_id'))[0];
+
+      // $order_id = explode(',', $request->post('order_id'))[0];
+      dd($request->post('order_id'));
+
       $order = $this->order->getOrderById($order_id);
 
       if($order){
@@ -656,7 +659,6 @@ class Order extends BaseController
         } else {
 
           $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
-          dd($order);
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
