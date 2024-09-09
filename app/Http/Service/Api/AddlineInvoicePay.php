@@ -21,6 +21,7 @@ class AddlineInvoicePay
     public function AddlinepayInvoice($inv, $montant1, $montant2, $montant3, $ref, $newCommandepaye, $newbank, $apiKey, $apiUrl)
     {
         // Fonction pour ajouter les lignes de paiement sur les factures (cb/espece/card cadeaux.)
+        // ajouter des paiment espéce et carte cadeaux sur les facture
         
         // Appel API pour ajouter un paiement
         $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl . "invoices/" . $inv . "/payments", json_encode($newbank));
@@ -42,9 +43,10 @@ class AddlineInvoicePay
         $ref_definitive = $index_row[0] . '-' . $index_pay;
         $ref_definitive1 = $index_row[0] . '-' . $index_pay1;
         $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
-        $fk_account = 50; // Espèce Gala
-        $paimentid = 4; // Méthode paiement espèce
-        $fk_account2 = 51; // Carte cadeaux
+        $fk_account = 50; // Espèce Gala    prod && transfertx
+        $paimentid = 4; // Méthode paiement espèce tranfertx et prod
+        $fk_account2 = 51; // Carte cadeaux gala transfertx
+        // $fk_account2 = 53;// prod compte cado
         $paimentid2 = 57; // Carte cadeaux
         $num_paiement = $name_list[0]['num_paiement'];
         
@@ -304,7 +306,8 @@ class AddlineInvoicePay
         $fk_bank = $name_list[0]['fk_bank'] + 1; // Le fk bank suivant
         $ref_definitive = $index_row[0] . '-' . $index_pay;
         $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
-        $fk_account = 51;// card cadeaux.
+        $fk_account = 51;// card cadeaux transfertx
+        // $fk_account = 53; // prod
         $paimentid =57;// carte cadeaux
         $num_paiement = $name_list[0]['num_paiement'];
         
