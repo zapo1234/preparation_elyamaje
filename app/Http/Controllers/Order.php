@@ -645,8 +645,6 @@ class Order extends BaseController
       $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderById($order_id);
 
-      dd($order);
-
       if($order){
         // Check distributor order
         $is_distributor = false; //$this->distributor->getDistributorById($order[0]['customer_id']) != 0 ? true : false;
@@ -659,6 +657,8 @@ class Order extends BaseController
         } else {
 
           $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
+          dd($order);
+
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
