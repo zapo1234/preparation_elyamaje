@@ -74,16 +74,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
-
-      if($order_lines){
+      if(!$order_lines->isEmpty()){
          $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
          ->where('payement_caisse.commande_id', $order_lines[0]['id'])
          ->get()
          ->toArray();
-
          $order_payments = json_decode(json_encode($order_payments), true);
       }
-     
+
+
       foreach($order_lines as $key => $order){
 
          // Pour les commandes BP / GALA

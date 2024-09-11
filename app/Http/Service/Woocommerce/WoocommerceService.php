@@ -140,6 +140,8 @@ class WoocommerceService
   public function transformArrayOrderDolibarr($orderDolibarr, $product_to_add_label = null, $withProducts = true){
 
     $shipping_method_label = [
+      'lpc_relay' => 'Colissimo relais',
+      'lpc_sign' => 'Colissimo avec signature (Est:48h-72h)',
       'chronotoshopdirect' => 'Chronopost - Livraison en relais Pickup',
       'chrono13' => 'Livraison express avant 13h',
       'chrono18' => 'Livraison à domicile avant 18h'
@@ -178,7 +180,7 @@ class WoocommerceService
 
     // On force la méthode d'expédition en livraison à domicile avec signature
     $transformOrder['shipping_method'] = $orderDolibarr[0]['shipping_method'] ?? "lpc_sign";
-    $transformOrder['product_code'] = null;
+    $transformOrder['product_code'] = $orderDolibarr[0]['product_code'] ?? null;
     // $transformOrder['shipping_method_detail'] = str_contains($orderDolibarr[0]['ref_order'], "BP") ? "Chronopost" 
     // : ($orderDolibarr[0]['total_order_ttc'] > 100 ? "Colissimo avec signature gratuit au dela de 100€ d'achat" : "Colissimo avec signature (Est:48h-72h)");
 
@@ -193,9 +195,9 @@ class WoocommerceService
     $adress_2 = isset($adress[1]) ? $adress[1] : '';
 
     $transformOrder['billing'] = [
-      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['name'],
+      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['pname'],
       "last_name" => $orderDolibarr[0]['billing_pname'] != null ? $orderDolibarr[0]['billing_pname'] : 
-      ($orderDolibarr[0]['pname'] != $orderDolibarr[0]['name'] ? $orderDolibarr[0]['pname'] : ''),
+      ($orderDolibarr[0]['pname'] != $orderDolibarr[0]['pname'] ? $orderDolibarr[0]['pname'] : ''),
       "company" => $orderDolibarr[0]['billing_company'] ?? $orderDolibarr[0]['company'],
       "address_1" => $orderDolibarr[0]['billing_adresse'] ?? $adress_1,
       "address_2" => $adress_2,

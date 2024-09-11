@@ -463,7 +463,7 @@ class Label extends BaseController
                 $order = $this->woocommerce->transformArrayOrder($order_by_id, $product_to_add_label);
 
             }
-
+            
             $weight = 0; // Kg
             $subtotal = 0;
             $items = [];

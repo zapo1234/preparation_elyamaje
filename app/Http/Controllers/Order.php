@@ -12,6 +12,7 @@ use App\Events\NotificationPusher;
 use Illuminate\Support\Facades\DB;
 use App\Http\Service\Api\Colissimo;
 use App\Http\Service\PDF\CreatePdf;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Service\Api\Transfertext;
 use App\Http\Service\Api\TransferOrder;
 use App\Repository\User\UserRepository;
@@ -113,7 +114,25 @@ class Order extends BaseController
       $this->commandeids = $commandeids;
       $this->colissimoTracking = $colissimoTracking;
     }
-  
+    
+    // Test send invoice
+    // public function invoice(){
+
+    //   // return view('email.invoice', ['ref_order'=> "ref_order",'code_promo'=>"code_promo",'percent'=>"percent", "name" => "name"]);
+    //   $to = "adrien1361@gmail.com";
+    //   $subject = 'Confirmation de commande Elyamaje lors du GALA Marseille 2024';
+
+     
+    //   Mail::send('email.invoice', ['ref_order'=> "GAL-12345678",'percent'=> "30%", "name" => "Adrien"], function ($message) use ($to, $subject) {
+    //     $message->to($to);
+    //     $message->subject($subject);
+    //     $message->from('no-reply@elyamaje.com');
+    //     // $message->attach($path_invoice);
+    //   });
+
+    //   dd("Email de test envoyé sur ".$to." !");
+    // }
+
     public function orders($id = null, $distributeur = false){
 
       if($id){
@@ -622,6 +641,7 @@ class Order extends BaseController
     }
 
     public function checkExpedition(Request $request){
+
       $order_id = explode(',', $request->post('order_id'))[0];
       $order = $this->order->getOrderById($order_id);
 
@@ -635,8 +655,8 @@ class Order extends BaseController
         if(count($order) > 0){
           echo json_encode(['success' => true, 'transfers'=> false, 'from_dolibarr' => true, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);
         } else {
-          $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
 
+          $order = $this->reassort->getReassortByIdWithMissingProduct($order_id);
           if(count($order) > 0){
           // Check si commande est un transfert
           echo json_encode(['success' => true, 'transfers'=> true, 'from_dolibarr' => false, 'order' => $order, 'is_distributor' => false, 'status' =>  __('status.'.$order[0]['status'])]);

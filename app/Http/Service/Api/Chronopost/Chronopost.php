@@ -13,7 +13,6 @@ class Chronopost
         // CODE ISO TO COUNTY NAME
         $countries = new Countries() ?? [];
         $countryName = strtoupper($countries->countries()[$order['shipping']['country']]) ?? '';
-
         $productCode = $this->getProductCode($order['shipping_method']);
         $format = $colissimo ? $colissimo->format_chronopost : "PDF";
 
