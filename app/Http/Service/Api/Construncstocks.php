@@ -339,12 +339,12 @@ class  Construncstocks
                         // recupérer le id_parent haut.
                          $index_libel = explode('%',$lmm);
                      
-                       if((int)$index_libel[1] < 10){
+                       if((int)$index_libel[1] < 20){
                            $list_product_limite_stocks[] =[
                           'produit'=>$index_libel[0]
                         ];
                     }
-                    // recupérer les produit en unite qui sont moins de 10
+                    // recupérer les produit en unite qui sont moins de 20
                       foreach($valo as $ll){
                        // recupérer le taux chez le libelle..
                          $taux_libelle = explode(' ',$ll['libelle_family']);
@@ -357,7 +357,7 @@ class  Construncstocks
           }
            
            
-          // recupérer les produit faible ens tocks moins de 10
+          // recupérer les produit faible ens tocks moins de 20
            $this->setStocksproduct($list_product_limite_stocks);
            
           $rape_index_first =[];// crée le 1 er index
@@ -384,7 +384,7 @@ class  Construncstocks
                    // recupérer le id_parent haut.
                   $index_libel = explode('%',$lmm);
                   
-                  if((int)$index_libel[1] < 10){
+                  if((int)$index_libel[1] < 20){
                     $list_product_limite_rape[] = [
                        'produit'=>$index_libel[0]
                     ];
@@ -463,7 +463,7 @@ class  Construncstocks
               $list_products = json_decode($listproduct, true);// la liste des produits dans dolibarr
         
             // recupérer les categoris directement depuis l'api
-              $produitParam = ["limit" => 120, "sortfield" => "rowid"];
+              $produitParam = ["limit" => 110, "sortfield" => "rowid"];
               $categorie = $this->api->CallAPI("GET", $apiKey, $apiUrl."categories", $produitParam);
               // reference ref_client dans dolibar
               $list_categorie = json_decode($categorie, true);// la liste des produits dans dolibarr
