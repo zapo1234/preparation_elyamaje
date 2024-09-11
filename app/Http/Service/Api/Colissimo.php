@@ -24,16 +24,13 @@ class Colissimo
 
        
         $productCode = $this->getProductCode($order);
+
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
         // $isCN23 = $this->isCn23($order['total_order'], $weight);
         $customsArticle = $this->customsArticle($order, $items);
 
-        
-
         // $nonMachinable = $this->isMachinable($productCode);
         $insuranceValue = $this->getInsuranceValue($productCode, $order);
-
-
         $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
@@ -98,10 +95,6 @@ class Colissimo
                     ]
                 ];
 
-                
-               
-               
-                
                 $url = "https://ws.colissimo.fr/sls-ws/SlsServiceWSRest/2.0/generateLabel";
                 $data = $requestParameter;
 
@@ -405,8 +398,8 @@ class Colissimo
             if($order['shipping']['country'] == "FR" && !preg_match($frenchMobileNumberRegex, $phoneNumber)){
                 $address = [
                     'companyName' => $order['shipping']['company'] ?? '',
-                    'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
-                    'firstName' => $order['shipping']['first_name'],
+                    'lastName' =>  $order['pick_up_location_id'] ? $order['billing']['last_name'] : ($order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name']),
+                    'firstName' => $order['pick_up_location_id'] ? $order['billing']['first_name'] : $order['shipping']['first_name'],
                     'line2' => $order['shipping']['address_1'],
                     'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
@@ -420,8 +413,8 @@ class Colissimo
             } else {
                 $address = [
                     'companyName' => $order['shipping']['company'] ?? '',
-                    'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
-                    'firstName' => $order['shipping']['first_name'],
+                    'lastName' => $order['pick_up_location_id'] ? $order['billing']['last_name'] : ($order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['last_name']),
+                    'firstName' => $order['pick_up_location_id'] ? $order['billing']['first_name'] : $order['shipping']['first_name'],
                     'line2' => $order['shipping']['address_1'],
                     'line3' => $order['shipping']['address_2'] ?? '',
                     'countryCode' => $order['shipping']['country'],
@@ -436,8 +429,8 @@ class Colissimo
         } else {
             $address = [
                 'companyName' =>$order['shipping']['company'] ?? '',
-                'lastName' => $order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name'],
-                'firstName' => $order['shipping']['first_name'],
+                'lastName' => $order['pick_up_location_id'] ? $order['billing']['last_name'] : ($order['shipping']['last_name'] != "" ? $order['shipping']['last_name'] : $order['shipping']['first_name']),
+                'firstName' => $order['pick_up_location_id'] ? $order['billing']['first_name'] : $order['shipping']['first_name'],
                 // 'line2' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_1']),
                 // 'line3' => preg_replace('/[^(\x20-\x7F)]*/', ' ', $order['shipping']['address_2'] ?? ''),
                 'line2' => $order['shipping']['address_1'],
