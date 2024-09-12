@@ -136,8 +136,6 @@ class Colissimo
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
 
                
-
-
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
                 }
@@ -363,19 +361,20 @@ class Colissimo
 
     protected function getInsuranceValue($product_code, $order){
         $total_order_ht = floatval($order['total_order']); // - $order['total_tax_order']);
+
         if($total_order_ht * 100 > 1500){
             $tranches_except = ["BPR", "A2P", "CMT", "PCS"];
             if(in_array($product_code, $tranches_except)){
                 if($total_order_ht * 100 > 100000){
                     return 100000;
                 } else {
-                    return $total_order_ht * 100;
+                    return intval($total_order_ht * 100);
                 }
             } else {
                 if($total_order_ht * 100 > 500000){
                     return 500000;
                 } else {
-                    return $total_order_ht * 100;
+                    return intval($total_order_ht * 100);
                 }
             }
         } else {
