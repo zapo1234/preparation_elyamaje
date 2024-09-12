@@ -1,0 +1,53 @@
+name: Déploiement de l'application preparation
+on:
+  push:
+    branches:
+      - release
+  pull_request:
+    branches:
+      - release
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: "Installation des dépendances NodeJS"
+        uses: actions/setup-node@v4.0.3
+        with:
+          node-version: "lts/*"
+      - run: |
+          npm install
+          echo "Dépendances NodeJS installées"
+
+      - name: "Déploiement de la branche de release dans le serveur de release"
+        if: ${{ github.ref == 'refs/heads/release' }}
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --exclude='.env'  --exclude='.htaccess'"
+          SOURCE: "./"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: 3522
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: "/vendor/"
+
+      - name: "Installation des dépendances PHP"
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "Connexion au serveur et exécution des commandes..."
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key  -p 3522 ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            cd ${{ secrets.REMOTE_TARGET }}
+            echo "Connexion réussie, installation des dépendances PHP"
+            composer install
+            composer update
+            echo "Installation des dépendances PHP terminée, redémarrage d'Apache..."
+            sudo systemctl restart apache2
+          EOF
+          echo "Redémarrage d'Apache terminé..."
