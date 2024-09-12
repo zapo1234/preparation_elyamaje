@@ -47,6 +47,7 @@ jobs:
             echo "Connexion réussie, installation des dépendances PHP"
             composer install
             composer update
+            php artisan key:generate
             echo "Installation des dépendances PHP terminée, redémarrage d'Apache..."
             sudo systemctl restart apache2 
           EOF
