@@ -20,6 +20,7 @@ class CreateTickeraTable extends Migration
             $table->string('socid')->nullable();
             $table->string('code_client')->nullable();
             $table->string('email')->nullable();
+            $table->string('phone')->nullable();
             $table->string('adresse');
             $table->string('zip_code');
             $table->string('ville');
@@ -28,7 +29,6 @@ class CreateTickeraTable extends Migration
             $table->string('gift_card');
             $table->string('code_reduction');
             $table->string('ticket_id');
-            $table->string('amount_wheel');
             $table->integer('amount_wheel')->default(0); // Montant gagné à la roue de la fortune
             $table->timestamps();
         });
