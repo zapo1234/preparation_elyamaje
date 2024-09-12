@@ -48,6 +48,6 @@ jobs:
             composer install
             composer update
             echo "Installation des dépendances PHP terminée, redémarrage d'Apache..."
-            sudo systemctl restart apache2
+            sudo systemctl restart apache2 
           EOF
           echo "Redémarrage d'Apache terminé..."
