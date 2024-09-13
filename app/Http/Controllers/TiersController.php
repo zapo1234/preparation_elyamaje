@@ -249,7 +249,7 @@ class TiersController extends BaseController
                 $ids = explode(',',$id_order);
                 
                 if($ids[1]==1){
-                  $array_final[] = $valu['idw'];
+                  $array_final[] = $valus['idw'];
                 }
             }
       }
