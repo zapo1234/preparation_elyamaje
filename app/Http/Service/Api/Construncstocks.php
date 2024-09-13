@@ -609,8 +609,10 @@ class  Construncstocks
                 foreach($val as $vlis){
                    foreach($list_joins as $kj=>$valo){
                      foreach($valo as $vbn){
+                      if(!in_array($vn['fk_product'],$id_no_vente)){
                         $product_data = array_search($vbn['fk_product'],$data_product);
-                         if($product_data!=false){
+                        
+                        if($product_data!=false){
                            $product_datas = explode('%',$product_data);
                         }
 
@@ -643,6 +645,7 @@ class  Construncstocks
                           ];
                       }
                    }
+                }
                }
            }
          }
