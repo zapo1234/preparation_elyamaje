@@ -34,6 +34,7 @@ class Colissimo
         $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
+        // dd(strval($insuranceValue));
         if($productCode){
             try {
                 $requestParameter = [
@@ -56,7 +57,7 @@ class Colissimo
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
-                            'insuranceValue' => intval($insuranceValue) ,
+                            'insuranceValue' => intval($insuranceValue),
                             // 'nonMachinable' => $nonMachinable, //Format du colis, true pour non standard
                             'pickupLocationId' => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : null
                         ],
@@ -131,10 +132,10 @@ class Colissimo
                 
                
 
-
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
 
+                // dd($content['<jsonInfos>']['messages'][0]['messageContent']);
                
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
