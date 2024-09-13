@@ -425,13 +425,17 @@ class  Construncstocks
       $apiUrl = env('KEY_API_URL');
 
       // recupérer les appels via dolibar directement.
-     $data = DB::connection('mysql2')->select("SELECT rowid,label,barcode,price_ttc FROM llxyq_product");
+     $data = DB::connection('mysql2')->select("SELECT rowid,label,barcode,price_ttc,tosell FROM llxyq_product");
       $name_list = json_encode($data);
       $list_product = json_decode($name_list,true);
       
       $list_products =[];
       $barcodes =[];// recupérer bar code.
+      $id_no_vente =[];
       foreach($list_product as $ld => $vak){
+        if($vak['tosell']==1){
+            $id_no_vente[] = $vak['rowid'];
+        }
           $list_products[] = [
            'id'=> $vak['rowid'],
            'label'=>$vak['label'],
@@ -443,6 +447,7 @@ class  Construncstocks
       }
 
     
+      dd($id_no_vente);
 
         $data1 = DB::connection('mysql2')->select("SELECT rowid,label,fk_parent FROM llxyq_categorie");
        $name_list1 = json_encode($data1);
