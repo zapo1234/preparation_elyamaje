@@ -443,6 +443,7 @@ class  Construncstocks
       }
 
     
+      dd($list_products);
 
         $data1 = DB::connection('mysql2')->select("SELECT rowid,label,fk_parent FROM llxyq_categorie");
        $name_list1 = json_encode($data1);
@@ -529,9 +530,6 @@ class  Construncstocks
 
          $list_joins = json_encode($list_join);
          $list_joins = json_decode($list_join,true);
-
-         dd($list_joins);
-
 
          // filtrer directement avec une requete sql depuis dolibar.
         /* $data3 = DB::connection('mysql2')->select("SELECT fk_categorie,fk_product FROM llxyq_categorie_product GROUP BY fk_categorie");
