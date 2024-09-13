@@ -255,7 +255,7 @@ class TiersController extends BaseController
       }
 
       // recupérer les id order qui sont en payé
-      dd(array_filter($array_final));
+      $array_finale = array_filter($array_final);
 
         
          // recupérer les ids de produits dans ce intervale.
