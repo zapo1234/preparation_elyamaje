@@ -446,9 +446,6 @@ class  Construncstocks
 
       }
 
-    
-      dd($id_no_vente);
-
         $data1 = DB::connection('mysql2')->select("SELECT rowid,label,fk_parent FROM llxyq_categorie");
        $name_list1 = json_encode($data1);
        $list_categori = json_decode($name_list1,true);
