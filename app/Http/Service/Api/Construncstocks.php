@@ -433,7 +433,7 @@ class  Construncstocks
       $barcodes =[];// recupérer bar code.
       $id_no_vente =[];
       foreach($list_product as $ld => $vak){
-        if($vak['tosell']==1){
+        if($vak['tosell']==0){
             $id_no_vente[] = $vak['rowid'];
         }
           $list_products[] = [
