@@ -443,7 +443,6 @@ class  Construncstocks
       }
 
     
-      dd($list_products);
 
         $data1 = DB::connection('mysql2')->select("SELECT rowid,label,fk_parent FROM llxyq_categorie");
        $name_list1 = json_encode($data1);
@@ -523,6 +522,8 @@ class  Construncstocks
          $data_img[$chainey] = $valc['barcode'];
 
       }
+
+      dd($data_img);
         //grouper la categories id et les id_product
         $list_join= ProductsCategorie::query()
         ->get()
