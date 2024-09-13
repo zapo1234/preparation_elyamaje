@@ -428,7 +428,8 @@ class  Construncstocks
              $data = DB::connection('mysql2')->select("SELECT rowid,label,barcode,price_ttc FROM llxyq_product");
               $name_list = json_encode($data);
               $list_product = json_decode($name_list,true);
-
+              
+              dd($list_product);
               
               $list_products =[];
               foreach($list_product as $vak){
