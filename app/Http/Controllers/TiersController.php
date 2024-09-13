@@ -215,8 +215,8 @@ class TiersController extends BaseController
          $mm1 = "23:59:59";
    
          // creé des bornes de recupération dans
-         $date1 = $datet.'T'.$mm;
-         $date2  = $datet.'T'.$mm1;
+         $date1 = $datet.' '.$mm;
+         $date2  = $datet.' '.$mm1;
          $status ="finished";
 
           // recupérer les id invoices facture en journee.
