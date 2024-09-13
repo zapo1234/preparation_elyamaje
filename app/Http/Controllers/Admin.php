@@ -1537,7 +1537,13 @@ class Admin extends BaseController
 
     
     public function stockscat(){
+
+        $cate = $this->construcstocks->listcategories();
+
+        dd($cate);
         $data = $this->construcstocks->Constructstocks();
+
+        
         // dd($data);
         $message="";
          // recupérer les produit en stocks
