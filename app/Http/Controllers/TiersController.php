@@ -226,7 +226,36 @@ class TiersController extends BaseController
                WHERE tms BETWEEN ? AND ?", [$date1, $date2]);
         $name_list = json_decode(json_encode($data), true);
 
-        dd($name_list);
+        // je veux recupérer les facture payé(facture)
+        $datas = DB::connection('mysql2')
+        ->select("SELECT rowid,paye
+             FROM llxyq_facture
+             WHERE date_valid BETWEEN ? AND ?", [$date1, $date2]);
+      $name_lists = json_decode(json_encode($datas), true);
+
+      $data_ids =[];
+      foreach($name_lists as $value){
+          $chaine_data = $value['rowid'].','.$value['paye'];
+           $data_ids[$chaine_data] = $value['rowid'];
+      }
+
+      // chercher les id de commande facture et en payé pour cette journée
+      $array_final =[];
+      $array_finale =[];
+      foreach($name_list as $valus){
+
+           $id_order = array_search($valus['fk_object'],$data_ids);
+           if($id_order!=false){
+                $ids = explode(',',$id_order);
+                
+                if($ids[1]==1){
+                  $array_final[] = $valu['idw'];
+                }
+            }
+      }
+
+      // recupérer les id order qui sont en payé
+      dd($array_final);
 
         
          // recupérer les ids de produits dans ce intervale.
