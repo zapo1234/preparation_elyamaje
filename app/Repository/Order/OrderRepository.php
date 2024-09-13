@@ -182,10 +182,22 @@ class OrderRepository implements OrderInterface
                         $is_distributor = true;
                      }
                      
-                     // IF distributor we add 30 bags for 1000 euros
-                     if($is_distributor && $total_order >= 1000){
-                        $montant_par_tranche = 1000;
-                        $nbr_sac = floor($total_order / $montant_par_tranche) * 30;
+                     // IF distributor we add 10 bags for 1000 euros
+                     $total_ht = floatval($orderData['total'] - $orderData['total_tax']);
+                     if($is_distributor && $total_ht >= 500){
+                        $palier = [500 => 10, 900 => 30, 2000 => 60, 3000 => 90];
+                        $nbr_sac = 0; 
+
+                        // Check palier
+                        foreach($palier as $key => $val){
+                           if($total_ht >= $key){
+                              $nbr_sac = $val;
+                           }
+                        }
+
+                        // $montant_par_tranche = 500;
+                        // $nbr_sac = floor($total_order / $montant_par_tranche) * 10;
+
                         $productsToInsert[] = [
                            'order_id' => $orderData['id'],
                            'product_woocommerce_id' => 110203,
