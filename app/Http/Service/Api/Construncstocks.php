@@ -526,8 +526,8 @@ class  Construncstocks
       
         //grouper la categories id et les id_product
       $list_join = DB::table('products_categories') // Table jointe avec produits et catégories
-    ->select('fk_categorie', 'id_product')
-    ->groupBy('fk_categorie', 'id_product')
+    ->select('fk_categorie', 'fk_product')
+    ->groupBy('fk_categorie', 'fk_product')
     ->get()
     ->groupBy('fk_categorie');
 
