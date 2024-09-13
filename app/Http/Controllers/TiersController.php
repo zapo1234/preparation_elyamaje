@@ -221,7 +221,7 @@ class TiersController extends BaseController
 
           // recupérer les id invoices facture en journee.
           $data = DB::connection('mysql2')
-          ->select("SELECT fk_object,idw, 
+          ->select("SELECT fk_object,idw
                FROM llxyq_facture_extrafields 
                WHERE tms BETWEEN ? AND ?", [$date1, $date2]);
         $name_list = json_decode(json_encode($data), true);
