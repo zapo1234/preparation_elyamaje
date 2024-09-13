@@ -193,7 +193,7 @@ class TiersController extends BaseController
          $list_result =[];
          $ids_commande = [];
    
-         foreach($data as $valu){
+        /* foreach($data as $valu){
             $date = date('Y-m-d', $valu['datem']);
             foreach($valu['array_options'] as $val)
             if($date == $datet){
@@ -205,6 +205,10 @@ class TiersController extends BaseController
          
          $array_result = array_unique($list);
          $array_finale = array_filter($array_result);
+       */
+
+         // je veux aller chercher directement dans dolibarr les datas les facture
+        
          
          // table historique de facture
          $mm = "07:00:00";
@@ -214,7 +218,17 @@ class TiersController extends BaseController
          $date1 = $datet.'T'.$mm;
          $date2  = $datet.'T'.$mm1;
          $status ="finished";
-   
+
+          // recupérer les id invoices facture en journee.
+          $data = DB::connection('mysql2')
+          ->select("SELECT fk_object,idw, 
+               FROM llxyq_facture_extrafields 
+               WHERE tms BETWEEN ? AND ?", [$date1, $date2]);
+        $name_list = json_decode(json_encode($data), true);
+
+        dd($name_list);
+
+        
          // recupérer les ids de produits dans ce intervale.
          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->whereRaw('LENGTH(order_id) < 10')->get();
 
