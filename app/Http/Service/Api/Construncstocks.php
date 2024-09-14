@@ -436,6 +436,7 @@ class  Construncstocks
         if($vak['tosell']==0){
             $id_no_vente[] = $vak['rowid'];
         }
+        if($vak['tosell']==1){
           $list_products[] = [
            'id'=> $vak['rowid'],
            'label'=>$vak['label'],
@@ -443,7 +444,7 @@ class  Construncstocks
            'barcode'=> $vak['barcode']
          ];
 
-
+        }
       }
 
         $data1 = DB::connection('mysql2')->select("SELECT rowid,label,fk_parent FROM llxyq_categorie");
