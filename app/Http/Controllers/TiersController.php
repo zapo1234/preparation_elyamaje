@@ -287,12 +287,12 @@ class TiersController extends BaseController
          }
    
          if(count($diff_array)==0){
-            $alert = "Toutes les commandes ont bien été facturées le $datet";
+            $alert = "Toutes les commandes ont bien été facturées et terminées le $datet";
          } elseif(count($diff_array)==1) {
-            $alert = "Attention nous avons une commande non facturée dans dolibarr le $datet, voir le N° $list_commande";
+            $alert = "Attention nous avons un probleme sur cette commmandes(verifier) le $datet, voir le N° $list_commande";
          } else {
             $nombre = count($diff_array);
-            $alert="Attention nous avons $nombre commandes non facturées dans dolibarr le $datet, voir les N° suivants : $list_commande";
+            $alert="Attention nous avons peut etre des problemes $nombre commandes(vérifier la facturation ou le status dans preparation) le $datet, voir les N° suivants : $list_commande";
          }
          
 
