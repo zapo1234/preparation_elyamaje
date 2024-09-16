@@ -984,6 +984,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
               }
 
               // aller cherher dans la table tickera les code
+              dd($ref_ticket);
 
                $data_ticket_code = DB::table('tickera')
               ->select('code_reduction') // Spécifiez les colonnes à sélectionner
