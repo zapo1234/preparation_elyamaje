@@ -45,8 +45,8 @@ class AddlineInvoicePay
         $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
         $fk_account = 50; // Espèce Gala    prod && transfertx
         $paimentid = 4; // Méthode paiement espèce tranfertx et prod
-        $fk_account2 = 51; // Carte cadeaux gala transfertx
-        // $fk_account2 = 53;// prod compte cado
+        //$fk_account2 = 51; // Carte cadeaux gala transfertx
+        $fk_account2 = 53;// prod compte cado
         $paimentid2 = 57; // Carte cadeaux
         $num_paiement = $name_list[0]['num_paiement'];
         
@@ -306,8 +306,8 @@ class AddlineInvoicePay
         $fk_bank = $name_list[0]['fk_bank'] + 1; // Le fk bank suivant
         $ref_definitive = $index_row[0] . '-' . $index_pay;
         $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
-        $fk_account = 51;// card cadeaux transfertx
-        // $fk_account = 53; // prod
+        //$fk_account = 51;// card cadeaux transfertx
+        $fk_account = 53; // prod
         $paimentid =57;// carte cadeaux
         $num_paiement = $name_list[0]['num_paiement'];
         

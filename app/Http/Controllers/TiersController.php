@@ -242,6 +242,8 @@ class TiersController extends BaseController
       // chercher les id de commande facture et en payé pour cette journée
       $array_final =[];
       $array_finale =[];
+      $chaine="cado";
+      $chaine1 ="gala";
       foreach($name_list as $valus){
 
            $id_order = array_search($valus['fk_object'],$data_ids);
@@ -249,7 +251,10 @@ class TiersController extends BaseController
                 $ids = explode(',',$id_order);
                 
                 if($ids[1]==1){
-                  $array_final[] = $valus['idw'];
+                  if(strpos($valus['idw'],$chaine)===false OR strpos($valus['idw'],$chaine1===false)){
+                    $array_final[] = $valus['idw'];
+
+                  }
                 }
             }
       }

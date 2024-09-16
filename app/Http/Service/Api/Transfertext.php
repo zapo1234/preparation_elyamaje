@@ -650,11 +650,10 @@ class Transfertext {
                 if(isset($key_commande[$donnees['order_id']])==false) {
                 
                     // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                    // veifier si la commande a facturé vient d'une beauty proof BPP
                     
                       $chaine_ext="GAL";
                       $chaine_ext2="CO";// facture devis
-                      $index_int="";// eviter que les commande de la BPP sois prise en compte pour
+                      $index_int="";// eviter que ces commande ont des points  fidelite
                       if(strpos($donnees['order_id'],$chaine_ext)!==false OR strpos($donnees['order_id'],$chaine_ext2)!==false){
                           $index_int=1;
                           $montant_fidelite = 0.000;
@@ -1217,16 +1216,16 @@ class Transfertext {
                      elseif(in_array($account_name,$array_revolut)) {
                          // revolut nouveaux compte.
                         // voir id moyens de paiment dans la table de dolibar paiment.
-                          $account_id=49;
-                          // $account_id =51;// prod 
+                          //$account_id=49;
+                           $account_id =51;// prod 
                          if($account_name=="revolut_pay"){
-                           $paimentid =55;// transfertx
-                           // $paimentid = 110;// prod
+                           //$paimentid =55;// transfertx
+                            $paimentid = 110;// prod
                          }
   
                          if($account_name=="revolut_cc"){
-                            $paimentid=107; // transfertx
-                            //$paimentid=109; // prod
+                           // $paimentid=107; // transfertx
+                            $paimentid=109; // prod
                          }
                          
                      }
@@ -1275,31 +1274,31 @@ class Transfertext {
                  
                  // tous cb/liq/espece
                  if($account_multiple=="yestous"){
-                  $account_id=48;// transfertx 
-                  //$account_id =49 // prod
+                  //$account_id=48;// transfertx 
+                   $account_id =49 // prod
                   $paimentid =6;// PROD envoi en CB.
                  }
 
                  // qaund y'a eu cb et carte cadeaux
                  if($account_multiple=="cbcado"){
-                     $account_id=48;// transfertx
-                     //$account_id =49 // prod
+                     //$account_id=48;// transfertx
+                     $account_id =49 // prod
                      $paimentid =6;// PROD envoi en CB.
 
                  }
 
                  // qaund y'des carte kdo
                  if($account_multiple=="kdo"){
-                     $account_id=51; // transfertx
-                     // $account_id =53; //prod
+                     //$account_id=51; // transfertx
+                      $account_id =53; //prod
                      $paimentid=57; // transfertx && prod
 
                  }
 
                  // quand y'a eu uniquement CB
                  if($account_multiple=="cbtotal"){
-                     $account_id =48; // transfertx
-                       //$account_id =49 // prod
+                     //$account_id =48; // transfertx
+                    $account_id =49 // prod
                      $paimentid =6;
 
                  }

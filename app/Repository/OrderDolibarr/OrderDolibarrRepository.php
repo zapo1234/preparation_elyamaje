@@ -1030,7 +1030,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
           // declencher la génération de facture et envoi de mail.
          $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
          // insert dans la base de données...
-          $datas_promo =[
+        /*  $datas_promo =[
          'id_commande'=>$id_commande,
          'code_promo'=>$code_promo,
          'percent'=>$percent,
@@ -1041,6 +1041,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
           
          // insert les données dans la base de données.
            DB::table('code_promos')->insert($datas_promo);
+      */
           return $ref_order;
       }
       else{
