@@ -981,8 +981,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
               foreach($data_tickera as $value){
                $ref_ticket[] = $value['ref'];
-               $amount = $value['ref'].','.$value['amount_payment'];
-               $data_montant[$amount] = $value['ref'];
+               $data_montant[] = $value['amount_payement'];
               }
 
               // aller cherher dans la table tickera les code
@@ -992,8 +991,23 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
                 // recupérer dans un tableau unique les data code
-              
-                dd($data_tickeras);
+               foreach($data_tickeras as $vals){
+
+                   $data_code[] = $vals['code_reduction'];
+               }
+               
+               // retourner l'ordre du tableau.
+                $data_code_finish = array_reverse($data_code);
+                $down_tickera =[];
+                for($i=0; $i < count($data_code_finish); $i++){
+                   for($y=0; $y < count($data_montant); $y++){
+                      $down_tickera[] = [
+                         $data_code_finish[$i] =>$data_montant[$y],
+                      ];
+                   }
+                }
+
+                dd($down_tickera);
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
