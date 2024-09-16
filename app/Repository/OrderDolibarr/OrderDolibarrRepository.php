@@ -989,6 +989,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->whereIn('ticket_id', $ref_ticket)
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
+                dump($data_montant);
                dd($data_tickeras);
 
             
