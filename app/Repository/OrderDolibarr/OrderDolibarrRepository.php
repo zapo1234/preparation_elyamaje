@@ -999,9 +999,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                // retourner l'ordre du tableau.
                 $data_code_finish = array_reverse($data_code);
                 $down_tickera =[];
-                foreach($data_code_finish as $vk){
-                   foreach($data_montant as $vd){
-                      $down_tickera[$vk] = $vd;
+                for($i=0; $i < count($data_code_finish); $i++){
+                   foreach($y=0; $y < count($data_montant); $y++){
+                      $down_tickera[$i] = $data_montant[$y];
                    }
                 }
 
