@@ -251,7 +251,7 @@ class TiersController extends BaseController
                 $ids = explode(',',$id_order);
                 
                 if($ids[1]==1){
-                  if(strpos($valus['idw'],$chaine)===false OR strpos($valus['idw'],$chaine1===false)){
+                  if(strpos($valus['idw'],$chaine)===false){
                     $array_final[] = $valus['idw'];
 
                   }
