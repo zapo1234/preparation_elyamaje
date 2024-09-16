@@ -255,7 +255,7 @@ class TiersController extends BaseController
       }
 
       // recupérer les id order qui sont en payé
-      dd(array_filter($array_final));
+      $array_finale = array_filter($array_final);
 
         
          // recupérer les ids de produits dans ce intervale.
@@ -272,7 +272,7 @@ class TiersController extends BaseController
    
          // resultat la table historique 
          $resultat_histories = $list_array;
-         $data = array_unique($list);
+         //$data = array_unique($list);
    
          // chercher les diff entre les deux tableau. 
          $diff_array = array_diff($resultat_histories,$array_finale);

@@ -1537,6 +1537,7 @@ class Admin extends BaseController
 
     
     public function stockscat(){
+
         $data = $this->construcstocks->Constructstocks();
         // dd($data);
         $message="";
