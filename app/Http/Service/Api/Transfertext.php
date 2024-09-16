@@ -1275,14 +1275,14 @@ class Transfertext {
                  // tous cb/liq/espece
                  if($account_multiple=="yestous"){
                   //$account_id=48;// transfertx 
-                   $account_id =49 // prod
+                   $account_id =49; // prod
                   $paimentid =6;// PROD envoi en CB.
                  }
 
                  // qaund y'a eu cb et carte cadeaux
                  if($account_multiple=="cbcado"){
                      //$account_id=48;// transfertx
-                     $account_id =49 // prod
+                     $account_id =49; // prod
                      $paimentid =6;// PROD envoi en CB.
 
                  }
@@ -1298,7 +1298,7 @@ class Transfertext {
                  // quand y'a eu uniquement CB
                  if($account_multiple=="cbtotal"){
                      //$account_id =48; // transfertx
-                    $account_id =49 // prod
+                    $account_id =49; // prod
                      $paimentid =6;
 
                  }
