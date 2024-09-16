@@ -953,7 +953,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
         
-         if(count($id_recup)!=0){
+   if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
             $usersWithPosts = DB::table('orders_doli')
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
@@ -996,14 +996,23 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                    $data_code[] = $vals['code_reduction'];
                }
                
-                dump($data_code);
+               // retourner l'ordre du tableau.
                 $data_code_finish = array_reverse($data_code);
-                dd($data_code_finish);
-            // traiter le retour de la facture
-           // verifions l'existence des resultats.
-            if(count($result)!=0){
+                $down_tickera =[];
+                foreach($data_code_finish as $vk){
+                   foreach($data_montant as $vd){
+                      $down_tickera[] =[
+                        $vk=> $vd
+                      ];
+                    }
+                }
+
+                dd($down_tickera);
+               // traiter le retour de la facture
+             // verifions l'existence des resultats.
+        if(count($result)!=0){
               // recupérer les variables utile pour envoyé la facture et l'email au clients.
-            $tiers =[
+               $tiers =[
            'ref_order'=>$result[0]['ref_order'],
            'name' => $result[0]['billing_name'],
            'pname' => $result[0]['billing_pname'],
