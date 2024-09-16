@@ -1000,7 +1000,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                 $data_code_finish = array_reverse($data_code);
                 $down_tickera =[];
                 for($i=0; $i < count($data_code_finish); $i++){
-                    $down_tickera = [
+                    $down_tickera[] = [
                          $data_code_finish[$i] =>$data_montant[$i],
                       ];
                }
