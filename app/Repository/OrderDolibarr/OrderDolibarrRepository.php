@@ -969,8 +969,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
             // je veux aller cherche les info tockera et paiment.
               $data= DB::table('payement_caisse')
-             ->where('commande_id', 114) // Condition pour 'commande_id'
-             ->where('type', 'TICK') // Condition pour 'type'
+             ->where('commande_id','=', 114) // Condition pour 'commande_id'
+             ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
