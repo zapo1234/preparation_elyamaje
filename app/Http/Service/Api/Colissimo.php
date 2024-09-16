@@ -116,7 +116,6 @@ class Colissimo
 
 
 
-
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -129,8 +128,7 @@ class Colissimo
                 ? $this->parseMonoPartBody($response)
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
-                
-               
+            
 
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;

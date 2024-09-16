@@ -296,7 +296,6 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/sav", [Controller::class, "sav"])->name('sav');
     Route::get("/getDetailsOrder", [Order::class, "getDetailsOrder"])->name('getDetailsOrder');
     // Update details order billing and shipping
-    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
     Route::post("/generateHistory", [Order::class, "generateHistory"])->name('history.generate');
     Route::get("/leaderHistory", [Order::class, "leaderHistory"])->name('leader.history');
     Route::get("/ordersDetails", [Order::class, "ordersDetails"])->name('ordersDetails');
@@ -309,6 +308,7 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
 
 // ADMIN - CHEF D'ÉQUIPE & EMBALLEUR & SAV
 Route::group(['middleware' => ['auth', 'role:1,4,3,6']], function () {
+    Route::post("/updateDetailsOrders", [Order::class, "updateDetailsOrders"])->name('updateDetailsOrders');
     Route::post("/getTrackingStatus", [Order::class, "getTrackingStatus"])->name('getTrackingStatus');
 });
 
