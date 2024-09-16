@@ -948,6 +948,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
      public function getOrderidfact($ref_commande,$indexs){
          // recupérer id de la commande...
+
+         dd('zapo');
          
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
@@ -965,6 +967,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
       
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
+
+
+            // je veux recupérer les infos caisse et tickera.
+
              
             
             // traiter le retour de la facture
