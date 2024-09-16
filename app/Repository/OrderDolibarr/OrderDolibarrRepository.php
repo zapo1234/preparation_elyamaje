@@ -987,7 +987,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
               // aller cherher dans la table tickera les code
               $data_ticket_code = DB::table('tickera')
-              ->select('code_reduction','ticket_id') // Spécifiez les colonnes à sélectionner
+              ->select('code_reduction') // Spécifiez les colonnes à sélectionner
                ->whereIn('ticket_id', $ref_ticket)
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
