@@ -251,7 +251,7 @@ class TiersController extends BaseController
                 $ids = explode(',',$id_order);
                 
                 if($ids[1]==1){
-                  if(strpos($valus['idw'],$chaine)===false){
+                  if(strpos($valus['idw'],$chaine)===false OR strpos($valus['idw'],$cahine1)===false){
                     $array_final[] = $valus['idw'];
 
                   }
@@ -260,10 +260,9 @@ class TiersController extends BaseController
       }
 
       // recupérer les id order qui sont en payé
-      $array_finale = array_filter($array_final);
+         $array_finale = array_filter($array_final);
 
-        
-         // recupérer les ids de produits dans ce intervale.
+        // recupérer les ids de produits dans ce intervale.
          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->whereRaw('LENGTH(order_id) < 10')->get();
 
          $name_list = json_encode($posts);
