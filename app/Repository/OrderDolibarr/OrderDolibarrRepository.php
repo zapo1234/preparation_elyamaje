@@ -974,7 +974,23 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              ->get(); // Récupérer les résultats
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
-             dd($data_tickera);
+            // va recupérer les code associe dans prepa_tickera via la ref tocket_id
+              $ref_ticket =[];
+              $data_montant =[];
+
+              foreach($data_tickera as $value){
+               $ref_ticket[] = $value['ref_ticket'];
+               $data_montant[] = $value['amount_payement'];
+              }
+
+              // aller cherher dans la table tickera les code
+
+               $data_ticket_code = DB::table('payement_caisse')
+              ->select('code_reduction') // Spécifiez les colonnes à sélectionner
+               ->whereIn('ticket_id', $ref_ticket)
+               ->get();
+                $data_tickeras = json_decode($data_ticket_code,true);
+               dd($data_tickeras);
 
             
             // traiter le retour de la facture
