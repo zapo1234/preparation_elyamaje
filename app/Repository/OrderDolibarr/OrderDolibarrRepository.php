@@ -1001,10 +1001,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                 $down_tickera =[];
                 foreach($data_code_finish as $vk){
                    foreach($data_montant as $vd){
-                      $down_tickera[] =[
-                        $vk=> $vd
-                      ];
-                    }
+                      $down_tickera[$vk] = $vd;
+                   }
                 }
 
                 dd($down_tickera);
