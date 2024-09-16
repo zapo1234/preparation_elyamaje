@@ -419,10 +419,10 @@ class  Construncstocks
       public function listcategories()
       {
           // Martial
-     $method = "GET";
-     // recupérer les clé Api dolibar transfertx........
-      $apiKey = env('KEY_API_DOLIBAR'); 
-      $apiUrl = env('KEY_API_URL');
+         $method = "GET";
+        // recupérer les clé Api dolibar transfertx........
+          $apiKey = env('KEY_API_DOLIBAR'); 
+         $apiUrl = env('KEY_API_URL');
 
       // recupérer les appels via dolibar directement.
      $data = DB::connection('mysql2')->select("SELECT rowid,label,barcode,price_ttc,tosell FROM llxyq_product");
