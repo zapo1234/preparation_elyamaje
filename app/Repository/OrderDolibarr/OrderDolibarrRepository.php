@@ -978,9 +978,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
               $ref_ticket =[];
               $data_montant =[];
 
-              dd($data_tickera);
-
               foreach($data_tickera as $value){
+               dd($value);
                $ref_ticket[] = $value['ref_ticket'];
                $data_montant[] = $value['amount_payement'];
               }
