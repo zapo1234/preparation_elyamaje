@@ -995,9 +995,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
                    $data_code[] = $vals['code_reduction'];
                }
-               dump($ref_ticket);
-               dump($data_montant);
-              dd($data_code);
+               
+                dump($data_code);
+                $data_code_finish = array_reverse($data_code);
+                dd($data_code_finish);
             // traiter le retour de la facture
            // verifions l'existence des resultats.
             if(count($result)!=0){
