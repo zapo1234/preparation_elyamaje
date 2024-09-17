@@ -242,6 +242,8 @@ class TiersController extends BaseController
       // chercher les id de commande facture et en payé pour cette journée
       $array_final =[];
       $array_finale =[];
+      $chaine="cado";
+      $chaine1 ="gala";
       foreach($name_list as $valus){
 
            $id_order = array_search($valus['fk_object'],$data_ids);
@@ -249,16 +251,18 @@ class TiersController extends BaseController
                 $ids = explode(',',$id_order);
                 
                 if($ids[1]==1){
-                  $array_final[] = $valus['idw'];
+                  if(strpos($valus['idw'],$chaine)===false OR strpos($valus['idw'],$chaine1)===false){
+                    $array_final[] = $valus['idw'];
+
+                  }
                 }
             }
       }
 
       // recupérer les id order qui sont en payé
-      $array_finale = array_filter($array_final);
+         $array_finale = array_filter($array_final);
 
-        
-         // recupérer les ids de produits dans ce intervale.
+        // recupérer les ids de produits dans ce intervale.
          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->whereRaw('LENGTH(order_id) < 10')->get();
 
          $name_list = json_encode($posts);
@@ -282,12 +286,12 @@ class TiersController extends BaseController
          }
    
          if(count($diff_array)==0){
-            $alert = "Toutes les commandes ont bien été facturées le $datet";
+            $alert = "Toutes les commandes ont bien été facturées et terminées le $datet";
          } elseif(count($diff_array)==1) {
-            $alert = "Attention nous avons une commande non facturée dans dolibarr le $datet, voir le N° $list_commande";
+            $alert = "Attention nous avons un probleme sur cette commmandes(verifier) le $datet, voir le N° $list_commande";
          } else {
             $nombre = count($diff_array);
-            $alert="Attention nous avons $nombre commandes non facturées dans dolibarr le $datet, voir les N° suivants : $list_commande";
+            $alert="Attention nous avons peut etre des problemes $nombre commandes(vérifier la facturation ou le status dans preparation) le $datet, voir les N° suivants : $list_commande";
          }
          
 
