@@ -2188,8 +2188,7 @@ class Admin extends BaseController
         }
     }
 
-    function updateProducts(){      
-
+    function updateProducts() {      
         try {
             $res = $this->construcstocks->updateProductsCaisse();
            
@@ -2202,6 +2201,11 @@ class Admin extends BaseController
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    
-   
+
+    public function getParticipant(){
+        $participants = DB::table('tickera')->get()->toArray();
+        $participants = json_encode($participants);
+        $participants = json_decode($participants, true);
+        return view('admin.participants',["participants" => $participants]);
+    } 
 }
