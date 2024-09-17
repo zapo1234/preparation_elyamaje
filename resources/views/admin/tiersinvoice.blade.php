@@ -87,6 +87,7 @@
          <!-- Total de la facture -->
          <div style="margin-top: 20px; width:70%;" id="total">
             <p><strong>HT:  </strong>{{ number_format($total_ttc-$total_ttc*20/100, 2, ',', '') }} €</p>
+            
             <p><strong>TVA:    </strong> 20%</p>
             
             <p><strong>TTC (+ Frais de port - réduction):  </strong>{{ number_format($total_ttc, 2, ',', '') }} €</p>

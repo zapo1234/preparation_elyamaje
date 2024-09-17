@@ -991,9 +991,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
                 // recupérer dans un tableau unique les data code
+                
                foreach($data_tickeras as $vals){
-
-                   $data_code[] = $vals['code_reduction'];
+                  $data_code[] = $vals['code_reduction'];
                }
                
                // retourner l'ordre du tableau.
@@ -1005,7 +1005,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                       ];
                }
 
-                dd($down_tickera);
+               
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
@@ -1067,9 +1067,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $remise = $remise_true*100;
          
           // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera);
          // insert dans la base de données...
-          $datas_promo =[
+         /* $datas_promo =[
          'id_commande'=>$id_commande,
          'code_promo'=>$code_promo,
          'percent'=>$percent,
@@ -1080,12 +1080,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
           
          // insert les données dans la base de données.
            DB::table('code_promos')->insert($datas_promo);
+         */
           return $ref_order;
       }
       else{
              // afficher une erreur ....
              // insert dans la table des erreur log.
-             $message =" Attention la commande Beauty proof paris $id_commande ne contient pas de produits !";
+             $message =" Attention la commande au $id_commande ne contient pas de produits !";
              $datas = [
                'order_id'=> $id_commande,
                'message'=> $message,
