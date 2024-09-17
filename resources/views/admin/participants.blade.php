@@ -21,12 +21,12 @@
 					</div>
                     <div class="card card_table_mobile_responsive">
                         <div class="card-body">
-                            <!-- <div class="d-flex justify-content-center">
+                            <div class="d-flex justify-content-center">
                                 <div class="loading spinner-border text-dark" role="status"> 
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
-                            </div> -->
-                            <table id="example" class="table_mobile_responsive w-100 table table-striped table-bordered">
+                            </div>
+                            <table id="example" class="d-none table_mobile_responsive w-100 table table-striped table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Nom</th>
@@ -65,7 +65,10 @@
 
         $(document).ready(function() {
             $('#example').DataTable({
-                
+                "initComplete": function(settings, json) {
+                    $(".loading").addClass('d-none')
+                    $("#example").removeClass('d-none')
+                },
             })
         })
 
