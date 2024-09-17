@@ -302,6 +302,8 @@ Route::group(['middleware' => ['auth', 'role:1,4,6']], function () {
     Route::get("/cashierWaiting", [Admin::class, "cashierWaiting"])->name('admin.cashierWaiting'); 
     Route::get("/beautyProfHistory", [Admin::class, "beautyProfHistory"])->name('admin.beautyProfHistory'); 
 
+    // Liste les participants du gala elyamaje Sept - 2024
+    Route::get("/getParticipant", [Admin::class, "getParticipant"])->name('getParticipant'); 
     Route::post("/returnOrder", [Order::class, "returnOrder"])->name('returnOrder'); 
 
 });

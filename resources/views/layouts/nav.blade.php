@@ -262,6 +262,7 @@
                         <li><a href="{{ url('cashier') }}">Caisse</a></li>
                         <li><a href="{{ url('beautyProfHistory') }}">Historique</a></li>
                         <li><a href="{{ url('stockscat') }}">Gestion stocks</a></li>
+                        <li><a href="{{ url('getParticipant') }}">Participants</a></li>
                         <li><a href="{{ url('generateinvoices') }}">Renvoyer une facture au client</a></li>
                     </ul>
                 </li>
