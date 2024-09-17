@@ -86,11 +86,13 @@
 
          <!-- Total de la facture -->
          <div style="margin-top: 20px; width:70%;" id="total">
-            <p><strong>HT:  </strong>{{ number_format($total_ttc-$total_ttc*20/100, 2, ',', '') }} €</p>
-            
+            <p><strong>Total HT:  </strong>{{ number_format($total_ttc-$total_ttc*20/100, 2, ',', '') }} €</p>
+            @foreach($down_tickera as $key => $value)
+            <p>Code reduction : <strong>{{ $key}}  valeur :{{ $value  }}</p><br/>
+             @endforeach
             <p><strong>TVA:    </strong> 20%</p>
             
-            <p><strong>TTC (+ Frais de port - réduction):  </strong>{{ number_format($total_ttc, 2, ',', '') }} €</p>
+            <p><strong>Total TTC (+ Frais de port - réduction):  </strong>{{ number_format($total_ttc, 2, ',', '') }} €</p>
             {{-- <p><strong>Remise {{$remise }} %    </strong>:  {{ number_format($total_ttc*$remise/100, 2, ',', '') }} €</p>
             <p><strong>Total T.T.C après remise :   </strong>{{ number_format($total_ttc-$total_ttc*$remise/100, 2, ',', '') }} €</p> --}}
         </div>
