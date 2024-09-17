@@ -1205,7 +1205,8 @@ class Transfertext {
                    $double_pai = array('CB,LIQ','LIQ,CB');// recupérer la methode de paiment....
                    $array_revolut = array('revolut_pay','revolut_cc');
                    $array_scalapay = array('wc-scalapay-payin3','wc-scalapay-payin4');
-                  
+                   $array_paiments4 = array('CHQ');// chéque.
+                   $array_facture_dolibar = array('VIR');
                    // commande vient pas du gala donc par internet ou devis
                   if($account_multiple=="nogala"){
                       if(in_array($account_name,$array_paiment)) {
@@ -1240,6 +1241,12 @@ class Transfertext {
                          $account_id=3; // PROD
                          $paimentid =3;// PROD
                        }
+
+                       elseif(in_array($account_name,$array_paiments4)){
+                        // cheque
+                         $account_id=5; // PROD
+                         $paimentid=5;// PROD
+                        }
 
                        elseif(in_array($account_name,$array_paimentss)){
                        // CB
