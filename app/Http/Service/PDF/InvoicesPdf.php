@@ -38,7 +38,7 @@ class InvoicesPdf
 
             //$filePaths = 'others_invoices/'.$ref_order.'.pdf';
 
-            $filePaths = 'galaM_2024_invoices/'.$ref_order.'.pdf';
+            $filePaths ='galaM_2024_invoices/'.$ref_order.'.pdf';
 
             // Enregistrement du fichier PDF dans le répertoire de stockage....
             Storage::put($filePaths, $pdfContent);
