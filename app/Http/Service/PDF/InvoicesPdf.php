@@ -38,7 +38,7 @@ class InvoicesPdf
 
             //$filePaths = 'others_invoices/'.$ref_order.'.pdf';
 
-            $filePaths = 'invoices/'.$ref_order.'.pdf';
+            $filePaths = 'galaM_2024_invoices/'.$ref_order.'.pdf';
 
             // Enregistrement du fichier PDF dans le répertoire de stockage....
             Storage::put($filePaths, $pdfContent);
@@ -46,8 +46,8 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             $to="adrien@elyamaje.com";
-             // $to ="zapomartial@yahoo.fr";
+             //$to="adrien@elyamaje.com";
+              $to ="emilie@elyamaje.com";
              //$to = $tiers['email'];
             // envoi de mail au client.
             
