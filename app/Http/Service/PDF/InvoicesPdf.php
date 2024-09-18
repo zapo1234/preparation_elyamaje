@@ -34,20 +34,16 @@ class InvoicesPdf
             $pdf =  $this->pdf->loadView('admin.tiersinvoice',['date'=>$date,'data_line_order'=>$data_line_order,'tiers'=>$tiers,'ref_order'=>$ref_order,'total_ht'=>$total_ht,'total_ttc'=>$total_ttc,'code_promo'=>$code_promo,'remise'=>$remise,'down_tickera'=>$down_tickera,
            'shipping_amount'=>$shipping_amount]);
             $pdfContent = $pdf->output();
-            $filePath = 'invoices/'.$ref_order.'.pdf'; // Emplacement dans le dossier storage/app
-
-            //$filePaths = 'others_invoices/'.$ref_order.'.pdf';
-
-            $filePaths ='galaM_2024_invoices/'.$ref_order.'.pdf';
-
-            // Enregistrement du fichier PDF dans le répertoire de stockage....
+        
+             $filePaths ='galaM_2024_invoices/'.$ref_order.'.pdf';
+             // Enregistrement du fichier PDF dans le répertoire de stockage....
             Storage::put($filePaths, $pdfContent);
             //$path_invoices = "storage/app/$filePath";
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
              //$to="adrien@elyamaje.com";
-              $to ="emilie@elyamaje.com";
+              $to ="zapomartial@yahoo.fr";
              //$to = $tiers['email'];
             // envoi de mail au client.
             
