@@ -390,4 +390,47 @@ class AddlineInvoicePay
 
 
     }
+
+    public function reconstruirecdo($inv,$ref,$newCommandepaye, $newbank,$apiKey, $apiUrl){
+    // dans le cas de kdo 100% reconstruire le montant.
+    $response_num = $this->api->CallAPI("POST", $apiKey, $apiUrl . "invoices/" . $inv . "/payments", json_encode($newbank));
+    // Mettre à jour la facture
+    $this->api->CallAPI("PUT", $apiKey, $apiUrl . "invoices/" . $inv, json_encode($newCommandepaye));
+    // Faire un select sur la table paiement
+     $data = DB::connection('mysql2')->select("SELECT rowid, ref, num_paiement, fk_bank,amount FROM llxyq_paiement WHERE rowid = ?", [$response_num]);
+    $name_list = json_decode(json_encode($data), true);
+
+      // Préparer les variables pour les updates
+      $ref_paiement = $name_list[0]['ref'];
+      $index_row = explode('-', $ref_paiement);
+      $index_pay = $index_row[1] + 1;
+      $fk_banks = $name_list[0]['fk_bank'];
+      $fk_bank = $name_list[0]['fk_bank'] + 1; // Le fk bank suivant
+      $ref_definitive = $index_row[0] . '-' . $index_pay;
+      $rowid_auto = $name_list[0]['rowid'] + 1; // Ligne insérée suivante
+      $fk_account = 50; // Espèce Gala
+      $paimentid = 4; // Méthode paiement espèce
+      $num_paiement = $name_list[0]['num_paiement'];
+
+      $amount = -$name_list[0]['amount'];// fournir un nombre negatif pour kdo
+      
+      // Reconstruire le montant cb de la facture
+      DB::connection('mysql2')
+          ->table('llxyq_paiement_facture')
+          ->where('fk_facture', '=', $inv)
+          ->update(['amount' => $amount]);
+      
+      // Modifier le montant dans la ligne de paiement
+      DB::connection('mysql2')
+          ->table('llxyq_paiement')
+          ->where('rowid', '=', $response_num)
+          ->update(['amount' => $amount, 'multicurrency_amount' => $amount]);
+      
+      // Modifier dans l'écriture de la banque avec le montant
+      DB::connection('mysql2')
+          ->table('llxyq_bank')
+          ->where('rowid', '=', $fk_banks)
+          ->update(['amount' => $amount]);
+
+    }
 }

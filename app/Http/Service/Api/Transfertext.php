@@ -1442,9 +1442,9 @@ class Transfertext {
                   }
               
                   if ($account_multiple == "kdo") { // 100% cadeaux
-                      // Lier les factures Dolibarr à un moyen de paiement et banque
-                      $this->api->CallAPI("POST", $apiKey, $apiUrl . "invoices/" . $inv . "/payments", json_encode($newbank));
-                      $this->api->CallAPI("PUT", $apiKey, $apiUrl . "invoices/" . $inv, json_encode($newCommandepaye));
+                     // modifier la ligne de paiment pour attribué un debit.
+                      $ref = $response['ref']; 
+                      $this->addlineinvoice->reconstruirecdo($inv,$ref,$newCommandepaye, $newbank,$apiKey, $apiUrl);
                   }
               
                   if ($account_multiple == "cbtotal") { // 100% CB

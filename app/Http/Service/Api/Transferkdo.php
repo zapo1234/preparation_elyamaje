@@ -528,19 +528,19 @@ class Transferkdo
                                                  }
                                                  
 
-                                               $tva_product = 0;
+                                               $tva_product = 20;
                                                $data_product[] = [
                                                 "desc"=>$desc,
                                                 "remise_percent"=> $donnees['discount_amount'],
                                                 "multicurrency_subprice"=> floatval($values['subtotal']),
                                                 "multicurrency_total_ht" => floatval($values['subtotal']),
-                                                "multicurrency_total_tva" => 0,
-                                                "multicurrency_total_ttc" => floatval($values['total']),
+                                                "multicurrency_total_tva" => floatval($values['total_tax']),
+                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
                                                 "fk_product" => $fk_product,//  insert id product dans dolibar.
-                                                "tva_tx" => "",
+                                                "tva_tx" => floatval($tva_product),
                                                 "ref_ext" => $socid, // simuler un champ pour socid pour identifié les produit du tiers dans la boucle /****** tres bon
                                         ];
 

@@ -92,6 +92,7 @@
             <p>Code reduction :  {{ $key}}  valeur :{{ $valus  }} €</p>
              @endforeach
              @endforeach
+             <p><strong>Frais de port </strong> : {{ $shipping_amount }} </p>
             <p><strong>TVA:    </strong> 20%</p>
             
             <p><strong> Total TTC (+ Frais de port - réduction):  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
