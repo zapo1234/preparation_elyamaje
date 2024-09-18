@@ -42,7 +42,7 @@ class InvoicesPdf
 
             // Enregistrement du fichier PDF dans le répertoire de stockage....
             Storage::put($filePaths, $pdfContent);
-            $path_invoices = "storage/app/$filePath";
+            //$path_invoices = "storage/app/$filePath";
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
