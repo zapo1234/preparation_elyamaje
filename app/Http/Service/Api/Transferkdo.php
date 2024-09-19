@@ -529,7 +529,7 @@ class Transferkdo
                                                  
                                                  if($donnees['gala']=="true"){
                                                   $total_ht = $values['subtotal']*120/100;
-                                                  $total_ttc = $values['subtotal'];inv
+                                                  $total_ttc = $values['subtotal'];
                                                }else{
                                                    $total_ht = $values['subtotal'];
                                                    $total_ttc = $values['total']+$values['total_tax'];

@@ -2121,8 +2121,15 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
-
-      dd('zapo');
+      
+    $datas_facture = DB::connection('mysql2')->select("
+    SELECT fk_facture, GROUP_CONCAT(fk_product) AS products
+    FROM llxyq_facturedet
+    GROUP BY fk_facture");
+    $datas = json_encode($datas_facture);
+    $datas = json_decode($datas, true);
+    dd($datas);
+      
       $message="";
       $css="no";
       $divid="no";
@@ -2154,7 +2161,7 @@ class Admin extends BaseController
   
 
     public function generatefactures(Request $request){
-        dd('zapo');
+        
 
         $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
