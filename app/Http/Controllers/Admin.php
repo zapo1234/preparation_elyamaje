@@ -2137,7 +2137,7 @@ class Admin extends BaseController
 
      if(strpos($datas[$i]['products'], $fk_product_billet)!==false){
          // je veux compter le nombre de product si superieur a 2
-         $nombre_fois = str_word_count($datas[$i]['products']);
+         $nombre_fois = substr_count($datas[$i]['products'],",");
 
         if($nombre_fois > 1){
            $data_fk_invoice[] = $datas[$i]['fk_facture'];
