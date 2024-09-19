@@ -2128,17 +2128,15 @@ class Admin extends BaseController
     GROUP BY fk_facture");
     $datas = json_encode($datas_facture);
     $datas = json_decode($datas, true);
+    dd($datas);
     $fk_product_billet = "6838";
-    $data_fk_invoice =[];
-    foreach($datas as $key => $values){
 
-        dd($values['fk_product']);
+    foreach($datas as $key => $values){
      // verifier si le fk_product est dans une chaine
      // et voir il est combien de fois
-      
-    }
 
-    dd($data_fk_invoice);
+
+    }
       
       $message="";
       $css="no";
