@@ -2121,6 +2121,8 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
+
+      dd('zapo');
       $message="";
       $css="no";
       $divid="no";
