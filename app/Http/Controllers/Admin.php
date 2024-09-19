@@ -2134,16 +2134,11 @@ class Admin extends BaseController
     foreach($datas as $key => $values){
      // verifier si le fk_product est dans une chain
      foreach($values as $value){
-       if(strpos($value['products'],$fk_product_billet)!==false){
-          $data_fk_invoice[] = $value['fk_product'];
-
-       }
-
-      }
+        dd($value);
+     }
      
     }
 
-    dd($data_fk_invoice);
       
       $message="";
       $css="no";
