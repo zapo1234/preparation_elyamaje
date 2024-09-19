@@ -2140,6 +2140,7 @@ class Admin extends BaseController
      
     }
 
+    dd($data_fk_invoice);
       
       $message="";
       $css="no";
