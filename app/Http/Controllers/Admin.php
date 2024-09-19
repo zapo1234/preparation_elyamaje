@@ -2154,6 +2154,7 @@ class Admin extends BaseController
   
 
     public function generatefactures(Request $request){
+        dd('zapo');
 
         $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)

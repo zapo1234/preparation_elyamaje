@@ -527,15 +527,30 @@ class Transferkdo
                                                       // recupérer les produit en kdo avec leur prix initial.
                                                  }
                                                  
+                                                 if($donnees['gala']=="true"){
+                                                  $total_ht = $values['subtotal']*120/100;
+                                                  $total_ttc = $values['subtotal'];inv
+                                               }else{
+                                                   $total_ht = $values['subtotal'];
+                                                   $total_ttc = $values['total']+$values['total_tax'];
+                                               }
+                                             
+                                                 if($donnees['gala']==true){
+                                                  $total_ht = $values['subtotal']*120/100;
+                                                  $total_ttc = $values['subtotal'];
+                                                 }else{
+                                                  $total_ht = $values['subtotal'];
+                                                  $total_ttc = $values['total']+$values['total_tax'];
+                                                 }  
 
                                                $tva_product = 20;
                                                $data_product[] = [
                                                 "desc"=>$desc,
                                                 "remise_percent"=> $donnees['discount_amount'],
-                                                "multicurrency_subprice"=> floatval($values['subtotal']),
-                                                "multicurrency_total_ht" => floatval($values['subtotal']),
+                                                "multicurrency_subprice"=> floatval($total_ht),
+                                                "multicurrency_total_ht" => floatval($total_ht);
                                                 "multicurrency_total_tva" => floatval($values['total_tax']),
-                                                "multicurrency_total_ttc" => floatval($values['total']+$values['total_tax']),
+                                                "multicurrency_total_ttc" => floatval($total_ttc),
                                                 "product_ref" => $ref, // reference du produit.(sku wwocommerce/ref produit dans facture invoice)
                                                 "product_label" =>$product_label,
                                                 "qty" => $values['quantity'],
