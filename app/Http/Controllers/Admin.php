@@ -2131,11 +2131,10 @@ class Admin extends BaseController
     //dd($datas);
     $fk_product_billet = "6838";
    $data_fk_invoice =[];
-    for($i=0; $i<count($datas); $i++){
      // verifier si le fk_product est dans une chain
     dd($datas[0]['fk_product']);
      
-    }
+    
 
     dd($data_fk_invoice);
       
