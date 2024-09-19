@@ -2131,9 +2131,9 @@ class Admin extends BaseController
     //dd($datas);
     $fk_product_billet = "6838";
    $data_fk_invoice =[];
-    foreach($datas as  $values){
+    for($i=0; $i<count($datas); $i++){
      // verifier si le fk_product est dans une chain
-    dump($values);
+    dd($datas[0]['fk_product']);
      
     }
 
