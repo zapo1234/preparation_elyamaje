@@ -2135,7 +2135,7 @@ class Admin extends BaseController
      // verifier si le fk_product est dans une chain
      foreach($values as $value){
        if(strpos($value['products'],$fk_product_billet)!=false){
-          $data_fk_invoice = $value['fk_product'];
+          $data_fk_invoice[] = $value['fk_product'];
 
        }
 
