@@ -2128,7 +2128,6 @@ class Admin extends BaseController
     GROUP BY fk_facture");
     $datas = json_encode($datas_facture);
     $datas = json_decode($datas, true);
-    dd($datas);
     $fk_product_billet = "6838";
     $data_fk_invoice =[];
     foreach($datas as $key => $values){
