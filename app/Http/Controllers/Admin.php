@@ -2134,7 +2134,7 @@ class Admin extends BaseController
     foreach($datas as $key => $values){
      // verifier si le fk_product est dans une chain
      foreach($values as $value){
-        dd($value);
+        dd($value['fk_product']);
      }
      
     }
