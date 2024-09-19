@@ -528,8 +528,7 @@ class Transferkdo
                                                  }
                                                  
                                                 
-
-                                               $tva_product = 20;
+                                                $tva_product = 20;
                                                $data_product[] = [
                                                 "desc"=>$desc,
                                                 "remise_percent"=> $donnees['discount_amount'],
