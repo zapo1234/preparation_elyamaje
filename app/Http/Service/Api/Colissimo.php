@@ -22,7 +22,6 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
 
-       
         $productCode = $this->getProductCode($order);
 
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
@@ -489,10 +488,11 @@ class Colissimo
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
             if(in_array($item['product_id'], $items)){
+                // dump( $item['total']);
                 $customsArticle[] = [
                     'description'   => $item['name'],
                     'quantity'      => $item['quantity'],
-                    'value'         => $item['total'] > 0 ? $item['total'] : ($item['real_price'] != 0 ? $item['real_price'] : 0.01),
+                    'value'         => $item['total'] > 0 ? $item['total'] : (isset($item['real_price']) && $item['real_price'] != 0 ? $item['real_price'] : 0.01),
                     'currency'      => config('app.currency'),
                     'artref'        => $item['ref'] ?? '',
                     'originalIdent' => 'A',
@@ -501,7 +501,6 @@ class Colissimo
                     'weight'        => is_numeric($item['weight']) ? $item['weight'] : 0
                 ];
             }
-           
         }   
         return $customsArticle;
     }
