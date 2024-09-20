@@ -2150,13 +2150,12 @@ class Admin extends BaseController
      
     
     // va me recupérer dans la table extrafields, facture
-    $datas_fac = DB::connection('mysql2')->select("
-    SELECT idw
-    FROM llxyq_facture_extrafields
-    WHERE fk_objectt IN (:data_fk_invoice)", ['data_fk_invoice' => $data_fk_invoice]);
+    $datas_fac = DB::connection('mysql2')->table('llxyq_facture_extrafields')
+    ->whereIn('fk_objectt', $data_fk_invoice)
+    ->select('idw')
+    ->get();
 
-    dd($datas_fac);
-
+     dd($datas_fac);
       
       $message="";
       $css="no";
