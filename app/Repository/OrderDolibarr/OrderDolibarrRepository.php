@@ -959,7 +959,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
              ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
             'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
-            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name')
+            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name','orders_doli.shipping_amount')
             ->where('orders_doli.id','=',$id_commande)
             ->get();
       
@@ -991,9 +991,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
                 // recupérer dans un tableau unique les data code
+                
                foreach($data_tickeras as $vals){
-
-                   $data_code[] = $vals['code_reduction'];
+                  $data_code[] = $vals['code_reduction'];
                }
                
                // retourner l'ordre du tableau.
@@ -1005,7 +1005,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                       ];
                }
 
-                dd($down_tickera);
+               
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
@@ -1041,6 +1041,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
+           // les frais de port
+           $shipping_amount = $result[0]['shipping_amount'];
            // definir le pourcentage du code promo envoyé  au tiers
         
            if($total_ttc >= 80){
@@ -1065,11 +1067,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
-         
+      
           // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount);
          // insert dans la base de données...
-          $datas_promo =[
+         /* $datas_promo =[
          'id_commande'=>$id_commande,
          'code_promo'=>$code_promo,
          'percent'=>$percent,
@@ -1080,12 +1082,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
           
          // insert les données dans la base de données.
            DB::table('code_promos')->insert($datas_promo);
+         */
           return $ref_order;
       }
       else{
              // afficher une erreur ....
              // insert dans la table des erreur log.
-             $message =" Attention la commande Beauty proof paris $id_commande ne contient pas de produits !";
+             $message =" Attention la commande au $id_commande ne contient pas de produits !";
              $datas = [
                'order_id'=> $id_commande,
                'message'=> $message,

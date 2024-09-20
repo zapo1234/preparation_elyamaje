@@ -719,8 +719,8 @@ class Admin extends BaseController
 
             try {
 
-                //$this->transfers->Transfertext($order);
-                $this->factorder->Transferorder($order);  
+                $this->transfers->Transfertext($order);
+                //$this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -2121,6 +2121,34 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
+      
+    $datas_facture = DB::connection('mysql2')->select("
+    SELECT fk_facture, GROUP_CONCAT(fk_product) AS products
+    FROM llxyq_facturedet
+    GROUP BY fk_facture");
+    $datas = json_encode($datas_facture);
+    $datas = json_decode($datas, true);
+    //dd($datas);
+    $fk_product_billet = "6838";
+   $data_fk_invoice =[];
+     // verifier si le fk_product est dans une chain
+     for($i=0; $i < count($datas);$i++){
+    //dd($datas[0]['fk_facture']);
+
+     if(strpos($datas[$i]['products'], $fk_product_billet)!==false){
+         // je veux compter le nombre de product si superieur a 2
+         $nombre_fois = substr_count($datas[$i]['products'],",");
+
+        if($nombre_fois > 1){
+           $data_fk_invoice[] = $datas[$i]['fk_facture'];
+        }
+     } 
+
+
+     }
+     
+    dd($data_fk_invoice);
+      
       $message="";
       $css="no";
       $divid="no";
@@ -2152,6 +2180,7 @@ class Admin extends BaseController
   
 
     public function generatefactures(Request $request){
+        
 
         $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
