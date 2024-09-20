@@ -2129,7 +2129,6 @@ class Admin extends BaseController
     $datas = json_encode($datas_facture);
     $datas = json_decode($datas, true);
 
-    dd($datas);
     //dd($datas);
     $fk_product_billet = "6838";
    $data_fk_invoice =[];
@@ -2141,7 +2140,7 @@ class Admin extends BaseController
          // je veux compter le nombre de product si superieur a 2
          $nombre_fois = substr_count($datas[$i]['products'],",");
 
-        if($nombre_fois > 1){
+        if($nombre_fois > 0){
            $data_fk_invoice[] = $datas[$i]['fk_facture'];
         }
      } 
