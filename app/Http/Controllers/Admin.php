@@ -2155,7 +2155,7 @@ class Admin extends BaseController
     ->select('idw')
     ->get();
 
-    $data = json_encode($datas_fact);
+    $data = json_encode($datas_fac);
     $datv = json_decode($data, true);
 
     dd($datv);
