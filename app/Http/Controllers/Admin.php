@@ -2160,7 +2160,7 @@ class Admin extends BaseController
 
     //insert dans une base de données
     $dat =[];
-
+     dd($datv);
     for($i=0; $i<count($datv); $i++){
        $dat[]=$datv[$i]['idw'],
     }
