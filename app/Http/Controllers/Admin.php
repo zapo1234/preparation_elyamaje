@@ -2161,11 +2161,12 @@ class Admin extends BaseController
     //insert dans une base de données
     $dat =[];
 
-    foreach($datv as $valus){
-
-        dd($valus);
+    for($i=0;  $i< count($datv); $i++){
+       $dat[]= $datv[$i]['idw'];
     }
-    DB::table('ids_dolibar')->insert($datv);
+
+    dd($dat);
+    DB::table('ids_dolibar')->insert($dat);
 
     dd($datv);
 
