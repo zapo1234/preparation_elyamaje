@@ -2168,9 +2168,9 @@ class Admin extends BaseController
        ];
     }
 
-    dd($dat);
-
-    DB::table('prepa_ids_dolibar')->insert($dat);
+foreach($dat as $val){
+  DB::table('prepa_ids_dolibar')->insert($val);
+ }
 
     dd($datv);
 
