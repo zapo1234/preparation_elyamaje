@@ -2159,7 +2159,6 @@ class Admin extends BaseController
     $datv = json_decode($data, true);
 
     //insert dans une base de données
-     dd($datv);
      $donnes =[];
      for($i=0; $i<count($datv); $i++){
      $donnes[] = $datv[$i]['idw'];
