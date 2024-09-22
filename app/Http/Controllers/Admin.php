@@ -2159,8 +2159,13 @@ class Admin extends BaseController
     $datv = json_decode($data, true);
 
     //insert dans une base de données
+    $dat =[];
 
-    //DB::table('ids_dolibar')->insert($datv);
+    foreach($datv as $values){
+
+        $dat[] = $values['idw'];
+    }
+    DB::table('ids_dolibar')->insert($datv);
 
     dd($datv);
 
