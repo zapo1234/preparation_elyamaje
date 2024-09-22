@@ -2157,7 +2157,6 @@ class Admin extends BaseController
 
     $data = json_encode($datas_fac);
     $datv = json_decode($data, true);
-
     //insert dans une base de données
      $donnes =[];
      for($i=0; $i<count($datv); $i++){
