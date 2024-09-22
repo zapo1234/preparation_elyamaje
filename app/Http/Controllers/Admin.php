@@ -2162,17 +2162,11 @@ class Admin extends BaseController
     $dat =[];
 
     for($i=0;  $i< count($datv); $i++){
-       $dat[]= [
-        'id_order'=>$datv[$i]['idw'],
+       $dat[]= $datv[$i]['idw'],
 
-       ];
+       
     }
-
-foreach($dat as $val){
-  DB::table('prepa_ids_dolibar')->insert($val);
- }
-
-    dd($datv);
+    dd($dat);
 
       
       $message="";
