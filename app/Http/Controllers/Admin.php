@@ -2162,8 +2162,13 @@ class Admin extends BaseController
     $dat =[];
 
     for($i=0;  $i< count($datv); $i++){
-       $dat[]= $datv[$i]['idw'];
+       $dat[]= [
+        'id_order'=>$datv[$i]['idw'];
+
+       ];
     }
+
+    dd($dat);
 
     DB::table('prepa_ids_dolibar')->insert($dat);
 
