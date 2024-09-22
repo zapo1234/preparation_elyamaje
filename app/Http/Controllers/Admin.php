@@ -2158,6 +2158,10 @@ class Admin extends BaseController
     $data = json_encode($datas_fac);
     $datv = json_decode($data, true);
 
+    //insert dans une base de données
+
+    DB::table('ids_dolibar')->insert($datv);
+
     dd($datv);
 
       
