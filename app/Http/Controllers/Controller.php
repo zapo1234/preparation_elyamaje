@@ -3108,7 +3108,7 @@ class Controller extends BaseController
         if($token == "lMxNFRyfpoh1gTs9HK3LqJtQtXxIkSN4k8G7Ia6ihkTB!U1k29Cf!Bz5414jiop"){
 
             $status = "completed";
-            $after = date('Y-m-d H:i:s', strtotime('-50 day'));
+            $after = date('Y-m-d H:i:s', strtotime('-100 day'));
             $per_page = 100;
             $page = 1;
             $orders = $this->api->getOrdersWoocommerce($status, $per_page, $page, $after);
