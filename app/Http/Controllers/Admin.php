@@ -2169,7 +2169,7 @@ class Admin extends BaseController
     }
 
 foreach($dat as $val){
-  dd($val);
+  DB::table('prepa_ids_dolibar')->insert($val);
  }
 
     dd($datv);
