@@ -2161,9 +2161,9 @@ class Admin extends BaseController
     //insert dans une base de données
     $dat =[];
 
-    foreach($datv as $values){
+    foreach($datv as $valus){
 
-        $dat[] = $values['idw'];
+        dd($valus);
     }
     DB::table('ids_dolibar')->insert($datv);
 
