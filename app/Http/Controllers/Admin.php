@@ -2164,7 +2164,6 @@ class Admin extends BaseController
     for($i=0;  $i< count($datv); $i++){
        $dat[]= $datv[$i]['idw'],
 
-       
     }
     dd($dat);
 
