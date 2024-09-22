@@ -2163,7 +2163,7 @@ class Admin extends BaseController
 
     for($i=0;  $i< count($datv); $i++){
        $dat[]= [
-        'id_order'=>$datv[$i]['idw'];
+        'id_order'=>$datv[$i]['idw'],
 
        ];
     }
