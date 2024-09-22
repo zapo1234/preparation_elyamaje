@@ -2160,7 +2160,7 @@ class Admin extends BaseController
 
     //insert dans une base de données
 
-    DB::table('ids_dolibar')->insert($datv);
+    //DB::table('ids_dolibar')->insert($datv);
 
     dd($datv);
 
