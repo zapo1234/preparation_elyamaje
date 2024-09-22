@@ -2159,15 +2159,8 @@ class Admin extends BaseController
     $datv = json_decode($data, true);
 
     //insert dans une base de données
-    $dat =[];
      dd($datv);
-    for($i=0; $i<count($datv); $i++){
-       $dat[]=$datv[$i]['idw'],
-    }
-    dd($dat);
-
-      
-      $message="";
+     $message="";
       $css="no";
       $divid="no";
        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
