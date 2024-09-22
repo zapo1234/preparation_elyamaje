@@ -2165,7 +2165,7 @@ class Admin extends BaseController
        $dat[]= $datv[$i]['idw'];
     }
 
-    DB::table('ids_dolibar')->insert($dat);
+    DB::table('prepa_ids_dolibar')->insert($dat);
 
     dd($datv);
 
