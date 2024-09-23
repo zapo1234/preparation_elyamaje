@@ -694,7 +694,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersPendingBeautyProf($ref_order, $date){
 
-      $date = $date ?? date('Y-m-d');
+      $date = $date != false ? $date : date('Y-m-d');
 
       if($ref_order){
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 

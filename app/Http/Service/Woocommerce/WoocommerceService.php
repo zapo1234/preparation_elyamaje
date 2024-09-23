@@ -195,9 +195,9 @@ class WoocommerceService
     $adress_2 = isset($adress[1]) ? $adress[1] : '';
 
     $transformOrder['billing'] = [
-      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['pname'],
+      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['name'],
       "last_name" => $orderDolibarr[0]['billing_pname'] != null ? $orderDolibarr[0]['billing_pname'] : 
-      ($orderDolibarr[0]['pname'] != $orderDolibarr[0]['pname'] ? $orderDolibarr[0]['pname'] : ''),
+      ($orderDolibarr[0]['name'] != $orderDolibarr[0]['pname'] ? $orderDolibarr[0]['pname'] : ''),
       "company" => $orderDolibarr[0]['billing_company'] ?? $orderDolibarr[0]['company'],
       "address_1" => $orderDolibarr[0]['billing_adresse'] ?? $adress_1,
       "address_2" => $adress_2,
