@@ -881,7 +881,7 @@ class Transfertext {
         ];
 
         // attribuer le compte bancaire.
-        $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));
+        $datetime = date('d-m-Y H:i:s', strtotime('+2 hours'));
         $d = DateTime::createFromFormat(
           'd-m-Y H:i:s',
           $datetime,
@@ -1378,7 +1378,7 @@ class Transfertext {
                  // liée la facture à un mode de rélgement
                 // convertir la date en datetime en timestamp.....
                 //$datetime = date('d-m-Y H:i:s');
-                $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
+                $datetime = date('d-m-Y H:i:s', strtotime('+2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
                 $d = DateTime::createFromFormat(
                 'd-m-Y H:i:s',
                  $datetime,
