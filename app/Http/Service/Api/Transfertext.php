@@ -658,8 +658,11 @@ class Transfertext {
                           $index_int=1;
                           $montant_fidelite = 0.000;
                       }else{
+                            //$index_int="";
+                            //$montant_fidelite = $donnees['total_order'];
                             $index_int="";
-                            $montant_fidelite = $donnees['total_order'];
+                            $total_shipping = $donnees['shipping_amount']*1.2;
+                            $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                       }
 
                     $data_options = [
