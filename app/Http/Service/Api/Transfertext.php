@@ -244,7 +244,7 @@ class Transfertext {
           //uniquement carte cdeaux
           if($val['payment_list']['amountCard']==0 && $val['payment_list']['amountSpecies']==0 && $val['payment_list']['amountDiscount']!=0){
             $chaine_index="kdo";
-            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// card && espece
+            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// 
           }
 
           //au cas elle as utilisé les 3(3emecas)
@@ -1165,7 +1165,7 @@ class Transfertext {
                      }
 
                        // quand y'a une carte bancaire et cado
-                     if($index_amount_true[2]=="cbcdo"){
+                     if($index_amount_true[2]=="cbcado"){
 
                           $index_m ="CB";
                           $moyen_paid =  array_search($index_m,$moyen_card);
