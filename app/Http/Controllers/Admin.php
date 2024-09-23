@@ -2128,6 +2128,7 @@ class Admin extends BaseController
     GROUP BY fk_facture");
     $datas = json_encode($datas_facture);
     $datas = json_decode($datas, true);
+
     //dd($datas);
     $fk_product_billet = "6838";
    $data_fk_invoice =[];
@@ -2139,7 +2140,7 @@ class Admin extends BaseController
          // je veux compter le nombre de product si superieur a 2
          $nombre_fois = substr_count($datas[$i]['products'],",");
 
-        if($nombre_fois > 1){
+        if($nombre_fois > 0){
            $data_fk_invoice[] = $datas[$i]['fk_facture'];
         }
      } 
@@ -2147,9 +2148,24 @@ class Admin extends BaseController
 
      }
      
-    dd($data_fk_invoice);
-      
-      $message="";
+    
+    // va me recupérer dans la table extrafields, facture
+    $datas_fac = DB::connection('mysql2')->table('llxyq_facture_extrafields')
+    ->whereIn('fk_object', $data_fk_invoice)
+    ->select('idw')
+    ->get();
+
+    $data = json_encode($datas_fac);
+    $datv = json_decode($data, true);
+    //insert dans une base de données
+     $donnes =[];
+     for($i=0; $i<count($datv); $i++){
+     $donnes[] = $datv[$i]['idw'];
+
+     }
+
+     dd($donnes);
+     $message="";
       $css="no";
       $divid="no";
        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
