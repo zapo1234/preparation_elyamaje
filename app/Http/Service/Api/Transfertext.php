@@ -244,7 +244,7 @@ class Transfertext {
           //uniquement carte cdeaux
           if($val['payment_list']['amountCard']==0 && $val['payment_list']['amountSpecies']==0 && $val['payment_list']['amountDiscount']!=0){
             $chaine_index="kdo";
-            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// card && espece
+            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// 
           }
 
           //au cas elle as utilisé les 3(3emecas)
@@ -658,8 +658,11 @@ class Transfertext {
                           $index_int=1;
                           $montant_fidelite = 0.000;
                       }else{
+                            //$index_int="";
+                            //$montant_fidelite = $donnees['total_order'];
                             $index_int="";
-                            $montant_fidelite = $donnees['total_order'];
+                            $total_shipping = $donnees['shipping_amount']*1.2;
+                            $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                       }
 
                     $data_options = [
@@ -878,7 +881,7 @@ class Transfertext {
         ];
 
         // attribuer le compte bancaire.
-        $datetime = date('d-m-Y H:i:s');
+        $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));
         $d = DateTime::createFromFormat(
           'd-m-Y H:i:s',
           $datetime,
@@ -1134,7 +1137,7 @@ class Transfertext {
 
                     // iniquement que card kdo
                       if($index_amount_true[2]=="kdo"){
-                       $index_m ="LIQ";
+                       $index_m ="CADO";
                       $moyen_paid =  array_search($index_m,$moyen_card);
                       $moyen_paids = explode(',',$moyen_paid);
                       $mode_reglement_id = $moyen_paids[0];
@@ -1162,7 +1165,7 @@ class Transfertext {
                      }
 
                        // quand y'a une carte bancaire et cado
-                     if($index_amount_true[2]=="cbcdo"){
+                     if($index_amount_true[2]=="cbcado"){
 
                           $index_m ="CB";
                           $moyen_paid =  array_search($index_m,$moyen_card);
@@ -1374,7 +1377,8 @@ class Transfertext {
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
                 // convertir la date en datetime en timestamp.....
-                $datetime = date('d-m-Y H:i:s');
+                //$datetime = date('d-m-Y H:i:s');
+                $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
                 $d = DateTime::createFromFormat(
                 'd-m-Y H:i:s',
                  $datetime,

@@ -2122,7 +2122,7 @@ class Admin extends BaseController
     
   public function generateinvoices(){
       
-    $datas_facture = DB::connection('mysql2')->select("
+  /*  $datas_facture = DB::connection('mysql2')->select("
     SELECT fk_facture, GROUP_CONCAT(fk_product) AS products
     FROM llxyq_facturedet
     GROUP BY fk_facture");
@@ -2165,6 +2165,7 @@ class Admin extends BaseController
      }
 
      dd($donnes);
+     */
      $message="";
       $css="no";
       $divid="no";
