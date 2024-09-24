@@ -1300,8 +1300,6 @@ class Order extends BaseController
 
     if(str_contains($order_id, 'CO') || str_contains($order_id, 'BP') || str_contains($order_id, 'GAL')){
       $order = $this->orderDolibarr->getOrdersDolibarrById($order_id)->toArray();
-
-      // dd($order);
     } else if(strlen($order_id) == 10 && !str_contains($order_id, 'SAV')){
       $order = $this->reassort->getReassortById($order_id);
     } else {

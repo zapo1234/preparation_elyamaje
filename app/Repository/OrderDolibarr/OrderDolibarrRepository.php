@@ -74,6 +74,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
+
       if(!$order_lines->isEmpty()){
          $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
          ->where('payement_caisse.commande_id', $order_lines[0]['id'])
@@ -84,10 +85,16 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
       foreach($order_lines as $key => $order){
-
          // Pour les commandes BP / GALA
          if($order_payments){
             $order_lines[$key]['payment_list'] = $order_payments;
+
+            // Check if type TICK = "carte cadeau" / "bon d'achat"
+            foreach($order_payments as $pay){
+               if($pay['type'] == "TICK"){
+                  $order_lines[$key]['gift_card_amount'] = $pay["amount_payement"];
+               }
+            }
          }
 
          $order_lines[$key]['name'] = $order['productName'];

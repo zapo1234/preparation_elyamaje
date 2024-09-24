@@ -163,9 +163,11 @@ function show(id){
                 if(!order[0].transfers){
                     var total = parseFloat(order[0].total_order)
                     var discount_total = !order[0].from_dolibarr ? parseFloat(order[0].discount) : 0
-                    var gift_card = !order[0].from_dolibarr ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount): 0) : 0
+                    // var gift_card = !order[0].from_dolibarr ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount): 0) : 0
+                    var gift_card = order[0].gift_card_amount ? (order[0].gift_card_amount > 0 ? parseFloat(order[0].gift_card_amount) : 0) : 0
                     var total_tax = !order[0].from_dolibarr ? parseFloat(order[0].total_tax_order) : parseFloat(order[0].total_tax)
                     var sub_total = parseFloat(total) + parseFloat(discount_total) + parseFloat(gift_card) - parseFloat(total_tax) - (!order[0].from_dolibarr ? parseFloat(order[0].shipping_amount) : 0)
+                    console.log(gift_card)
                 }
 
                 $(".modal_order_admin").remove()
@@ -206,7 +208,7 @@ function show(id){
                                                 ${order[0].coupons && order[0].coupons_amount > 0 ? `<span class="text-success">Code(s) promo: <strong>`+order[0].coupons+` (-`+order[0].coupons_amount+`€)</strong></span>` : ``}
                                                 ${!order[0].from_dolibarr ? '<span class="montant_total_order">Expédition:<strong>'+order[0].shipping_amount+'€</strong></span>' : ''}
                                                 <span class="montant_total_order">TVA: <strong class="total_tax_order">`+parseFloat(total_tax).toFixed(2)+`€</strong></span>
-                                                ${gift_card > 0 ? `<span class="text-success">PW Gift Card: <strong>`+gift_card+`€</strong></span>` : ``}
+                                                ${gift_card > 0 ? `<span class="text-success">Carte cadeau / Bon d'achat: <strong>`+gift_card+`€</strong></span>` : ``}
                                                 ${order[0].remise_percent > 0 ? `<span class="text-success">Réduction: <strong>(-`+order[0].remise_percent+`%)</strong></span>` : ``}
                                                 <span class="mt-1 mb-2 montant_total_order">Payé: <strong class="total_paid_order">`+total+`€</strong></span>
                                                 <div class="d-flex justify-content-end">
