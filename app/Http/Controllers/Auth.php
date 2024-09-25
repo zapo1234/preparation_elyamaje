@@ -65,14 +65,15 @@ class Auth extends BaseController
     }
 
     public function postLogin(Request $request){
-
         $input = $request->all();
         $this->validate($request, [
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
-        if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))){
+        // Log with email or password
+        if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password'])) ||
+        auth()->attempt(array('identifier' => $input['email'], 'password' => $input['password']))){
             if(auth()->user()->active == 0){
                 Auth()->guard()->logout();
                 $request->session()->invalidate();
@@ -105,7 +106,6 @@ class Auth extends BaseController
                 return redirect()->route('login')->with('error','Identifiants incorrectes !');
             }
         }
-      
     }
 
     public function forgotPassword(){

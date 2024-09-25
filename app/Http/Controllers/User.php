@@ -56,14 +56,20 @@ class User extends BaseController
 
         $user_name_last_name =   $input['name_last_name'];
         $email =  $input['email'];
+        $identifier =  $input['identifier'];
         $role =  $input['role'];
         $poste =  $input['poste'] ?? 0;
         $type =  $input['type'] ?? "warehouse";
         $password = $input['password'] != null && $input['password'] != "" ? $input['password'] : false;
         $send_mail = false;
 
-        // Check if email is unique
-        $email_already_exist = $this->users->getUserByEmail($email);
+        // Check if email or identifier is unique
+        if($identifier != null && $identifier != ""){
+            $email_already_exist = $this->users->getUserByEmailOrdIdentifier($email, $identifier);
+        } else {
+            $email_already_exist = $this->users->getUserByEmail($email);
+        }
+
         if(count($email_already_exist) > 0){
             if($email_already_exist[0]->active == 0){
                 $this->users->updateUserActive($email);
@@ -81,7 +87,7 @@ class User extends BaseController
        
         // crypter l'email.
         $password_hash = Hash::make($password);
-        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste, $type);
+        $create = $this->users->createUser($user_name_last_name, $email, $role, $password_hash, $poste, $type, $identifier);
 
         if($create){
             if($send_mail){
@@ -141,17 +147,24 @@ class User extends BaseController
         $user_id =   $input['account_user_update'];
         $user_name_last_name =  $input['update_name_last_name'];
         $email =  $input['update_email'];
+        $identifier =  $input['update_identifier'] ?? null;
         $role =  $input['update_role'];
         $poste =  $input['update_poste'] ?? 0;
         $type =  $input['update_type'] ?? null;
-        
+       
         // Check if email is unique
-        $email_already_exist = $this->users->getUserByEmail($email, $user_id);
+        if($identifier != null && $identifier != ""){
+            $email_already_exist = $this->users->getUserByEmailOrdIdentifier($email, $identifier, $user_id);
+        } else {
+            $email_already_exist = $this->users->getUserByEmail($email, $user_id);
+        }
+
+        // $email_already_exist = $this->users->getUserByEmail($email, $user_id);
         if($email_already_exist > 0){
             return redirect()->back()->with('error',  'Cet email existe déjà !');
         }
   
-        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type);
+        $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type, $identifier);
 
         if($update){
             return redirect()->back()->with('success', 'Compte modifié avec succès !');

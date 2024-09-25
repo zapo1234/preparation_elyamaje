@@ -38,7 +38,7 @@
                         <form method="post" action="{{ route('login') }}" class="form_login_error">
                             @csrf 
                             <div class="mb-3 mt-3">
-                                <input name="email" type="email" class="form-control" placeholder="Email">
+                                <input required name="email" type="text" class="form-control" placeholder="Email">
                             </div>
                             <div class="mb-3 mt-3">
                                 <div class="input-group" id="show_hide_password">
@@ -76,7 +76,7 @@
                             </div>
                             @csrf 
                             <div class="mb-3 mt-3">
-                                <input required name="email" type="email" class="form-control" placeholder="Email">
+                                <input required name="email" type="text" class="form-control" placeholder="Email">
                             </div>
                             <div class="mb-3 mt-3">
                                 <div class="input-group" id="show_hide_password">
