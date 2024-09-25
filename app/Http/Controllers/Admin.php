@@ -2120,6 +2120,8 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
+
+     dd('css');
       $message="";
       $css="no";
       $divid="no";
