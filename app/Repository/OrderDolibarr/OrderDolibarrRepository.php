@@ -85,6 +85,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
       foreach($order_lines as $key => $order){
+         $order_lines[$key]['gift_card_amount'] = 0; 
+
          // Pour les commandes BP / GALA
          if($order_payments){
             $order_lines[$key]['payment_list'] = $order_payments;
@@ -92,7 +94,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             // Check if type TICK = "carte cadeau" / "bon d'achat"
             foreach($order_payments as $pay){
                if($pay['type'] == "TICK"){
-                  $order_lines[$key]['gift_card_amount'] = $pay["amount_payement"];
+                  $order_lines[$key]['gift_card_amount'] = floatval($order_lines[$key]['gift_card_amount'] + $pay["amount_payement"]);
                }
             }
          }
