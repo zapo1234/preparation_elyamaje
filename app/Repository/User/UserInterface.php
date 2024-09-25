@@ -16,13 +16,15 @@ interface UserInterface
 
    public function getUserByEmail($email, $user_id = false);
 
+   public function getUserByEmailOrdIdentifier($email, $identifier, $user_id = false);
+
    public function updateRoleByUser($user_id, $role_id);
 
-   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type);
+   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type, $identifier);
 
    public function updateUserDetails($user_id, $data);
 
-   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type);
+   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type, $identifier);
 
    public function deleteUser($user_id);
 

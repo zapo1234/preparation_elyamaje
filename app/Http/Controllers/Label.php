@@ -225,12 +225,12 @@ class Label extends BaseController
             // Update des champs products_order à null et delete label
             if($this->label->deleteLabelByTrackingNumber($tracking_number)){
                 $this->labelProductOrder->deleteLabelProductOrderById($label_id);
-                return redirect()->route('labels')->with('success', 'Étiquette supprimée avec succès !');
+                return redirect()->back()->with('success', 'Étiquette supprimée avec succès !');
             } else {
-                return redirect()->route('labels')->with('error', 'Erreur de suppression d\'étiquette !');
+                return redirect()->back()->with('error', 'Erreur de suppression d\'étiquette !');
             }
         } else {
-            return redirect()->route('labels')->with('error', 'Erreur de suppression d\'étiquette Woocommerce !');
+            return redirect()->back()->with('error', 'Erreur de suppression d\'étiquette Woocommerce !');
         }
     }
 
@@ -508,7 +508,7 @@ class Label extends BaseController
                             echo json_encode(['success' => true, 'file' => base64_encode($labelChrono['label']), 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
                             return;
                         } else {
-                            return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                            return redirect()->back()->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                         }
                     } else { 
                         // Étiquette Colissimo
@@ -525,14 +525,14 @@ class Label extends BaseController
                                         echo json_encode(['success' => true, 'file' => base64_encode($label['label']), 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
                                         return;
                                     } else {
-                                        return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                                        return redirect()->back()->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                                     }
                                 } else {
                                     if($from_js){
                                         echo json_encode(['success' => true, 'file' => false, 'message' => 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']]);
                                         return;
                                     } else {
-                                        return redirect()->route('labels')->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
+                                        return redirect()->back()->with('success', 'Étiquette générée pour la commande '.$order[0]['order_woocommerce_id']);
                                     }
                                 }
                             } else {
@@ -540,7 +540,7 @@ class Label extends BaseController
                                     echo json_encode(['success' => false, 'message' => 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation']);
                                     return;
                                 } else {
-                                    return redirect()->route('labels')->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
+                                    return redirect()->back()->with('error', 'Étiquette générée et disponible sur Woocommerce mais erreur base préparation');
                                 }
                             }
                         } else {

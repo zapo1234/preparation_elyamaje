@@ -263,6 +263,7 @@ class WoocommerceService
               'quantity' => $order['quantity'],
               'subtotal' => $order['priceDolibarr'],
               'price' => $order['priceDolibarr'],
+              'real_price' => $order['priceDolibarr'],
               'total' => $order['total_ht'],
               'subtotal_tax' => $order['total_tva'],
               'total_tax' => $order['total_tva'],
@@ -275,7 +276,7 @@ class WoocommerceService
             ];
           }
         } else {
-          $transformOrder['line_items'][]= [
+          $transformOrder['line_items'][] = [
             'id' => $order['line_items_id_dolibarr'],
             'name' => $order['productName'],
             'product_id' => $order['product_woocommerce_id'],
@@ -283,6 +284,7 @@ class WoocommerceService
             'quantity' => $order['quantity'],
             'subtotal' => $order['priceDolibarr'],
             'price' => $order['priceDolibarr'],
+            'real_price' => $order['priceDolibarr'],
             'total' => $order['total_ht'],
             'subtotal_tax' => $order['total_tva'],
             'total_tax' => $order['total_tva'],

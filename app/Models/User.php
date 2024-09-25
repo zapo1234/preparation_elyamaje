@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'identifier',
         'email',
         'role_id',
         'password',
@@ -64,6 +65,10 @@ class User extends Authenticatable
 
     public static function findByEmail($email){
         return static::where('email', $email)->first();
+    }
+
+    public static function findByEmailOrTrainer($email){
+        return static::where('email', $email)->orWhere('identifier', $email)->first();
     }
 
 }

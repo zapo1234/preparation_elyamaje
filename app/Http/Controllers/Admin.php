@@ -1154,7 +1154,7 @@ class Admin extends BaseController
         $date = $request->get('created_at') ?? false;
         $orders_status = ['pending', 'processing', 'canceled'];
         $orders = $this->orderDolibarr->getAllOrdersPendingBeautyProf($ref_order, $date);
-
+        
         // Check if order date time is older than 2 hours
         foreach($orders as $ord => $or){
             $date1 = new DateTime(date('Y-m-d H:i:s'));
