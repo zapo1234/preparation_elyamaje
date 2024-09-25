@@ -1,11 +1,8 @@
-name: Déploiement de l'application preparation
+name: Déploiement de l'application preparation en dev
 on:
   push:
     branches:
-      - release
-  pull_request:
-    branches:
-      - release
+      - develop
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,14 +18,14 @@ jobs:
           npm install
           echo "Dépendances NodeJS installées"
 
-      - name: "Déploiement de la branche de release dans le serveur de release"
-        if: ${{ github.ref == 'refs/heads/release' }}
+      - name: "Déploiement de la branche de develop dans le serveur de dev"
+        if: ${{ github.ref == 'refs/heads/develop' }}
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --exclude='.env'  --exclude='.htaccess'"
           SOURCE: "./"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST_DEV }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: 3522
           TARGET: ${{ secrets.REMOTE_TARGET }}
@@ -42,7 +39,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           echo "Connexion au serveur et exécution des commandes..."
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key  -p 3522 ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key  -p 3522 ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST_DEV }} << 'EOF'
             cd ${{ secrets.REMOTE_TARGET }}
             echo "Connexion réussie, installation des dépendances PHP"
             composer install
