@@ -55,7 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
                     return redirect()->route('labels');
                     break;
                 case 8 :
-                    return redirect()->route('kit');
+                    return redirect()->route('orders.kit');
                     break;
                 default:
                     return redirect()->route('logout');
