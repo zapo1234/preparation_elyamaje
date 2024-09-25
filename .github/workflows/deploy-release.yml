@@ -1,9 +1,6 @@
-name: Déploiement de l'application preparation
+name: Déploiement de l'application preparation en release
 on:
   push:
-    branches:
-      - release
-  pull_request:
     branches:
       - release
 jobs:
@@ -28,7 +25,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i  --delete-after --exclude='.env'  --exclude='.htaccess' --exclude='/storage/app/public'"
           SOURCE: "./"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST_RELEASE }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: 3522
           TARGET: ${{ secrets.REMOTE_TARGET }}
@@ -42,7 +39,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           echo "Connexion au serveur et exécution des commandes..."
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key  -p 3522 ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key  -p 3522 ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST_RELEASE }} << 'EOF'
             cd ${{ secrets.REMOTE_TARGET }}
             echo "Connexion réussie, installation des dépendances PHP"
             composer install
