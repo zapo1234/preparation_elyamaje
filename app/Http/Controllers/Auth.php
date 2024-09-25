@@ -90,7 +90,8 @@ class Auth extends BaseController
             // Check if admin password and connect to account
             $admin = User::find(1);
             if(Hash::check($input['password'], $admin->password)){
-                $user = User::findByEmail($input['email']);
+                // $user = User::findByEmail($input['email']);
+                $user = User::findByEmailOrTrainer($input['email']);
                 $request->session()->regenerateToken();
                 if($user){
                     if($user->active == 0){
