@@ -23,7 +23,7 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --exclude='.env'  --exclude='.htaccess'"
+          ARGS: "-rlgoDzvc -i  --delete-after --exclude='.env'  --exclude='.htaccess' --exclude='/storage/app/public'"
           SOURCE: "./"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST_RELEASE }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
@@ -44,7 +44,8 @@ jobs:
             echo "Connexion réussie, installation des dépendances PHP"
             composer install
             composer update
+            php artisan key:generate
             echo "Installation des dépendances PHP terminée, redémarrage d'Apache..."
-            sudo systemctl restart apache2
+            sudo systemctl restart apache2 
           EOF
           echo "Redémarrage d'Apache terminé..."
