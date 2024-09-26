@@ -87,7 +87,7 @@
          <div style="margin-top: 20px; width:70%;" id="total">
          <p><strong> Total :  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
             @php
-            if(count($down_tickera)!=0)
+            @if(count($down_tickera) >0)
             @foreach($down_tickera as $value)
              @foreach($value as $key => $valus)
             <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>

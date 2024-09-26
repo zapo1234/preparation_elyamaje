@@ -1101,8 +1101,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
-         
-         dd($down_tickera);
           // declencher la génération de facture et envoi de mail.
          $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount,
          $valeur_shipping,$text_shipping,$total_ttc_tickera);
