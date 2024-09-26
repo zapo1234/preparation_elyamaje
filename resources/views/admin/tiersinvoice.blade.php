@@ -56,7 +56,7 @@
                     {{ $tiers['code_postal'] }} {{ $tiers['city'] }}<br>
                     Téléphone : {{  $tiers['phone']  }}<br/><br/>
                     Réf-facture :{{ $ref_order }}<br/>
-                    Date : Marseille le  {{  date('d/m/y')  }}
+                    Date : Marseille le  {{  date('d/m/Y')  }}
                     
                 </td>
             </tr>
