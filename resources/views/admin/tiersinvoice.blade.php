@@ -86,7 +86,7 @@
          <!-- Total de la facture -->
          <div style="margin-top: 20px; width:70%;" id="total">
          <p><strong> Total :  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
-    
+            
             @foreach($down_tickera as $value)
              @foreach($value as $key => $valus)
             <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>
