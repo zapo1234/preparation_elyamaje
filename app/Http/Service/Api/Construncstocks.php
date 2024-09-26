@@ -834,8 +834,6 @@ class  Construncstocks
               $this->setDatas($result_list_cats);
 
               $result_list_cats = array_reverse($result_list_cats);
-
-              dd($resultats);
               
               
               return $resultats;
