@@ -905,7 +905,26 @@ class Admin extends BaseController
         
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
+            
+
+            // dump(env('HOST_ELYAMAJE'));
+            // dump(env('DBNAME_DOLIBARR'));
+            // dump(env('USER_DOLIBARR'));
+            // dd(env('PW_DOLIBARR'));
+
+
             $products_categories = $pdoDolibarr->getCategories();
+
+            // foreach ($products_categories as $key => $value) {
+            //     if ($value["fk_categorie"] == 65) {
+            //         dd($value);
+            //     }
+            // }
+
+
+            // dd("fin");
+
            
             DB::beginTransaction();
             DB::table('products_categories')->truncate();
