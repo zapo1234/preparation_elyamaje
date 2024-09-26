@@ -39,6 +39,9 @@
         </div>
 
         <!-- Invoice Address and Client Info -->
+         @php
+         $date = Carbon::now();
+         @endphp
         <table style="margin-bottom:50px;">
             <tr>
                 <td style="width: 50%;">
@@ -55,7 +58,8 @@
                     {{  $tiers['adresse'] }}<br>
                     {{ $tiers['code_postal'] }} {{ $tiers['city'] }}<br>
                     Téléphone : {{  $tiers['phone']  }}<br/><br/>
-                    Réf-facture :{{ $ref_order }}
+                    Réf-facture :{{ $ref_order }}<br/>
+                    Date :{{  $date->translatedFormat('d F y') }}
                 </td>
             </tr>
         </table>
@@ -66,7 +70,6 @@
                 <tr>
                     <th>Produit</th>
                     <th>Quantité</th>
-                    <th>Prix (H.T)</th>
                     <th>Total (T.T.C)</th>
                     <th>Prix après remise (-30%)</th>
                 </tr>
@@ -76,7 +79,6 @@
                 <tr>
                         <td style="padding: 2px; border: 1px solid #ddd;">{{ $resultat['libelle'] }}</td>
                         <td style="padding: 2px; border: 1px solid #ddd;">{{ $resultat['qte'] }}</td>
-                        <td style="padding: 2px; border: 1px solid #ddd;">{{ $resultat['price'] }}</td>
                         <td style="padding: 2px; border: 1px solid #ddd;">{{ $resultat['total_ttc'] }}</td>
                         <td style="padding: 2px; border: 1px solid #ddd;">{{ $resultat['prix_remise'] }}</td>
                 </tr>
@@ -86,16 +88,19 @@
 
          <!-- Total de la facture -->
          <div style="margin-top: 20px; width:70%;" id="total">
-            <p><strong>Total HT:  </strong> {{ number_format($total_ttc-$total_ttc*20/100, 2, ',', '') }} €</p>
+         <p><strong> Total :  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
+           @php
+           @if(count($down_tickera)!=0)
             @foreach($down_tickera as $value)
              @foreach($value as $key => $valus)
-            <p>Code reduction :  {{ $key}}  valeur :{{ $valus  }} €</p>
+            <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>
              @endforeach
              @endforeach
-             <p><strong>Frais de port </strong> : {{ $shipping_amount }} €</p>
-            <p><strong>TVA:    </strong> 20%</p>
-            
-            <p><strong> Total TTC (réduction):  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
+            @endif
+             @endphp
+             <p><strong> Total (TTC) :  </strong> {{ number_format($total_ttc_tickera, 2, ',', '') }} €</p>
+             <p><strong>{{ $text_shipping  }} </strong>    {{ $valeur_shipping }}</p>
+            <p><strong>Total (TVA):  {{ number_format($total_ttc_tickera*20/100, 2, ',', '') }} €  </strong> (20%)</p>
             {{-- <p><strong>Remise {{$remise }} %    </strong>:  {{ number_format($total_ttc*$remise/100, 2, ',', '') }} €</p>
             <p><strong>Total T.T.C après remise : </strong>{{ number_format($total_ttc-$total_ttc*$remise/100, 2, ',', '') }} €</p> --}}
         </div>
