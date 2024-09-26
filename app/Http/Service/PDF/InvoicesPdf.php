@@ -44,7 +44,7 @@ class InvoicesPdf
             $path_invoice = "storage/app/$filePaths";
 
              //$to="adrien@elyamaje.com";
-              $to ="mmajeri@elyamaje.com";
+              $to ="emilie@elyamaje.com";
              //$to = $tiers['email'];
             // envoi de mail au client.
             
