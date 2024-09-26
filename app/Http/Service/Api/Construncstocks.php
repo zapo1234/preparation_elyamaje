@@ -871,9 +871,10 @@ class  Construncstocks
 
           public function updateProductsCaisse()
           {
+            
               try {
-                  $url = 'https://www.poserp.elyamaje.com/api/index.php/';
-                  $key = 'VA05eq187SAKUm4h4I4x8sofCQ7jsHQd';
+                  $url = env('KEY_API_URL');
+                  $key = env('KEY_API_DOLIBAR');
       
                   $parametres = array(
                       'apikey' => $key,
@@ -884,18 +885,21 @@ class  Construncstocks
                   $products = json_decode($products,true);
       
                   $array_final = array();
+
+                 
       
                   foreach ($products as $key => $prod) {
+
                       if ($prod["status"] == 1) {   
       
-                          $qte = 0;  
-      
                           if ($prod["warehouse_array_list"]) {
+                              $qte = 0; 
+
                               foreach ($prod["warehouse_array_list"][$prod["id"]] as $key => $value) {
-                                  if ($value["warehouse"] == "Entrepot Malpasse") {
-                                      if ($qte == 0) {
-                                          $qte = $value["stock"];
-                                      }
+                                  if ($value["warehouse"] == "Entrepot Malpasse" || $value["warehouse"] =="Entrepot Malpasse Stockage") {
+
+                                    $qte = $qte + $value["stock"];
+
                                   }
                               }
                           }
@@ -911,8 +915,7 @@ class  Construncstocks
                           array_push($array_final,$data);
                       }
                   }
-      
-                  // dd($array_final);
+                 
       
                   if ($array_final) {
                       DB::beginTransaction();

@@ -289,7 +289,7 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
-                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                            'image' => isset($product['images_variations'][$key]) ? $product['images_variations'][$key] : (isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null),
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
                             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
@@ -905,7 +905,26 @@ class Admin extends BaseController
         
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
+            
+
+            // dump(env('HOST_ELYAMAJE'));
+            // dump(env('DBNAME_DOLIBARR'));
+            // dump(env('USER_DOLIBARR'));
+            // dd(env('PW_DOLIBARR'));
+
+
             $products_categories = $pdoDolibarr->getCategories();
+
+            // foreach ($products_categories as $key => $value) {
+            //     if ($value["fk_categorie"] == 65) {
+            //         dd($value);
+            //     }
+            // }
+
+
+            // dd("fin");
+
            
             DB::beginTransaction();
             DB::table('products_categories')->truncate();
