@@ -92,7 +92,6 @@
             <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>
              @endforeach
              @endforeach
-            @endif
              
              <p><strong> Total (TTC) :  </strong> {{ number_format($total_ttc_tickera, 2, ',', '') }} €</p>
              <p><strong>{{ $text_shipping  }} </strong>    {{ $valeur_shipping }}</p>
