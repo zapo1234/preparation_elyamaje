@@ -90,7 +90,7 @@
             @if(count($down_tickera) > 0)
             @foreach($down_tickera as $value)
              @foreach($value as $key => $valus)
-            <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>
+            <p> Bon d'achat  :  {{ $key}}  valeur :  - {{ $valus  }} €</p>
              @endforeach
              @endforeach
              @endif
