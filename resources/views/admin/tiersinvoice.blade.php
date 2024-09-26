@@ -39,9 +39,6 @@
         </div>
 
         <!-- Invoice Address and Client Info -->
-         @php
-         $date = Carbon::now();
-         @endphp
         <table style="margin-bottom:50px;">
             <tr>
                 <td style="width: 50%;">
