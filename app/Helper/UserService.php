@@ -17,7 +17,7 @@ class UserService{
     public function validateInput(){
         $validator = Validator::make(['email' => $this->email, 'password' => $this->password],
         [
-            'email' => ['required', 'email:rfc,dns', 'exists:users'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string']
         ]);
 
@@ -33,7 +33,10 @@ class UserService{
         if($validate['status'] == false){
             return $validate;
         } else {
-            $user = User::where('email', $this->email)->first();
+            $user = User::where('email', $this->email)
+                ->orWhere('identifier', $this->email)
+                ->first();
+
             if(Hash::check($this->password, $user->password)){
                 $token = $user->createToken('token')->plainTextToken;
                 return ['status' => true, 'token' => $token, 'user' => $user];
