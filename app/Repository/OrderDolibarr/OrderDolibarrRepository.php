@@ -989,6 +989,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
+               $down_tickera = [];
+               if(count($data_tickera)!=0) {
 
               foreach($data_tickera as $value){
                $ref_ticket[] = $value['ref'];
@@ -1020,6 +1022,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                          $data_code_finish[$i] =>$data_montant[$i],
                       ];
                }
+            }
+            else{
+                $montant_tickera_bon=0;
+            }
          
                // traiter le retour de la facture
              // verifions l'existence des resultats.
@@ -1056,8 +1062,19 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
+           $total_ttc_tickera = $total_ttc - $montant_tickera_bon;
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
+
+           if($shipping_amount==0){
+             $text_shipping="";
+             $valeur_shipping="";
+              
+           }else{
+              $text_shipping ="Frais de port";
+              $monnaie="€";
+              $valeur_shipping = $shipping_amount.' '.$monnaie;
+           }
 
 
            // definir le pourcentage du code promo envoyé  au tiers
