@@ -289,7 +289,7 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
-                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                            'image' => isset($product['images_variations'][$key]) ? $product['images_variations'][$key] : (isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null),
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
                             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];

@@ -165,7 +165,7 @@ class User extends BaseController
         }
   
         $update = $this->users->updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type, $identifier);
-
+        
         if($update){
             return redirect()->back()->with('success', 'Compte modifié avec succès !');
         } else {
