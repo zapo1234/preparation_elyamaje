@@ -1056,8 +1056,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
-
-           $total_ttc_tickera = $result[0]['total_order_ttc'];// nouveaux ttc(-la valeur du bon)
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
 
@@ -1088,8 +1086,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $remise = $remise_true*100;
       
           // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount
-         $valeur_shipping,$text_shipping,$total_ttc_tickera);
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount);
          // insert dans la base de données...
          /* $datas_promo =[
          'id_commande'=>$id_commande,
