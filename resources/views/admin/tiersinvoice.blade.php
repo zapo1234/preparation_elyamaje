@@ -86,16 +86,18 @@
          <!-- Total de la facture -->
          <div style="margin-top: 20px; width:70%;" id="total">
          <p><strong> Total :  </strong> {{ number_format($total_ttc, 2, ',', '') }} €</p>
-            
+            @php
+            if(count($down_tickera)!=0)
             @foreach($down_tickera as $value)
              @foreach($value as $key => $valus)
             <p> Bon d'achat  :  {{ $key}}  valeur :{{ $valus  }} €</p>
              @endforeach
              @endforeach
-
+             @endif
+            @endphp
              <p><strong> Total (TTC) :  </strong> {{ number_format($total_ttc_tickera, 2, ',', '') }} €</p>
              <p><strong></strong></p>
-            <p><strong>Total (TVA):  {{ number_format($total_ttc*20/100, 2, ',', '') }} €  </strong> (20%)</p>
+            <p><strong>Total (TVA):  {{ number_format($total_ttc_tickera*20/100, 2, ',', '') }} €  </strong> (20%)</p>
             {{-- <p><strong>Remise {{$remise }} %    </strong>:  {{ number_format($total_ttc*$remise/100, 2, ',', '') }} €</p>
             <p><strong>Total T.T.C après remise : </strong>{{ number_format($total_ttc-$total_ttc*$remise/100, 2, ',', '') }} €</p> --}}
         </div>
