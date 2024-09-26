@@ -2166,7 +2166,7 @@ class Admin extends BaseController
 
      dd($donnes);
      */
-    $data = $this->construcstocks->Constructstocks();
+    $data = $this->construcstocks->listcategories();
 
     dd($data);
 

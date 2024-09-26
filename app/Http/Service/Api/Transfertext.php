@@ -231,7 +231,7 @@ class Transfertext {
 
           // espece et cartes cadeaux
           if($val['payment_list']['amountCard']==0 && $val['payment_list']['amountSpecies']!=0 && $val['payment_list']['amountDiscount']!=0){
-            $chaine_index="liqkdo";//carte bancaire et card cadeaux
+            $chaine_index="liqkdo";//liq et card cadeaux
             $indice_amount_liq=$val['payment_list']['amountSpecies'].'%'. $val['payment_list']['amountDiscount'].'%'.$chaine_index;
           }
 
@@ -1141,7 +1141,7 @@ class Transfertext {
                       $moyen_paid =  array_search($index_m,$moyen_card);
                       $moyen_paids = explode(',',$moyen_paid);
                       $mode_reglement_id = $moyen_paids[0];
-                      $account_multiple="yeskdo";
+                      $account_multiple="kdo";
                         // j'accroche les compte bancaire
                      }
                        // Qaund y'a un paiement uniquement que par CB 
