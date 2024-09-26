@@ -2166,6 +2166,10 @@ class Admin extends BaseController
 
      dd($donnes);
      */
+    $data = $this->construcstocks->Constructstocks();
+
+    dd($data);
+
      $message="";
       $css="no";
       $divid="no";
