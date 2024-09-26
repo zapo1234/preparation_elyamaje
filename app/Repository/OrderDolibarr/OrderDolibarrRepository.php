@@ -985,7 +985,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              $data_tickera = json_decode($dataresult,true);
 
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
-            if(count($data_tickera)!=0){
+         
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
@@ -1020,12 +1020,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                          $data_code_finish[$i] =>$data_montant[$i],
                       ];
                }
-              
-            }else{
-
-                 $montant_tickera_bon=0;
-            }
-               
+         
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
@@ -1062,18 +1057,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
 
-           $total_ttc_tickera = $result[0]['total_order_ttc']-$montant_tickera_bon;// nouveaux ttc(-la valeur du bon)
+           $total_ttc_tickera = $result[0]['total_order_ttc'];// nouveaux ttc(-la valeur du bon)
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
 
-           if($shipping_amount==0){
-              $text_shipping=""
-              $valeur_shipping="";
-           }else{
-             $text_shipping= "Frais de port";
-             $monnaie="€";
-             $valeur_shipping = $shipping_amount.''.$monnaie;
-           }
 
            // definir le pourcentage du code promo envoyé  au tiers
         
