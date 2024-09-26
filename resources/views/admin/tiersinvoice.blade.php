@@ -95,6 +95,7 @@
              @endforeach
              @endif
             @endphp
+            <p> <strong> {{ $text_shipping   }}   </strong>  {{  $valeur_shipping  }}</p>
              <p><strong> Total (TTC) :  </strong> {{ number_format($total_ttc_tickera, 2, ',', '') }} €</p>
              <p><strong></strong></p>
             <p><strong>Total (TVA):  {{ number_format($total_ttc_tickera*20/100, 2, ',', '') }} €  </strong> (20%)</p>
