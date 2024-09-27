@@ -965,7 +965,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
         
    if(count($id_recup)!=0){
 
-      dd('zapo');
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
             $usersWithPosts = DB::table('orders_doli')
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
