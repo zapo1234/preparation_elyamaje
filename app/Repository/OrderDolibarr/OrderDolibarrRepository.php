@@ -1060,7 +1060,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
-           $total_ttc_tickera = $total_ttc - $montant_tickera_bon;
+           $total_ttc_ticker = $total_ttc - $montant_tickera_bon;
+           $total_ttc_tickera = $total_ttc_ticker*0.2/1.2;
 
            if($total_ttc_tickera > 150){
                $aff =2;
