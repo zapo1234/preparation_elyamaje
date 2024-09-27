@@ -984,7 +984,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
-            dump($data_tickera);
+            
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
          
               $ref_ticket =[];
@@ -998,22 +998,18 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                $data_montant[] = $value['amount_payement'];
               }
 
-
+             dd($data_montant);
               // recupérer le montant du  
 
                   $montant_tickera_bon = array_sum($data_montant);
 
-                  dd($montant_tickera_bon);
-               
-                     // aller cherher dans la table tickera les code
+                // aller cherher dans la table tickera les code
                 $data_ticket_code = DB::table('tickera')
               ->select('ticket_id','code_reduction') // Spécifiez les colonnes à sélectionner
                ->whereIn('ticket_id', $ref_ticket)
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
                 // recupérer dans un tableau unique les data code
-
-                dump($data_tickeras);
                 
                foreach($data_tickeras as $vals){
                   $data_code[] = $vals['code_reduction'];
