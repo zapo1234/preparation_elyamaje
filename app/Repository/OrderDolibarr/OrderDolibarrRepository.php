@@ -999,6 +999,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
                  // recupérer le montant des bon 
                  $montant_tickera_bon = array_sum($data_montant);
+                 dd($montant_tickera_bon);
 
                 // aller cherher dans la table tickera les code
                 $data_ticket_code = DB::table('tickera')
@@ -1025,7 +1026,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          
             
-            dd($down_tickera);
+            
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
