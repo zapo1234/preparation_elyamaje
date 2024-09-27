@@ -1008,7 +1008,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
 
-                dd($data_tickeras);
+                
                 // recupérer dans un tableau unique les data code
                 
                foreach($data_tickeras as $vals){
@@ -1028,7 +1028,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          
             
-            
+            dd($down_tickera);
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
