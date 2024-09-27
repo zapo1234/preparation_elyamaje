@@ -976,7 +976,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
 
-
+             dump($id_commande);
             // je veux aller cherche les info tockera et paiment.
               $data= DB::table('payement_caisse')
              ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
