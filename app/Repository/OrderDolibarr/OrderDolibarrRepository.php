@@ -961,6 +961,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
+         
         
    if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
@@ -975,26 +976,35 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
 
-
             // je veux aller cherche les info tockera et paiment.
               $data= DB::table('payement_caisse')
              ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
              ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
+
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
-            // va recupérer les code associe dans prepa_tickera via la ref tocket_id
+            
+              // va recupérer les code associe dans prepa_tickera via la ref tocket_id
+         
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
+               $down_tickera = [];
+               if(count($data_tickera)!=0) {
 
               foreach($data_tickera as $value){
                $ref_ticket[] = $value['ref'];
                $data_montant[] = $value['amount_payement'];
               }
 
-              // aller cherher dans la table tickera les code
-              $data_ticket_code = DB::table('tickera')
+             
+              // recupérer le montant du  
+
+                  $montant_tickera_bon = array_sum($data_montant);
+
+                // aller cherher dans la table tickera les code
+                $data_ticket_code = DB::table('tickera')
               ->select('ticket_id','code_reduction') // Spécifiez les colonnes à sélectionner
                ->whereIn('ticket_id', $ref_ticket)
                ->get();
@@ -1007,14 +1017,17 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                
                // retourner l'ordre du tableau.
                 $data_code_finish = array_reverse($data_code);
-                $down_tickera =[];
                 for($i=0; $i < count($data_code_finish); $i++){
                     $down_tickera[] = [
                          $data_code_finish[$i] =>$data_montant[$i],
                       ];
                }
-
-               
+            }
+            else{
+                $montant_tickera_bon=0;
+            }
+         
+            
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
@@ -1050,8 +1063,21 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
+           $total_ttc_tickera = $total_ttc - $montant_tickera_bon;
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
+
+           if($shipping_amount==0){
+             $text_shipping="";
+             $valeur_shipping="";
+              
+           }else{
+              $text_shipping ="Frais de port";
+              $monnaie="€";
+              $valeur_shipping = $shipping_amount.' '.$monnaie;
+           }
+
+
            // definir le pourcentage du code promo envoyé  au tiers
         
            if($total_ttc >= 80){
@@ -1076,9 +1102,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
-      
-          // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount);
+          // declencher la génération de facture et envoi de mail...
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount,
+         $valeur_shipping,$text_shipping,$total_ttc_tickera);
          // insert dans la base de données...
          /* $datas_promo =[
          'id_commande'=>$id_commande,

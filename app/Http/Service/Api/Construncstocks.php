@@ -463,13 +463,13 @@ class  Construncstocks
 
 
     // recupérer les product directement depuis dolibar  via Api.
-   /*   $produitParam = ["limit" => 1400, "sortfield" => "rowid"];
+   /*   $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
        $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
        // reference ref_client dans dolibar
       $list_products = json_decode($listproduct, true);// la liste des produits dans dolibarr
 
     // recupérer les categoris directement depuis l'api
-      $produitParam = ["limit" => 120, "sortfield" => "rowid"];
+      $produitParam = ["limit" => 150, "sortfield" => "rowid"];
       $categorie = $this->api->CallAPI("GET", $apiKey, $apiUrl."categories", $produitParam);
       // reference ref_client dans dolibar
       $list_categorie = json_decode($categorie, true);// la liste des produits dans dolibarr
