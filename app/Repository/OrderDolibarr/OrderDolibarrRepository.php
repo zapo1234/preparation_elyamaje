@@ -999,7 +999,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
                  // recupérer le montant des bon 
                  $montant_tickera_bon = array_sum($data_montant);
-                 dump($montant_tickera_bon);
+                 
 
                 // aller cherher dans la table tickera les code
                 $data_ticket_code = DB::table('tickera')
@@ -1008,13 +1008,14 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                ->get();
                 $data_tickeras = json_decode($data_ticket_code,true);
 
-                
+                dump($data_tickeras);
                 // recupérer dans un tableau unique les data code
                 
                foreach($data_tickeras as $vals){
                   $data_code[] = $vals['code_reduction'];
                }
                
+               dd($data_code);
                // retourner l'ordre du tableau.
                 $data_code_finish = array_reverse($data_code);
                 for($i=0; $i < count($data_code_finish); $i++){
@@ -1028,7 +1029,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          
             
-            dd($down_tickera);
+            
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
