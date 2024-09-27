@@ -986,7 +986,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              $data_tickera = json_decode($dataresult,true);
             
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
-             dd($id_commande);
+             dd($data_tickera);
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
