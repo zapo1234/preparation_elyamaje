@@ -982,8 +982,9 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
 
-            // $dataresult = json_encode($data);
-             $data_tickera = json_decode($data,true);
+             //$dataresult = json_encode($data);
+             $data_tickera = $data->toArray();
+             dd($data_tickera);
             
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
              dd($data_tickera);
