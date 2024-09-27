@@ -981,24 +981,24 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
              ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
-             dump($id_commande);
-             dump($data);
+
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
             
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
-             dd($data_tickera);
+         
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
                $down_tickera = [];
                if(count($data_tickera)!=0) {
-               
+
               foreach($data_tickera as $value){
                $ref_ticket[] = $value['ref'];
                $data_montant[] = $value['amount_payement'];
               }
 
+             
               // recupérer le montant du  
 
                   $montant_tickera_bon = array_sum($data_montant);
