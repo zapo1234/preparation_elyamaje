@@ -961,7 +961,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
-         dump($id_recup);
+         
         
    if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
@@ -976,17 +976,15 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
 
-             dump($id_commande);
             // je veux aller cherche les info tockera et paiment.
               $data= DB::table('payement_caisse')
              ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
              ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
 
-             dump($data);
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
-            dd($data_tickera);
+            dump($data_tickera);
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
          
               $ref_ticket =[];
