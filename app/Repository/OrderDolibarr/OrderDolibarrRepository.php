@@ -982,6 +982,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
              ->where('type', '=','TICK') // Condition pour 'type'
              ->get(); // Récupérer les résultats
+
+             dump($data);
              $dataresult = json_encode($data);
              $data_tickera = json_decode($dataresult,true);
             dd($data_tickera);
