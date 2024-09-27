@@ -961,8 +961,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
-         
-         dd(env('MAIL_HOST'));
+      
         
    if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
