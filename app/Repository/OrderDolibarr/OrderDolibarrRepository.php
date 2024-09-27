@@ -961,7 +961,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
-         
+      
         
    if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
@@ -986,7 +986,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              $data_tickera = json_decode($dataresult,true);
             
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
-         
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
@@ -998,10 +997,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                $data_montant[] = $value['amount_payement'];
               }
 
-             
-              // recupérer le montant du  
-
-                  $montant_tickera_bon = array_sum($data_montant);
+                 // recupérer le montant des bon 
+                 $montant_tickera_bon = array_sum($data_montant);
 
                 // aller cherher dans la table tickera les code
                 $data_ticket_code = DB::table('tickera')
@@ -1064,6 +1061,12 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
            $total_ttc_tickera = $total_ttc - $montant_tickera_bon;
+
+           if($total_ttc_tickera > 150){
+               $aff =2;
+           }else{
+              $aff = 1;
+           }
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
 
