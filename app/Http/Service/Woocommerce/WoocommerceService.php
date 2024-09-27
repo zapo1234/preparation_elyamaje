@@ -171,7 +171,7 @@ class WoocommerceService
     $transformOrder['dolibarrOrderId'] = $orderDolibarr[0]['id'];
     $transformOrder['discount_total'] = 0;
     $transformOrder['coupons'] = "";
-    $transformOrder['shipping_amount'] = 0;
+    $transformOrder['shipping_amount'] = $orderDolibarr[0]['shipping_amount'] ?? 0;
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
