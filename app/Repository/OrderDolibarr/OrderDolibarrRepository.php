@@ -1026,7 +1026,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                 $montant_tickera_bon=0;
             }
 
-            dd($montant_tickera_bon);
          
                // traiter le retour de la facture
              // verifions l'existence des resultats...
