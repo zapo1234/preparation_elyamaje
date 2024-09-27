@@ -99,7 +99,9 @@
             <p> <strong> {{ $valeur_shipping   }}   </strong>  {{  $text_shipping  }}</p>
              <p><strong> Total (TTC) :  </strong> {{ number_format($total_ttc_tickera, 2, ',', '') }} €</p>
              <p><strong></strong></p>
-            <p><strong>Total (TVA):  {{ number_format($total_ttc_tickera*0.2/1.2, 2, ',', '') }} €  </strong> (20%)</p>
+             @if($total_ttc_tickera > 0)
+             <p><strong>Total (TVA):  {{ number_format($total_ttc_tickera*0.2/1.2, 2, ',', '') }} €  </strong> (20%)</p>
+             @endif
             {{-- <p><strong>Remise {{$remise }} %    </strong>:  {{ number_format($total_ttc*$remise/100, 2, ',', '') }} €</p>
             <p><strong>Total T.T.C après remise : </strong>{{ number_format($total_ttc-$total_ttc*$remise/100, 2, ',', '') }} €</p> --}}
         </div>
