@@ -1025,6 +1025,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             }
          
             
+            dd($down_tickera);
                // traiter le retour de la facture
              // verifions l'existence des resultats.
         if(count($result)!=0){
