@@ -43,10 +43,9 @@ class InvoicesPdf
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             //$to="adrien@elyamaje.com";
-             $to ="emilie@elyamaje.com";
+              $to="adrien@elyamaje.com";
              //$to = $tiers['email'];
-            // envoi de mail au client.
+             // envoi de mail au client.
             
             if($indexs=="xxxv1"){
                 Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=> $percent, "name" => isset($tiers["name"]) ? $tiers["name"]: ""], function ($message) use ($to, $subject, $content,$path_invoice) {
