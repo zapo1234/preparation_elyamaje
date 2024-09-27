@@ -992,10 +992,10 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
                $down_tickera = [];
                if(count($data_tickera)!=0) {
 
-              foreach($data_tickera as $value){
-               $ref_ticket[] = $value['ref'];
-               $data_montant[] = $value['amount_payement'];
-              }
+                  foreach($data_tickera as $value){
+                   $ref_ticket[] = $value['ref'];
+                   $data_montant[] = $value['amount_payement'];
+                }
 
                  // recupérer le montant des bon 
                  $montant_tickera_bon = array_sum($data_montant);
@@ -1025,6 +1025,8 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
             else{
                 $montant_tickera_bon=0;
             }
+
+            dd($montant_tickera_bon);
          
                // traiter le retour de la facture
              // verifions l'existence des resultats...
@@ -1064,11 +1066,6 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            $total_ttc_ticker = $total_ttc - $montant_tickera_bon;
            
 
-           if($total_ttc_tickera > 150){
-               $aff =2;
-           }else{
-              $aff = 1;
-           }
            // les frais de port
            $shipping_amount = $result[0]['shipping_amount'];
 
