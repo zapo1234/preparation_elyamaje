@@ -986,19 +986,18 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
              $data_tickera = json_decode($dataresult,true);
             
               // va recupérer les code associe dans prepa_tickera via la ref tocket_id
-         
+             dump($data_tickera);
               $ref_ticket =[];
               $data_montant =[];
                $data_code =[];// recupérer
                $down_tickera = [];
                if(count($data_tickera)!=0) {
-
+                 dd('zapo');
               foreach($data_tickera as $value){
                $ref_ticket[] = $value['ref'];
                $data_montant[] = $value['amount_payement'];
               }
 
-             dd($data_montant);
               // recupérer le montant du  
 
                   $montant_tickera_bon = array_sum($data_montant);
