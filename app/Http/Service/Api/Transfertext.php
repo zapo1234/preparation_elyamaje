@@ -226,7 +226,7 @@ class Transfertext {
           // il y'a carte bancaire et carte cadeaux
           if($val['payment_list']['amountCard']!=0 && $val['payment_list']['amountSpecies']==0 && $val['payment_list']['amountDiscount']!=0) {
             $chaine_index="cbcado";
-            $indice_amount_liq=$val['payment_list']['amoutDiscount'].'%'.$chaine_index.'%'.$prefix;//carte bancaire et card cadeaux
+            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;//carte bancaire et card cadeaux
           }
 
           // espece et cartes cadeaux
@@ -1252,9 +1252,9 @@ class Transfertext {
                         }
 
                        elseif(in_array($account_name,$array_paimentss)){
-                       // CB
-                         $account_id=4; // PROD
-                         $paimentid=4;// PROD
+                       // DONS
+                         $account_id=3; // PROD
+                         $paimentid=3;// PROD
                      }
 
                      else{
