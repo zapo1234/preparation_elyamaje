@@ -1277,8 +1277,8 @@ class Transfertext {
                    }
                    // liquide et cb 
                    if($account_multiple=="cbliq"){
-                      $account_id=48;// transfertx
-                      // account_id=49 PROD
+                      //$account_id=48;// transfertx
+                       $account_id=49;  //PROD
                       $paimentid =6;// PROD envoi en CB.
                  }
                  
