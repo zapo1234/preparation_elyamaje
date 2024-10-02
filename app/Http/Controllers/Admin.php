@@ -2141,7 +2141,7 @@ class Admin extends BaseController
     
   public function generateinvoices(){
       
-  /*  $datas_facture = DB::connection('mysql2')->select("
+   $datas_facture = DB::connection('mysql2')->select("
     SELECT fk_facture, GROUP_CONCAT(fk_product) AS products
     FROM llxyq_facturedet
     GROUP BY fk_facture");
@@ -2149,8 +2149,9 @@ class Admin extends BaseController
     $datas = json_decode($datas, true);
 
     //dd($datas);
-    $fk_product_billet = "6838";
-   $data_fk_invoice =[];
+    //$fk_product_billet = "6838";
+    $fk_product_billet="6417";// carte cadeaux
+    $data_fk_invoice =[];
      // verifier si le fk_product est dans une chain
      for($i=0; $i < count($datas);$i++){
     //dd($datas[0]['fk_facture']);
@@ -2167,8 +2168,7 @@ class Admin extends BaseController
 
      }
      
-    
-    // va me recupérer dans la table extrafields, facture
+     // va me recupérer dans la table extrafields, facture
     $datas_fac = DB::connection('mysql2')->table('llxyq_facture_extrafields')
     ->whereIn('fk_object', $data_fk_invoice)
     ->select('idw')
@@ -2184,7 +2184,7 @@ class Admin extends BaseController
      }
 
      dd($donnes);
-     */
+    
 
      $message="";
       $css="no";
