@@ -213,7 +213,7 @@ class TransferOrder
              }
 
              
-                  // je me connecte au clé dolibarr pour intéragir avec api.
+                  // je me connecte au clé dolibarr pour intéragir avec api..
                    $method = "GET";
                   $apiKey = env('KEY_API_DOLIBAR'); 
                   $apiUrl = env('KEY_API_URL');
@@ -223,6 +223,7 @@ class TransferOrder
                    $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	                 $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
+
                   
                    // tester si l'api repond pour renvoyé un message d'erreur s'il faut .
                   if(count($listproduct)==0){
@@ -764,6 +765,8 @@ class TransferOrder
                            $data_lines= $data_lines;
                         }
 
+                        dump($data_lines);
+
                           // traiter les commande uniquement en bon d'achat.
                           foreach($data_lines[0]['lines'] as $keys => $val){
                             $chainex ="Carte";
@@ -798,7 +801,7 @@ class TransferOrder
                         }
                       }
                      }
-
+                         dd($data_lines);
                            // construire les données du clients a attacher a la facture.
                             // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
