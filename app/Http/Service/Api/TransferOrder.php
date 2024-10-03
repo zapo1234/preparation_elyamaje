@@ -223,8 +223,7 @@ class TransferOrder
                    $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	                 $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
-                   
-                   dd($listproduct);
+
                   
                    // tester si l'api repond pour renvoyé un message d'erreur s'il faut .
                   if(count($listproduct)==0){
@@ -286,14 +285,13 @@ class TransferOrder
                   }
 
                  // recuperer le dernier id => socid du tiers dans dolibarr.
-                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
+                /*  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
 	    	          "sortorder" => "DESC", 
 		              "limit" => "1", 
 		               "mode" => "1",
 		               )
          	         ), true);
-                   
 
                   foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
@@ -303,6 +301,8 @@ class TransferOrder
                    $id_cl = $id_cl+1;
                    $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
+
+                  */
 
                    // important je veux recupérer un array qui lit le barcode et id du product de dloibar
                     foreach($listproduct as $values) {
@@ -746,7 +746,7 @@ class TransferOrder
                        }
 
 
-                       dd($data_tiers);
+                
 
                        // création du client dans Api dolibar !
                        if(count($data_tiers)!=0){
