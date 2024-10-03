@@ -743,6 +743,9 @@ class TransferOrder
                          }
                        }
 
+
+                       dd($data_tiers);
+
                        // création du client dans Api dolibar !
                        if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
