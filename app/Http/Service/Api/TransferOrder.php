@@ -293,8 +293,7 @@ class TransferOrder
 		               "mode" => "1",
 		               )
          	         ), true);
-
-                   dd($clientSearch);
+                   
 
                   foreach($clientSearch as $data) {
                     $tiers_ref = $data['id'];
