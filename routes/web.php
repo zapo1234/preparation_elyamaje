@@ -19,7 +19,7 @@ use App\Http\Controllers\SupplierOrderController;
 |--------------------------------------------------------------------------
 |
 |   Liste des routes de l'application "Préparation" définies selon
-|   les rôles utilisateurs ci-dessous.
+|   les rôles utilisateurs ci-dessous..fy
 |
 */
 
