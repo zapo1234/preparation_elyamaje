@@ -92,6 +92,7 @@ class CommandeidsRepository implements CommandeidsInterface
              '106,payplug'=>'payplug',
              '106,payplug'=>'PAYP',
              '6,CB'=>'CB',
+             '57,CADO'=>'CADO',
              '6,cod'=>'cod',
              '102,bancontact'=>'bancontact',
              '108,oney_x4_with_fees'=>'oney_x4_with_fees',

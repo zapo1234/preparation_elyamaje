@@ -23,7 +23,7 @@
                         <img src="https://www.connect.elyamaje.com/admin/uploads/logo_caisse.png" style="width: 170px;">
                         <h1 style="color: #1A2028; text-align:center; margin-top: 40px; font-size: 22px; font-weight: bold; margin-bottom: 15px;">Bonjour {{ $name }},</h1>
                     </div>
-                    <p style="text-align:center; line-height: 17px;">Toute l'Équipe Elyamaje vous remercie pour votre venue au Gala de Marseille 2024.</p>
+                    <p style="text-align:center; line-height: 17px;">Toute l'Équipe Elyamaje vous remercie pour votre venue à son Gala de Marseille 2024.</p>
                     <p style="text-align:center; line-height: 17px;">Nous avons le plaisir de vous informer que votre commande est actuellement en cours de préparation. 
                     Elle vous sera livrée sous un délai de 72H.</p>
 

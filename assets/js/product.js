@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
     $('#example').DataTable({
         "lengthMenu": [
             [10, 25, 50, 100, 250, -1],

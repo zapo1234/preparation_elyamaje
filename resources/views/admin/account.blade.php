@@ -50,6 +50,10 @@
 													<label for="email" class="form-label">Email*</label>
 													<input required name="email" type="email" class="form-control" id="email">
 												</div>
+												<div class="col-md-12">
+													<label for="identifier" class="form-label">Identifiant</label>
+													<input required name="identifier" type="identifier" class="form-control" id="identifier">
+												</div>
 												<div class="col-md-12 d-flex align-items-center form-check" style="cursor: pointer !important; margin-left: 8px">
 													<input class="form-check-input" style="cursor: pointer; width: 20px; height: 20px;" type="checkbox" value="" id="passwordCheck" name="passwordCheck">
 													<label style="margin-left: 15px; margin-top: 5px" class="form-check-label" for="passwordCheck">Renseigner un mot de passe manuellement</label>
@@ -228,6 +232,11 @@
 																	<div class="col-md-12">
 																		<label for="update_email" class="form-label">Email*</label>
 																		<input value="{{ $user['email'] }}" required name="update_email" type="update_email" class="form-control">
+																	</div>
+
+																	<div class="col-md-12">
+																		<label for="update_identifier" class="form-label">Identifiant</label>
+																		<input value="{{ $user['identifier'] }}" required name="update_identifier" type="update_identifier" class="form-control">
 																	</div>
 																	<div class="col-md-12">
 																		<label for="update_role" class="form-label">Rôle*</label>

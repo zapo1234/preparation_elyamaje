@@ -171,7 +171,7 @@ class WoocommerceService
     $transformOrder['dolibarrOrderId'] = $orderDolibarr[0]['id'];
     $transformOrder['discount_total'] = 0;
     $transformOrder['coupons'] = "";
-    $transformOrder['shipping_amount'] = 0;
+    $transformOrder['shipping_amount'] = $orderDolibarr[0]['shipping_amount'] ?? 0;
     $transformOrder['gift_card'] = 0;
     $transformOrder['from_dolibarr'] = true;
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
@@ -195,9 +195,9 @@ class WoocommerceService
     $adress_2 = isset($adress[1]) ? $adress[1] : '';
 
     $transformOrder['billing'] = [
-      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['pname'],
+      "first_name" => $orderDolibarr[0]['billing_name'] ?? $orderDolibarr[0]['name'],
       "last_name" => $orderDolibarr[0]['billing_pname'] != null ? $orderDolibarr[0]['billing_pname'] : 
-      ($orderDolibarr[0]['pname'] != $orderDolibarr[0]['pname'] ? $orderDolibarr[0]['pname'] : ''),
+      ($orderDolibarr[0]['name'] != $orderDolibarr[0]['pname'] ? $orderDolibarr[0]['pname'] : ''),
       "company" => $orderDolibarr[0]['billing_company'] ?? $orderDolibarr[0]['company'],
       "address_1" => $orderDolibarr[0]['billing_adresse'] ?? $adress_1,
       "address_2" => $adress_2,
@@ -263,6 +263,7 @@ class WoocommerceService
               'quantity' => $order['quantity'],
               'subtotal' => $order['priceDolibarr'],
               'price' => $order['priceDolibarr'],
+              'real_price' => $order['priceDolibarr'],
               'total' => $order['total_ht'],
               'subtotal_tax' => $order['total_tva'],
               'total_tax' => $order['total_tva'],
@@ -275,7 +276,7 @@ class WoocommerceService
             ];
           }
         } else {
-          $transformOrder['line_items'][]= [
+          $transformOrder['line_items'][] = [
             'id' => $order['line_items_id_dolibarr'],
             'name' => $order['productName'],
             'product_id' => $order['product_woocommerce_id'],
@@ -283,6 +284,7 @@ class WoocommerceService
             'quantity' => $order['quantity'],
             'subtotal' => $order['priceDolibarr'],
             'price' => $order['priceDolibarr'],
+            'real_price' => $order['priceDolibarr'],
             'total' => $order['total_ht'],
             'subtotal_tax' => $order['total_tva'],
             'total_tax' => $order['total_tva'],

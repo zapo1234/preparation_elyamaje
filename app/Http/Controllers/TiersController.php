@@ -193,7 +193,7 @@ class TiersController extends BaseController
          $list_result =[];
          $ids_commande = [];
    
-         foreach($data as $valu){
+        /* foreach($data as $valu){
             $date = date('Y-m-d', $valu['datem']);
             foreach($valu['array_options'] as $val)
             if($date == $datet){
@@ -205,17 +205,64 @@ class TiersController extends BaseController
          
          $array_result = array_unique($list);
          $array_finale = array_filter($array_result);
+       */
+
+         // je veux aller chercher directement dans dolibarr les datas les facture
+        
          
          // table historique de facture
          $mm = "07:00:00";
          $mm1 = "23:59:59";
    
          // creé des bornes de recupération dans
-         $date1 = $datet.'T'.$mm;
-         $date2  = $datet.'T'.$mm1;
+         $date1 = $datet.' '.$mm;
+         $date2  = $datet.' '.$mm1;
          $status ="finished";
-   
-         // recupérer les ids de produits dans ce intervale.
+
+          // recupérer les id invoices facture en journee.
+          $data = DB::connection('mysql2')
+          ->select("SELECT fk_object,idw
+               FROM llxyq_facture_extrafields 
+               WHERE tms BETWEEN ? AND ?", [$date1, $date2]);
+        $name_list = json_decode(json_encode($data), true);
+
+        // je veux recupérer les facture payé(facture)
+        $datas = DB::connection('mysql2')
+        ->select("SELECT rowid,paye
+             FROM llxyq_facture
+             WHERE date_valid BETWEEN ? AND ?", [$date1, $date2]);
+      $name_lists = json_decode(json_encode($datas), true);
+
+      $data_ids =[];
+      foreach($name_lists as $value){
+          $chaine_data = $value['rowid'].','.$value['paye'];
+           $data_ids[$chaine_data] = $value['rowid'];
+      }
+
+      // chercher les id de commande facture et en payé pour cette journée
+      $array_final =[];
+      $array_finale =[];
+      $chaine="cado";
+      $chaine1 ="gala";
+      foreach($name_list as $valus){
+
+           $id_order = array_search($valus['fk_object'],$data_ids);
+           if($id_order!=false){
+                $ids = explode(',',$id_order);
+                
+                if($ids[1]==1){
+                  if(strpos($valus['idw'],$chaine)===false OR strpos($valus['idw'],$chaine1)===false){
+                    $array_final[] = $valus['idw'];
+
+                  }
+                }
+            }
+      }
+
+      // recupérer les id order qui sont en payé
+         $array_finale = array_filter($array_final);
+
+        // recupérer les ids de produits dans ce intervale.
          $posts = History::where('status','=',$status)->whereBetween('created_at', [$date1, $date2])->whereRaw('LENGTH(order_id) < 10')->get();
 
          $name_list = json_encode($posts);
@@ -229,7 +276,7 @@ class TiersController extends BaseController
    
          // resultat la table historique 
          $resultat_histories = $list_array;
-         $data = array_unique($list);
+         //$data = array_unique($list);
    
          // chercher les diff entre les deux tableau. 
          $diff_array = array_diff($resultat_histories,$array_finale);
@@ -239,12 +286,12 @@ class TiersController extends BaseController
          }
    
          if(count($diff_array)==0){
-            $alert = "Toutes les commandes ont bien été facturées le $datet";
+            $alert = "Toutes les commandes ont bien été facturées et terminées le $datet";
          } elseif(count($diff_array)==1) {
-            $alert = "Attention nous avons une commande non facturée dans dolibarr le $datet, voir le N° $list_commande";
+            $alert = "Attention nous avons un probleme sur cette commmandes(verifier) le $datet, voir le N° $list_commande";
          } else {
             $nombre = count($diff_array);
-            $alert="Attention nous avons $nombre commandes non facturées dans dolibarr le $datet, voir les N° suivants : $list_commande";
+            $alert="Attention nous avons peut etre des problemes $nombre commandes(vérifier la facturation ou le status dans preparation) le $datet, voir les N° suivants : $list_commande";
          }
          
 

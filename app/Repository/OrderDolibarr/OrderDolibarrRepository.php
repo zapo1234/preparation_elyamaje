@@ -74,6 +74,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          ->where('orders_doli.ref_order', $order_id)
          ->get();
 
+
       if(!$order_lines->isEmpty()){
          $order_payments = DB::table('payement_caisse')->select('payement_caisse.type', 'payement_caisse.amount_payement')
          ->where('payement_caisse.commande_id', $order_lines[0]['id'])
@@ -84,10 +85,18 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
 
       foreach($order_lines as $key => $order){
+         $order_lines[$key]['gift_card_amount'] = 0; 
 
          // Pour les commandes BP / GALA
          if($order_payments){
             $order_lines[$key]['payment_list'] = $order_payments;
+
+            // Check if type TICK = "carte cadeau" / "bon d'achat"
+            foreach($order_payments as $pay){
+               if($pay['type'] == "TICK"){
+                  $order_lines[$key]['gift_card_amount'] = floatval($order_lines[$key]['gift_card_amount'] + $pay["amount_payement"]);
+               }
+            }
          }
 
          $order_lines[$key]['name'] = $order['productName'];
@@ -694,7 +703,7 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
    public function getAllOrdersPendingBeautyProf($ref_order, $date){
 
-      $date = $date ?? date('Y-m-d');
+      $date = $date != false ? $date : date('Y-m-d');
 
       if($ref_order){
          return $this->model::select('orders_doli.id as order_id', 'users.name as seller', 'orders_doli.statut as status', 'orders_doli.ref_order', 
@@ -952,26 +961,76 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
          $userdata =  DB::table('orders_doli')->select('id','ref_order')->where('ref_order','=',$ref_commande)->get();
          $ids = json_encode($userdata);
          $id_recup = json_decode($ids,true);
+      
         
-         if(count($id_recup)!=0){
+   if(count($id_recup)!=0){
             $id_commande = $id_recup[0]['id'];// recupérer id de commmande.
             $usersWithPosts = DB::table('orders_doli')
             ->join('lines_commande_doli', 'orders_doli.id', '=', 'lines_commande_doli.id_commande')
              ->select('lines_commande_doli.*', 'orders_doli.ref_order','orders_doli.name','orders_doli.pname','orders_doli.adresse','orders_doli.code_postal','orders_doli.email',
             'orders_doli.total_tax','orders_doli.total_order_ttc','orders_doli.ref_order','orders_doli.city','orders_doli.phone','orders_doli.billing_adresse','orders_doli.billing_city','orders_doli.billing_code_postal',
-            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name')
+            'orders_doli.billing_code_postal','orders_doli.billing_pname','orders_doli.billing_name','orders_doli.shipping_amount')
             ->where('orders_doli.id','=',$id_commande)
             ->get();
       
             $lists = json_encode($usersWithPosts);
             $result = json_decode($lists,true);
-             
+
+            // je veux aller cherche les info tockera et paiment.
+              $data= DB::table('payement_caisse')
+             ->where('commande_id','=', $id_commande) // Condition pour 'commande_id'
+             ->where('type', '=','TICK') // Condition pour 'type'
+             ->get(); // Récupérer les résultats
+
+             $dataresult = json_encode($data);
+             $data_tickera = json_decode($dataresult,true);
             
-            // traiter le retour de la facture
-           // verifions l'existence des resultats.
-            if(count($result)!=0){
+              // va recupérer les code associe dans prepa_tickera via la ref tocket_id..
+              $ref_ticket =[];
+              $data_montant =[];
+               $data_code =[];// recupérer
+               $down_tickera = [];
+               if(count($data_tickera)!=0) {
+
+                  foreach($data_tickera as $value){
+                   $ref_ticket[] = $value['ref'];
+               $data_montant[] = $value['amount_payement'];
+              }
+
+                 // recupérer le montant des bon 
+                 $montant_tickera_bon = array_sum($data_montant);
+                 
+
+                // aller cherher dans la table tickera les code
+                $data_ticket_code = DB::table('tickera')
+              ->select('ticket_id','code_reduction') // Spécifiez les colonnes à sélectionner
+               ->whereIn('ticket_id', $ref_ticket)
+               ->get();
+                $data_tickeras = json_decode($data_ticket_code,true);
+
+                // recupérer dans un tableau unique les data code
+                
+               foreach($data_tickeras as $vals){
+                  $data_code[] = $vals['code_reduction'];
+               }
+               
+               // retourner l'ordre du tableau.
+                $data_code_finish = array_reverse($data_code);
+                for($i=0; $i < count($data_code_finish); $i++){
+                    $down_tickera[] = [
+                         $data_code_finish[$i] =>$data_montant[$i],
+                      ];
+               }
+            }
+            else{
+                $montant_tickera_bon=0;
+            }
+         
+               // traiter le retour de la facture
+             // verifions l'existence des resultats...
+        if(count($result)!=0){
               // recupérer les variables utile pour envoyé la facture et l'email au clients.
-            $tiers =[
+               $tiers =[
            'ref_order'=>$result[0]['ref_order'],
            'name' => $result[0]['billing_name'],
            'pname' => $result[0]['billing_pname'],
@@ -1002,6 +1061,28 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
            // le destinatire et la date d'aujourdhuit.
            $destinataire = $result[0]['email'];
            $total_ttc = $result[0]['total_order_ttc'];
+           $total_ttc_tickera = $total_ttc - $montant_tickera_bon;
+           
+
+           if($total_ttc_tickera > 150){
+               $aff =2;
+           }else{
+              $aff = 1;
+           }
+           // les frais de port
+           $shipping_amount = $result[0]['shipping_amount'];
+
+           if($shipping_amount==0){
+             $text_shipping="";
+             $valeur_shipping="";
+              
+           }else{
+              $text_shipping ="Frais de port";
+              $monnaie="€";
+              $valeur_shipping = $shipping_amount.' '.$monnaie;
+           }
+
+
            // definir le pourcentage du code promo envoyé  au tiers
         
            if($total_ttc >= 80){
@@ -1026,11 +1107,11 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
 
          $remise_true = env('DISCOUNT');
          $remise = $remise_true*100;
-         
-          // declencher la génération de facture et envoi de mail.
-         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs);
+          // declencher la génération de facture et envoi de mail...
+         $this->pdf->invoicespdf($data_line_order,$tiers, $ref_order, $total_ht, $total_ttc, $destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount,
+         $valeur_shipping,$text_shipping,$total_ttc_tickera);
          // insert dans la base de données...
-          $datas_promo =[
+         /* $datas_promo =[
          'id_commande'=>$id_commande,
          'code_promo'=>$code_promo,
          'percent'=>$percent,
@@ -1041,12 +1122,13 @@ class OrderDolibarrRepository implements OrderDolibarrInterface
           
          // insert les données dans la base de données.
            DB::table('code_promos')->insert($datas_promo);
+         */
           return $ref_order;
       }
       else{
              // afficher une erreur ....
              // insert dans la table des erreur log.
-             $message =" Attention la commande Beauty proof paris $id_commande ne contient pas de produits !";
+             $message =" Attention la commande au $id_commande ne contient pas de produits !";
              $datas = [
                'order_id'=> $id_commande,
                'message'=> $message,

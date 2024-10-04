@@ -123,6 +123,9 @@ class ApiController extends Controller
             DB::table('tickera')->where('ticket_id', $ticketId)->update(['amount_wheel' => $amount, 'gift_card' => $gift_card]);
             return response()->json(['success' => true]);
          } catch (Exception $e){
+            DB::table('log_error')->insert([
+               'message' => $e->getMessage(),
+           ]); 
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
          }
       } else {
