@@ -1170,7 +1170,7 @@ class TransferOrder
                     }
 
                    elseif(in_array($account_name,$array_paimentss)){
-                        // CB
+                        // DONS
                          $account_id=3; // PROD
                          $paimentid=3;// PROD
                    }

@@ -21,7 +21,7 @@ class UserRepository implements UserInterface
    public function getUsersAndRoles($withInactive = false){
       $status = $withInactive ? [0, 1] : [1];
 
-      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type', 'active', 'picture')
+      $users = $this->model->select('users.id as user_id', 'name', 'email', 'role_id', 'role', 'poste', 'type', 'active', 'picture', 'identifier')
          ->Leftjoin('user_roles', 'user_roles.user_id', '=', 'users.id')
          ->Leftjoin('roles', 'roles.id', '=', 'user_roles.role_id')
          ->whereIn('users.active', $status)
@@ -92,6 +92,20 @@ class UserRepository implements UserInterface
       }
    }
 
+   public function getUserByEmailOrdIdentifier($email, $identifier, $user_id = false){
+      if($user_id){
+         return $this->model->where(function($query) use ($email, $identifier) {
+            $query->where('email', $email)
+                  ->orWhere('identifier', $identifier);
+        })
+        ->where('id', '!=', $user_id)
+        ->count();
+      } else {
+         return $this->model->where('email', $email)->orWhere('identifier', $identifier)->get();
+      }
+
+      return $this->model->where('email', $email)->orWhere('identifier', $identifier)->get();
+   }
 
    public function getUserById($user_id){
       try{
@@ -146,11 +160,11 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type){
-      try{
-
+   public function createUser($user_name_last_name, $email, $role, $password, $poste, $type, $identifier){
+      try {
          $user = $this->model->create([
             'name'=> $user_name_last_name,
+            'identifier' => $identifier,
             'email'=> $email,
             'password'=> $password,
             'poste'=> $poste,
@@ -174,12 +188,13 @@ class UserRepository implements UserInterface
       }
    }
 
-   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type){
+   public function updateUserById($user_id, $user_name_last_name, $email, $role, $poste, $type, $identifier){
       try{
          $delete_order = true;
          $this->model->where('id', $user_id)->update([
             'name'=> $user_name_last_name,
             'email'=> $email,
+            'identifier' => $identifier,
             'poste'=> !in_array('3', $role) ? 0 : $poste,
             'type' => $type
          ]);

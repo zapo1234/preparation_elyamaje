@@ -289,7 +289,7 @@ class Admin extends BaseController
                             'is_variable' => 0,
                             'weight' =>  $product['weights_variation'][$key] != "" ? $product['weights_variation'][$key] : $product['weight'],
                             'menu_order' => $product['menu_order'],
-                            'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
+                            'image' => isset($product['images_variations'][$key]) ? $product['images_variations'][$key] : (isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null),
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
                             'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
                         ];
@@ -719,8 +719,8 @@ class Admin extends BaseController
 
             try {
 
-                //$this->transfers->Transfertext($order);
-                $this->factorder->Transferorder($order);  
+                $this->transfers->Transfertext($order);
+                //$this->factorder->Transferorder($order);  
 
                 // Stock historique
                 $data = [
@@ -905,7 +905,26 @@ class Admin extends BaseController
         
         try {
             $pdoDolibarr = new PdoDolibarr(env('HOST_ELYAMAJE'),env('DBNAME_DOLIBARR'),env('USER_DOLIBARR'),env('PW_DOLIBARR'));
+
+            
+
+            // dump(env('HOST_ELYAMAJE'));
+            // dump(env('DBNAME_DOLIBARR'));
+            // dump(env('USER_DOLIBARR'));
+            // dd(env('PW_DOLIBARR'));
+
+
             $products_categories = $pdoDolibarr->getCategories();
+
+            // foreach ($products_categories as $key => $value) {
+            //     if ($value["fk_categorie"] == 65) {
+            //         dd($value);
+            //     }
+            // }
+
+
+            // dd("fin");
+
            
             DB::beginTransaction();
             DB::table('products_categories')->truncate();
@@ -1154,7 +1173,7 @@ class Admin extends BaseController
         $date = $request->get('created_at') ?? false;
         $orders_status = ['pending', 'processing', 'canceled'];
         $orders = $this->orderDolibarr->getAllOrdersPendingBeautyProf($ref_order, $date);
-
+        
         // Check if order date time is older than 2 hours
         foreach($orders as $ord => $or){
             $date1 = new DateTime(date('Y-m-d H:i:s'));
@@ -1537,6 +1556,7 @@ class Admin extends BaseController
 
     
     public function stockscat(){
+
         $data = $this->construcstocks->Constructstocks();
         // dd($data);
         $message="";
@@ -2120,19 +2140,18 @@ class Admin extends BaseController
 
     
   public function generateinvoices(){
-
-     $datas_facture = DB::connection('mysql2')->select("
+      
+   $datas_facture = DB::connection('mysql2')->select("
     SELECT fk_facture, GROUP_CONCAT(fk_product) AS products
     FROM llxyq_facturedet
     GROUP BY fk_facture");
     $datas = json_encode($datas_facture);
     $datas = json_decode($datas, true);
 
-    dd($datas);
-
     //dd($datas);
-    $fk_product_billet = "6838";
-   $data_fk_invoice =[];
+    //$fk_product_billet = "6838";
+    $fk_product_billet="6417";// carte cadeaux
+    $data_fk_invoice =[];
      // verifier si le fk_product est dans une chain
      for($i=0; $i < count($datas);$i++){
     //dd($datas[0]['fk_facture']);
@@ -2149,8 +2168,7 @@ class Admin extends BaseController
 
      }
      
-    
-    // va me recupérer dans la table extrafields, facture
+     // va me recupérer dans la table extrafields, facture
     $datas_fac = DB::connection('mysql2')->table('llxyq_facture_extrafields')
     ->whereIn('fk_object', $data_fk_invoice)
     ->select('idw')
@@ -2166,7 +2184,9 @@ class Admin extends BaseController
      }
 
      dd($donnes);
-      $message="";
+    
+
+     $message="";
       $css="no";
       $divid="no";
        return view('admin.generateinvoices',['message'=>$message,'css'=>$css,'divid'=>$divid]);
@@ -2197,6 +2217,7 @@ class Admin extends BaseController
   
 
     public function generatefactures(Request $request){
+        
 
         $ref_commande = $request->get('order_id');// recupérer ref_order entrées par le user.
         $data = $this->orderDolibarr->getAllReforder();// recupérer le tableau des arrays(ref_order)
@@ -2233,8 +2254,7 @@ class Admin extends BaseController
         }
     }
 
-    function updateProducts(){      
-
+    function updateProducts() {      
         try {
             $res = $this->construcstocks->updateProductsCaisse();
            
@@ -2247,6 +2267,11 @@ class Admin extends BaseController
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    
-   
+
+    public function getParticipant(){
+        $participants = DB::table('tickera')->get()->toArray();
+        $participants = json_encode($participants);
+        $participants = json_decode($participants, true);
+        return view('admin.participants',["participants" => $participants]);
+    } 
 }

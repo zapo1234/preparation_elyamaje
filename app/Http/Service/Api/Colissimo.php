@@ -22,7 +22,6 @@ class Colissimo
 
     public function generateLabel($order, $weight, $order_id, $colissimo, $items){
 
-       
         $productCode = $this->getProductCode($order);
 
         // $isCN22 = $this->isCn22($order['total_order'], $weight);
@@ -34,6 +33,7 @@ class Colissimo
         $format = $colissimo ? $colissimo->format_colissimo : "PDF_A4_300dpi";
         $address = $this->getAddress($order);
 
+        // dd(strval($insuranceValue));
         if($productCode){
             try {
                 $requestParameter = [
@@ -56,7 +56,7 @@ class Colissimo
                         ],
                         'parcel' => [
                             'weight' => $weight, // Poids du colis
-                            'insuranceValue' => intval($insuranceValue) ,
+                            'insuranceValue' => intval($insuranceValue),
                             // 'nonMachinable' => $nonMachinable, //Format du colis, true pour non standard
                             'pickupLocationId' => $order['pick_up_location_id'] != false ? $order['pick_up_location_id'] : null
                         ],
@@ -115,7 +115,6 @@ class Colissimo
 
 
 
-
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post($url, $data);
@@ -128,13 +127,12 @@ class Colissimo
                 ? $this->parseMonoPartBody($response)
                 : $this->parseMultiPartBody($response, $boundary[0]);
 
-                
-               
-
+            
 
                 $label = isset($content['<label>']) ? mb_convert_encoding($content['<label>'], 'UTF-8', 'ASCII') : false;
                 $cn23 = isset($content['<cn23>']) ? mb_convert_encoding($content['<cn23>'], 'UTF-8', 'ASCII') : false;
 
+                // dd($content['<jsonInfos>']['messages'][0]['messageContent']);
                
                 if(!$label){
                     return $content['<jsonInfos>']['messages'][0]['messageContent'];
@@ -490,10 +488,11 @@ class Colissimo
         $customsArticle = [];
         foreach($order['line_items'] as $key => $item){
             if(in_array($item['product_id'], $items)){
+                // dump( $item['total']);
                 $customsArticle[] = [
                     'description'   => $item['name'],
                     'quantity'      => $item['quantity'],
-                    'value'         => $item['total'] > 0 ? $item['total'] : ($item['real_price'] != 0 ? $item['real_price'] : 0.01),
+                    'value'         => $item['total'] > 0 ? $item['total'] : (isset($item['real_price']) && $item['real_price'] != 0 ? $item['real_price'] : 0.01),
                     'currency'      => config('app.currency'),
                     'artref'        => $item['ref'] ?? '',
                     'originalIdent' => 'A',
@@ -502,7 +501,6 @@ class Colissimo
                     'weight'        => is_numeric($item['weight']) ? $item['weight'] : 0
                 ];
             }
-           
         }   
         return $customsArticle;
     }

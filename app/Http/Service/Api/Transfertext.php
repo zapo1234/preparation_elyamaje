@@ -226,12 +226,12 @@ class Transfertext {
           // il y'a carte bancaire et carte cadeaux
           if($val['payment_list']['amountCard']!=0 && $val['payment_list']['amountSpecies']==0 && $val['payment_list']['amountDiscount']!=0) {
             $chaine_index="cbcado";
-            $indice_amount_liq=$val['payment_list']['amoutDiscount'].'%'.$chaine_index.'%'.$prefix;//carte bancaire et card cadeaux
+            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;//carte bancaire et card cadeaux
           }
 
           // espece et cartes cadeaux
           if($val['payment_list']['amountCard']==0 && $val['payment_list']['amountSpecies']!=0 && $val['payment_list']['amountDiscount']!=0){
-            $chaine_index="liqkdo";//carte bancaire et card cadeaux
+            $chaine_index="liqkdo";//liq et card cadeaux
             $indice_amount_liq=$val['payment_list']['amountSpecies'].'%'. $val['payment_list']['amountDiscount'].'%'.$chaine_index;
           }
 
@@ -244,7 +244,7 @@ class Transfertext {
           //uniquement carte cdeaux
           if($val['payment_list']['amountCard']==0 && $val['payment_list']['amountSpecies']==0 && $val['payment_list']['amountDiscount']!=0){
             $chaine_index="kdo";
-            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// card && espece
+            $indice_amount_liq=$val['payment_list']['amountDiscount'].'%'.$chaine_index.'%'.$prefix;// 
           }
 
           //au cas elle as utilisé les 3(3emecas)
@@ -650,17 +650,19 @@ class Transfertext {
                 if(isset($key_commande[$donnees['order_id']])==false) {
                 
                     // formalisés les valeurs de champs ajoutés id_commande et coupons de la commande.
-                    // veifier si la commande a facturé vient d'une beauty proof BPP
                     
                       $chaine_ext="GAL";
                       $chaine_ext2="CO";// facture devis
-                      $index_int="";// eviter que les commande de la BPP sois prise en compte pour
+                      $index_int="";// eviter que ces commande ont des points  fidelite
                       if(strpos($donnees['order_id'],$chaine_ext)!==false OR strpos($donnees['order_id'],$chaine_ext2)!==false){
                           $index_int=1;
                           $montant_fidelite = 0.000;
                       }else{
+                            //$index_int="";
+                            //$montant_fidelite = $donnees['total_order'];
                             $index_int="";
-                            $montant_fidelite = $donnees['total_order'];
+                            $total_shipping = $donnees['shipping_amount']*1.2;
+                            $montant_fidelite = $donnees['total_order']-$total_shipping+$donnees['gift_card_amount'];
                       }
 
                     $data_options = [
@@ -879,7 +881,7 @@ class Transfertext {
         ];
 
         // attribuer le compte bancaire.
-        $datetime = date('d-m-Y H:i:s');
+        $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));
         $d = DateTime::createFromFormat(
           'd-m-Y H:i:s',
           $datetime,
@@ -1135,11 +1137,11 @@ class Transfertext {
 
                     // iniquement que card kdo
                       if($index_amount_true[2]=="kdo"){
-                       $index_m ="LIQ";
+                       $index_m ="CADO";
                       $moyen_paid =  array_search($index_m,$moyen_card);
                       $moyen_paids = explode(',',$moyen_paid);
                       $mode_reglement_id = $moyen_paids[0];
-                      $account_multiple="yeskdo";
+                      $account_multiple="kdo";
                         // j'accroche les compte bancaire
                      }
                        // Qaund y'a un paiement uniquement que par CB 
@@ -1163,7 +1165,7 @@ class Transfertext {
                      }
 
                        // quand y'a une carte bancaire et cado
-                     if($index_amount_true[2]=="cbcdo"){
+                     if($index_amount_true[2]=="cbcado"){
 
                           $index_m ="CB";
                           $moyen_paid =  array_search($index_m,$moyen_card);
@@ -1206,7 +1208,8 @@ class Transfertext {
                    $double_pai = array('CB,LIQ','LIQ,CB');// recupérer la methode de paiment....
                    $array_revolut = array('revolut_pay','revolut_cc');
                    $array_scalapay = array('wc-scalapay-payin3','wc-scalapay-payin4');
-                  
+                   $array_paiments4 = array('CHQ');// chéque.
+                   $array_facture_dolibar = array('VIR');
                    // commande vient pas du gala donc par internet ou devis
                   if($account_multiple=="nogala"){
                       if(in_array($account_name,$array_paiment)) {
@@ -1217,16 +1220,16 @@ class Transfertext {
                      elseif(in_array($account_name,$array_revolut)) {
                          // revolut nouveaux compte.
                         // voir id moyens de paiment dans la table de dolibar paiment.
-                          $account_id=49;
-                          // $account_id =51;// prod 
+                          //$account_id=49;
+                           $account_id =51;// prod 
                          if($account_name=="revolut_pay"){
-                           $paimentid =55;// transfertx
-                           // $paimentid = 110;// prod
+                           //$paimentid =55;// transfertx
+                            $paimentid = 110;// prod
                          }
   
                          if($account_name=="revolut_cc"){
-                            $paimentid=107; // transfertx
-                            //$paimentid=109; // prod
+                           // $paimentid=107; // transfertx
+                            $paimentid=109; // prod
                          }
                          
                      }
@@ -1242,10 +1245,16 @@ class Transfertext {
                          $paimentid =3;// PROD
                        }
 
+                       elseif(in_array($account_name,$array_paiments4)){
+                        // cheque
+                         $account_id=5; // PROD
+                         $paimentid=5;// PROD
+                        }
+
                        elseif(in_array($account_name,$array_paimentss)){
-                       // CB
-                         $account_id=4; // PROD
-                         $paimentid=4;// PROD
+                       // DONS
+                         $account_id=3; // PROD
+                         $paimentid=3;// PROD
                      }
 
                      else{
@@ -1268,38 +1277,38 @@ class Transfertext {
                    }
                    // liquide et cb 
                    if($account_multiple=="cbliq"){
-                      $account_id=48;// transfertx
-                      // account_id=49 PROD
+                      //$account_id=48;// transfertx
+                       $account_id=49;  //PROD
                       $paimentid =6;// PROD envoi en CB.
                  }
                  
                  // tous cb/liq/espece
                  if($account_multiple=="yestous"){
-                  $account_id=48;// transfertx 
-                  //$account_id =49 // prod
+                  //$account_id=48;// transfertx 
+                   $account_id =49; // prod
                   $paimentid =6;// PROD envoi en CB.
                  }
 
                  // qaund y'a eu cb et carte cadeaux
                  if($account_multiple=="cbcado"){
-                     $account_id=48;// transfertx
-                     //$account_id =49 // prod
+                     //$account_id=48;// transfertx
+                     $account_id =49; // prod
                      $paimentid =6;// PROD envoi en CB.
 
                  }
 
                  // qaund y'des carte kdo
                  if($account_multiple=="kdo"){
-                     $account_id=51; // transfertx
-                     // $account_id =53; //prod
+                     //$account_id=51; // transfertx
+                      $account_id =53; //prod
                      $paimentid=57; // transfertx && prod
 
                  }
 
                  // quand y'a eu uniquement CB
                  if($account_multiple=="cbtotal"){
-                     $account_id =48; // transfertx
-                       //$account_id =49 // prod
+                     //$account_id =48; // transfertx
+                    $account_id =49; // prod
                      $paimentid =6;
 
                  }
@@ -1368,7 +1377,8 @@ class Transfertext {
                  // recupérer la datetime et la convertir timestamp
                  // liée la facture à un mode de rélgement
                 // convertir la date en datetime en timestamp.....
-                $datetime = date('d-m-Y H:i:s');
+                //$datetime = date('d-m-Y H:i:s');
+                $datetime = date('d-m-Y H:i:s', strtotime('-2 hours'));// a modifier selon le décalage horaire.(ajouter heure)
                 $d = DateTime::createFromFormat(
                 'd-m-Y H:i:s',
                  $datetime,
@@ -1436,9 +1446,9 @@ class Transfertext {
                   }
               
                   if ($account_multiple == "kdo") { // 100% cadeaux
-                      // Lier les factures Dolibarr à un moyen de paiement et banque
-                      $this->api->CallAPI("POST", $apiKey, $apiUrl . "invoices/" . $inv . "/payments", json_encode($newbank));
-                      $this->api->CallAPI("PUT", $apiKey, $apiUrl . "invoices/" . $inv, json_encode($newCommandepaye));
+                     // modifier la ligne de paiment pour attribué un debit.
+                      $ref = $response['ref']; 
+                      $this->addlineinvoice->reconstruirecdo($inv,$ref,$newCommandepaye, $newbank,$apiKey, $apiUrl);
                   }
               
                   if ($account_multiple == "cbtotal") { // 100% CB

@@ -15,15 +15,20 @@ class CreateTickeraTable extends Migration
     {
         Schema::create('tickera', function (Blueprint $table) {
             $table->id();
-            $table->string('last_name');
-            $table->string('first_name');
-            $table->string('adresse')->nullable();
-            $table->string('zip')->nullable();
-            $table->string('city')->nullable();
-            $table->string('email');
-            $table->string('ticket_id');
+            $table->string('nom');
+            $table->string('prenom');
+            $table->string('socid')->nullable();
+            $table->string('code_client')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('adresse');
+            $table->string('zip_code');
+            $table->string('ville');
+            $table->string('date_created');
             $table->string('montant_attribue');
+            $table->string('gift_card');
             $table->string('code_reduction');
+            $table->string('ticket_id');
             $table->integer('amount_wheel')->default(0); // Montant gagné à la roue de la fortune
             $table->timestamps();
         });

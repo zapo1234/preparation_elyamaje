@@ -19,7 +19,8 @@ class InvoicesPdf
           $this->pdf = $pdf;
       }
 
-       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$percent,$indexs){
+       public function invoicespdf($data_line_order,$tiers,$ref_order,$total_ht,$total_ttc,$destinataire,$code_promo,$remise,$percent,$indexs,$down_tickera,$shipping_amount,$text_shipping,$valeur_shipping,
+       $total_ttc_tickera){
         
             $date = date('Y-m-d H:i:s');
             $date = date('d/m/Y');
@@ -31,20 +32,20 @@ class InvoicesPdf
          
         try{
 
-            $pdf =  $this->pdf->loadView('admin.tiersinvoice',['date'=>$date,'data_line_order'=>$data_line_order,'tiers'=>$tiers,'ref_order'=>$ref_order,'total_ht'=>$total_ht,'total_ttc'=>$total_ttc,'code_promo'=>$code_promo,'remise'=>$remise]);
+            $pdf =  $this->pdf->loadView('admin.tiersinvoice',['date'=>$date,'data_line_order'=>$data_line_order,'tiers'=>$tiers,'ref_order'=>$ref_order,'total_ht'=>$total_ht,'total_ttc'=>$total_ttc,'code_promo'=>$code_promo,'remise'=>$remise,'down_tickera'=>$down_tickera,
+           'shipping_amount'=>$shipping_amount,'text_shipping'=>$text_shipping,'valeur_shipping'=>$valeur_shipping,'total_ttc_tickera'=>$total_ttc_tickera]);
             $pdfContent = $pdf->output();
-            $filePath = 'invoices/'.$ref_order.'.pdf'; // Emplacement dans le dossier storage/app
-
-            $filePaths = 'others_invoices/'.$ref_order.'.pdf';
-            // Enregistrement du fichier PDF dans le répertoire de stockage....
+        
+             $filePaths ='galaM_2024_invoices/'.$ref_order.'.pdf';
+             // Enregistrement du fichier PDF dans le répertoire de stockage....
             Storage::put($filePaths, $pdfContent);
-            $path_invoices = "storage/app/$filePath";
+            //$path_invoices = "storage/app/$filePath";
             // recupérer ici les facture renvoye
             $path_invoice = "storage/app/$filePaths";
 
-             //$to="martial@elyamaje.com";
-             $to = $tiers['email'];
-            // envoi de mail au client.
+              $to="zapomartial@yahoo.fr";
+             //$to = $tiers['email'];
+             // envoi de mail au client.
             
             if($indexs=="xxxv1"){
                 Mail::send('email.invoice', ['ref_order'=>$ref_order,'code_promo'=>$code_promo,'percent'=> $percent, "name" => isset($tiers["name"]) ? $tiers["name"]: ""], function ($message) use ($to, $subject, $content,$path_invoice) {
