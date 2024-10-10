@@ -11,34 +11,38 @@ class DiscountRepository
     */
     public function getDiscountCodes($startDate = null, $endDate = null, $code = null, $status = null, $limit = null, $status_updated = null)
     {
-        $query = DB::table('discount_code')->select('*');
+        $query = DB::table('discount_code')
+        ->select('discount_code.*', 'products.name')
+        ->join('products_order', 'discount_code.order_id', '=', 'products_order.order_id')
+        ->join('products', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id');
 
         // Ajouter des conditions de filtre si les paramètres sont fournis
         if ($startDate) {
-            $query->where('order_date', '>=', $startDate);
+            $query->where('discount_code.order_date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->where('order_date', '<=', $endDate);
+            $query->where('discount_code.order_date', '<=', $endDate);
         }
 
         if ($code) {
-            $query->where('code', $code);
+            $query->where('discount_code.code', $code);
         }
 
         if ($status_updated) {
-            $query->where('status_updated', '>=', $status_updated);
+            $query->where('discount_code.status_updated', '>=', $status_updated);
         }
 
         if ($status) {
             $statusArray = explode(',', $status);
-            $query->whereIn('status', (array) $statusArray);
+            $query->whereIn('discount_code.status', (array) $statusArray);
         }
 
         if ($limit) {
             $query->limit($limit);
         }
 
+        dd($query->get());
         // Récupérer les résultats et les transformer
         return $query->get()->map(function ($item) {
             return [
