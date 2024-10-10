@@ -29,7 +29,7 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete-after --exclude='.env'  --exclude='.htaccess' --exclude='/storage/app/*' --exclude='/assets/images/*'"
+          ARGS: "-rlgoDzvc -i --delete-after --exclude='.env'  --exclude='.htaccess' --exclude='/storage/app/*' --exclude='/assets/images/*' --exclude='/public/storage/*'"
           SOURCE: "./"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST_DEV }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
