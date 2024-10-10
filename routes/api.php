@@ -2,8 +2,9 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\DiscountCodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,8 +55,9 @@ Route::post("/updateLabelsStatus", [ApiController::class, "updateLabelsStatus"])
 Route::get('/products/appi-elearning', [ApiController::class, 'productApi']);
 
 
-
-
+Route::middleware('api_key')->group(function () {
+    Route::get('/getCodes', [DiscountCodeController::class, 'getFilteredDiscountCodes']);
+});
 
 
 
