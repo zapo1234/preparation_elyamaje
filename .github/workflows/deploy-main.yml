@@ -51,6 +51,7 @@ jobs:
               echo "Connexion réussie, installation des dépendances PHP..."
               composer install || { echo "Erreur lors de l'installation des dépendances PHP"; exit 1; }
               composer update || { echo "Erreur lors de la mise à jour des dépendances PHP"; exit 1; }
+              php artisan migrate
               echo "Installation des dépendances PHP terminée"
           EOF
             echo "Succès du déploiement des dépendances PHP."
