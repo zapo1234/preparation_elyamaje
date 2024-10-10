@@ -43,7 +43,7 @@ class DiscountCodeController extends BaseController
     {
         // Extraire les filtres optionnels de la requête
         $startDate = $this->validateDate($request->get('start_date')) ? $request->get('start_date') : null;
-        $endDate = $this->validateDate($request->get('end_date')) ? $this->validateDate($request->get('end_date')) : null;
+        $endDate = $this->validateDate($request->get('end_date')) ? $request->get('end_date') : null;
         $code = $request->get('code') ?? null;
         $status = $request->get('status') ?? null;
         $status_updated =  $this->validateDate($request->get('status_updated')) ? $request->get('status_updated') : null;
