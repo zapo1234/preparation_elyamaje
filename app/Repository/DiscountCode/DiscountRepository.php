@@ -53,6 +53,8 @@ class DiscountRepository
                 'phone' => $item->phone,
                 'code_promo' => $item->code,
                 'total_ht' => $item->total_ht,
+                'shipping_amount' => $item->shipping_amount,
+                'payment_method' => $item->	payment_method,
                 'total_ttc' => $item->total_ttc,
                 'status' => $item->status,
                 'date' => $item->order_date,
