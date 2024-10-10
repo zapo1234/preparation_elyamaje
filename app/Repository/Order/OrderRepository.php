@@ -24,6 +24,9 @@ class OrderRepository implements OrderInterface
 
       $is_distributor = false;
 
+      // Discount code for connect 
+      $code = [];
+
       // Parcourir les données des utilisateurs
       foreach ($array_user as $userId => $userOrders) {
             $ordersToInsert = [];
@@ -47,8 +50,35 @@ class OrderRepository implements OrderInterface
                         $amount[] = isset($coupon['nominal_amount']) ? $coupon['nominal_amount'] : 0;
                      }
                   }
-
-      
+                  
+                  // Get all discounts codes live / student (amb / -10)
+                  if(count($coupons) > 0){
+                     $discount_code = [];
+                     foreach($coupons as $cp){
+                        if(str_contains($cp, 'amb') || str_contains($cp, '-10')){
+                           $discount_code[] = $cp;
+                        }
+                     }
+                     if(count($discount_code) > 0){
+                        $code [] = [
+                           "order_id"        => $orderData['id'],
+                           "first_name"      => $orderData['billing']['first_name'] ?? "",
+                           "last_name"       => $orderData['billing']['last_name'] ?? "" ,
+                           "phone"           => $orderData['billing']['phone'] ?? "" ,
+                           "email"           => $orderData['billing']['email'] ?? "",
+                           "address_1"       => $orderData['billing']['address_1'] ?? "",
+                           "address_2"       => $orderData['billing']['address_2'] ?? "",
+                           "city"            => $orderData['billing']['city'] ?? "",
+                           "code"            => implode(',', $discount_code),
+                           "total_ht"        => floatval($orderData['total'] - $orderData['total_tax']),
+                           "total_ttc"       => floatval($orderData['total']),
+                           "status"          => $orderData['status'],
+                           "status_updated"  => $orderData['date_created'],
+                           "order_date"      => $orderData['date_created'],
+                        ]; 
+                     }
+                  }
+                
                   // Utilisation de la fonction pour récupérer la valeur avec la clé "_lpc_meta_pickUpProductCode"
                   if(isset($orderData['meta_data'])){
                      $productCode = $this->getValueByKey($orderData['meta_data'], "_lpc_meta_pickUpProductCode");
@@ -146,7 +176,6 @@ class OrderRepository implements OrderInterface
                         'billing_customer_country' => $orderData['billing']['country'] ?? null,
                         'billing_customer_email' => $orderData['billing']['email'] ?? null,
                         'billing_customer_phone' => $orderData['billing']['phone'] ?? null,
-      
                         'shipping_customer_first_name' => $orderData['shipping']['first_name'] ?? null,
                         'shipping_customer_last_name' => $orderData['shipping']['last_name'] ?? null,
                         'shipping_customer_company' => $orderData['shipping']['company'] ?? null,
@@ -157,11 +186,9 @@ class OrderRepository implements OrderInterface
                         'shipping_customer_postcode' => $orderData['shipping']['postcode'] ?? null,
                         'shipping_customer_country' => $orderData['shipping']['country'] ?? null,
                         'shipping_customer_phone' => $orderData['shipping']['phone'] ?? null,
-      
                         'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
                         'payment_method_title' => $orderData['payment_method_title'] ? $orderData['payment_method_title'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'Gift Card' : null ),
                         'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
-      
                         'date' => $orderData['date_created'],
                         'total_tax_order' => $orderData['total_tax'],
                         'total_order' => $orderData['total'],
@@ -171,7 +198,6 @@ class OrderRepository implements OrderInterface
                         'shipping_method' => isset($orderData['shipping_lines'][0]['method_id']) ? $orderData['shipping_lines'][0]['method_id'] : null,
                         'shipping_method_detail' => isset($orderData['shipping_lines'][0]['method_title']) ? $orderData['shipping_lines'][0]['method_title'] : null,
                         'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? floatval($orderData['shipping_lines'][0]['total']) : null,
-      
                         'product_code' => $productCode,
                         'pick_up_location_id' => $pickUpLocationId,
                         'customer_note' => $orderData['customer_note'],
@@ -218,13 +244,17 @@ class OrderRepository implements OrderInterface
                   DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);
                }
             } 
-   
-           // Insérer les données dans la base de données par lot
-           try{
-               
-               DB::transaction(function () use ($ordersToInsert, $productsToInsert) {
+            
+            // Insérer les données dans la base de données par lot
+            try{
+               DB::transaction(function () use ($ordersToInsert, $productsToInsert, $code) {
                   DB::table('orders')->insertOrIgnore($ordersToInsert);
                   DB::table('products_order')->insertOrIgnore($productsToInsert);
+
+                  // Insert into discount code for connect
+                  if(count($code) > 0){
+                     DB::table('discount_code')->insertOrIgnore($code);
+                  }
                });
             } catch(Exception $e){ 
                echo json_encode(['success' => false]);
