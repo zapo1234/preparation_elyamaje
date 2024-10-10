@@ -72,6 +72,8 @@ class OrderRepository implements OrderInterface
                            "code"            => implode(',', $discount_code),
                            "total_ht"        => floatval($orderData['total'] - $orderData['total_tax']),
                            "total_ttc"       => floatval($orderData['total']),
+                           'shipping_amount' => isset($orderData['shipping_lines'][0]['total']) ? floatval($orderData['shipping_lines'][0]['total']) : null,
+                           'payment_method' => $orderData['payment_method'] ? $orderData['payment_method'] : (count($orderData['pw_gift_cards_redeemed']) > 0 ? 'gift_card' : null ),
                            "status"          => $orderData['status'],
                            "status_updated"  => $orderData['date_created'],
                            "order_date"      => $orderData['date_created'],
