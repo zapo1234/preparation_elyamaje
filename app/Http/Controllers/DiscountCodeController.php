@@ -53,6 +53,20 @@ class DiscountCodeController extends BaseController
         return $this->discountRepository->getDiscountCodes($startDate, $endDate, $code, $status, $limit, $status_updated);
     }
 
+    public function postOrderStatus(Request $request)
+    {
+        $order_id = $request->post('order_id');
+        $status = $request->post('status');
+
+        if($status && $order_id){
+            $data = [
+                "status" => $status,
+                "status_updated" => date('Y-m-d H:i:s')
+            ];
+            return $this->discountRepository->updateOrder($order_id, $data);
+        }
+    }
+
     // Check date format
     private function validateDate($date, $format = 'Y-m-d')
     {

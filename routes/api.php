@@ -57,6 +57,7 @@ Route::get('/products/appi-elearning', [ApiController::class, 'productApi']);
 
 Route::middleware('api_key')->group(function () {
     Route::get('/getCodes', [DiscountCodeController::class, 'getFilteredDiscountCodes']);
+    Route::post('/postOrderStatus', [DiscountCodeController::class, 'postOrderStatus']);
 });
 
 
