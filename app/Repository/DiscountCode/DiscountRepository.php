@@ -11,10 +11,8 @@ class DiscountRepository
     */
     public function getDiscountCodes($startDate = null, $endDate = null, $code = null, $status = null, $limit = null, $status_updated = null)
     {
-        $query = DB::table('discount_code')
-        ->select('discount_code.*', 'products.name')
-        ->join('products_order', 'discount_code.order_id', '=', 'products_order.order_id')
-        ->join('products', 'products_order.product_woocommerce_id', '=', 'products.product_woocommerce_id');
+        // Get discount code
+        $query = DB::table('discount_code')->select('*');
 
         // Ajouter des conditions de filtre si les paramètres sont fournis
         if ($startDate) {
@@ -42,27 +40,44 @@ class DiscountRepository
             $query->limit($limit);
         }
 
-        dd($query->get());
-        // Récupérer les résultats et les transformer
-        return $query->get()->map(function ($item) {
-            return [
-                'id_commande' => $item->order_id,
-                'nom' => $item->last_name,
-                'prenom' => $item->first_name,
-                'email' => $item->email,
-                'phone' => $item->phone,
-                'address_1' => $item->address_1,
-                'address_2' => $item->address_2,
-                'city' => $item->city,
-                'phone' => $item->phone,
-                'code_promo' => $item->code,
-                'total_ht' => $item->total_ht,
-                'shipping_amount' => $item->shipping_amount,
-                'payment_method' => $item->	payment_method,
-                'total_ttc' => $item->total_ttc,
-                'status' => $item->status,
-                'date' => $item->order_date,
+        $discount_code = $query->get()->toArray();
+        $discount_code_order = [];
+        $order_id = [];
+
+        foreach($discount_code as $code){
+            $code = (array) $code;
+            $order_id[] = $code['order_id'];
+            $discount_code_order[$code['order_id']] = $code;
+        }
+
+      
+        // Request to get orders products
+        $details_order = DB::table('products_order')
+        ->select('*')
+        ->join('products', 'products.product_woocommerce_id', '=', 'products_order.product_woocommerce_id')
+        ->whereIn('products_order.order_id', $order_id)
+        ->get()
+        ->toArray();
+
+        foreach($details_order as $order){
+            $order = (array) $order;
+            $discount_code_order[$order['order_id']]['data_lines'][] = [
+                "id" => $order['product_woocommerce_id'],
+                "name" => $order['name'],
+                "category" => $order['category'],
+                "category_id" => $order['category_id'],
+                "quantity" => $order['quantity'],
+                "cost" => $order['cost'],
+                "price" => $order['price'],
+                "subtotal_tax" => $order['subtotal_tax'],
+                "total_tax" => $order['total_tax'],
+                "total" => $order['total_price'],
+                "barcode" => $order['barcode'],
+                "status" => $order['status'],
             ];
-        });
+        }
+
+        $discount_code_order = array_values($discount_code_order);
+        return $discount_code_order;
     }
 }
