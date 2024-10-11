@@ -80,4 +80,8 @@ class DiscountRepository
         $discount_code_order = array_values($discount_code_order);
         return $discount_code_order;
     }
+
+    public function updateOrder($order_id, $data){
+        return DB::table('discount_code')->where('order_id', '=', $order_id)->update($data);
+    }
 }
