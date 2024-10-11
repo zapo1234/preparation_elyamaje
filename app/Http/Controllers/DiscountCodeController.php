@@ -60,7 +60,8 @@ class DiscountCodeController extends BaseController
 
         if($status && $order_id){
             $data = [
-                "status" => $status
+                "status" => $status,
+                "status_updated" => date('Y-m-d H:i:s')
             ];
             return $this->discountRepository->updateOrder($order_id, $data);
         }
