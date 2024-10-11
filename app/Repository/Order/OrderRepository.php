@@ -77,6 +77,7 @@ class OrderRepository implements OrderInterface
                            "status"          => $orderData['status'],
                            "status_updated"  => $orderData['date_created'],
                            "order_date"      => $orderData['date_created'],
+                           'gift_card_amount' => isset($orderData['pw_gift_cards_redeemed'][0]['amount']) ? $orderData['pw_gift_cards_redeemed'][0]['amount'] : 0,
                         ]; 
                      }
                   }
