@@ -14,7 +14,7 @@ class AddFieldRefundsAmount extends Migration
     public function up()
     {
         Schema::table('discount_code', function (Blueprint $table) {
-            $table->integer("refunds_amount")->default(0);
+            $table->float("refunds_amount")->default(0);
         });
     }
 
