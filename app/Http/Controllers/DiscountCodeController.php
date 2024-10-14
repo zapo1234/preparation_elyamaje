@@ -57,11 +57,14 @@ class DiscountCodeController extends BaseController
     {
         $order_id = $request->post('order_id');
         $status = $request->post('status');
+        $refunds_amount = $request->post('refunds_amount') ?? 0;
+
 
         if($status && $order_id){
             $data = [
                 "status" => $status,
-                "status_updated" => date('Y-m-d H:i:s')
+                "status_updated" => date('Y-m-d H:i:s'),
+                "refunds_amount" => $refunds_amount
             ];
             return $this->discountRepository->updateOrder($order_id, $data);
         }
