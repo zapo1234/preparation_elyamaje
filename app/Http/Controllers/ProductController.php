@@ -52,7 +52,8 @@ class ProductController extends BaseController
                     'name' => $product['name'],
                     'permalink' => $product['url'],
                     'image_url' => $product['image'],
-                    'categories' => explode(',', $product['category_id']),
+                    'categories_id' => explode(',', $product['category_id']),
+                    'categories_name' => explode(',', $product['category']),
                 ];
             } 
             return null;
