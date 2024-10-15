@@ -8,5 +8,7 @@ interface CategoriesInterface
 
   public function getAllCategories();
 
+  public function getAllCategoriesNotSorted();
+
   public function updateCategoryOrder($id, $order_display, $parent);
 }

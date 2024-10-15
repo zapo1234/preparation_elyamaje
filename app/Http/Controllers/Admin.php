@@ -232,7 +232,8 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
-                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0,
+                    'url' => isset($product['permalink']) ? $product['permalink'] : null
                 ];
 
                 // Nouvelle manière de récupérer les variations plus opti et récupère même si un produit possède plusieurs variations - A TESTER ENCORE -
@@ -291,7 +292,8 @@ class Admin extends BaseController
                             'menu_order' => $product['menu_order'],
                             'image' => isset($product['images_variations'][$key]) ? $product['images_variations'][$key] : (isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null),
                             'ref' => isset($product['sku']) ? $product['sku'] : null,
-                            'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                            'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0,
+                            'url' => isset($product['permalink']) ? $product['permalink'] : null
                         ];
                     }
                 }
@@ -313,7 +315,8 @@ class Admin extends BaseController
                     'menu_order' => $product['menu_order'],
                     'image' => isset($product['images'][0]['src']) ? $product['images'][0]['src'] : null,
                     'ref' => isset($product['sku']) ? $product['sku'] : null,
-                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0
+                    'is_virtual' => isset($product['virtual']) ? ($product['virtual'] ? 1 : 0) : 0,
+                    'url' => isset($product['permalink']) ? $product['permalink'] : null
                 ];
             }
         }

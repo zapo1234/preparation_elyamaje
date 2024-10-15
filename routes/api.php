@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DiscountCodeController;
 
 /*
@@ -56,8 +57,12 @@ Route::get('/products/appi-elearning', [ApiController::class, 'productApi']);
 
 
 Route::middleware('api_key')->group(function () {
+    // Route for connect
     Route::get('/getCodes', [DiscountCodeController::class, 'getFilteredDiscountCodes']);
     Route::post('/postOrderStatus', [DiscountCodeController::class, 'postOrderStatus']);
+
+    // Route for e-learning to get all products / categories
+    Route::get('/getProductsCategories', [ProductController::class, 'getProductsCategories']);
 });
 
 
