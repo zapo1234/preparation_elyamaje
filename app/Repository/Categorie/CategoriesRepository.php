@@ -93,6 +93,11 @@ class CategoriesRepository implements CategoriesInterface
    }
 
 
+   public function getAllCategoriesNotSorted(){
+      $categories = $this->model::all()->toArray();
+      return $categories;
+   }
+
    function trierCategories($elements, $parent = 0) {
       $arborescence = array();
   
