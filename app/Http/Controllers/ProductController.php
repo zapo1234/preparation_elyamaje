@@ -24,6 +24,21 @@ class ProductController extends BaseController
         $this->productCategories = $productCategories;
     }
 
+    /**
+     * Récupère les produits et les catégories de produits.
+     *
+     * Cette méthode obtient tous les produits du site woocommerce, les filtre par statut
+     * (publié ou autre), et les formate pour renvoyer des informations utiles.
+     * De plus, elle récupère toutes les catégories de produits disponibles
+     * et les formate pour le retour.
+     *
+     * @param Request $request L'objet de requête HTTP contenant des paramètres
+     *                         tels que le statut des produits.
+     *
+     * @return array Un tableau associatif contenant deux clés :
+     *               - "products" : Un tableau de produits filtrés et formatés.
+     *               - "categories" : Un tableau de catégories formatées.
+     */
     public function getProductsCategories(Request $request)
     {
         $status = $request->get('status') ?? "publish";
