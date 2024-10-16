@@ -223,6 +223,8 @@ class TransferOrder
                    $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	                 $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
+
+                   
                   
                    // tester si l'api repond pour renvoyé un message d'erreur s'il faut .
                   if(count($listproduct)==0){

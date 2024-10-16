@@ -182,7 +182,7 @@ class Transfertext {
     */
       public function Transfertext($orders) {
         
-      
+        
         $fk_commande="";
         $linkedObjectsIds = [];
         $coupons="";
@@ -270,10 +270,13 @@ class Transfertext {
     $apiKey = env('KEY_API_DOLIBAR'); 
     $apiUrl = env('KEY_API_URL');
 
+    
+
     $produitParam = ["limit" => 1600, "sortfield" => "rowid"];
     $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
     // reference ref_client dans dolibar
     $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
+
 
     if(count($listproduct)==0){
       $this->logError->insert(['order_id' => isset($orders[0]['order_woocommerce_id']) ? $orders[0]['order_woocommerce_id'] :  0, 'message' => 'la facture n\'a pas été crée signalé au service informatique !']);
@@ -497,7 +500,7 @@ class Transfertext {
                     $code_country = $donnees['billing']['country'];
                   }
                   
-                  // create tiers news
+                  // create tiers adjout d'une array options pour id_woocomerce
                   $data_tiers[] =[ 
                   'entity' =>'1',
                   'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
