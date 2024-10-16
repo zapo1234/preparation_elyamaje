@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Repository\Don\DonRepository;
 use App\Repository\Tiers\TiersRepository;
-use App\Repository\Don\DonsproductRepository;
+use App\Repository\Don\DonsProductRepository;
 use App\Repository\LogError\LogErrorRepository;
 use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
@@ -42,7 +42,7 @@ class TransferOrder
         CommandeidsRepository $commande,
         TiersRepository $tiers,
         DonRepository $don,
-        DonsproductRepository $dons,
+        DonsProductRepository $dons,
         LogErrorRepository $logError
        )
        {
