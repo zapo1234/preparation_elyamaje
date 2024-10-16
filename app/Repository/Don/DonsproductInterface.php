@@ -3,7 +3,7 @@
 namespace App\Repository\Don;
 
 
-interface DonsproductInterface
+interface DonsProductInterface
 {
      public function inserts($data);
 

@@ -7,7 +7,7 @@ use Exception;
 use App\Models\Donsproduct;
 use Illuminate\Support\Facades\DB;
 
-class DonsProductRepository implements DonsproductInterface
+class DonsProductRepository implements DonsProductInterface
 {
 
    private $model;
