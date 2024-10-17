@@ -182,6 +182,7 @@ class Transfertext {
     */
       public function Transfertext($orders) {
         
+        
         $fk_commande="";
         $linkedObjectsIds = [];
         $coupons="";
