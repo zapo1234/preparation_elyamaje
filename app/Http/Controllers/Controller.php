@@ -2669,8 +2669,21 @@ class Controller extends BaseController
                     $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
                     $tier = json_decode($tier, true);
 
-                    $name = $tier["name"];
-                    $pname = $tier["name"];
+                    $name = "";
+                    $pname = "";
+                    
+                    $parts = explode(" ", $tier["name"], 2);
+
+                    if (count($parts) == 2) {
+                        $name = $parts[0];
+                        $pname = $parts[1];
+                    } else {
+                        // Si une seule partie, on l'utilise pour le nom et le prénom
+                        $name = $parts[0];
+                        $pname = $parts[0];
+                    }
+
+
                     $adresse = $tier["address"];
                     $city = $tier["town"];
                     $company = $tier["name_alias"];
