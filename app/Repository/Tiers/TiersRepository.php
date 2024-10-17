@@ -144,6 +144,8 @@ class TiersRepository implements TiersInterface
 
               $lists = $clientSearch;
 
+              
+
 
              $data_ids = array('3087');
              $code_client = array('CU2306-14213','CU2306-14212','CU2308-16399');
@@ -152,6 +154,14 @@ class TiersRepository implements TiersInterface
              $array_email = $this->getEmails();
 
             foreach($lists as $key=>$values){
+
+              if(isset($values['array_options']['options_id_wc'])){
+
+                 $id_wc= $values['array_options']['options_id_wc'];
+              }
+              else{
+                  $id_wc="";
+              }
                
                if($this->testing($array_tiers,$values['id'])==false){
                
@@ -168,6 +178,7 @@ class TiersRepository implements TiersInterface
                            $tier->nom = $values['name'];
                            $tier->prenom = $values['name_alias'];
                            $tier->socid = $values['id'];
+                           $tier->id_wc = $id_wc;
                            $tier->email = $values['email'];
                            $tier->code_client = $values['code_client'];
                            $tier->phone = $values['phone'];

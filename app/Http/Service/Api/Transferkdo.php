@@ -463,6 +463,10 @@ class Transferkdo
                                      $code_country = $donnees['billing']['country'];
                                    }
 
+                                   // créer le tiers et mettrea jour un champ id_woocommerce
+                                   $tiers_options = [
+                                    "options_id_wc"=>$donnees['customer_id']
+                                   ];
                                    $data_tiers[] =[ 
                                    'entity' =>'1',
                                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
@@ -477,7 +481,8 @@ class Transferkdo
                                     'client' 	=> '1',
                                     'code_client'	=> $code_client,
                                     'country_id' => $id_country,
-                                    'country_code'=> $code_country
+                                    'country_code'=> $code_country,
+                                    'array_options'=> $tiers_options,
                                  ];
                                  
                                    $data_infos_user = [

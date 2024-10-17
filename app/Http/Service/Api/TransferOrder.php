@@ -450,6 +450,9 @@ class TransferOrder
                                    }
 
                                    // je creer les datas pour le client.
+                                   $tiers_options = [
+                                    "options_id_wc"=>$donnees['customer_id']
+                                   ];
 
                                    $data_tiers[] =[ 
                                    'entity' =>'1',
