@@ -213,7 +213,7 @@ class TransferOrder
              }
 
              
-                  // je me connecte au clé dolibarr pour intéragir avec api.
+                  // je me connecte au clé dolibarr pour intéragir avec api..
                    $method = "GET";
                   $apiKey = env('KEY_API_DOLIBAR'); 
                   $apiUrl = env('KEY_API_URL');
@@ -223,8 +223,6 @@ class TransferOrder
                    $produitParam = ["limit" => 2500, "sortfield" => "rowid"];
 	                 $listproduct = $this->api->CallAPI("GET", $apiKey, $apiUrl."products", $produitParam);
                    $listproduct = json_decode($listproduct, true);// la liste des produits dans dolibarr
-
-                   
                   
                    // tester si l'api repond pour renvoyé un message d'erreur s'il faut .
                   if(count($listproduct)==0){
@@ -286,7 +284,7 @@ class TransferOrder
                   }
 
                  // recuperer le dernier id => socid du tiers dans dolibarr.
-                  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
+                /*  $clientSearch = json_decode($this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties", array(
 		              "sortfield" => "t.rowid", 
 	    	          "sortorder" => "DESC", 
 		              "limit" => "1", 
@@ -302,6 +300,8 @@ class TransferOrder
                    $id_cl = $id_cl+1;
                    $socid ="";
                    $data_list_product =[];// tableau associative entre le ean barcode et id_produit via dollibar
+
+                  */
 
                    // important je veux recupérer un array qui lit le barcode et id du product de dloibar
                     foreach($listproduct as $values) {
@@ -747,6 +747,9 @@ class TransferOrder
                          }
                        }
 
+
+                
+
                        // création du client dans Api dolibar !
                        if(count($data_tiers)!=0){
                           foreach($data_tiers as $data) {
@@ -768,6 +771,8 @@ class TransferOrder
                            // sinon pareil 
                            $data_lines= $data_lines;
                         }
+
+                        dump($data_lines);
 
                           // traiter les commande uniquement en bon d'achat.
                           foreach($data_lines[0]['lines'] as $keys => $val){
@@ -803,7 +808,7 @@ class TransferOrder
                         }
                       }
                      }
-
+                         dd($data_lines);
                            // construire les données du clients a attacher a la facture.
                             // on ne cree pas l'attache de la seconde facture si la condition est respecté...
                            if(count($array_data_gift_card)==0){
