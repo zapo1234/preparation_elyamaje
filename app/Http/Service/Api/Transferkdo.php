@@ -577,6 +577,18 @@ class Transferkdo
                                   $fid=1;
                                   if(isset($key_commande[$donnees['order_id']])==false) {
 
+                                     // gerer les coliship
+                                       if(isset($donnees['coliship'])){
+                                           if($donnees['coliship']==1){
+                                               $index_col=1;
+                                            }else{
+                                              $index_col ="";
+                                          }
+
+                                        }else{
+                                         $index_col="";
+                                        }
+
                                     if($donnees['gala']=="true"){
                                        $index_number="-gala";
                                     }else{
@@ -596,6 +608,7 @@ class Transferkdo
                                         "options_prepa" => $preparateur,
                                         "options_emba" => $emballeur,
                                         "options_point_fidelite"=>"0.00",
+                                        "options_col"=> $index_col,
                                         ];
                                       
                                        // liée la facture à l'utilisateur via un socid et le details des produits
