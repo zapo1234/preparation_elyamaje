@@ -177,6 +177,7 @@ class WoocommerceService
     $transformOrder['fk_commande'] = $orderDolibarr[0]['fk_commande'];
     $transformOrder['pick_up_location_id'] = $orderDolibarr[0]['pick_up_location_id'] != 0 && $orderDolibarr[0]['pick_up_location_id'] ? $orderDolibarr[0]['pick_up_location_id'] : false;
     $transformOrder['preparateur'] = isset($orderDolibarr[0]['preparateur']) ? $orderDolibarr[0]['preparateur'] : '';
+    $transformOrder['coliship'] = isset($orderDolibarr[0]['coliship']) ? $orderDolibarr[0]['coliship'] : 0;
 
     // On force la méthode d'expédition en livraison à domicile avec signature
     $transformOrder['shipping_method'] = $orderDolibarr[0]['shipping_method'] ?? "lpc_sign";
