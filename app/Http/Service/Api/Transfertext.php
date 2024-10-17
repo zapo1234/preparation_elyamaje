@@ -661,6 +661,19 @@ class Transfertext {
                       $chaine_ext="GAL";
                       $chaine_ext2="CO";// facture devis
                       $index_int="";// eviter que ces commande ont des points  fidelite
+
+                      // gerer les coliship
+                      if(isset($donnees['coliship'])){
+                         if($donnees['coliship']==1){
+                            $index_col=1;
+                         }else{
+                            $index_col ="";
+                         }
+
+                      }else{
+                         $index_col="";
+                      }
+                      
                       if(strpos($donnees['order_id'],$chaine_ext)!==false OR strpos($donnees['order_id'],$chaine_ext2)!==false){
                           $index_int=1;
                           $montant_fidelite = 0.000;
@@ -679,6 +692,7 @@ class Transfertext {
                       "options_prepa" => $preparateur,
                       "options_emba" => $emballeur,
                       "options_point_fidelite"=>$montant_fidelite,
+                      "options_col"=> $index_col,
                       ];
                     
                       // liée la facture à l'utilisateur via un socid et le details des produits

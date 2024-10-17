@@ -612,6 +612,18 @@ class TransferOrder
                                     $chaine_ext ="CO";
                                     $index_int="";// eviter que les commande de la BPP sois prise en compte.
 
+
+                                     // gerer les coliship
+                                   if(isset($donnees['coliship'])){
+                                     if($donnees['coliship']==1){
+                                          $index_col=1;
+                                        }else{
+                                          $index_col ="";
+                                       }
+
+                                     }else{
+                                        $index_col="";
+                                      }
                                     // je construire les point fidelité a attribué en fonction de la commande
                                     // si l'id de la commande est un devis CO pas de point.
                                     if(strpos($donnees['order_id'],$chaine_ext)!==false){
