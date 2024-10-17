@@ -501,6 +501,9 @@ class Transfertext {
                   }
                   
                   // create tiers adjout d'une array options pour id_woocomerce
+                   $tiers_options = [
+                     "options_id_wc"=>$donnees['customer_id']
+                    ];
                   $data_tiers[] =[ 
                   'entity' =>'1',
                   'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
@@ -516,7 +519,8 @@ class Transfertext {
                   'client' 	=> '1',
                   'code_client'	=> $code_client,
                   'country_id' => $id_country,
-                  'country_code'=> $code_country
+                  'country_code'=> $code_country,
+                  'array_options'=> $tiers_options,
                 ];
                 
                   $data_infos_user = [
