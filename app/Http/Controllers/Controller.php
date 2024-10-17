@@ -2665,9 +2665,18 @@ class Controller extends BaseController
 
                 $order = $this->api->CallAPI("GET", $apiKey, $apiUrl."orders/".$id);
                 $order = json_decode($order, true);
+                
+                // Déterminer si le commande est un coliship ou pas 
+                    $coliship = 0;
+                  
+                    if (count($order["array_options"])) {
+                        $coliship = ($order["array_options"]["options_col"] === "1")? 1:0;
+                    }
 
                     $tier = $this->api->CallAPI("GET", $apiKey, $apiUrl."thirdparties/".$order["socid"]);
                     $tier = json_decode($tier, true);
+
+                    
 
                     $name = "";
                     $pname = "";
@@ -2726,7 +2735,8 @@ class Controller extends BaseController
                             "total_order_ttc" => $order["total_ttc"],
                             "user_id" => 0,
                             "payment_methode" => $order["mode_reglement_code"],
-                            "statut" => "processing"
+                            "statut" => "processing",
+                            "coliship" => $coliship
                         ];
 
                         $id_f = DB::table('orders_doli')->insertGetId($detail_facture);
