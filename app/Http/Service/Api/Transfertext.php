@@ -48,7 +48,7 @@ class Transfertext {
   DonsproductRepository $dons,
   LogErrorRepository $logError,
   AddlineInvoicePay $addlineinvoice,
-  SynchroTiersInvoices $synchrotiers,
+  SynchroTiersInvoices $synchrotiers
   ) {
     $this->api=$api;
     $this->commande = $commande;
@@ -419,11 +419,10 @@ class Transfertext {
         $id_wc = $donnees['customer_id'];
         $emailuser = $this->synchrotiers->getEmailTiers($id_wc);// email capter existant dans les bdd dolibar et wc.
         if(count($emailuser)!=0){
-           $emailUser = mb_strtolower($emailuser[0]['email']);
-           $fk_tiers_CU =  array_search($emailUser,$data_list);
-
-        }else{
-          $fk_tiers_CU="";
+             $emailUser = mb_strtolower($emailuser[0]['email']);
+              $fk_tiers_CU =  array_search($emailUser,$data_list);
+           }else{
+            $fk_tiers_CU="";
         }
 
         if($fk_tiers!=""){
