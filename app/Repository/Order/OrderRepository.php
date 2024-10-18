@@ -22,8 +22,6 @@ class OrderRepository implements OrderInterface
 
    public function insertOrdersByUsers($array_user, $distributors_list = []){
 
-      $is_distributor = false;
-
       // Discount code for connect 
       $code = [];
 
@@ -34,6 +32,7 @@ class OrderRepository implements OrderInterface
        
             // Construire un tableau des données d'insertion pour l'utilisateur actuel
             foreach ($userOrders as $orderData) {
+               $is_distributor = false;
                if(!isset($orderData['from_dolibarr'])){
                   // Récupérer que les commandes venant de woocommerce, les autres sont déjà en base pas besoin de réinsérer
                   $coupons = [];
