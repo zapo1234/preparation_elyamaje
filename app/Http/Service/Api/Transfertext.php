@@ -19,6 +19,8 @@ use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 use App\Http\Service\Api\AddlineInvoicePay;
+use App\Http\Service\Api\SynchroTiersInvoices;
+
 
 class Transfertext {
   private $api;
@@ -36,6 +38,7 @@ class Transfertext {
   private $tiers;
   private $amountcard;
   private $addlineinvoice;
+  private $synchrotiers;
   
   public function __construct(
   Api $api,
@@ -44,7 +47,8 @@ class Transfertext {
   DonRepository $don,
   DonsproductRepository $dons,
   LogErrorRepository $logError,
-  AddlineInvoicePay $addlineinvoice
+  AddlineInvoicePay $addlineinvoice,
+  SynchroTiersInvoices $synchrotiers,
   ) {
     $this->api=$api;
     $this->commande = $commande;
@@ -53,6 +57,7 @@ class Transfertext {
     $this->dons = $dons;
     $this->logError = $logError;
     $this->addlineinvoice = $addlineinvoice;
+    $this->synchrotiers = $synchrotiers;
   }
     
     
@@ -181,7 +186,6 @@ class Transfertext {
    *@return array
     */
       public function Transfertext($orders) {
-        
         
         $fk_commande="";
         $linkedObjectsIds = [];
@@ -411,17 +415,34 @@ class Transfertext {
         $datex = $date_recu[0];
         $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
 
+        // gere le cas des anciens  qui ont un code CU avant preparation.
+        $id_wc = $donnees['customer_id'];
+        $emailuser = $this->synchrotiers->getEmailTiers($id_wc);// email capter existant dans les bdd dolibar et wc.
+        if(count($emailuser)!=0){
+           $emailUser = mb_strtolower($emailuser[0]['email']);
+           $fk_tiers_CU =  array_search($emailUser,$data_list);
+
+        }else{
+          $fk_tiers_CU="";
+        }
+
         if($fk_tiers!=""){
           $socid = $fk_tiers;
         }
 
-        if($fk_tiers_phone !="" && $fk_tiers == ""){
+        if($fk_tiers_phone !="" && $fk_tiers == "" && $fk_tiers_CU ==""){
           $socid = $fk_tiers_phone;
         }
           
         // construire le tableau
-        if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone==""){
+        if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone=="" && $fk_tiers_CU==""){
           $socid = $fk_tier;
+          // recupérer dans la bdd en fonction du socid 
+        }
+
+        // Pour les ancien client CU
+        if($fk_tiers_CU!="" && $fk_tier=="" && $fk_tiers=="" && $fk_tiers_phone==""){
+          $socid = $fk_tiers_CU;
           // recupérer dans la bdd en fonction du socid 
         }
 
@@ -444,8 +465,8 @@ class Transfertext {
 
         }
 
-
-        if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="") {
+        // condition pour crée un nouveau utilisateur
+        if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="" && $fk_tiers_CU=="") {
                   
                   $date = date('Y-m-d');
                   $dat = explode('-', $date);
