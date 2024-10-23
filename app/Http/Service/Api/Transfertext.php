@@ -20,7 +20,7 @@ use App\Repository\Commandeids\CommandeidsRepository;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 use App\Http\Service\Api\AddlineInvoicePay;
 use App\Http\Service\Api\SynchroTiersInvoices;
-
+use App\Http\Service\Api\CreateTiers;
 
 class Transfertext {
   private $api;
@@ -39,6 +39,7 @@ class Transfertext {
   private $amountcard;
   private $addlineinvoice;
   private $synchrotiers;
+  private $createtiers;
   
   public function __construct(
   Api $api,
@@ -48,7 +49,8 @@ class Transfertext {
   DonsproductRepository $dons,
   LogErrorRepository $logError,
   AddlineInvoicePay $addlineinvoice,
-  SynchroTiersInvoices $synchrotiers
+  SynchroTiersInvoices $synchrotiers,
+  CreateTiers $createtiers
   ) {
     $this->api=$api;
     $this->commande = $commande;
@@ -58,6 +60,7 @@ class Transfertext {
     $this->logError = $logError;
     $this->addlineinvoice = $addlineinvoice;
     $this->synchrotiers = $synchrotiers;
+    $this->createtiers = $createtiers;
   }
     
     
@@ -291,9 +294,6 @@ class Transfertext {
 
     //Recuperer les ref_client existant dans dolibar
     $tiers_ref = "";
-    // recupérer directement les tiers de puis bdd.
-    //$this->tiers->insertiers();// mise a jour api
-    $list_tier = $this->tiers->getalltiers();// recupérer les tiers a jours ..
     
     // recuperer les ids commandes
     $ids_commande = $this->commande->getAll(); // tableau pour recupérer les id_commande 
@@ -302,37 +302,6 @@ class Transfertext {
     $ids_commandes =[];
     foreach($ids_commande as $key => $valis) {
         $ids_commandes[$valis['id_commande']] = $key;
-    }
-
-    // recupérer l'id du pays du clients associé au prféfixe du pays.
-    $data_id_country = $this->commande->getIdcountry();
-    $data_ids_country = [];
-    foreach($data_id_country as $valu) {
-      $data_ids_country[$valu['rowid']]= $valu['code'];
-    }
-
-    // recupérer les email,socid, code client existant dans tiers
-    $data_email = [];//entre le code_client et email.
-    $data_list = []; //tableau associative de id et email
-    $data_code =[];// tableau associative entre id(socid et le code client )
-    $data_phone = [];
-    foreach($list_tier as $val) {
-      //$data_email[$val['code_client']] = $val['email'];
-      if($val['email']!="") {
-        $data_list[$val['socid']] = mb_strtolower($val['email']);
-      }
-        
-      if($val['phone']!=""){
-        $data_phone[$val['socid']] = $val['phone'];
-      }
-      // recuperer id customer du client et créer un tableau associative.
-      $code_cl = explode('-',$val['code_client']);
-      if(count($code_cl)>2){
-        $code_cls = $code_cl[2];
-        if($code_cls!=0){
-          $data_code[$val['socid']] = $code_cls;
-        }
-      }
     }
 
     // recuperer le dernier id => socid du tiers dans dolibarr.
@@ -395,176 +364,34 @@ class Transfertext {
 
 
     foreach($orders as $k => $donnees) {
-        // créer des tiers pour dolibarr via les datas woocomerce. 
-        // créer le client via dolibarr à partir de woocomerce...
-        $ref_client = rand(4,10);
-        //  $email_true = mb_strtolower($donnees['billing']['email']);
-        // recupérer id du tiers en fonction de son email...
-        $email_true = mb_strtolower($donnees['billing']['email']);
-        // recupérer id du tiers en fonction de son email...
-        $fk_tiers = array_search($email_true,$data_list);
-        $espace_phone =  str_replace(' ', '',$donnees['billing']['phone']);// suprimer les espace entre le phone
-        $fk_tiers_phone = array_search($espace_phone,$data_phone);
-        // recupérer id en fonction du customer id
-        // recupérer id en fonction du customer id
-        $fk_tier = array_search($donnees['customer_id'],$data_code);
-        // convertir la date en format timesamp de la facture .
-        $datetime = $donnees['date']; // date recu de woocomerce.
-        $date_recu = explode(' ',$datetime); // dolibar...
+       
+        // definir les variable pour le tiers.
+        $email = $donnees['billing']['email'];
+        $last_name = $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'];
+        $first_name="";
+        $city =  $donnees['billing']['city'];
+        $adresse = $donnees['billing']['address_1'];
+        $zip = $donnees['billing']['postcode'];
+        $phone = $donnees['billing']['phone'];
+        $date = $donnees['date'];
+        $id_country = $donnees['billing']['country'];
+        $code_country = $donnees['billing']['company'];
+        $order_id = $donnees['order_id'];
+        $is_professionel = $donnees['is_professional'];
+        $compagny = $donnees['billing']['company'];
+        $id_cusotmer = $donnees['customer_id'];
+        $date_created = $donnees['date'];
+      
+        $date_recu = explode(' ', $date_created); // dolibar...
         // transformer la date en format date Y-m-d...
         $datex = $date_recu[0];
-        $new_date = strtotime($datex);// convertir la date au format timesamp pour Api dolibarr.
+        $new_date = strtotime($datex);
 
-        // gere le cas des anciens  qui ont un code CU avant preparation.
-        $id_wc = $donnees['customer_id'];
-        $emailuser = $this->synchrotiers->getEmailTiers($id_wc);// email capter existant dans les bdd dolibar et wc.
-        if(count($emailuser)!=0){
-             $emailUser = mb_strtolower($emailuser[0]['email']);
-              $fk_tiers_CU =  array_search($emailUser,$data_list);
-           }else{
-            $fk_tiers_CU="";
-        }
-
-        if($fk_tiers!=""){
-          $socid = $fk_tiers;
-        }
-
-        if($fk_tiers_phone !="" && $fk_tiers == "" && $fk_tiers_CU ==""){
-          $socid = $fk_tiers_phone;
-        }
-          
-        // construire le tableau
-        if($fk_tier!="" && $fk_tiers=="" && $fk_tiers_phone=="" && $fk_tiers_CU==""){
-          $socid = $fk_tier;
-          // recupérer dans la bdd en fonction du socid 
-        }
-
-        // Pour les ancien client CU
-        if($fk_tiers_CU!="" && $fk_tier=="" && $fk_tiers=="" && $fk_tiers_phone==""){
-          $socid = $fk_tiers_CU;
-          // recupérer dans la bdd en fonction du socid 
-        }
-
-          if($socid!=""){
-                $data =  $this->tiers->gettiersid($socid);
-            if(count($data)==0){
-            $data_infos_user =[];
-            }else{
-
-                  foreach($data as $valu){
-                    $nom =$valu['nom'];
-                    $email = $valu['email'];
-                  }
-                  $data_infos_user = [
-                  'first_name'=> $nom,
-                  'last_name'=>'',
-                  'email'=>$email,
-                ];
-          }
-
-        }
-
-        // condition pour crée un nouveau utilisateur
-        if($fk_tiers=="" && $fk_tier=="" && $fk_tiers_phone=="" && $fk_tiers_CU=="") {
-                  
-                  $date = date('Y-m-d');
-                  $dat = explode('-', $date);
-                  $a1 = $dat[0];
-                  // recupérer les deux deniers chiffre;
-                  $a11= substr($a1,-2);
-                  $a2 = $dat[1];
-                
-                  //$socid = $id_cl;
-                  $socid="news";
-                  $woo = $donnees['billing']['company'];
-                  
-                    $type_id="";
-                  $typent_code="";
-                  // defini si le client est un professionnel.
-                  if($woo!=""){
-                    $type_id ="235";
-                    $typent_code="PROF";
-                  }
-                  
-                  if(isset($donnees['is_professional'])){
-                  if($donnees['is_professional']==true){
-                    $type_id ="235";
-                    $typent_code="PROF";
-                  }
-
-                }else{
-                  $type_id="";
-                  $typent_code="";
-                    
-                }
-                  $name="";
-
-                  $chaine_index ="GAL";
-                  if(strpos($donnees['order_id'],$chaine_index)!==false){
-                    $code_client = $donnees['order_id'];
-                  }else{
-                  $code = $donnees['customer_id'];
-                    $code_client ="WC-$a2$a11-$code";// créer le code client du tiers...
-                }
-                
-
-                  // recupérer le prefix pays a partir du code client 
-                  $code_country = $donnees['billing']['country'];
-                  $id_country = array_search($code_country,$data_ids_country);
-                  if($id_country==""){
-                    $id_country=1;
-                    $code_country ="FR";
-                  }
-                  if($id_country!=""){
-                    $id_country = array_search($code_country,$data_ids_country);
-                    $code_country = $donnees['billing']['country'];
-                  }
-                  
-                  // create tiers adjout d'une array options pour id_woocomerce
-                   $tiers_options = [
-                     "options_id_wc"=>$donnees['customer_id']
-                    ];
-                  $data_tiers[] =[ 
-                  'entity' =>'1',
-                  'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
-                  'name_alias' => $woo,
-                  'address' => $donnees['billing']['address_1'],
-                  'zip' => $donnees['billing']['postcode'],
-                  'status'=>'1',
-                  'email' => $donnees['billing']['email'],
-                  "typent_id" => $type_id,
-                  "typent_code" => $typent_code,
-                  'phone' => $donnees['billing']['phone'],
-                  'town'=> $donnees['billing']['city'],
-                  'client' 	=> '1',
-                  'code_client'	=> $code_client,
-                  'country_id' => $id_country,
-                  'country_code'=> $code_country,
-                  'array_options'=> $tiers_options,
-                ];
-                
-                  $data_infos_user = [
-                      'first_name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
-                      'last_name' =>'',
-                      'email'=>$donnees['billing']['email'],
-                    ];
-                  // recupérer un array pour créer un client via bdd base de données.
-                $info_tiers_flush =[
-                    'name'=> $donnees['billing']['first_name'].' '.$donnees['billing']['last_name'],
-                    'socid'=> $socid,
-                    'code_client'	=> $code_client,
-                    'email' => $donnees['billing']['email'],
-                    'name_alias' => $woo,
-                    'address' => $donnees['billing']['address_1'],
-                    'city'=>  $donnees['billing']['city'],
-                    'zip' => $donnees['billing']['postcode'],
-                    'status'=>'1',
-                    'phone' => $donnees['billing']['phone'],
-                    'country_code'=> $donnees['billing']['country'],
-                    'date_created'=> date('Y-m-d H:i:s')
-                  ];
-            }
-
+        // appeler le service de creation et incluant le socid
+        $data_tiers = $this->createtiers->createtiers($email, $id_cusotmer, $phone, $city, $zip,$adresse, $order_id, $first_name, $last_name,$date_created,$id_country,$code_country,
+        $compagny,$is_professionel);
+        // recupérer le socid et renvoyr les
+        $socid = $this->createtiers->getSocidtiers();
 
               // recupére des lines pour des gift card
               foreach($donnees['line_items'] as $key => $values){
@@ -998,13 +825,13 @@ class Transfertext {
     $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
     $tiers_exist = $this->don->gettiers();
     // insert le tiers dans la BDD...
-    if(count($data_infos_order)!=0){
+    //if(count($data_infos_order)!=0){
       // insert 
-      if(isset($tiers_exist[$data_infos_order['email']])==false){
-        $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
+     // if(isset($tiers_exist[$data_infos_order['email']])==false){
+     //   $this->don->inserts($data_infos_order['first_name'],$data_infos_order['last_name'],$data_infos_order['email'],$data_infos_order['order_id'],$data_infos_order['coupons'],$data_infos_order['total_order'],$data_infos_order['date_order']);
         // JOINTRE les produits.
-      }
-    }
+    //  }
+    //}
     // Ajouter le client dans la base de données interne 
       //if(count($info_tiers_flush)!=0){
         // 
