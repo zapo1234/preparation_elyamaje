@@ -15,6 +15,8 @@ use App\Models\Distributeur\Invoicesdistributeur;
 use App\Repository\Commandeids\CommandeidsRepository;
 use Automattique\WooCommerce\HttpClient\HttpClientException;
 use App\Http\Service\Api\AddlineInvoicePay;
+use DateTime;
+use DateTimeZone;
 
 class ValidPayInvoices
 {
@@ -47,12 +49,12 @@ class ValidPayInvoices
 
 
     /**
-     * valider et accorder un moyen de paiment une facture dans dolibar
-     * @param string $chaine_amount une chaine de caractère envoyé
-     * @param string $getAccount une chaine de caractère envoyé
-     * @param string $getIsdistributor une chaine de caractère envoyé
+     * valider et mettre le status et accorder des moyens de paiment a des facture dans dolibar
+     * @param string $chaine_amount une chaine de caractère envoyé un jeu de chaine pensant 
+     * @param string $getAccount une chaine de caractère envoyé methode de paiment
+     * @param string $getIsdistributor une chaine de caractère envoyé un indice de distributeur
      * @param int $getIdfacture une chaine de caractère envoyé
-     * @param array $orders tableau envoyé client
+     * @param array $orders un tableau contenant les datas du users.
      * @return void
      */
     public function ValidPay($orders,$chaine_amount,$getAccountpay,$getIsdistributor,$getIdfacture)
@@ -107,18 +109,7 @@ class ValidPayInvoices
                $tiers_ref = $data['id'];
              }
         
-               // le nombre recupérer 
-               $count_datas = $orders;// retour array ici
-               $ids_orders =[];// recupérer les id commande venant de woocomerce....
-               $data_ids=[];// recupérer les nouveaux ids de commande jamais utilisés....
-               $data_fk_facture =[];// recupérer l'id de la commande et le fk_facture
-              foreach($count_datas as $k =>$valis){
-                     $ids_orders[] = $valis['id'];
-                     if(!in_array($valis['id'],$this->getDataidcommande())) {
-                        $data_ids[]= $valis['id'];
-                      
-                      }
-               }
+               
                 // insérer id commande et id_facture via dolibarr.
                  $data_fk_facture[] =[
                  'id_commande'=> $getIdfacture,
@@ -129,40 +120,8 @@ class ValidPayInvoices
                   // Liee id de la commande au fk_facture et insert dans une table 
                   DB::table('fk_factures')->insert($data_fk_facture);
                   // le nombre de facture à traiter en payé
-                  $count_data = count($ids_orders);
+                  //$count_data = count($ids_orders);
                   // les nouveau order à traiter
-                   // recupérer le nombre de commande recupérer 
-                 $nombre1 = $count_data;
-                 //$nombre2= count($this->getDataidcommande());// compter les anciennes ids 
-                 // nombre des nouveaux order recupérer journaliier.
-                 $nombre_orders = count($data_ids);
-                 // tranformer le tableau en chaine de caractère
-                 $list_id_commande = implode(',',$data_ids);
-                 $nombre_count = $inv - $nombre_orders+1;
-                 $datetime = date('d-m-Y H:i:s');
-                 $dat = date('Y-m-d H:i:s');
-         
-                 // insert infos dans bdd ...
-                 if($nombre_orders= 0) {
-                    $label = "Aucune commande transférée";
-                 }
-                  elseif($nombre_orders==1){
-                     $label ="la commande à été transférée dans dolibars le $datetime";
-                  }
-                  else{
-                      $label = "$nombre_orders commandes transférées dans dolibars le $datetime";
-                 }
-                 // insert dans la table 
-                 // recupérer une chaine de id_commande et id_facture
-                 $chaine_data = $list_id_commande.','.$inv;
-                 $sucess = new Transfertsucce();
-                 $sucess->date = $dat;
-                 $sucess->id_commande = $list_id_commande;
-                 $sucess->label = $label;
-                 $sucess->save();
-                 // convertir en entier la valeur.
-                 $id_cl = (int)$tiers_ref;
-                 $id_cl = $id_cl+1;
                   $socid ="";
                  // id  du dernier invoices(facture)
                  // valider invoice

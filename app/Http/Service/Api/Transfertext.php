@@ -21,6 +21,8 @@ use Automattique\WooCommerce\HttpClient\HttpClientException;
 use App\Http\Service\Api\AddlineInvoicePay;
 use App\Http\Service\Api\SynchroTiersInvoices;
 use App\Http\Service\Api\CreateTiers;
+use App\Http\Service\Api\ValidPayInvoices;
+
 
 class Transfertext {
   private $api;
@@ -40,7 +42,8 @@ class Transfertext {
   private $addlineinvoice;
   private $synchrotiers;
   private $createtiers;
-  
+  private $validpay;
+
   public function __construct(
   Api $api,
   CommandeidsRepository $commande,
@@ -50,7 +53,8 @@ class Transfertext {
   LogErrorRepository $logError,
   AddlineInvoicePay $addlineinvoice,
   SynchroTiersInvoices $synchrotiers,
-  CreateTiers $createtiers
+  CreateTiers $createtiers,
+  ValidPayInvoices $validpay
   ) {
     $this->api=$api;
     $this->commande = $commande;
@@ -61,6 +65,7 @@ class Transfertext {
     $this->addlineinvoice = $addlineinvoice;
     $this->synchrotiers = $synchrotiers;
     $this->createtiers = $createtiers;
+    $this->validpay = $validpay;
   }
     
     
@@ -819,7 +824,12 @@ class Transfertext {
 
     // mettre la facture en status en payé et l'attribue un compte bancaire.
     if(count($data_lines)!=0){
-      $this->invoicespay($orders);
+      //$this->invoicespay($orders);
+      $getAccountpay = $donnees['payment_method'];
+      $getIsdistributor = $status_distributeur;
+      $getIdfacture = $donnees['order_id'];
+      // valide le status et mettre la facture en payée et dans les bon compte bancaire.
+      $this->validpay->ValidPay($orders,$chaine_amount,$getAccountpay,$getIsdistributor,$getIdfacture);
     }
     // merger le client et les data coupons.....
     $data_infos_order  = array_merge($data_infos_user,$data_options_kdo);
