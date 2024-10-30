@@ -54,7 +54,8 @@ class OrderRepository implements OrderInterface
                   if(count($coupons) > 0){
                      $discount_code = [];
                      foreach($coupons as $cp){
-                        if(str_contains($cp, 'amb') || str_contains($cp, '-10')){
+                        $check_students_code = isset(explode('-', $cp)[3]) ? explode('-', $cp)[3] : false;
+                        if(str_contains($cp, 'amb') || $check_students_code == "10"){
                            $discount_code[] = $cp;
                         }
                      }
@@ -247,7 +248,7 @@ class OrderRepository implements OrderInterface
                   DB::table('orders_doli')->where('ref_order', $orderData['id'])->update(['user_id' => $userId]);
                }
             } 
-            
+
             // Insérer les données dans la base de données par lot
             try{
                DB::transaction(function () use ($ordersToInsert, $productsToInsert, $code) {
