@@ -147,11 +147,19 @@ class CreateTiers
             // recupérer dans la bdd en fonction du socid 
         }
 
-        // Pour les anciens clients CU
+        // Pour les anciens clients CU capter
         if ($fk_tiers_CU != "" && $fk_tier == "" && $fk_tiers == "" && $fk_tiers_phone == "") {
             $socid = $fk_tiers_CU;
             // recupérer dans la bdd en fonction du socid 
         }
+
+        // faire l'ouverture pour les client CU non capter si le phone n'a pas changer donne lui
+          if($fk_tiers_phone != "") {
+            $socid = $fk_tiers_phone;
+        }
+
+       
+
 
         if ($socid != "") {
             $data = $this->tiers->gettiersid($socid);
@@ -257,6 +265,10 @@ class CreateTiers
             ];
             // recupérer un array pour créer un client via bdd base de données.
         }
+
+
+        // cree le client pour la seconde condition(les client CU)
+        // basons sur si l'email a changer et le phone a changer et id n'est pas data_code.
 
 
         // recupérer le socid.
