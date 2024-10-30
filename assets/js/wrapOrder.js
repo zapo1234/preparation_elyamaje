@@ -1024,12 +1024,31 @@ document.addEventListener("keydown", function (e) {
         var array = $("#detail_order").val().split(",");
         if (array.length == 3 && !scan) {
             scan = true;
-            $("#order_id").val(array[0].split(",")[0]);
-            $(".order_id_input").val(array[0].split(",")[0]);
-            $("#product_count").val(array[1]);
-            $("#customer").val(array[2]);
-            $(".validate_order").attr("disabled", false);
-            $(".validate_order").click();
+            if (
+                typeof array[0].split(",")[0] === undefined ||
+                array[0].split(",")[0] === "undefined"
+            ) {
+                $(".alert-danger").remove();
+                $(".show_messages").prepend(
+                    `
+                    <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                        <div class=" text-white">Format incorrect, veuillez écrire le numéro à la main</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `
+                );
+                clean_scan();
+                setTimeout(function () {
+                    $(".order_id_input").val("");
+                }, 100);
+            } else {
+                $("#order_id").val(array[0].split(",")[0]);
+                $(".order_id_input").val(array[0].split(",")[0]);
+                $("#product_count").val(array[1]);
+                $("#customer").val(array[2]);
+                $(".validate_order").attr("disabled", false);
+                $(".validate_order").click();
+            }
         }
     } else if (
         $(".modal_order").hasClass("show") &&
